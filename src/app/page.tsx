@@ -80,7 +80,7 @@ export default async function DashboardPage() {
 
   const quickLinks = [
     { href: '/platformlar', label: 'Platformlar & Partnerler', desc: 'CRM, yayıncılar, küratörler', color: '#7c3aed' },
-    { href: '/yayincilar', label: 'Yayıncılar', desc: 'Twitch, Kick, SOOP, YouTube', color: '#3b82f6' },
+    { href: '/yayincilar', label: 'Yayıncılar', desc: 'Twitch, Kick, SOOP, YouTube, Bilibili, Douyin, NicoNico, Chzzk', color: '#3b82f6' },
     { href: '/toplantilar', label: 'Toplantılar', desc: 'Planlama ve notlar', color: '#14b8a6' },
     { href: '/sosyal-medya', label: 'Sosyal Medya', desc: 'Paylaşımlar ve analizler', color: '#f59e0b' },
     { href: '/reddit', label: 'Reddit', desc: 'Hesaplar ve gönderiler', color: '#ef4444' },
@@ -127,7 +127,6 @@ export default async function DashboardPage() {
             icon={Tv2}
             iconColor="#a78bfa"
             iconBg="rgba(124,58,237,0.12)"
-            trend={`Twitch ${stats.twitchCount} · Kick ${stats.kickCount} · SOOP ${stats.soopCount} · YT ${stats.ytCount}`}
           />
           <StatCard
             label="Platform / Partner"
@@ -159,7 +158,7 @@ export default async function DashboardPage() {
           />
           <StatCard
             label="Bütçe Kullanımı"
-            value={`%${stats.budgetPercent}`}
+            value={`$${stats.totalExpenses.toLocaleString('en-US')}`}
             icon={DollarSign}
             iconColor="#4ade80"
             iconBg="rgba(34,197,94,0.12)"

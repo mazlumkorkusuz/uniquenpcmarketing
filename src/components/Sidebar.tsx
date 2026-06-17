@@ -93,7 +93,7 @@ export default function Sidebar() {
             Unique NPC
           </div>
           <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '2px' }}>
-            Marketing Hub
+            Marketing
           </div>
         </div>
       </div>
