@@ -17,7 +17,7 @@ type Row = Record<string, unknown>
 
 function currency(v: unknown) {
   if (v === null || v === undefined) return <span style={{ color: '#64748b' }}>—</span>
-  return <span style={{ color: '#4ade80', fontWeight: 600 }}>{Number(v).toLocaleString('tr-TR', { minimumFractionDigits: 2 })} ₺</span>
+  return <span style={{ color: '#4ade80', fontWeight: 600 }}>${Number(v).toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
 }
 
 function dateCell(v: unknown) {
@@ -82,19 +82,19 @@ export default async function ButcePage() {
           <div style={{ backgroundColor: '#1a1a24', border: '1px solid #2a2a3a', borderRadius: '12px', padding: '20px' }}>
             <div style={{ fontSize: '12px', color: '#64748b', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '8px' }}>Aylık Bütçe</div>
             <div style={{ fontSize: '24px', fontWeight: 700, color: '#4ade80' }}>
-              {monthlyBudget > 0 ? `${monthlyBudget.toLocaleString('tr-TR')} ₺` : '—'}
+              {monthlyBudget > 0 ? `$${monthlyBudget.toLocaleString('en-US')}` : '—'}
             </div>
           </div>
           <div style={{ backgroundColor: '#1a1a24', border: '1px solid #2a2a3a', borderRadius: '12px', padding: '20px' }}>
             <div style={{ fontSize: '12px', color: '#64748b', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '8px' }}>Toplam Harcama</div>
             <div style={{ fontSize: '24px', fontWeight: 700, color: totalExpenses > monthlyBudget && monthlyBudget > 0 ? '#f87171' : '#f1f5f9' }}>
-              {totalExpenses.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} ₺
+              ${totalExpenses.toLocaleString('en-US', { minimumFractionDigits: 2 })}
             </div>
           </div>
           <div style={{ backgroundColor: '#1a1a24', border: '1px solid #2a2a3a', borderRadius: '12px', padding: '20px' }}>
             <div style={{ fontSize: '12px', color: '#64748b', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '8px' }}>Kalan Bütçe</div>
             <div style={{ fontSize: '24px', fontWeight: 700, color: remaining < 0 ? '#f87171' : '#2dd4bf' }}>
-              {monthlyBudget > 0 ? `${remaining.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} ₺` : '—'}
+              {monthlyBudget > 0 ? `$${remaining.toLocaleString('en-US', { minimumFractionDigits: 2 })}` : '—'}
             </div>
           </div>
           <div style={{ backgroundColor: '#1a1a24', border: '1px solid #2a2a3a', borderRadius: '12px', padding: '20px' }}>
@@ -126,8 +126,8 @@ export default async function ButcePage() {
               />
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '8px' }}>
-              <span style={{ fontSize: '12px', color: '#64748b' }}>0 ₺</span>
-              <span style={{ fontSize: '12px', color: '#64748b' }}>{monthlyBudget.toLocaleString('tr-TR')} ₺</span>
+              <span style={{ fontSize: '12px', color: '#64748b' }}>$0</span>
+              <span style={{ fontSize: '12px', color: '#64748b' }}>${monthlyBudget.toLocaleString('en-US')}</span>
             </div>
           </div>
         )}
@@ -142,7 +142,7 @@ export default async function ButcePage() {
                 return (
                   <div key={cat} style={{ backgroundColor: '#13131a', borderRadius: '8px', padding: '12px' }}>
                     <div style={{ fontSize: '12px', color: '#64748b', marginBottom: '4px' }}>{cat}</div>
-                    <div style={{ fontSize: '16px', fontWeight: 700, color: '#4ade80' }}>{amount.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} ₺</div>
+                    <div style={{ fontSize: '16px', fontWeight: 700, color: '#4ade80' }}>${amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</div>
                     <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '2px' }}>%{pct}</div>
                   </div>
                 )

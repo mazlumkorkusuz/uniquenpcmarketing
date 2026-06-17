@@ -72,7 +72,7 @@ function formatDate(dateStr?: string | null) {
 }
 
 function formatCurrency(n: number) {
-  return n.toLocaleString('tr-TR', { minimumFractionDigits: 0 }) + ' ₺'
+  return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 0 })
 }
 
 export default async function DashboardPage() {
@@ -97,18 +97,6 @@ export default async function DashboardPage() {
           backgroundColor: '#13131a',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '4px' }}>
-          <div
-            style={{
-              width: '10px',
-              height: '10px',
-              borderRadius: '50%',
-              backgroundColor: '#22c55e',
-              boxShadow: '0 0 8px rgba(34,197,94,0.6)',
-            }}
-          />
-          <span style={{ fontSize: '12px', color: '#64748b', fontWeight: 500 }}>Canlı</span>
-        </div>
         <h1 style={{ fontSize: '26px', fontWeight: 800, color: '#f1f5f9', margin: 0 }}>
           Marketing Dashboard
         </h1>
