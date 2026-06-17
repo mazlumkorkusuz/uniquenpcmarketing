@@ -13,7 +13,10 @@ import {
   Wallet,
   Gamepad2,
   ChevronRight,
+  LogOut,
 } from 'lucide-react'
+import { useAuth } from '@/components/AppShell'
+import { useState } from 'react'
 
 const navItems = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
@@ -28,6 +31,13 @@ const navItems = [
 
 export default function Sidebar() {
   const pathname = usePathname()
+  const { user, logout } = useAuth()
+  const [loggingOut, setLoggingOut] = useState(false)
+
+  const handleLogout = async () => {
+    setLoggingOut(true)
+    await logout()
+  }
 
   return (
     <aside
@@ -117,26 +127,91 @@ export default function Sidebar() {
         })}
       </nav>
 
-      {/* Footer */}
-      <div
-        style={{
-          padding: '16px 20px',
-          borderTop: '1px solid #2a2a3a',
-        }}
-      >
-        <div
+      {/* Footer / User / Logout */}
+      <div style={{ padding: '16px 20px', borderTop: '1px solid #2a2a3a' }}>
+        {/* User email */}
+        {user && (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '8px 10px',
+              borderRadius: '8px',
+              backgroundColor: '#1a1a24',
+              border: '1px solid #2a2a3a',
+              marginBottom: '10px',
+            }}
+          >
+            <div
+              style={{
+                width: '28px',
+                height: '28px',
+                borderRadius: '50%',
+                background: 'linear-gradient(135deg, #7c3aed, #3b82f6)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+                fontSize: '11px',
+                fontWeight: 700,
+                color: 'white',
+              }}
+            >
+              {user.email?.[0].toUpperCase() ?? 'U'}
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div
+                style={{
+                  fontSize: '12px',
+                  color: '#f1f5f9',
+                  fontWeight: 500,
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {user.email}
+              </div>
+              <div style={{ fontSize: '10px', color: '#4ade80' }}>● Aktif</div>
+            </div>
+          </div>
+        )}
+
+        {/* Logout button */}
+        <button
+          onClick={handleLogout}
+          disabled={loggingOut}
           style={{
-            background: 'linear-gradient(135deg, rgba(124,58,237,0.15), rgba(59,130,246,0.15))',
-            border: '1px solid rgba(124,58,237,0.2)',
-            borderRadius: '10px',
-            padding: '12px',
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '9px 12px',
+            borderRadius: '8px',
+            backgroundColor: 'rgba(239,68,68,0.08)',
+            border: '1px solid rgba(239,68,68,0.2)',
+            color: '#f87171',
+            fontSize: '13.5px',
+            fontWeight: 500,
+            cursor: loggingOut ? 'not-allowed' : 'pointer',
+            opacity: loggingOut ? 0.6 : 1,
+            transition: 'all 0.15s ease',
+          }}
+          onMouseEnter={(e) => {
+            if (!loggingOut) {
+              (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'rgba(239,68,68,0.15)'
+              ;(e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(239,68,68,0.4)'
+            }
+          }}
+          onMouseLeave={(e) => {
+            ;(e.currentTarget as HTMLButtonElement).style.backgroundColor = 'rgba(239,68,68,0.08)'
+            ;(e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(239,68,68,0.2)'
           }}
         >
-          <div style={{ fontSize: '12px', fontWeight: 600, color: '#a78bfa', marginBottom: '2px' }}>
-            Marketing Tracker
-          </div>
-          <div style={{ fontSize: '11px', color: '#64748b' }}>v1.0 · Oyun Şirketi</div>
-        </div>
+          <LogOut size={15} />
+          <span>{loggingOut ? 'Çıkış yapılıyor…' : 'Çıkış Yap'}</span>
+        </button>
       </div>
     </aside>
   )
