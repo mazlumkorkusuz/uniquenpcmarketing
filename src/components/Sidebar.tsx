@@ -13,18 +13,55 @@ import {
   MessageCircle,
   Wallet,
   ChevronRight,
+  ChevronDown,
   LogOut,
 } from 'lucide-react'
+import { LucideIcon } from 'lucide-react'
 import { useAuth } from '@/components/AppShell'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
-const navItems = [
+interface SubNavItem {
+  href: string
+  label: string
+}
+
+interface NavItem {
+  href: string
+  label: string
+  icon: LucideIcon
+  children?: SubNavItem[]
+}
+
+const navItems: NavItem[] = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/platformlar', label: 'Platformlar & Partnerler', icon: Globe },
-  { href: '/yayincilar', label: 'Yayıncılar', icon: Tv2 },
+  {
+    href: '/yayincilar',
+    label: 'Yayıncılar',
+    icon: Tv2,
+    children: [
+      { href: '/yayincilar/twitch', label: 'Twitch' },
+      { href: '/yayincilar/kick', label: 'Kick' },
+      { href: '/yayincilar/soop', label: 'SOOP' },
+      { href: '/yayincilar/niconico', label: 'NicoNico' },
+      { href: '/yayincilar/chzzk', label: 'Chzzk' },
+      { href: '/yayincilar/bilibili', label: 'BiliBili' },
+      { href: '/yayincilar/douyin', label: 'Douyin' },
+    ],
+  },
   { href: '/toplantilar', label: 'Toplantılar', icon: Calendar },
   { href: '/notlar', label: 'Notlar', icon: FileText },
-  { href: '/sosyal-medya', label: 'Sosyal Medya', icon: Share2 },
+  {
+    href: '/sosyal-medya',
+    label: 'Sosyal Medya',
+    icon: Share2,
+    children: [
+      { href: '/sosyal-medya/twitter', label: 'Twitter' },
+      { href: '/sosyal-medya/instagram', label: 'Instagram' },
+      { href: '/sosyal-medya/tiktok', label: 'TikTok' },
+      { href: '/sosyal-medya/youtube', label: 'YouTube' },
+    ],
+  },
   { href: '/reddit', label: 'Reddit', icon: MessageCircle },
   { href: '/butce', label: 'Bütçe Yönetimi', icon: Wallet },
 ]
@@ -33,6 +70,37 @@ export default function Sidebar() {
   const pathname = usePathname()
   const { user, logout } = useAuth()
   const [loggingOut, setLoggingOut] = useState(false)
+
+  const [expanded, setExpanded] = useState<Set<string>>(() => {
+    const s = new Set<string>()
+    for (const item of navItems) {
+      if (item.children?.some((c) => pathname.startsWith(c.href))) {
+        s.add(item.href)
+      }
+    }
+    return s
+  })
+
+  useEffect(() => {
+    setExpanded((prev) => {
+      const next = new Set(prev)
+      for (const item of navItems) {
+        if (item.children?.some((c) => pathname.startsWith(c.href))) {
+          next.add(item.href)
+        }
+      }
+      return next
+    })
+  }, [pathname])
+
+  const toggleExpand = (href: string) => {
+    setExpanded((prev) => {
+      const next = new Set(prev)
+      if (next.has(href)) next.delete(href)
+      else next.add(href)
+      return next
+    })
+  }
 
   const handleLogout = async () => {
     setLoggingOut(true)
@@ -108,37 +176,117 @@ export default function Sidebar() {
         {navItems.map((item) => {
           const Icon = item.icon
           const isActive = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href)
+          const isExpanded = expanded.has(item.href)
+          const hasChildren = !!item.children
+
           return (
-            <Link
-              key={item.href}
-              href={item.href}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '10px',
-                padding: '9px 12px',
-                borderRadius: '8px',
-                color: isActive ? '#a78bfa' : '#94a3b8',
-                textDecoration: 'none',
-                fontSize: '13.5px',
-                fontWeight: 500,
-                marginBottom: '2px',
-                transition: 'all 0.15s ease',
-                backgroundColor: isActive ? 'rgba(124,58,237,0.12)' : 'transparent',
-                border: isActive ? '1px solid rgba(124,58,237,0.25)' : '1px solid transparent',
-              }}
-            >
-              <Icon size={16} strokeWidth={isActive ? 2.5 : 2} />
-              <span style={{ flex: 1 }}>{item.label}</span>
-              {isActive && <ChevronRight size={14} />}
-            </Link>
+            <div key={item.href} style={{ marginBottom: '2px' }}>
+              {/* Main nav row */}
+              <div
+                className="nav-item"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  borderRadius: '8px',
+                  color: isActive ? '#a78bfa' : '#94a3b8',
+                  fontSize: '13.5px',
+                  fontWeight: 500,
+                  backgroundColor: isActive ? 'rgba(124,58,237,0.12)' : 'transparent',
+                  border: isActive ? '1px solid rgba(124,58,237,0.25)' : '1px solid transparent',
+                  overflow: 'hidden',
+                  transition: 'all 0.15s ease',
+                }}
+              >
+                <Link
+                  href={item.href}
+                  onClick={hasChildren ? () => setExpanded((prev) => { const n = new Set(prev); n.add(item.href); return n }) : undefined}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    padding: '9px 4px 9px 12px',
+                    flex: 1,
+                    color: 'inherit',
+                    textDecoration: 'none',
+                  }}
+                >
+                  <Icon size={16} strokeWidth={isActive ? 2.5 : 2} />
+                  <span style={{ flex: 1 }}>{item.label}</span>
+                  {!hasChildren && isActive && <ChevronRight size={14} style={{ marginRight: '8px' }} />}
+                </Link>
+                {hasChildren && (
+                  <button
+                    onClick={() => toggleExpand(item.href)}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      padding: '9px 10px',
+                      color: 'inherit',
+                      display: 'flex',
+                      alignItems: 'center',
+                      flexShrink: 0,
+                    }}
+                  >
+                    <ChevronDown
+                      size={14}
+                      style={{
+                        transform: isExpanded ? 'rotate(0deg)' : 'rotate(-90deg)',
+                        transition: 'transform 0.2s ease',
+                      }}
+                    />
+                  </button>
+                )}
+              </div>
+
+              {/* Sub-items */}
+              {hasChildren && isExpanded && (
+                <div style={{ paddingLeft: '14px', paddingTop: '2px', paddingBottom: '2px' }}>
+                  {item.children!.map((child) => {
+                    const isChildActive = pathname === child.href
+                    return (
+                      <Link
+                        key={child.href}
+                        href={child.href}
+                        className="sub-nav-item"
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px',
+                          padding: '6px 10px',
+                          borderRadius: '6px',
+                          color: isChildActive ? '#a78bfa' : '#64748b',
+                          textDecoration: 'none',
+                          fontSize: '13px',
+                          fontWeight: isChildActive ? 600 : 400,
+                          marginBottom: '1px',
+                          backgroundColor: isChildActive ? 'rgba(124,58,237,0.08)' : 'transparent',
+                          borderLeft: isChildActive ? '2px solid #7c3aed' : '2px solid transparent',
+                          transition: 'all 0.15s ease',
+                        }}
+                      >
+                        <div
+                          style={{
+                            width: '5px',
+                            height: '5px',
+                            borderRadius: '50%',
+                            backgroundColor: isChildActive ? '#a78bfa' : '#3a3a4a',
+                            flexShrink: 0,
+                          }}
+                        />
+                        {child.label}
+                      </Link>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
           )
         })}
       </nav>
 
       {/* Footer / User / Logout */}
       <div style={{ padding: '16px 20px', borderTop: '1px solid #2a2a3a' }}>
-        {/* User email */}
         {user && (
           <div
             style={{
@@ -187,7 +335,6 @@ export default function Sidebar() {
           </div>
         )}
 
-        {/* Logout button */}
         <button
           onClick={handleLogout}
           disabled={loggingOut}
@@ -209,7 +356,7 @@ export default function Sidebar() {
           }}
           onMouseEnter={(e) => {
             if (!loggingOut) {
-              (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'rgba(239,68,68,0.15)'
+              ;(e.currentTarget as HTMLButtonElement).style.backgroundColor = 'rgba(239,68,68,0.15)'
               ;(e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(239,68,68,0.4)'
             }
           }}

@@ -1,9 +1,22 @@
 export const dynamic = 'force-dynamic'
 import { supabase } from '@/lib/supabase'
 import PageHeader from '@/components/PageHeader'
-import DataTable from '@/components/DataTable'
-import Badge, { statusBadge } from '@/components/Badge'
-import { Tv2 } from 'lucide-react'
+import BarChart from '@/components/BarChart'
+import { Tv2, ArrowRight } from 'lucide-react'
+import Link from 'next/link'
+
+type Row = Record<string, unknown>
+
+const PLATFORMS = [
+  { key: 'twitch',   label: 'Twitch',   color: '#9146ff', href: '/yayincilar/twitch' },
+  { key: 'kick',     label: 'Kick',     color: '#53fc18', href: '/yayincilar/kick' },
+  { key: 'soop',     label: 'SOOP',     color: '#3b82f6', href: '/yayincilar/soop' },
+  { key: 'youtube',  label: 'YouTube',  color: '#ff4444', href: '/yayincilar/youtube' },
+  { key: 'niconico', label: 'NicoNico', color: '#e8e8e8', href: '/yayincilar/niconico' },
+  { key: 'chzzk',    label: 'Chzzk',    color: '#00ffa3', href: '/yayincilar/chzzk' },
+  { key: 'bilibili', label: 'BiliBili', color: '#00a1d6', href: '/yayincilar/bilibili' },
+  { key: 'douyin',   label: 'Douyin',   color: '#fe2c55', href: '/yayincilar/douyin' },
+]
 
 async function getData() {
   const [
@@ -11,175 +24,144 @@ async function getData() {
     { data: kick },
     { data: soop },
     { data: youtube },
-    { data: tracking },
-    { data: favorites },
   ] = await Promise.all([
-    supabase.from('twitch_streamers').select('*').order('followers', { ascending: false }),
-    supabase.from('kick_streamers').select('*').order('followers', { ascending: false }),
-    supabase.from('soop_streamers').select('*').order('followers', { ascending: false }),
-    supabase.from('youtube_channels').select('*').order('subscribers', { ascending: false }),
-    supabase.from('streamer_tracking').select('*').order('created_at', { ascending: false }).limit(50),
-    supabase.from('streamer_favorites').select('*').order('created_at', { ascending: false }),
+    supabase.from('twitch_streamers').select('username, display_name, followers').order('followers', { ascending: false }),
+    supabase.from('kick_streamers').select('username, channel_name, followers').order('followers', { ascending: false }),
+    supabase.from('soop_streamers').select('username, channel_name, followers').order('followers', { ascending: false }),
+    supabase.from('youtube_channels').select('channel_name, subscribers').order('subscribers', { ascending: false }),
   ])
   return {
-    twitch: twitch ?? [],
-    kick: kick ?? [],
-    soop: soop ?? [],
-    youtube: youtube ?? [],
-    tracking: tracking ?? [],
-    favorites: favorites ?? [],
+    twitch: (twitch ?? []) as Row[],
+    kick: (kick ?? []) as Row[],
+    soop: (soop ?? []) as Row[],
+    youtube: (youtube ?? []) as Row[],
   }
 }
 
-type Row = Record<string, unknown>
-
-function numCell(v: unknown) {
-  return v
-    ? <span style={{ color: '#4ade80', fontWeight: 600 }}>{Number(v).toLocaleString('tr-TR')}</span>
-    : <span style={{ color: '#64748b' }}>—</span>
-}
-
-function emailCell(v: unknown) {
-  return v
-    ? <span style={{ color: '#7c3aed', fontFamily: 'monospace', fontSize: '12px' }}>{String(v)}</span>
-    : <span style={{ color: '#64748b' }}>—</span>
-}
-
-function strCell(v: unknown) {
-  return v ? String(v) : <span style={{ color: '#64748b' }}>—</span>
-}
-
 export default async function YayincilarPage() {
-  const { twitch, kick, soop, youtube, tracking, favorites } = await getData()
+  const { twitch, kick, soop, youtube } = await getData()
 
-  const twitchCols = [
-    { key: 'username', label: 'Kullanıcı Adı', render: (v: unknown) => <span style={{ fontWeight: 600, color: '#a78bfa' }}>{String(v)}</span> },
-    { key: 'display_name', label: 'Görünen Ad', render: strCell },
-    { key: 'followers', label: 'Takipçi', render: numCell },
-    { key: 'avg_viewers', label: 'Ort. İzleyici', render: numCell },
-    { key: 'language', label: 'Dil', render: (v: unknown) => v ? <Badge variant="blue">{String(v)}</Badge> : <span style={{ color: '#64748b' }}>—</span> },
-    { key: 'game', label: 'Oyun', render: strCell },
-    { key: 'contact_email', label: 'E-posta', render: emailCell },
-    { key: 'status', label: 'Durum', render: (v: unknown) => statusBadge(v as string) ?? <span style={{ color: '#64748b' }}>—</span> },
-  ]
+  const counts: Record<string, number> = {
+    twitch:   twitch.length,
+    kick:     kick.length,
+    soop:     soop.length,
+    youtube:  youtube.length,
+    niconico: 0,
+    chzzk:    0,
+    bilibili: 0,
+    douyin:   0,
+  }
 
-  const kickCols = [
-    { key: 'username', label: 'Kullanıcı Adı', render: (v: unknown) => <span style={{ fontWeight: 600, color: '#4ade80' }}>{String(v)}</span> },
-    { key: 'channel_name', label: 'Kanal Adı', render: strCell },
-    { key: 'followers', label: 'Takipçi', render: numCell },
-    { key: 'avg_viewers', label: 'Ort. İzleyici', render: numCell },
-    { key: 'language', label: 'Dil', render: (v: unknown) => v ? <Badge variant="blue">{String(v)}</Badge> : <span style={{ color: '#64748b' }}>—</span> },
-    { key: 'contact_email', label: 'E-posta', render: emailCell },
-    { key: 'status', label: 'Durum', render: (v: unknown) => statusBadge(v as string) ?? <span style={{ color: '#64748b' }}>—</span> },
-  ]
+  const chartData: Record<string, { label: string; value: number }[]> = {
+    twitch:   twitch.slice(0, 8).map((r) => ({ label: String(r.display_name ?? r.username ?? '—'), value: Number(r.followers) || 0 })),
+    kick:     kick.slice(0, 8).map((r) => ({ label: String(r.channel_name ?? r.username ?? '—'), value: Number(r.followers) || 0 })),
+    soop:     soop.slice(0, 8).map((r) => ({ label: String(r.channel_name ?? r.username ?? '—'), value: Number(r.followers) || 0 })),
+    youtube:  youtube.slice(0, 8).map((r) => ({ label: String(r.channel_name ?? '—'), value: Number(r.subscribers) || 0 })),
+    niconico: [],
+    chzzk:    [],
+    bilibili: [],
+    douyin:   [],
+  }
 
-  const soopCols = [
-    { key: 'username', label: 'Kullanıcı Adı', render: (v: unknown) => <span style={{ fontWeight: 600, color: '#60a5fa' }}>{String(v)}</span> },
-    { key: 'channel_name', label: 'Kanal Adı', render: strCell },
-    { key: 'followers', label: 'Takipçi', render: numCell },
-    { key: 'avg_viewers', label: 'Ort. İzleyici', render: numCell },
-    { key: 'language', label: 'Dil', render: (v: unknown) => v ? <Badge variant="blue">{String(v)}</Badge> : <span style={{ color: '#64748b' }}>—</span> },
-    { key: 'contact_email', label: 'E-posta', render: emailCell },
-    { key: 'status', label: 'Durum', render: (v: unknown) => statusBadge(v as string) ?? <span style={{ color: '#64748b' }}>—</span> },
-  ]
-
-  const ytCols = [
-    { key: 'channel_name', label: 'Kanal', render: (v: unknown) => <span style={{ fontWeight: 600, color: '#f87171' }}>{String(v)}</span> },
-    { key: 'subscribers', label: 'Abone', render: numCell },
-    { key: 'avg_views', label: 'Ort. İzlenme', render: numCell },
-    { key: 'language', label: 'Dil', render: (v: unknown) => v ? <Badge variant="blue">{String(v)}</Badge> : <span style={{ color: '#64748b' }}>—</span> },
-    { key: 'genre', label: 'İçerik', render: (v: unknown) => v ? <Badge variant="orange">{String(v)}</Badge> : <span style={{ color: '#64748b' }}>—</span> },
-    { key: 'contact_email', label: 'E-posta', render: emailCell },
-    { key: 'status', label: 'Durum', render: (v: unknown) => statusBadge(v as string) ?? <span style={{ color: '#64748b' }}>—</span> },
-  ]
-
-  const trackingCols = [
-    { key: 'streamer_id', label: 'Yayıncı ID', render: (v: unknown) => <span style={{ fontFamily: 'monospace', fontSize: '12px', color: '#94a3b8' }}>{String(v)}</span> },
-    { key: 'streamer_type', label: 'Platform', render: (v: unknown) => v ? <Badge variant="purple">{String(v)}</Badge> : <span style={{ color: '#64748b' }}>—</span> },
-    { key: 'status', label: 'Durum', render: (v: unknown) => statusBadge(v as string) ?? <span style={{ color: '#64748b' }}>—</span> },
-    { key: 'priority', label: 'Öncelik', render: (v: unknown) => {
-      if (!v) return <span style={{ color: '#64748b' }}>—</span>
-      const s = String(v).toLowerCase()
-      return <Badge variant={s === 'high' || s === 'yüksek' ? 'red' : s === 'medium' || s === 'orta' ? 'orange' : 'gray'}>{String(v)}</Badge>
-    }},
-    { key: 'assigned_to', label: 'Sorumlu', render: strCell },
-    { key: 'last_contact', label: 'Son İletişim', render: (v: unknown) => v ? <span style={{ fontSize: '12px', color: '#94a3b8' }}>{new Date(v as string).toLocaleDateString('tr-TR')}</span> : <span style={{ color: '#64748b' }}>—</span> },
-    { key: 'next_action', label: 'Sonraki Adım', render: strCell },
-  ]
-
-  const PlatformSection = ({
-    title,
-    color,
-    count,
-    children,
-  }: { title: string; color: string; count: number; children: React.ReactNode }) => (
-    <div
-      style={{
-        backgroundColor: '#1a1a24',
-        border: '1px solid #2a2a3a',
-        borderRadius: '12px',
-        overflow: 'hidden',
-        marginBottom: '24px',
-      }}
-    >
-      <div style={{ padding: '14px 20px', borderBottom: '1px solid #2a2a3a', display: 'flex', alignItems: 'center', gap: '10px' }}>
-        <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: color }} />
-        <span style={{ fontSize: '15px', fontWeight: 600, color: '#f1f5f9' }}>{title}</span>
-        <span
-          style={{
-            marginLeft: 'auto',
-            backgroundColor: color + '20',
-            color,
-            border: `1px solid ${color}40`,
-            borderRadius: '9999px',
-            padding: '2px 10px',
-            fontSize: '13px',
-            fontWeight: 600,
-          }}
-        >
-          {count}
-        </span>
-      </div>
-      {children}
-    </div>
-  )
+  const total = Object.values(counts).reduce((a, b) => a + b, 0)
+  const platformBar = PLATFORMS.map((p) => ({ label: p.label, value: counts[p.key] }))
 
   return (
     <div>
       <PageHeader
         title="Yayıncılar"
-        subtitle={`${twitch.length + kick.length + soop.length + youtube.length} yayıncı · Twitch, Kick, SOOP, YouTube`}
+        subtitle={`${total} toplam yayıncı · 8 platform`}
         icon={Tv2}
         gradient="linear-gradient(135deg, #3b82f6, #14b8a6)"
       />
       <div style={{ padding: '24px 32px' }}>
-        <PlatformSection title="Twitch Yayıncıları" color="#9146ff" count={twitch.length}>
-          <DataTable columns={twitchCols} data={twitch as Row[]} emptyMessage="Twitch yayıncısı bulunamadı" />
-        </PlatformSection>
-        <PlatformSection title="Kick Yayıncıları" color="#53fc18" count={kick.length}>
-          <DataTable columns={kickCols} data={kick as Row[]} emptyMessage="Kick yayıncısı bulunamadı" />
-        </PlatformSection>
-        <PlatformSection title="SOOP Yayıncıları" color="#3b82f6" count={soop.length}>
-          <DataTable columns={soopCols} data={soop as Row[]} emptyMessage="SOOP yayıncısı bulunamadı" />
-        </PlatformSection>
-        <PlatformSection title="YouTube Kanalları" color="#ff0000" count={youtube.length}>
-          <DataTable columns={ytCols} data={youtube as Row[]} emptyMessage="YouTube kanalı bulunamadı" />
-        </PlatformSection>
-        <PlatformSection title="Takip Listesi" color="#f59e0b" count={tracking.length}>
-          <DataTable columns={trackingCols} data={tracking as Row[]} emptyMessage="Takip listesi boş" />
-        </PlatformSection>
-        <PlatformSection title="Favoriler" color="#ec4899" count={favorites.length}>
-          <DataTable
-            columns={[
-              { key: 'streamer_id', label: 'Yayıncı ID', render: (v: unknown) => <span style={{ fontFamily: 'monospace', fontSize: '12px', color: '#94a3b8' }}>{String(v)}</span> },
-              { key: 'streamer_type', label: 'Platform', render: (v: unknown) => v ? <Badge variant="purple">{String(v)}</Badge> : <span style={{ color: '#64748b' }}>—</span> },
-              { key: 'added_by', label: 'Ekleyen', render: strCell },
-              { key: 'notes', label: 'Not', render: strCell },
-            ]}
-            data={favorites as Row[]}
-            emptyMessage="Favori listesi boş"
-          />
-        </PlatformSection>
+
+        {/* Platform comparison bar chart */}
+        <div style={{ backgroundColor: '#1a1a24', border: '1px solid #2a2a3a', borderRadius: '12px', padding: '20px', marginBottom: '28px' }}>
+          <div style={{ fontSize: '14px', fontWeight: 600, color: '#f1f5f9', marginBottom: '4px' }}>Platform Karşılaştırması</div>
+          <div style={{ fontSize: '12px', color: '#64748b', marginBottom: '16px' }}>Platforma göre takip edilen yayıncı sayısı</div>
+          <BarChart data={platformBar} color="#3b82f6" height={100} />
+        </div>
+
+        {/* Platform cards grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>
+          {PLATFORMS.map((platform) => {
+            const count = counts[platform.key]
+            const bars = chartData[platform.key]
+            return (
+              <div
+                key={platform.key}
+                style={{
+                  backgroundColor: '#1a1a24',
+                  border: '1px solid #2a2a3a',
+                  borderRadius: '12px',
+                  overflow: 'hidden',
+                  display: 'flex',
+                  flexDirection: 'column',
+                }}
+              >
+                {/* Card header */}
+                <div style={{ padding: '16px 20px', borderBottom: '1px solid #2a2a3a' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <div
+                        style={{
+                          width: '10px',
+                          height: '10px',
+                          borderRadius: '50%',
+                          backgroundColor: platform.color,
+                          boxShadow: `0 0 8px ${platform.color}60`,
+                        }}
+                      />
+                      <span style={{ fontSize: '15px', fontWeight: 700, color: '#f1f5f9' }}>{platform.label}</span>
+                    </div>
+                    <span style={{ fontSize: '26px', fontWeight: 800, color: count > 0 ? platform.color : '#475569' }}>
+                      {count}
+                    </span>
+                  </div>
+                  <div style={{ fontSize: '12px', color: '#64748b', marginTop: '4px' }}>
+                    {count > 0 ? 'yayıncı takip ediliyor' : 'henüz veri yok'}
+                  </div>
+                </div>
+
+                {/* Mini bar chart */}
+                <div style={{ padding: '14px 20px', flex: 1 }}>
+                  {bars.length > 0 ? (
+                    <>
+                      <div style={{ fontSize: '11px', color: '#64748b', marginBottom: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                        Takipçiye göre top yayıncılar
+                      </div>
+                      <BarChart data={bars} color={platform.color} height={80} maxBars={8} />
+                    </>
+                  ) : (
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '80px' }}>
+                      <span style={{ fontSize: '12px', color: '#475569' }}>Veri bekleniyor…</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Footer link */}
+                <div style={{ padding: '12px 20px', borderTop: '1px solid #2a2a3a' }}>
+                  <Link
+                    href={platform.href}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      fontSize: '13px',
+                      fontWeight: 500,
+                      color: platform.color,
+                      textDecoration: 'none',
+                    }}
+                  >
+                    Detayları Görüntüle
+                    <ArrowRight size={14} />
+                  </Link>
+                </div>
+              </div>
+            )
+          })}
+        </div>
       </div>
     </div>
   )

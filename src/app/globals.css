@@ -46,3 +46,13 @@ body {
 tr.data-row:hover td {
   background-color: rgba(34, 34, 47, 0.6);
 }
+
+.nav-item:hover {
+  background-color: rgba(124, 58, 237, 0.06) !important;
+  border-color: rgba(124, 58, 237, 0.15) !important;
+}
+
+.sub-nav-item:hover {
+  color: #c4b5fd !important;
+  background-color: rgba(124, 58, 237, 0.06) !important;
+}
