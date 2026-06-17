@@ -2,8 +2,9 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
-import { Gamepad2, Mail, Lock, AlertCircle, Clock, Eye, EyeOff } from 'lucide-react'
+import { Mail, Lock, AlertCircle, Clock, Eye, EyeOff } from 'lucide-react'
 
 const MAX_ATTEMPTS = 3
 const LOCKOUT_SECONDS = 60
@@ -156,18 +157,23 @@ export default function LoginPage() {
         <div style={{ textAlign: 'center', marginBottom: '36px' }}>
           <div
             style={{
-              width: '60px',
-              height: '60px',
-              borderRadius: '16px',
-              background: 'linear-gradient(135deg, #7c3aed, #3b82f6)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
+              width: '80px',
+              height: '80px',
+              borderRadius: '20px',
+              overflow: 'hidden',
               margin: '0 auto 16px',
-              boxShadow: '0 8px 32px rgba(124,58,237,0.3)',
+              backgroundColor: 'white',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
             }}
           >
-            <Gamepad2 size={28} color="white" />
+            <Image
+              src="/logo.png"
+              alt="Unique NPC"
+              width={80}
+              height={80}
+              style={{ display: 'block', width: '100%', height: '100%' }}
+              priority
+            />
           </div>
           <h1 style={{ fontSize: '22px', fontWeight: 800, color: '#f1f5f9', margin: '0 0 6px' }}>
             Unique NPC

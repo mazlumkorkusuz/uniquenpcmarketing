@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard,
@@ -11,7 +12,6 @@ import {
   Share2,
   MessageCircle,
   Wallet,
-  Gamepad2,
   ChevronRight,
   LogOut,
 } from 'lucide-react'
@@ -70,14 +70,20 @@ export default function Sidebar() {
             width: '36px',
             height: '36px',
             borderRadius: '10px',
-            background: 'linear-gradient(135deg, #7c3aed, #3b82f6)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
+            overflow: 'hidden',
             flexShrink: 0,
+            backgroundColor: 'white',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
           }}
         >
-          <Gamepad2 size={20} color="white" />
+          <Image
+            src="/logo.png"
+            alt="Unique NPC"
+            width={36}
+            height={36}
+            style={{ display: 'block', width: '100%', height: '100%' }}
+            priority
+          />
         </div>
         <div>
           <div style={{ fontSize: '14px', fontWeight: 700, color: '#f1f5f9', lineHeight: 1.2 }}>
