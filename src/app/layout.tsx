@@ -9,7 +9,7 @@ const geistSans = Geist({
 })
 
 export const metadata: Metadata = {
-  title: 'Unique NPC Marketing Hub',
+  title: 'Unique NPC Games Marketing',
   description: 'Oyun şirketi pazarlama takip paneli',
   icons: {
     icon: '/favicon.ico',
