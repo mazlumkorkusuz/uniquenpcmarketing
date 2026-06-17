@@ -12,8 +12,8 @@ export const metadata: Metadata = {
   title: 'Unique NPC Marketing Hub',
   description: 'Oyun şirketi pazarlama takip paneli',
   icons: {
-    icon: '/logo.png',
-    apple: '/logo.png',
+    icon: '/favicon.ico',
+    apple: '/favicon.ico',
   },
 }
 
