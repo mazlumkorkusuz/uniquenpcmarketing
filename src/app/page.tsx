@@ -1,65 +1,385 @@
-import Image from "next/image";
+export const dynamic = 'force-dynamic'
+import { supabase } from '@/lib/supabase'
+import StatCard from '@/components/StatCard'
+import {
+  Tv2,
+  Globe,
+  Calendar,
+  DollarSign,
+  Users,
+  TrendingUp,
+  MessageCircle,
+  FileText,
+  ArrowRight,
+} from 'lucide-react'
+import Link from 'next/link'
+import QuickLinkCard from '@/components/QuickLinkCard'
 
-export default function Home() {
+async function getDashboardStats() {
+  const [
+    { count: twitchCount },
+    { count: kickCount },
+    { count: soopCount },
+    { count: ytCount },
+    { count: platformCount },
+    { count: meetingCount },
+    { count: noteCount },
+    { count: redditCount },
+    { data: budgetData },
+    { data: expenseData },
+    { data: recentMeetings },
+    { data: recentNotes },
+  ] = await Promise.all([
+    supabase.from('twitch_streamers').select('*', { count: 'exact', head: true }),
+    supabase.from('kick_streamers').select('*', { count: 'exact', head: true }),
+    supabase.from('soop_streamers').select('*', { count: 'exact', head: true }),
+    supabase.from('youtube_channels').select('*', { count: 'exact', head: true }),
+    supabase.from('crm_platforms').select('*', { count: 'exact', head: true }),
+    supabase.from('meetings').select('*', { count: 'exact', head: true }),
+    supabase.from('notes').select('*', { count: 'exact', head: true }),
+    supabase.from('reddit_accounts').select('*', { count: 'exact', head: true }),
+    supabase.from('budget_settings').select('monthly_budget').order('created_at', { ascending: false }).limit(1),
+    supabase.from('budget_expenses').select('amount'),
+    supabase.from('meetings').select('id, title, date, status').order('date', { ascending: false }).limit(5),
+    supabase.from('notes').select('id, title, created_at, category').order('created_at', { ascending: false }).limit(5),
+  ])
+
+  const totalStreamers = (twitchCount ?? 0) + (kickCount ?? 0) + (soopCount ?? 0) + (ytCount ?? 0)
+  const monthlyBudget = budgetData?.[0]?.monthly_budget ?? 0
+  const totalExpenses = expenseData?.reduce((sum, e) => sum + (Number(e.amount) || 0), 0) ?? 0
+
+  return {
+    totalStreamers,
+    platformCount: platformCount ?? 0,
+    meetingCount: meetingCount ?? 0,
+    noteCount: noteCount ?? 0,
+    redditCount: redditCount ?? 0,
+    monthlyBudget,
+    totalExpenses,
+    budgetPercent: monthlyBudget > 0 ? Math.round((totalExpenses / monthlyBudget) * 100) : 0,
+    recentMeetings: recentMeetings ?? [],
+    recentNotes: recentNotes ?? [],
+    twitchCount: twitchCount ?? 0,
+    kickCount: kickCount ?? 0,
+    soopCount: soopCount ?? 0,
+    ytCount: ytCount ?? 0,
+  }
+}
+
+function formatDate(dateStr?: string | null) {
+  if (!dateStr) return '—'
+  return new Date(dateStr).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', year: 'numeric' })
+}
+
+function formatCurrency(n: number) {
+  return n.toLocaleString('tr-TR', { minimumFractionDigits: 0 }) + ' ₺'
+}
+
+export default async function DashboardPage() {
+  const stats = await getDashboardStats()
+
+  const quickLinks = [
+    { href: '/platformlar', label: 'Platformlar & Partnerler', desc: 'CRM, yayıncılar, küratörler', color: '#7c3aed' },
+    { href: '/yayincilar', label: 'Yayıncılar', desc: 'Twitch, Kick, SOOP, YouTube', color: '#3b82f6' },
+    { href: '/toplantilar', label: 'Toplantılar', desc: 'Planlama ve notlar', color: '#14b8a6' },
+    { href: '/sosyal-medya', label: 'Sosyal Medya', desc: 'Paylaşımlar ve analizler', color: '#f59e0b' },
+    { href: '/reddit', label: 'Reddit', desc: 'Hesaplar ve gönderiler', color: '#ef4444' },
+    { href: '/butce', label: 'Bütçe', desc: 'Harcamalar ve planlama', color: '#22c55e' },
+  ]
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div>
+      {/* Page header */}
+      <div
+        style={{
+          padding: '28px 32px 24px',
+          borderBottom: '1px solid #2a2a3a',
+          backgroundColor: '#13131a',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '4px' }}>
+          <div
+            style={{
+              width: '10px',
+              height: '10px',
+              borderRadius: '50%',
+              backgroundColor: '#22c55e',
+              boxShadow: '0 0 8px rgba(34,197,94,0.6)',
+            }}
+          />
+          <span style={{ fontSize: '12px', color: '#64748b', fontWeight: 500 }}>Canlı</span>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <h1 style={{ fontSize: '26px', fontWeight: 800, color: '#f1f5f9', margin: 0 }}>
+          Marketing Dashboard
+        </h1>
+        <p style={{ fontSize: '14px', color: '#64748b', margin: '4px 0 0 0' }}>
+          Tüm pazarlama faaliyetlerinize genel bakış
+        </p>
+      </div>
+
+      <div style={{ padding: '28px 32px' }}>
+
+        {/* Stat cards */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px', marginBottom: '28px' }}>
+          <StatCard
+            label="Toplam Yayıncı"
+            value={stats.totalStreamers}
+            icon={Tv2}
+            iconColor="#a78bfa"
+            iconBg="rgba(124,58,237,0.12)"
+            trend={`Twitch ${stats.twitchCount} · Kick ${stats.kickCount} · SOOP ${stats.soopCount} · YT ${stats.ytCount}`}
+          />
+          <StatCard
+            label="Platform / Partner"
+            value={stats.platformCount}
+            icon={Globe}
+            iconColor="#60a5fa"
+            iconBg="rgba(59,130,246,0.12)"
+          />
+          <StatCard
+            label="Toplantılar"
+            value={stats.meetingCount}
+            icon={Calendar}
+            iconColor="#2dd4bf"
+            iconBg="rgba(20,184,166,0.12)"
+          />
+          <StatCard
+            label="Notlar"
+            value={stats.noteCount}
+            icon={FileText}
+            iconColor="#fb923c"
+            iconBg="rgba(249,115,22,0.12)"
+          />
+          <StatCard
+            label="Reddit Hesabı"
+            value={stats.redditCount}
+            icon={MessageCircle}
+            iconColor="#f87171"
+            iconBg="rgba(239,68,68,0.12)"
+          />
+          <StatCard
+            label="Bütçe Kullanımı"
+            value={`%${stats.budgetPercent}`}
+            icon={DollarSign}
+            iconColor="#4ade80"
+            iconBg="rgba(34,197,94,0.12)"
+            trend={`${formatCurrency(stats.totalExpenses)} / ${formatCurrency(stats.monthlyBudget)}`}
+            trendUp={stats.budgetPercent < 80}
+          />
         </div>
-      </main>
+
+        {/* Budget progress bar */}
+        {stats.monthlyBudget > 0 && (
+          <div
+            style={{
+              backgroundColor: '#1a1a24',
+              border: '1px solid #2a2a3a',
+              borderRadius: '12px',
+              padding: '20px',
+              marginBottom: '28px',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+              <div style={{ fontSize: '14px', fontWeight: 600, color: '#f1f5f9', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <TrendingUp size={16} color="#4ade80" />
+                Aylık Bütçe Kullanımı
+              </div>
+              <div style={{ fontSize: '13px', color: '#94a3b8' }}>
+                <span style={{ color: stats.budgetPercent > 80 ? '#f87171' : '#4ade80', fontWeight: 600 }}>
+                  {formatCurrency(stats.totalExpenses)}
+                </span>
+                {' / '}
+                {formatCurrency(stats.monthlyBudget)}
+              </div>
+            </div>
+            <div
+              style={{
+                height: '8px',
+                backgroundColor: '#2a2a3a',
+                borderRadius: '4px',
+                overflow: 'hidden',
+              }}
+            >
+              <div
+                style={{
+                  height: '100%',
+                  width: `${Math.min(stats.budgetPercent, 100)}%`,
+                  background: stats.budgetPercent > 80
+                    ? 'linear-gradient(90deg, #ef4444, #f87171)'
+                    : 'linear-gradient(90deg, #22c55e, #4ade80)',
+                  borderRadius: '4px',
+                  transition: 'width 0.3s ease',
+                }}
+              />
+            </div>
+            <div style={{ fontSize: '12px', color: '#64748b', marginTop: '6px' }}>
+              %{stats.budgetPercent} kullanıldı
+            </div>
+          </div>
+        )}
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '28px' }}>
+
+          {/* Recent meetings */}
+          <div
+            style={{
+              backgroundColor: '#1a1a24',
+              border: '1px solid #2a2a3a',
+              borderRadius: '12px',
+              overflow: 'hidden',
+            }}
+          >
+            <div
+              style={{
+                padding: '16px 20px',
+                borderBottom: '1px solid #2a2a3a',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}
+            >
+              <div style={{ fontSize: '14px', fontWeight: 600, color: '#f1f5f9', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Calendar size={15} color="#2dd4bf" />
+                Son Toplantılar
+              </div>
+              <Link
+                href="/toplantilar"
+                style={{ fontSize: '12px', color: '#7c3aed', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}
+              >
+                Tümü <ArrowRight size={12} />
+              </Link>
+            </div>
+            <div>
+              {stats.recentMeetings.length === 0 ? (
+                <div style={{ padding: '32px', textAlign: 'center', color: '#64748b', fontSize: '13px' }}>
+                  Henüz toplantı yok
+                </div>
+              ) : (
+                stats.recentMeetings.map((m: Record<string, unknown>) => (
+                  <div
+                    key={String(m.id)}
+                    style={{
+                      padding: '12px 20px',
+                      borderBottom: '1px solid rgba(42,42,58,0.4)',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <div>
+                      <div style={{ fontSize: '13px', fontWeight: 500, color: '#e2e8f0' }}>{String(m.title ?? '—')}</div>
+                      <div style={{ fontSize: '12px', color: '#64748b', marginTop: '2px' }}>{formatDate(m.date as string)}</div>
+                    </div>
+                    {m.status ? (
+                      <span
+                        style={{
+                          fontSize: '11px',
+                          padding: '2px 8px',
+                          borderRadius: '9999px',
+                          backgroundColor: 'rgba(59,130,246,0.12)',
+                          color: '#60a5fa',
+                          border: '1px solid rgba(59,130,246,0.25)',
+                        }}
+                      >
+                        {String(m.status)}
+                      </span>
+                    ) : null}
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+
+          {/* Recent notes */}
+          <div
+            style={{
+              backgroundColor: '#1a1a24',
+              border: '1px solid #2a2a3a',
+              borderRadius: '12px',
+              overflow: 'hidden',
+            }}
+          >
+            <div
+              style={{
+                padding: '16px 20px',
+                borderBottom: '1px solid #2a2a3a',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}
+            >
+              <div style={{ fontSize: '14px', fontWeight: 600, color: '#f1f5f9', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <FileText size={15} color="#fb923c" />
+                Son Notlar
+              </div>
+              <Link
+                href="/notlar"
+                style={{ fontSize: '12px', color: '#7c3aed', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}
+              >
+                Tümü <ArrowRight size={12} />
+              </Link>
+            </div>
+            <div>
+              {stats.recentNotes.length === 0 ? (
+                <div style={{ padding: '32px', textAlign: 'center', color: '#64748b', fontSize: '13px' }}>
+                  Henüz not yok
+                </div>
+              ) : (
+                stats.recentNotes.map((n: Record<string, unknown>) => (
+                  <div
+                    key={String(n.id)}
+                    style={{
+                      padding: '12px 20px',
+                      borderBottom: '1px solid rgba(42,42,58,0.4)',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <div>
+                      <div style={{ fontSize: '13px', fontWeight: 500, color: '#e2e8f0' }}>{String(n.title ?? '—')}</div>
+                      <div style={{ fontSize: '12px', color: '#64748b', marginTop: '2px' }}>{formatDate(n.created_at as string)}</div>
+                    </div>
+                    {n.category ? (
+                      <span
+                        style={{
+                          fontSize: '11px',
+                          padding: '2px 8px',
+                          borderRadius: '9999px',
+                          backgroundColor: 'rgba(249,115,22,0.12)',
+                          color: '#fb923c',
+                          border: '1px solid rgba(249,115,22,0.25)',
+                        }}
+                      >
+                        {String(n.category)}
+                      </span>
+                    ) : null}
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Quick links */}
+        <div>
+          <h2 style={{ fontSize: '15px', fontWeight: 600, color: '#94a3b8', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Users size={15} />
+            Hızlı Erişim
+          </h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px' }}>
+            {quickLinks.map((ql) => (
+              <QuickLinkCard
+                key={ql.href}
+                href={ql.href}
+                label={ql.label}
+                desc={ql.desc}
+                color={ql.color}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
-  );
+  )
 }
