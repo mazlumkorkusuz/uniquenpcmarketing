@@ -67,21 +67,24 @@ export default function Sidebar() {
       >
         <div
           style={{
-            width: '36px',
-            height: '36px',
+            width: '40px',
+            height: '40px',
             borderRadius: '10px',
             overflow: 'hidden',
             flexShrink: 0,
             backgroundColor: 'white',
             boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <Image
-            src="/logo.png"
-            alt="Unique NPC"
-            width={36}
-            height={36}
-            style={{ display: 'block', width: '100%', height: '100%' }}
+            src="/uniqlogo.png"
+            alt="Unique NPC Games"
+            width={40}
+            height={40}
+            style={{ display: 'block', width: '100%', height: '100%', objectFit: 'contain' }}
             priority
           />
         </div>

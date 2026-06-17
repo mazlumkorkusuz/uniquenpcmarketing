@@ -157,21 +157,24 @@ export default function LoginPage() {
         <div style={{ textAlign: 'center', marginBottom: '36px' }}>
           <div
             style={{
-              width: '80px',
-              height: '80px',
+              width: '200px',
+              height: '200px',
               borderRadius: '20px',
               overflow: 'hidden',
               margin: '0 auto 16px',
               backgroundColor: 'white',
               boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
           >
             <Image
-              src="/logo.png"
-              alt="Unique NPC"
-              width={80}
-              height={80}
-              style={{ display: 'block', width: '100%', height: '100%' }}
+              src="/uniqlogo.png"
+              alt="Unique NPC Games"
+              width={200}
+              height={200}
+              style={{ display: 'block', width: '100%', height: '100%', objectFit: 'contain' }}
               priority
             />
           </div>
