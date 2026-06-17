@@ -12,6 +12,8 @@ import {
   Share2,
   MessageCircle,
   Wallet,
+  BarChart2,
+  Newspaper,
   ChevronRight,
   ChevronDown,
   LogOut,
@@ -64,6 +66,8 @@ const navItems: NavItem[] = [
   },
   { href: '/reddit', label: 'Reddit', icon: MessageCircle },
   { href: '/butce', label: 'Bütçe Yönetimi', icon: Wallet },
+  { href: '/gamalytic', label: 'Gamalytic', icon: BarChart2 },
+  { href: '/news', label: 'News', icon: Newspaper },
 ]
 
 export default function Sidebar() {
