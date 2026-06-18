@@ -38,7 +38,15 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/platformlar', label: 'Platformlar & Partnerler', icon: Globe },
+  {
+    href: '/platformlar',
+    label: 'Platformlar & Partnerler',
+    icon: Globe,
+    children: [
+      { href: '/platformlar/lurkit', label: 'Lurkit' },
+      { href: '/platformlar/terminals', label: 'Terminals.io' },
+    ],
+  },
   {
     href: '/yayincilar',
     label: 'Yayıncılar',
