@@ -83,9 +83,12 @@ export default async function DashboardPage() {
     { href: '/platformlar', label: 'Platformlar & Partnerler', desc: 'CRM, yayıncılar, küratörler', color: '#7c3aed' },
     { href: '/yayincilar', label: 'Yayıncılar', desc: 'Twitch, Kick, SOOP, YouTube, Bilibili, Douyin, NicoNico, Chzzk', color: '#3b82f6' },
     { href: '/toplantilar', label: 'Toplantılar', desc: 'Planlama ve notlar', color: '#14b8a6' },
-    { href: '/sosyal-medya', label: 'Sosyal Medya', desc: 'Paylaşımlar ve analizler', color: '#f59e0b' },
+    { href: '/notlar', label: 'Notlar', desc: 'Tüm notlar ve kayıtlar', color: '#fb923c' },
+    { href: '/sosyal-medya', label: 'Sosyal Medya', desc: 'Twitter, Instagram, TikTok, YouTube', color: '#f59e0b' },
     { href: '/reddit', label: 'Reddit', desc: 'Hesaplar ve gönderiler', color: '#ef4444' },
-    { href: '/butce', label: 'Bütçe', desc: 'Harcamalar ve planlama', color: '#22c55e' },
+    { href: '/butce', label: 'Bütçe Yönetimi', desc: 'Harcamalar ve planlama', color: '#22c55e' },
+    { href: '/gamalytic', label: 'Gamalytic', desc: 'Oyun analitik platformu', color: '#4f46e5' },
+    { href: '/news', label: 'News', desc: 'Oyun sektörü haberleri', color: '#d97706' },
   ]
 
   return (

@@ -1,139 +1,115 @@
 export const dynamic = 'force-dynamic'
 import { supabase } from '@/lib/supabase'
 import PageHeader from '@/components/PageHeader'
-import DataTable from '@/components/DataTable'
-import Badge, { statusBadge } from '@/components/Badge'
-import { Share2 } from 'lucide-react'
-
-async function getData() {
-  const [{ data: posts }, { data: twitterAccounts }, { data: marketingData }] = await Promise.all([
-    supabase.from('social_posts').select('*').order('created_at', { ascending: false }),
-    supabase.from('twitter_accounts').select('*').order('followers', { ascending: false }),
-    supabase.from('marketing_data').select('*').order('date', { ascending: false }).limit(100),
-  ])
-  return { posts: posts ?? [], twitterAccounts: twitterAccounts ?? [], marketingData: marketingData ?? [] }
-}
+import BarChart from '@/components/BarChart'
+import { Share2, ArrowRight } from 'lucide-react'
+import Link from 'next/link'
 
 type Row = Record<string, unknown>
 
-function numCell(v: unknown) {
-  return v ? <span style={{ color: '#4ade80', fontWeight: 600 }}>{Number(v).toLocaleString('tr-TR')}</span> : <span style={{ color: '#64748b' }}>—</span>
+const PLATFORMS = [
+  { key: 'twitter',   label: 'Twitter',   color: '#1d9bf0', href: '/sosyal-medya/twitter',   followersLabel: 'Takipçi' },
+  { key: 'instagram', label: 'Instagram', color: '#e1306c', href: '/sosyal-medya/instagram', followersLabel: 'Takipçi' },
+  { key: 'tiktok',    label: 'TikTok',    color: '#fe2c55', href: '/sosyal-medya/tiktok',    followersLabel: 'Takipçi' },
+  { key: 'youtube',   label: 'YouTube',   color: '#ff4444', href: '/sosyal-medya/youtube',   followersLabel: 'Abone' },
+]
+
+async function getData() {
+  const [{ data: posts }, { data: twitterAccounts }, { data: ytChannels }] = await Promise.all([
+    supabase.from('social_posts').select('platform'),
+    supabase.from('twitter_accounts').select('followers'),
+    supabase.from('youtube_channels').select('subscribers'),
+  ])
+  return {
+    posts: (posts ?? []) as Row[],
+    twitterAccounts: (twitterAccounts ?? []) as Row[],
+    ytChannels: (ytChannels ?? []) as Row[],
+  }
 }
 
-function platformBadge(v: unknown) {
-  if (!v) return <span style={{ color: '#64748b' }}>—</span>
-  const p = String(v).toLowerCase()
-  const variant =
-    p.includes('twitter') || p.includes('x') ? 'blue'
-    : p.includes('instagram') ? 'orange'
-    : p.includes('facebook') ? 'blue'
-    : p.includes('tiktok') ? 'red'
-    : p.includes('youtube') ? 'red'
-    : 'gray'
-  return <Badge variant={variant as 'blue' | 'orange' | 'red' | 'gray'}>{String(v)}</Badge>
-}
-
-function dateCell(v: unknown) {
-  if (!v) return <span style={{ color: '#64748b' }}>—</span>
-  return <span style={{ fontSize: '12px', color: '#64748b' }}>{new Date(v as string).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+function fmtNum(n: number) {
+  if (n === 0) return '—'
+  return n >= 1_000_000 ? (n / 1_000_000).toFixed(1) + 'M' : n >= 1000 ? (n / 1000).toFixed(0) + 'k' : String(n)
 }
 
 export default async function SosyalMedyaPage() {
-  const { posts, twitterAccounts, marketingData } = await getData()
+  const { posts, twitterAccounts, ytChannels } = await getData()
 
-  const postsByPlatform: Record<string, number> = {}
+  const postCounts: Record<string, number> = { twitter: 0, instagram: 0, tiktok: 0, youtube: 0 }
   for (const p of posts) {
-    const platform = String((p as Row).platform ?? 'Diğer')
-    postsByPlatform[platform] = (postsByPlatform[platform] ?? 0) + 1
+    const pl = String(p.platform ?? '').toLowerCase()
+    if (pl.includes('twitter') || pl.includes('/x')) postCounts.twitter++
+    else if (pl.includes('instagram')) postCounts.instagram++
+    else if (pl.includes('tiktok')) postCounts.tiktok++
+    else if (pl.includes('youtube')) postCounts.youtube++
   }
 
-  const postCols = [
-    { key: 'platform', label: 'Platform', render: platformBadge },
-    { key: 'content', label: 'İçerik', render: (v: unknown) => (
-      <span style={{ fontSize: '13px', color: '#cbd5e1', maxWidth: '320px', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-        {String(v ?? '—')}
-      </span>
-    )},
-    { key: 'status', label: 'Durum', render: (v: unknown) => statusBadge(v as string) ?? <span style={{ color: '#64748b' }}>—</span> },
-    { key: 'scheduled_at', label: 'Planlanan', render: dateCell },
-    { key: 'posted_at', label: 'Yayınlandı', render: dateCell },
-    { key: 'likes', label: '❤️', render: numCell },
-    { key: 'shares', label: '🔄', render: numCell },
-    { key: 'comments', label: '💬', render: numCell },
-    { key: 'campaign', label: 'Kampanya', render: (v: unknown) => v ? <Badge variant="purple">{String(v)}</Badge> : <span style={{ color: '#64748b' }}>—</span> },
-  ]
+  const followerCounts: Record<string, number> = {
+    twitter:   twitterAccounts.reduce((s, r) => s + (Number(r.followers) || 0), 0),
+    instagram: 0,
+    tiktok:    0,
+    youtube:   ytChannels.reduce((s, r) => s + (Number(r.subscribers) || 0), 0),
+  }
 
-  const twitterCols = [
-    { key: 'username', label: 'Kullanıcı Adı', render: (v: unknown) => <span style={{ fontWeight: 600, color: '#1d9bf0' }}>@{String(v ?? '')}</span> },
-    { key: 'display_name', label: 'Görünen Ad', render: (v: unknown) => v ? String(v) : <span style={{ color: '#64748b' }}>—</span> },
-    { key: 'followers', label: 'Takipçi', render: numCell },
-    { key: 'following', label: 'Takip', render: numCell },
-    { key: 'tweets', label: 'Tweet', render: numCell },
-    { key: 'status', label: 'Durum', render: (v: unknown) => statusBadge(v as string) ?? <span style={{ color: '#64748b' }}>—</span> },
-  ]
-
-  const marketingCols = [
-    { key: 'platform', label: 'Platform', render: platformBadge },
-    { key: 'metric_name', label: 'Metrik', render: (v: unknown) => <span style={{ fontWeight: 500, color: '#e2e8f0' }}>{String(v ?? '—')}</span> },
-    { key: 'metric_value', label: 'Değer', render: numCell },
-    { key: 'date', label: 'Tarih', render: dateCell },
-    { key: 'campaign', label: 'Kampanya', render: (v: unknown) => v ? <Badge variant="purple">{String(v)}</Badge> : <span style={{ color: '#64748b' }}>—</span> },
-  ]
-
-  const Section = ({ title, color, count, children }: { title: string; color: string; count: number; children: React.ReactNode }) => (
-    <div style={{ backgroundColor: '#1a1a24', border: '1px solid #2a2a3a', borderRadius: '12px', overflow: 'hidden', marginBottom: '24px' }}>
-      <div style={{ padding: '14px 20px', borderBottom: '1px solid #2a2a3a', display: 'flex', alignItems: 'center', gap: '10px' }}>
-        <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: color }} />
-        <span style={{ fontSize: '15px', fontWeight: 600, color: '#f1f5f9' }}>{title}</span>
-        <span style={{ marginLeft: 'auto', backgroundColor: color + '20', color, border: `1px solid ${color}40`, borderRadius: '9999px', padding: '2px 10px', fontSize: '13px', fontWeight: 600 }}>
-          {count}
-        </span>
-      </div>
-      {children}
-    </div>
-  )
+  const platformBar = PLATFORMS.map((p) => ({ label: p.label, value: postCounts[p.key] }))
+  const totalPosts = Object.values(postCounts).reduce((a, b) => a + b, 0)
 
   return (
     <div>
       <PageHeader
         title="Sosyal Medya"
-        subtitle="Paylaşımlar, Twitter hesapları ve pazarlama verileri"
+        subtitle={`${totalPosts} gönderi · 4 platform`}
         icon={Share2}
         gradient="linear-gradient(135deg, #f59e0b, #ec4899)"
       />
       <div style={{ padding: '24px 32px' }}>
 
-        {/* Platform breakdown */}
-        {Object.keys(postsByPlatform).length > 0 && (
-          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginBottom: '28px' }}>
-            {Object.entries(postsByPlatform).map(([platform, count]) => (
-              <div
-                key={platform}
-                style={{
-                  backgroundColor: '#1a1a24',
-                  border: '1px solid #2a2a3a',
-                  borderRadius: '10px',
-                  padding: '14px 20px',
-                  textAlign: 'center',
-                  minWidth: '120px',
-                }}
-              >
-                <div style={{ fontSize: '24px', fontWeight: 700, color: '#f1f5f9' }}>{count}</div>
-                <div style={{ fontSize: '12px', color: '#64748b', marginTop: '4px' }}>{platform}</div>
-              </div>
-            ))}
-          </div>
-        )}
+        {/* Platform comparison chart */}
+        <div style={{ backgroundColor: '#1a1a24', border: '1px solid #2a2a3a', borderRadius: '12px', padding: '20px', marginBottom: '28px' }}>
+          <div style={{ fontSize: '14px', fontWeight: 600, color: '#f1f5f9', marginBottom: '4px' }}>Platform Karşılaştırması</div>
+          <div style={{ fontSize: '12px', color: '#64748b', marginBottom: '16px' }}>Platforma göre toplam gönderi sayısı</div>
+          <BarChart data={platformBar} color="#ec4899" height={100} />
+        </div>
 
-        <Section title="Sosyal Medya Paylaşımları" color="#ec4899" count={posts.length}>
-          <DataTable columns={postCols} data={posts as Row[]} emptyMessage="Paylaşım bulunamadı" />
-        </Section>
-        <Section title="Twitter / X Hesapları" color="#1d9bf0" count={twitterAccounts.length}>
-          <DataTable columns={twitterCols} data={twitterAccounts as Row[]} emptyMessage="Twitter hesabı bulunamadı" />
-        </Section>
-        <Section title="Pazarlama Verileri" color="#7c3aed" count={marketingData.length}>
-          <DataTable columns={marketingCols} data={marketingData as Row[]} emptyMessage="Pazarlama verisi bulunamadı" />
-        </Section>
+        {/* Platform cards */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>
+          {PLATFORMS.map((platform) => {
+            const pCount = postCounts[platform.key]
+            const fCount = followerCounts[platform.key]
+            return (
+              <div
+                key={platform.key}
+                style={{ backgroundColor: '#1a1a24', border: '1px solid #2a2a3a', borderRadius: '12px', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
+              >
+                <div style={{ padding: '20px', flex: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '18px' }}>
+                    <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: platform.color, boxShadow: `0 0 8px ${platform.color}60` }} />
+                    <span style={{ fontSize: '16px', fontWeight: 700, color: '#f1f5f9' }}>{platform.label}</span>
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                    <div style={{ backgroundColor: '#13131a', borderRadius: '8px', padding: '12px' }}>
+                      <div style={{ fontSize: '11px', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '6px' }}>Gönderi</div>
+                      <div style={{ fontSize: '24px', fontWeight: 800, color: pCount > 0 ? platform.color : '#475569' }}>{pCount}</div>
+                    </div>
+                    <div style={{ backgroundColor: '#13131a', borderRadius: '8px', padding: '12px' }}>
+                      <div style={{ fontSize: '11px', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '6px' }}>{platform.followersLabel}</div>
+                      <div style={{ fontSize: '24px', fontWeight: 800, color: fCount > 0 ? '#4ade80' : '#475569' }}>{fmtNum(fCount)}</div>
+                    </div>
+                  </div>
+                </div>
+                <div style={{ padding: '12px 20px', borderTop: '1px solid #2a2a3a' }}>
+                  <Link
+                    href={platform.href}
+                    style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: 500, color: platform.color, textDecoration: 'none' }}
+                  >
+                    Detayları Görüntüle
+                    <ArrowRight size={14} />
+                  </Link>
+                </div>
+              </div>
+            )
+          })}
+        </div>
       </div>
     </div>
   )
