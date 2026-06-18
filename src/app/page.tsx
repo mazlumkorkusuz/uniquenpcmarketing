@@ -15,6 +15,7 @@ import {
 import Link from 'next/link'
 import QuickLinkCard from '@/components/QuickLinkCard'
 import AISearchBar from '@/components/AISearchBar'
+import BudgetDonutChart from '@/components/BudgetDonutChart'
 
 async function getDashboardStats() {
   const [
@@ -40,7 +41,7 @@ async function getDashboardStats() {
     supabase.from('notes').select('*', { count: 'exact', head: true }),
     supabase.from('reddit_accounts').select('*', { count: 'exact', head: true }),
     supabase.from('budget_settings').select('monthly_budget').order('created_at', { ascending: false }).limit(1),
-    supabase.from('budget_expenses').select('amount'),
+    supabase.from('budget_expenses').select('amount, platform, category'),
     supabase.from('meetings').select('id, title, date, status').order('date', { ascending: false }).limit(5),
     supabase.from('notes').select('id, title, created_at, category').order('created_at', { ascending: false }).limit(5),
   ])
@@ -48,6 +49,16 @@ async function getDashboardStats() {
   const totalStreamers = (twitchCount ?? 0) + (kickCount ?? 0) + (soopCount ?? 0) + (ytCount ?? 0)
   const monthlyBudget = budgetData?.[0]?.monthly_budget ?? 0
   const totalExpenses = expenseData?.reduce((sum, e) => sum + (Number(e.amount) || 0), 0) ?? 0
+
+  type ExpRow = Record<string, unknown>
+  const grouped: Record<string, number> = {}
+  for (const e of (expenseData ?? []) as ExpRow[]) {
+    const key = String(e.platform ?? e.category ?? 'Diğer')
+    grouped[key] = (grouped[key] ?? 0) + (Number(e.amount) || 0)
+  }
+  const budgetChartData = Object.entries(grouped)
+    .map(([name, value]) => ({ name, value }))
+    .sort((a, b) => b.value - a.value)
 
   return {
     totalStreamers,
@@ -58,6 +69,7 @@ async function getDashboardStats() {
     monthlyBudget,
     totalExpenses,
     budgetPercent: monthlyBudget > 0 ? Math.round((totalExpenses / monthlyBudget) * 100) : 0,
+    budgetChartData,
     recentMeetings: recentMeetings ?? [],
     recentNotes: recentNotes ?? [],
     twitchCount: twitchCount ?? 0,
@@ -210,6 +222,13 @@ export default async function DashboardPage() {
             </div>
           </div>
         )}
+
+        {/* Budget distribution donut chart */}
+        <div style={{ backgroundColor: '#1a1a24', border: '1px solid #2a2a3a', borderRadius: '12px', padding: '20px', marginBottom: '28px' }}>
+          <div style={{ fontSize: '14px', fontWeight: 600, color: '#f1f5f9', marginBottom: '2px' }}>Bütçe Dağılımı</div>
+          <div style={{ fontSize: '12px', color: '#64748b', marginBottom: '4px' }}>Platforma göre harcama dağılımı</div>
+          <BudgetDonutChart data={stats.budgetChartData} />
+        </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '28px' }}>
 
