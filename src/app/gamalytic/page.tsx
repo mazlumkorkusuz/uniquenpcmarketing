@@ -37,7 +37,7 @@ interface SteamDetails {
   steamGenres?: string[]
 }
 
-interface HistoryPoint { date: string; copiesSold: number }
+interface HistoryPoint { timeStamp: number; sales: number; revenue?: number; players?: number; score?: number; followers?: number }
 
 interface GameData {
   name?: string
@@ -47,11 +47,11 @@ interface GameData {
   releaseDate?: string
   reviewScore?: number
   reviewCount?: number
-  followerCount?: number
+  followers?: number
   avgPlaytime?: number
   copiesSold?: number
   revenue?: number
-  peakPlayers?: number
+  players?: number
   wishlists?: number
   tags?: string[]
   countryData?: Record<string, number>
@@ -186,12 +186,18 @@ function SalesHistoryChart({ history }: { history: HistoryPoint[] }) {
   const [mounted, setMounted] = useState(false)
   useEffect(() => { setMounted(true) }, [])
 
-  const data = history.slice(-24)
+  const data = history.map(p => ({
+    date: new Date(p.timeStamp).toLocaleDateString('tr-TR', { day: '2-digit', month: 'short', year: '2-digit' }),
+    sales: p.sales,
+  }))
+
   if (!mounted || !data.length) return (
     <div style={{ height: 160, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#475569', fontSize: '13px' }}>
       {mounted ? 'Veri yok' : ''}
     </div>
   )
+
+  const step = Math.max(1, Math.floor(data.length / 12))
 
   return (
     <ResponsiveContainer width="100%" height={180}>
@@ -202,8 +208,7 @@ function SalesHistoryChart({ history }: { history: HistoryPoint[] }) {
           tick={{ fontSize: 10, fill: '#64748b' }}
           tickLine={false}
           axisLine={false}
-          interval="preserveStartEnd"
-          tickFormatter={(v: string) => v.slice(0, 7)}
+          interval={step - 1}
         />
         <YAxis
           tick={{ fontSize: 10, fill: '#64748b' }}
@@ -215,7 +220,7 @@ function SalesHistoryChart({ history }: { history: HistoryPoint[] }) {
         <Tooltip content={<ChartTooltip />} />
         <Line
           type="monotone"
-          dataKey="copiesSold"
+          dataKey="sales"
           stroke="#7c3aed"
           strokeWidth={2}
           dot={false}
@@ -382,8 +387,8 @@ export default function GamalyticPage() {
                 <StatCard icon={DollarSign}  iconColor="#4ade80"  iconBg="rgba(34,197,94,0.12)"    label="Tahmini Gelir"    value={fmtUSD(d?.revenue)} />
                 <StatCard icon={Globe}       iconColor="#60a5fa"  iconBg="rgba(59,130,246,0.12)"   label="Satılan Kopya"   value={fmt(d?.copiesSold)} />
                 <StatCard icon={Star}        iconColor="#fbbf24"  iconBg="rgba(245,158,11,0.12)"   label="İnceleme Skoru"  value={d?.reviewScore != null ? `${d.reviewScore}/100` : '—'} />
-                <StatCard icon={Heart}       iconColor="#f87171"  iconBg="rgba(239,68,68,0.12)"    label="Takipçi"         value={fmt(d?.followerCount)} />
-                <StatCard icon={Users}       iconColor="#fb923c"  iconBg="rgba(249,115,22,0.12)"   label="Aktif Oyuncu"    value={fmt(d?.peakPlayers)} />
+                <StatCard icon={Heart}       iconColor="#f87171"  iconBg="rgba(239,68,68,0.12)"    label="Takipçi"         value={fmt(d?.followers)} />
+                <StatCard icon={Users}       iconColor="#fb923c"  iconBg="rgba(249,115,22,0.12)"   label="Aktif Oyuncu"    value={fmt(d?.players)} />
                 <StatCard icon={TrendingUp}  iconColor="#a78bfa"  iconBg="rgba(124,58,237,0.12)"   label="İstek Listesi"   value={fmt(d?.wishlists)} />
                 <StatCard icon={Clock}       iconColor="#2dd4bf"  iconBg="rgba(20,184,166,0.12)"   label="Ort. Oynama"     value={d?.avgPlaytime != null ? `${Number(d.avgPlaytime).toFixed(1)} saat` : '—'} />
               </div>
