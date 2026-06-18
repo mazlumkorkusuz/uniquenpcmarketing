@@ -622,3 +622,32 @@ begin
     end if;
   end loop;
 end $$;
+
+-- İçerik Planlaması: social_media_posts table
+CREATE TABLE IF NOT EXISTS social_media_posts (
+  id             uuid         PRIMARY KEY DEFAULT gen_random_uuid(),
+  platform       text         NOT NULL,
+  title          text,
+  content        text,
+  scheduled_date date,
+  scheduled_time time,
+  status         text         NOT NULL DEFAULT 'Taslak',
+  created_at     timestamptz  NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_smp_platform       ON social_media_posts(platform);
+CREATE INDEX IF NOT EXISTS idx_smp_scheduled_date ON social_media_posts(scheduled_date);
+
+ALTER TABLE social_media_posts ENABLE ROW LEVEL SECURITY;
+
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies
+    WHERE schemaname = 'public'
+      AND tablename  = 'social_media_posts'
+      AND policyname = 'auth_all_social_media_posts'
+  ) THEN
+    CREATE POLICY auth_all_social_media_posts ON social_media_posts
+      FOR ALL TO authenticated USING (true) WITH CHECK (true);
+  END IF;
+END $$;
