@@ -14,6 +14,7 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import QuickLinkCard from '@/components/QuickLinkCard'
+import AISearchBar from '@/components/AISearchBar'
 
 async function getDashboardStats() {
   const [
@@ -106,6 +107,8 @@ export default async function DashboardPage() {
       </div>
 
       <div style={{ padding: '28px 32px' }}>
+
+        <AISearchBar />
 
         {/* Stat cards */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px', marginBottom: '28px' }}>
