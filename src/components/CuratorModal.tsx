@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 import { ModalBase, inputStyle, labelStyle, fieldStyle, cancelBtnStyle, submitBtnStyle, addBtnStyle } from './ModalBase'
 import { Toast } from './Toast'
+import { revalidateDashboard } from '@/app/actions'
 
 interface ToastState { message: string; type: 'success' | 'error' }
 
@@ -34,6 +35,7 @@ export function CuratorModal() {
       setToast({ message: 'Küratör başarıyla eklendi.', type: 'success' })
       setForm({ name: '', platform: '', genre: '', followers: '', email: '', status: 'Aktif' })
       setOpen(false)
+      await revalidateDashboard()
       router.refresh()
     } catch (err: unknown) {
       setToast({ message: (err as Error).message || 'Bir hata oluştu.', type: 'error' })

@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 import { ModalBase, inputStyle, labelStyle, fieldStyle, cancelBtnStyle, submitBtnStyle, addBtnStyle } from './ModalBase'
 import { Toast } from './Toast'
+import { revalidateDashboard } from '@/app/actions'
 
 interface ToastState { message: string; type: 'success' | 'error' }
 
@@ -33,6 +34,7 @@ export function BudgetExpenseModal({ accentColor = '#22c55e', buttonLabel = '+ H
       setToast({ message: 'Harcama başarıyla eklendi.', type: 'success' })
       setForm({ platform: '', title: '', amount: '', date: '', status: 'Beklemede' })
       setOpen(false)
+      await revalidateDashboard()
       router.refresh()
     } catch (err: unknown) {
       setToast({ message: (err as Error).message || 'Bir hata oluştu.', type: 'error' })
