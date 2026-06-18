@@ -388,7 +388,7 @@ export default function GamalyticPage() {
                 <StatCard icon={Globe}       iconColor="#60a5fa"  iconBg="rgba(59,130,246,0.12)"   label="Satılan Kopya"   value={fmt(d?.copiesSold)} />
                 <StatCard icon={Star}        iconColor="#fbbf24"  iconBg="rgba(245,158,11,0.12)"   label="İnceleme Skoru"  value={d?.reviewScore != null ? `${d.reviewScore}/100` : '—'} />
                 <StatCard icon={Heart}       iconColor="#f87171"  iconBg="rgba(239,68,68,0.12)"    label="Takipçi"         value={fmt(d?.followers)} />
-                <StatCard icon={Users}       iconColor="#fb923c"  iconBg="rgba(249,115,22,0.12)"   label="Aktif Oyuncu"    value={fmt(d?.players)} />
+                <StatCard icon={Users}       iconColor="#fb923c"  iconBg="rgba(249,115,22,0.12)"   label="Toplam Oyuncu"    value={fmt(d?.players)} />
                 <StatCard icon={TrendingUp}  iconColor="#a78bfa"  iconBg="rgba(124,58,237,0.12)"   label="İstek Listesi"   value={fmt(d?.wishlists)} />
                 <StatCard icon={Clock}       iconColor="#2dd4bf"  iconBg="rgba(20,184,166,0.12)"   label="Ort. Oynama"     value={d?.avgPlaytime != null ? `${Number(d.avgPlaytime).toFixed(1)} saat` : '—'} />
               </div>
