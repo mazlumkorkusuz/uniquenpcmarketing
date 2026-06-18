@@ -14,6 +14,7 @@ import {
   Wallet,
   BarChart2,
   Newspaper,
+  Star,
   ChevronRight,
   ChevronDown,
   LogOut,
@@ -66,6 +67,7 @@ const navItems: NavItem[] = [
   },
   { href: '/reddit', label: 'Reddit', icon: MessageCircle },
   { href: '/butce', label: 'Bütçe Yönetimi', icon: Wallet },
+  { href: '/steam-kuratorleri', label: 'Steam Küratörleri', icon: Star },
   { href: '/gamalytic', label: 'Gamalytic', icon: BarChart2 },
   { href: '/news', label: 'News', icon: Newspaper },
 ]
