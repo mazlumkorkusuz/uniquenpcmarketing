@@ -61,7 +61,7 @@ export default async function InstagramPage() {
 
   return (
     <div>
-      <PageHeader title="Instagram" subtitle="Instagram paylaşımları ve metrikler" icon={Share2} gradient="linear-gradient(135deg, #e1306c, #833ab4)">
+      <PageHeader title="Instagram" subtitle="Instagram paylaşımları ve metrikler" imageSrc="/icons/instagram.png" gradient="linear-gradient(135deg, #e1306c, #833ab4)">
         <SocialAccountModal table="instagram_accounts" color="#e1306c" />
       </PageHeader>
       <div style={{ padding: '24px 32px' }}>

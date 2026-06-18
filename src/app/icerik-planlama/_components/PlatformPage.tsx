@@ -16,7 +16,8 @@ interface PlatformPageProps {
   label: string
   color: string
   gradient: string
-  icon: LucideIcon
+  icon?: LucideIcon
+  imageSrc?: string
 }
 
 function dateCell(v: unknown) {
@@ -35,7 +36,7 @@ function statusBadge(status: string | null) {
   return <span style={{ fontSize: '12px', fontWeight: 600, color: text, backgroundColor: bg, borderRadius: '5px', padding: '2px 8px' }}>{status}</span>
 }
 
-export async function PlatformPage({ platform, label, color, gradient, icon }: PlatformPageProps) {
+export async function PlatformPage({ platform, label, color, gradient, icon, imageSrc }: PlatformPageProps) {
   const { data } = await supabase
     .from('social_media_posts')
     .select('*')
@@ -85,7 +86,7 @@ export async function PlatformPage({ platform, label, color, gradient, icon }: P
 
   return (
     <div>
-      <PageHeader title={label} subtitle={`${label} içerik planlaması`} icon={icon} gradient={gradient}>
+      <PageHeader title={label} subtitle={`${label} içerik planlaması`} icon={icon} imageSrc={imageSrc} gradient={gradient}>
         <PostModal platform={platform} platformColor={color} />
       </PageHeader>
 

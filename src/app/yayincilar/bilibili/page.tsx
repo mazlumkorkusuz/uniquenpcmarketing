@@ -38,7 +38,7 @@ export default async function BiliBiliPage() {
 
   return (
     <div>
-      <PageHeader title="BiliBili Yayıncıları" subtitle={`${total} yayıncı takip ediliyor`} icon={Tv2} gradient="linear-gradient(135deg, #f472b6, #a855f7)">
+      <PageHeader title="BiliBili Yayıncıları" subtitle={`${total} yayıncı takip ediliyor`} imageSrc="/icons/bilibili.png" gradient="linear-gradient(135deg, #f472b6, #a855f7)">
         <StreamerModal table="bilibili_streamers" color="#f472b6" />
       </PageHeader>
       <div style={{ padding: '24px 32px' }}>

@@ -38,7 +38,7 @@ export default async function NicoNicoPage() {
 
   return (
     <div>
-      <PageHeader title="NicoNico Yayıncıları" subtitle={`${total} yayıncı takip ediliyor`} icon={Tv2} gradient="linear-gradient(135deg, #cccccc, #888888)">
+      <PageHeader title="NicoNico Yayıncıları" subtitle={`${total} yayıncı takip ediliyor`} imageSrc="/icons/niconico.png" gradient="linear-gradient(135deg, #cccccc, #888888)">
         <StreamerModal table="niconico_streamers" color="#888888" />
       </PageHeader>
       <div style={{ padding: '24px 32px' }}>

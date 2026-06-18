@@ -52,7 +52,7 @@ export default async function YouTubePage() {
 
   return (
     <div>
-      <PageHeader title="YouTube Kanalları" subtitle={`${total} kanal takip ediliyor`} icon={Tv2} gradient="linear-gradient(135deg, #ff4444, #cc0000)">
+      <PageHeader title="YouTube Kanalları" subtitle={`${total} kanal takip ediliyor`} imageSrc="/icons/youtube.png" gradient="linear-gradient(135deg, #ff4444, #cc0000)">
         <StreamerModal table="youtube_channels" color="#ff4444" />
       </PageHeader>
       <div style={{ padding: '24px 32px' }}>

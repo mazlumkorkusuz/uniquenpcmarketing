@@ -38,7 +38,7 @@ export default async function ChzzkPage() {
 
   return (
     <div>
-      <PageHeader title="Chzzk Yayıncıları" subtitle={`${total} yayıncı takip ediliyor`} icon={Tv2} gradient="linear-gradient(135deg, #00d4aa, #009975)">
+      <PageHeader title="Chzzk Yayıncıları" subtitle={`${total} yayıncı takip ediliyor`} imageSrc="/icons/chzzk.png" gradient="linear-gradient(135deg, #00d4aa, #009975)">
         <StreamerModal table="chzzk_streamers" color="#00d4aa" />
       </PageHeader>
       <div style={{ padding: '24px 32px' }}>

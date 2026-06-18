@@ -43,7 +43,7 @@ export default async function KickPage() {
 
   return (
     <div>
-      <PageHeader title="Kick Yayıncıları" subtitle={`${total} yayıncı takip ediliyor`} icon={Tv2} gradient="linear-gradient(135deg, #53fc18, #2ea80e)">
+      <PageHeader title="Kick Yayıncıları" subtitle={`${total} yayıncı takip ediliyor`} imageSrc="/icons/kick.png" gradient="linear-gradient(135deg, #53fc18, #2ea80e)">
         <StreamerModal table="kick_streamers" color="#53fc18" />
       </PageHeader>
       <div style={{ padding: '24px 32px' }}>

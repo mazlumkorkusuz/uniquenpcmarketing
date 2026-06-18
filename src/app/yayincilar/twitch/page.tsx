@@ -44,7 +44,7 @@ export default async function TwitchPage() {
 
   return (
     <div>
-      <PageHeader title="Twitch Yayıncıları" subtitle={`${total} yayıncı takip ediliyor`} icon={Tv2} gradient="linear-gradient(135deg, #9146ff, #6441a5)">
+      <PageHeader title="Twitch Yayıncıları" subtitle={`${total} yayıncı takip ediliyor`} imageSrc="/icons/twitch.png" gradient="linear-gradient(135deg, #9146ff, #6441a5)">
         <StreamerModal table="twitch_streamers" color="#9146ff" />
       </PageHeader>
       <div style={{ padding: '24px 32px' }}>

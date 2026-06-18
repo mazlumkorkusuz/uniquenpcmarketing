@@ -3,12 +3,13 @@ import { LucideIcon } from 'lucide-react'
 interface PageHeaderProps {
   title: string
   subtitle?: string
-  icon: LucideIcon
+  icon?: LucideIcon
+  imageSrc?: string
   gradient: string
   children?: React.ReactNode
 }
 
-export default function PageHeader({ title, subtitle, icon: Icon, gradient, children }: PageHeaderProps) {
+export default function PageHeader({ title, subtitle, icon: Icon, imageSrc, gradient, children }: PageHeaderProps) {
   return (
     <div
       style={{
@@ -33,9 +34,18 @@ export default function PageHeader({ title, subtitle, icon: Icon, gradient, chil
             alignItems: 'center',
             justifyContent: 'center',
             flexShrink: 0,
+            overflow: 'hidden',
           }}
         >
-          <Icon size={22} color="white" />
+          {imageSrc ? (
+            <img
+              src={imageSrc}
+              alt={title}
+              style={{ width: '28px', height: '28px', objectFit: 'contain', display: 'block' }}
+            />
+          ) : Icon ? (
+            <Icon size={22} color="white" />
+          ) : null}
         </div>
         <div>
           <h1 style={{ fontSize: '20px', fontWeight: 700, color: '#f1f5f9', margin: 0 }}>{title}</h1>

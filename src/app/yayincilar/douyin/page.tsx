@@ -38,7 +38,7 @@ export default async function DouyinPage() {
 
   return (
     <div>
-      <PageHeader title="Douyin Yayıncıları" subtitle={`${total} yayıncı takip ediliyor`} icon={Tv2} gradient="linear-gradient(135deg, #fe2c55, #010101)">
+      <PageHeader title="Douyin Yayıncıları" subtitle={`${total} yayıncı takip ediliyor`} imageSrc="/icons/tiktok.png" gradient="linear-gradient(135deg, #fe2c55, #010101)">
         <StreamerModal table="douyin_streamers" color="#fe2c55" />
       </PageHeader>
       <div style={{ padding: '24px 32px' }}>

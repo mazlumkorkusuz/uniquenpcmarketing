@@ -43,7 +43,7 @@ export default async function SOOPPage() {
 
   return (
     <div>
-      <PageHeader title="SOOP Yayıncıları" subtitle={`${total} yayıncı takip ediliyor`} icon={Tv2} gradient="linear-gradient(135deg, #3b82f6, #1d4ed8)">
+      <PageHeader title="SOOP Yayıncıları" subtitle={`${total} yayıncı takip ediliyor`} imageSrc="/icons/soop.jpeg" gradient="linear-gradient(135deg, #3b82f6, #1d4ed8)">
         <StreamerModal table="soop_streamers" color="#3b82f6" />
       </PageHeader>
       <div style={{ padding: '24px 32px' }}>

@@ -61,7 +61,7 @@ export default async function TikTokPage() {
 
   return (
     <div>
-      <PageHeader title="TikTok" subtitle="TikTok paylaşımları ve metrikler" icon={Share2} gradient="linear-gradient(135deg, #fe2c55, #010101)">
+      <PageHeader title="TikTok" subtitle="TikTok paylaşımları ve metrikler" imageSrc="/icons/tiktok.png" gradient="linear-gradient(135deg, #fe2c55, #010101)">
         <SocialAccountModal table="tiktok_accounts" color="#fe2c55" />
       </PageHeader>
       <div style={{ padding: '24px 32px' }}>

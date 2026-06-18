@@ -27,12 +27,14 @@ import { useState, useEffect } from 'react'
 interface SubNavItem {
   href: string
   label: string
+  imageSrc?: string
 }
 
 interface NavItem {
   href: string
   label: string
   icon: LucideIcon
+  imageSrc?: string
   children?: SubNavItem[]
 }
 
@@ -53,13 +55,13 @@ const navItems: NavItem[] = [
     label: 'Yayıncılar',
     icon: Tv2,
     children: [
-      { href: '/yayincilar/twitch', label: 'Twitch' },
-      { href: '/yayincilar/kick', label: 'Kick' },
-      { href: '/yayincilar/soop', label: 'SOOP' },
-      { href: '/yayincilar/niconico', label: 'NicoNico' },
-      { href: '/yayincilar/chzzk', label: 'Chzzk' },
-      { href: '/yayincilar/bilibili', label: 'BiliBili' },
-      { href: '/yayincilar/douyin', label: 'Douyin' },
+      { href: '/yayincilar/twitch',   label: 'Twitch',   imageSrc: '/icons/twitch.png' },
+      { href: '/yayincilar/kick',     label: 'Kick',     imageSrc: '/icons/kick.png' },
+      { href: '/yayincilar/soop',     label: 'SOOP',     imageSrc: '/icons/soop.jpeg' },
+      { href: '/yayincilar/niconico', label: 'NicoNico', imageSrc: '/icons/niconico.png' },
+      { href: '/yayincilar/chzzk',    label: 'Chzzk',    imageSrc: '/icons/chzzk.png' },
+      { href: '/yayincilar/bilibili', label: 'BiliBili', imageSrc: '/icons/bilibili.png' },
+      { href: '/yayincilar/douyin',   label: 'Douyin',   imageSrc: '/icons/tiktok.png' },
     ],
   },
   { href: '/toplantilar', label: 'Toplantılar', icon: Calendar },
@@ -69,26 +71,26 @@ const navItems: NavItem[] = [
     label: 'Sosyal Medya',
     icon: Share2,
     children: [
-      { href: '/sosyal-medya/twitter', label: 'Twitter' },
-      { href: '/sosyal-medya/instagram', label: 'Instagram' },
-      { href: '/sosyal-medya/tiktok', label: 'TikTok' },
-      { href: '/sosyal-medya/youtube', label: 'YouTube' },
+      { href: '/sosyal-medya/twitter',   label: 'Twitter',   imageSrc: '/icons/x.png' },
+      { href: '/sosyal-medya/instagram', label: 'Instagram', imageSrc: '/icons/instagram.png' },
+      { href: '/sosyal-medya/tiktok',    label: 'TikTok',    imageSrc: '/icons/tiktok.png' },
+      { href: '/sosyal-medya/youtube',   label: 'YouTube',   imageSrc: '/icons/youtube.png' },
     ],
   },
-  { href: '/reddit', label: 'Reddit', icon: MessageCircle },
+  { href: '/reddit', label: 'Reddit', icon: MessageCircle, imageSrc: '/icons/reddit.svg' },
   { href: '/butce', label: 'Bütçe Yönetimi', icon: Wallet },
   {
     href: '/icerik-planlama',
     label: 'İçerik Planlaması',
     icon: CalendarCheck,
     children: [
-      { href: '/icerik-planlama/tiktok',    label: 'TikTok' },
-      { href: '/icerik-planlama/instagram', label: 'Instagram' },
-      { href: '/icerik-planlama/twitter',   label: 'Twitter' },
-      { href: '/icerik-planlama/linkedin',  label: 'LinkedIn' },
-      { href: '/icerik-planlama/youtube',   label: 'YouTube' },
-      { href: '/icerik-planlama/reddit',    label: 'Reddit' },
-      { href: '/icerik-planlama/ig',        label: 'IG' },
+      { href: '/icerik-planlama/tiktok',    label: 'TikTok',    imageSrc: '/icons/tiktok.png' },
+      { href: '/icerik-planlama/instagram', label: 'Instagram', imageSrc: '/icons/instagram.png' },
+      { href: '/icerik-planlama/twitter',   label: 'Twitter',   imageSrc: '/icons/x.png' },
+      { href: '/icerik-planlama/linkedin',  label: 'LinkedIn',  imageSrc: '/icons/linkedin.png' },
+      { href: '/icerik-planlama/youtube',   label: 'YouTube',   imageSrc: '/icons/youtube.png' },
+      { href: '/icerik-planlama/reddit',    label: 'Reddit',    imageSrc: '/icons/reddit.svg' },
+      { href: '/icerik-planlama/ig',        label: 'IG',        imageSrc: '/icons/instagram.png' },
     ],
   },
   { href: '/steam-kuratorleri', label: 'Steam Küratörleri', icon: Star },
@@ -240,7 +242,15 @@ export default function Sidebar() {
                     textDecoration: 'none',
                   }}
                 >
-                  <Icon size={16} strokeWidth={isActive ? 2.5 : 2} />
+                  {item.imageSrc ? (
+                    <img
+                      src={item.imageSrc}
+                      alt={item.label}
+                      style={{ width: '17px', height: '17px', objectFit: 'contain', borderRadius: '3px', flexShrink: 0, opacity: isActive ? 1 : 0.7 }}
+                    />
+                  ) : (
+                    <Icon size={16} strokeWidth={isActive ? 2.5 : 2} />
+                  )}
                   <span style={{ flex: 1 }}>{item.label}</span>
                   {!hasChildren && isActive && <ChevronRight size={14} style={{ marginRight: '8px' }} />}
                 </Link>
@@ -295,15 +305,23 @@ export default function Sidebar() {
                           transition: 'all 0.15s ease',
                         }}
                       >
-                        <div
-                          style={{
-                            width: '5px',
-                            height: '5px',
-                            borderRadius: '50%',
-                            backgroundColor: isChildActive ? '#a78bfa' : '#3a3a4a',
-                            flexShrink: 0,
-                          }}
-                        />
+                        {child.imageSrc ? (
+                          <img
+                            src={child.imageSrc}
+                            alt={child.label}
+                            style={{ width: '15px', height: '15px', objectFit: 'contain', borderRadius: '3px', flexShrink: 0, opacity: isChildActive ? 1 : 0.65 }}
+                          />
+                        ) : (
+                          <div
+                            style={{
+                              width: '5px',
+                              height: '5px',
+                              borderRadius: '50%',
+                              backgroundColor: isChildActive ? '#a78bfa' : '#3a3a4a',
+                              flexShrink: 0,
+                            }}
+                          />
+                        )}
                         {child.label}
                       </Link>
                     )

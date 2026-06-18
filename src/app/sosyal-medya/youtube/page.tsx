@@ -78,7 +78,7 @@ export default async function YouTubeSocialPage() {
 
   return (
     <div>
-      <PageHeader title="YouTube" subtitle="YouTube kanalları ve pazarlama verileri" icon={Share2} gradient="linear-gradient(135deg, #ff4444, #cc0000)">
+      <PageHeader title="YouTube" subtitle="YouTube kanalları ve pazarlama verileri" imageSrc="/icons/youtube.png" gradient="linear-gradient(135deg, #ff4444, #cc0000)">
         <SocialAccountModal table="youtube_channels" color="#ff4444" usernameField="channel_name" followersField="subscribers" followingField="following" postsField="video_count" />
       </PageHeader>
       <div style={{ padding: '24px 32px' }}>

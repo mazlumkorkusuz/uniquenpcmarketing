@@ -68,7 +68,7 @@ export default async function TwitterPage() {
 
   return (
     <div>
-      <PageHeader title="Twitter / X" subtitle="Twitter hesapları ve paylaşımları" icon={Share2} gradient="linear-gradient(135deg, #1d9bf0, #0c6fa8)">
+      <PageHeader title="Twitter / X" subtitle="Twitter hesapları ve paylaşımları" imageSrc="/icons/x.png" gradient="linear-gradient(135deg, #1d9bf0, #0c6fa8)">
         <SocialAccountModal table="twitter_accounts" color="#1d9bf0" postsField="tweets" />
       </PageHeader>
       <div style={{ padding: '24px 32px' }}>

@@ -106,7 +106,7 @@ export default async function RedditPage() {
       <PageHeader
         title="Reddit"
         subtitle="Hesaplar, gönderiler ve istatistikler"
-        icon={MessageCircle}
+        imageSrc="/icons/reddit.svg"
         gradient="linear-gradient(135deg, #ff4500, #ff6534)"
       >
         <RedditAccountModal />

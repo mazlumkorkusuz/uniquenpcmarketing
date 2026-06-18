@@ -16,13 +16,13 @@ const PLATFORM_COLORS: Record<string, string> = {
 }
 
 const PLATFORMS = [
-  { key: 'twitter',   label: 'Twitter',   color: '#1d9bf0' },
-  { key: 'instagram', label: 'Instagram', color: '#e1306c' },
-  { key: 'tiktok',    label: 'TikTok',    color: '#fe2c55' },
-  { key: 'linkedin',  label: 'LinkedIn',  color: '#0a66c2' },
-  { key: 'youtube',   label: 'YouTube',   color: '#ff4444' },
-  { key: 'reddit',    label: 'Reddit',    color: '#ff4500' },
-  { key: 'ig',        label: 'IG',        color: '#c13584' },
+  { key: 'twitter',   label: 'Twitter',   color: '#1d9bf0', icon: '/icons/x.png' },
+  { key: 'instagram', label: 'Instagram', color: '#e1306c', icon: '/icons/instagram.png' },
+  { key: 'tiktok',    label: 'TikTok',    color: '#fe2c55', icon: '/icons/tiktok.png' },
+  { key: 'linkedin',  label: 'LinkedIn',  color: '#0a66c2', icon: '/icons/linkedin.png' },
+  { key: 'youtube',   label: 'YouTube',   color: '#ff4444', icon: '/icons/youtube.png' },
+  { key: 'reddit',    label: 'Reddit',    color: '#ff4500', icon: '/icons/reddit.svg' },
+  { key: 'ig',        label: 'IG',        color: '#c13584', icon: '/icons/instagram.png' },
 ]
 
 async function getData() {
@@ -69,7 +69,7 @@ export default async function IcerikPlanlamaPage() {
                 transition: 'border-color 0.15s',
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: p.color, flexShrink: 0 }} />
+                  <img src={p.icon} alt={p.label} style={{ width: '18px', height: '18px', objectFit: 'contain', borderRadius: '3px', flexShrink: 0 }} />
                   <span style={{ fontSize: '12px', fontWeight: 600, color: '#94a3b8' }}>{p.label}</span>
                 </div>
                 <div style={{ fontSize: '20px', fontWeight: 700, color: p.color }}>
@@ -107,7 +107,7 @@ export default async function IcerikPlanlamaPage() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '7px' }}>
                 {PLATFORMS.map(p => (
                   <div key={p.key} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <div style={{ width: '10px', height: '10px', borderRadius: '2px', backgroundColor: p.color, flexShrink: 0 }} />
+                    <img src={p.icon} alt={p.label} style={{ width: '14px', height: '14px', objectFit: 'contain', borderRadius: '2px', flexShrink: 0 }} />
                     <span style={{ fontSize: '12px', color: '#94a3b8' }}>{p.label}</span>
                   </div>
                 ))}

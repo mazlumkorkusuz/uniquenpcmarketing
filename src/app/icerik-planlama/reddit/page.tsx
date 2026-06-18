@@ -1,5 +1,4 @@
 export const dynamic = 'force-dynamic'
-import { MessageCircle } from 'lucide-react'
 import { PlatformPage } from '../_components/PlatformPage'
 
 export default function RedditIcerikPage() {
@@ -9,7 +8,7 @@ export default function RedditIcerikPage() {
       label="Reddit"
       color="#ff4500"
       gradient="linear-gradient(135deg, #ff4500, #cc3700)"
-      icon={MessageCircle}
+      imageSrc="/icons/reddit.svg"
     />
   )
 }
