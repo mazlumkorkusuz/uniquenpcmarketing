@@ -4,6 +4,7 @@ import PageHeader from '@/components/PageHeader'
 import { ContentCalendar } from '@/components/ContentCalendar'
 import type { CalPost } from '@/components/ContentCalendar'
 import { CalendarCheck } from 'lucide-react'
+import Image from 'next/image'
 
 const PLATFORM_COLORS: Record<string, string> = {
   twitter:   '#1d9bf0',
@@ -69,7 +70,7 @@ export default async function IcerikPlanlamaPage() {
                 transition: 'border-color 0.15s',
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                  <img src={p.icon} alt={p.label} style={{ width: '18px', height: '18px', objectFit: 'contain', borderRadius: '3px', flexShrink: 0 }} />
+                  <Image src={p.icon} alt={p.label} width={18} height={18} style={{ objectFit: 'contain', borderRadius: '3px', flexShrink: 0 }} />
                   <span style={{ fontSize: '12px', fontWeight: 600, color: '#94a3b8' }}>{p.label}</span>
                 </div>
                 <div style={{ fontSize: '20px', fontWeight: 700, color: p.color }}>
@@ -107,7 +108,7 @@ export default async function IcerikPlanlamaPage() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '7px' }}>
                 {PLATFORMS.map(p => (
                   <div key={p.key} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <img src={p.icon} alt={p.label} style={{ width: '14px', height: '14px', objectFit: 'contain', borderRadius: '2px', flexShrink: 0 }} />
+                    <Image src={p.icon} alt={p.label} width={14} height={14} style={{ objectFit: 'contain', borderRadius: '2px', flexShrink: 0 }} />
                     <span style={{ fontSize: '12px', color: '#94a3b8' }}>{p.label}</span>
                   </div>
                 ))}

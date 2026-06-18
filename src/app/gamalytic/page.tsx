@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useCallback } from 'react'
+import Image from 'next/image'
 import {
   BarChart2,
   Search,
@@ -256,11 +257,15 @@ export default function GamalyticPage() {
 
             {/* Header image + info */}
             <div style={{ display: 'grid', gridTemplateColumns: '340px 1fr', gap: '24px', alignItems: 'flex-start' }}>
-              <img
-                src={headerImg}
-                alt={selected.name}
-                style={{ width: '100%', borderRadius: '12px', border: '1px solid #2a2a3a', objectFit: 'cover' }}
-              />
+              <div style={{ position: 'relative', width: '100%', aspectRatio: '460/215', borderRadius: '12px', overflow: 'hidden', border: '1px solid #2a2a3a' }}>
+                <Image
+                  src={headerImg}
+                  alt={selected.name}
+                  fill
+                  style={{ objectFit: 'cover' }}
+                  sizes="340px"
+                />
+              </div>
               <div>
                 <h1 style={{ fontSize: '24px', fontWeight: 800, color: '#f1f5f9', margin: '0 0 8px' }}>{d?.name ?? selected.name}</h1>
                 <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginBottom: '12px' }}>
@@ -457,11 +462,15 @@ export default function GamalyticPage() {
                       e.currentTarget.style.transform = 'translateY(0)'
                     }}
                   >
-                    <img
-                      src={item.tiny_image}
-                      alt={item.name}
-                      style={{ width: '100%', height: '120px', objectFit: 'cover', display: 'block', borderBottom: '1px solid #2a2a3a' }}
-                    />
+                    <div style={{ position: 'relative', width: '100%', height: '120px', overflow: 'hidden', borderBottom: '1px solid #2a2a3a' }}>
+                      <Image
+                        src={item.tiny_image}
+                        alt={item.name}
+                        fill
+                        style={{ objectFit: 'cover' }}
+                        sizes="280px"
+                      />
+                    </div>
                     <div style={{ padding: '12px 14px 14px' }}>
                       <div style={{ fontSize: '13px', fontWeight: 600, color: '#f1f5f9', marginBottom: '8px', lineHeight: 1.35 }}>{item.name}</div>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '6px' }}>
