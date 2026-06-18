@@ -9,7 +9,7 @@ const next = require('next')
 const fs = require('fs')
 const path = require('path')
 
-const PORT = parseInt(process.env.PORT || '3000', 10)
+const PORT = process.env.PORT || 3000
 const PID_FILE = path.join(__dirname, '.server.pid')
 const dev = process.env.NODE_ENV !== 'production'
 
