@@ -6,6 +6,7 @@ import StatCard from '@/components/StatCard'
 import BarChart from '@/components/BarChart'
 import PageHeader from '@/components/PageHeader'
 import { Tv2, Users, Eye } from 'lucide-react'
+import { StreamerModal } from '@/components/StreamerModal'
 
 type Row = Record<string, unknown>
 
@@ -40,7 +41,9 @@ export default async function SOOPPage() {
 
   return (
     <div>
-      <PageHeader title="SOOP Yayıncıları" subtitle={`${total} yayıncı takip ediliyor`} icon={Tv2} gradient="linear-gradient(135deg, #3b82f6, #1d4ed8)" />
+      <PageHeader title="SOOP Yayıncıları" subtitle={`${total} yayıncı takip ediliyor`} icon={Tv2} gradient="linear-gradient(135deg, #3b82f6, #1d4ed8)">
+        <StreamerModal table="soop_streamers" color="#3b82f6" />
+      </PageHeader>
       <div style={{ padding: '24px 32px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px', marginBottom: '28px' }}>
           <StatCard label="Toplam Yayıncı" value={total}                                  icon={Tv2}   iconColor="#60a5fa" iconBg="rgba(59,130,246,0.12)" />

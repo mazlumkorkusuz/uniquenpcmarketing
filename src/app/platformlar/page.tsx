@@ -4,6 +4,7 @@ import PageHeader from '@/components/PageHeader'
 import DataTable from '@/components/DataTable'
 import Badge, { statusBadge } from '@/components/Badge'
 import { Globe } from 'lucide-react'
+import { PlatformModal } from '@/components/PlatformModal'
 
 async function getData() {
   const { data: platforms } = await supabase
@@ -71,19 +72,21 @@ export default async function PlatformlarPage() {
               <div style={{ fontSize: '15px', fontWeight: 600, color: '#f1f5f9' }}>CRM Platformları</div>
               <div style={{ fontSize: '12px', color: '#64748b' }}>İş ortağı platformlar</div>
             </div>
-            <div
-              style={{
-                marginLeft: 'auto',
-                backgroundColor: '#3b82f620',
-                color: '#3b82f6',
-                border: '1px solid #3b82f640',
-                borderRadius: '9999px',
-                padding: '2px 12px',
-                fontSize: '13px',
-                fontWeight: 600,
-              }}
-            >
-              {platforms.length}
+            <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <div
+                style={{
+                  backgroundColor: '#3b82f620',
+                  color: '#3b82f6',
+                  border: '1px solid #3b82f640',
+                  borderRadius: '9999px',
+                  padding: '2px 12px',
+                  fontSize: '13px',
+                  fontWeight: 600,
+                }}
+              >
+                {platforms.length}
+              </div>
+              <PlatformModal />
             </div>
           </div>
           <DataTable columns={platformColumns} data={platforms as Row[]} emptyMessage="Henüz platform eklenmemiş" />

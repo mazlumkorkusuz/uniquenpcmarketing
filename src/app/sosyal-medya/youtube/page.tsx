@@ -6,6 +6,7 @@ import StatCard from '@/components/StatCard'
 import BarChart from '@/components/BarChart'
 import PageHeader from '@/components/PageHeader'
 import { Share2, Users, Eye, TrendingUp } from 'lucide-react'
+import { SocialAccountModal } from '@/components/SocialAccountModal'
 
 type Row = Record<string, unknown>
 
@@ -75,7 +76,9 @@ export default async function YouTubeSocialPage() {
 
   return (
     <div>
-      <PageHeader title="YouTube" subtitle="YouTube kanalları ve pazarlama verileri" icon={Share2} gradient="linear-gradient(135deg, #ff4444, #cc0000)" />
+      <PageHeader title="YouTube" subtitle="YouTube kanalları ve pazarlama verileri" icon={Share2} gradient="linear-gradient(135deg, #ff4444, #cc0000)">
+        <SocialAccountModal table="youtube_channels" color="#ff4444" usernameField="channel_name" followersField="subscribers" followingField="following" postsField="video_count" />
+      </PageHeader>
       <div style={{ padding: '24px 32px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px', marginBottom: '28px' }}>
           <StatCard label="Toplam Kanal"    value={channels.length}                        icon={Share2}    iconColor="#f87171" iconBg="rgba(239,68,68,0.12)" />

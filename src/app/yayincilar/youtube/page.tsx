@@ -6,6 +6,7 @@ import StatCard from '@/components/StatCard'
 import BarChart from '@/components/BarChart'
 import PageHeader from '@/components/PageHeader'
 import { Tv2, Users, Eye } from 'lucide-react'
+import { StreamerModal } from '@/components/StreamerModal'
 
 type Row = Record<string, unknown>
 
@@ -49,7 +50,9 @@ export default async function YouTubePage() {
 
   return (
     <div>
-      <PageHeader title="YouTube Kanalları" subtitle={`${total} kanal takip ediliyor`} icon={Tv2} gradient="linear-gradient(135deg, #ff4444, #cc0000)" />
+      <PageHeader title="YouTube Kanalları" subtitle={`${total} kanal takip ediliyor`} icon={Tv2} gradient="linear-gradient(135deg, #ff4444, #cc0000)">
+        <StreamerModal table="youtube_channels" color="#ff4444" />
+      </PageHeader>
       <div style={{ padding: '24px 32px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px', marginBottom: '28px' }}>
           <StatCard label="Toplam Kanal"   value={total}                              icon={Tv2}   iconColor="#f87171" iconBg="rgba(239,68,68,0.12)" />

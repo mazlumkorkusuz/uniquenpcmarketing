@@ -16,6 +16,7 @@ import Link from 'next/link'
 import QuickLinkCard from '@/components/QuickLinkCard'
 import AISearchBar from '@/components/AISearchBar'
 import BudgetDonutChart from '@/components/BudgetDonutChart'
+import { BudgetExpenseModal } from '@/components/BudgetExpenseModal'
 
 async function getDashboardStats() {
   const [
@@ -225,8 +226,13 @@ export default async function DashboardPage() {
 
         {/* Budget distribution donut chart */}
         <div style={{ backgroundColor: '#1a1a24', border: '1px solid #2a2a3a', borderRadius: '12px', padding: '20px', marginBottom: '28px' }}>
-          <div style={{ fontSize: '14px', fontWeight: 600, color: '#f1f5f9', marginBottom: '2px' }}>Bütçe Dağılımı</div>
-          <div style={{ fontSize: '12px', color: '#64748b', marginBottom: '4px' }}>Platforma göre harcama dağılımı</div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '4px' }}>
+            <div>
+              <div style={{ fontSize: '14px', fontWeight: 600, color: '#f1f5f9', marginBottom: '2px' }}>Bütçe Dağılımı</div>
+              <div style={{ fontSize: '12px', color: '#64748b' }}>Platforma göre harcama dağılımı</div>
+            </div>
+            <BudgetExpenseModal accentColor="#22c55e" buttonLabel="+ Bütçe Ekle" />
+          </div>
           <BudgetDonutChart data={stats.budgetChartData} />
         </div>
 

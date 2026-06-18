@@ -6,6 +6,7 @@ import StatCard from '@/components/StatCard'
 import BarChart from '@/components/BarChart'
 import PageHeader from '@/components/PageHeader'
 import { Share2, Users, MessageCircle } from 'lucide-react'
+import { SocialAccountModal } from '@/components/SocialAccountModal'
 
 type Row = Record<string, unknown>
 
@@ -65,7 +66,9 @@ export default async function TwitterPage() {
 
   return (
     <div>
-      <PageHeader title="Twitter / X" subtitle="Twitter hesapları ve paylaşımları" icon={Share2} gradient="linear-gradient(135deg, #1d9bf0, #0c6fa8)" />
+      <PageHeader title="Twitter / X" subtitle="Twitter hesapları ve paylaşımları" icon={Share2} gradient="linear-gradient(135deg, #1d9bf0, #0c6fa8)">
+        <SocialAccountModal table="twitter_accounts" color="#1d9bf0" postsField="tweets" />
+      </PageHeader>
       <div style={{ padding: '24px 32px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px', marginBottom: '28px' }}>
           <StatCard label="Hesap Sayısı"     value={accounts.length}                          icon={Users}         iconColor="#1d9bf0" iconBg="rgba(29,155,240,0.12)" />

@@ -6,6 +6,7 @@ import StatCard from '@/components/StatCard'
 import BarChart from '@/components/BarChart'
 import PageHeader from '@/components/PageHeader'
 import { Tv2, Users, Eye } from 'lucide-react'
+import { StreamerModal } from '@/components/StreamerModal'
 
 type Row = Record<string, unknown>
 
@@ -40,7 +41,9 @@ export default async function KickPage() {
 
   return (
     <div>
-      <PageHeader title="Kick Yayıncıları" subtitle={`${total} yayıncı takip ediliyor`} icon={Tv2} gradient="linear-gradient(135deg, #53fc18, #2ea80e)" />
+      <PageHeader title="Kick Yayıncıları" subtitle={`${total} yayıncı takip ediliyor`} icon={Tv2} gradient="linear-gradient(135deg, #53fc18, #2ea80e)">
+        <StreamerModal table="kick_streamers" color="#53fc18" />
+      </PageHeader>
       <div style={{ padding: '24px 32px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px', marginBottom: '28px' }}>
           <StatCard label="Toplam Yayıncı" value={total}                                  icon={Tv2}   iconColor="#4ade80" iconBg="rgba(34,197,94,0.12)" />

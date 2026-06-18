@@ -6,6 +6,7 @@ import StatCard from '@/components/StatCard'
 import BarChart from '@/components/BarChart'
 import PageHeader from '@/components/PageHeader'
 import { Share2, Heart, MessageCircle, TrendingUp } from 'lucide-react'
+import { SocialAccountModal } from '@/components/SocialAccountModal'
 
 type Row = Record<string, unknown>
 
@@ -58,7 +59,9 @@ export default async function InstagramPage() {
 
   return (
     <div>
-      <PageHeader title="Instagram" subtitle="Instagram paylaşımları ve metrikler" icon={Share2} gradient="linear-gradient(135deg, #e1306c, #833ab4)" />
+      <PageHeader title="Instagram" subtitle="Instagram paylaşımları ve metrikler" icon={Share2} gradient="linear-gradient(135deg, #e1306c, #833ab4)">
+        <SocialAccountModal table="instagram_accounts" color="#e1306c" />
+      </PageHeader>
       <div style={{ padding: '24px 32px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px', marginBottom: '28px' }}>
           <StatCard label="Toplam Gönderi"  value={posts.length}                            icon={Share2}       iconColor="#e1306c" iconBg="rgba(225,48,108,0.12)" />

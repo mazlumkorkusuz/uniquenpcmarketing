@@ -4,6 +4,7 @@ import PageHeader from '@/components/PageHeader'
 import DataTable from '@/components/DataTable'
 import Badge, { statusBadge } from '@/components/Badge'
 import { MessageCircle } from 'lucide-react'
+import { RedditAccountModal } from '@/components/RedditAccountModal'
 
 async function getData() {
   const [{ data: accounts }, { data: posts }, { data: stats }, { data: shared }] = await Promise.all([
@@ -105,7 +106,9 @@ export default async function RedditPage() {
         subtitle="Hesaplar, gönderiler ve istatistikler"
         icon={MessageCircle}
         gradient="linear-gradient(135deg, #ff4500, #ff6534)"
-      />
+      >
+        <RedditAccountModal />
+      </PageHeader>
       <div style={{ padding: '24px 32px' }}>
 
         {/* Stats row */}

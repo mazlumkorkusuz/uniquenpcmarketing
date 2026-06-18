@@ -4,6 +4,7 @@ import PageHeader from '@/components/PageHeader'
 import DataTable from '@/components/DataTable'
 import Badge, { statusBadge } from '@/components/Badge'
 import { Calendar } from 'lucide-react'
+import { MeetingModal } from '@/components/MeetingModal'
 
 async function getData() {
   const [{ data: meetings }, { data: notes }] = await Promise.all([
@@ -75,7 +76,9 @@ export default async function ToplantilarPage() {
         subtitle="Toplantı takvimi ve notlar"
         icon={Calendar}
         gradient="linear-gradient(135deg, #14b8a6, #3b82f6)"
-      />
+      >
+        <MeetingModal />
+      </PageHeader>
       <div style={{ padding: '24px 32px' }}>
 
         {/* Summary */}

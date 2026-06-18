@@ -4,6 +4,7 @@ import PageHeader from '@/components/PageHeader'
 import DataTable from '@/components/DataTable'
 import Badge, { statusBadge } from '@/components/Badge'
 import { Star } from 'lucide-react'
+import { CuratorModal } from '@/components/CuratorModal'
 
 async function getData() {
   const { data: curators } = await supabase
@@ -34,7 +35,9 @@ export default async function SteamKuratorleriPage() {
         subtitle={`${curators.length} küratör`}
         icon={Star}
         gradient="linear-gradient(135deg, #14b8a6, #0891b2)"
-      />
+      >
+        <CuratorModal />
+      </PageHeader>
       <div style={{ padding: '24px 32px' }}>
         <div
           style={{

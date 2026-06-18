@@ -6,6 +6,7 @@ import StatCard from '@/components/StatCard'
 import BarChart from '@/components/BarChart'
 import PageHeader from '@/components/PageHeader'
 import { Share2, Heart, MessageCircle, TrendingUp } from 'lucide-react'
+import { SocialAccountModal } from '@/components/SocialAccountModal'
 
 type Row = Record<string, unknown>
 
@@ -58,7 +59,9 @@ export default async function TikTokPage() {
 
   return (
     <div>
-      <PageHeader title="TikTok" subtitle="TikTok paylaşımları ve metrikler" icon={Share2} gradient="linear-gradient(135deg, #fe2c55, #010101)" />
+      <PageHeader title="TikTok" subtitle="TikTok paylaşımları ve metrikler" icon={Share2} gradient="linear-gradient(135deg, #fe2c55, #010101)">
+        <SocialAccountModal table="tiktok_accounts" color="#fe2c55" />
+      </PageHeader>
       <div style={{ padding: '24px 32px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px', marginBottom: '28px' }}>
           <StatCard label="Toplam Video"   value={posts.length}                         icon={Share2}        iconColor="#fe2c55" iconBg="rgba(254,44,85,0.12)" />
