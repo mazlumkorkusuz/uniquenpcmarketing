@@ -7,6 +7,7 @@ import BarChart from '@/components/BarChart'
 import PageHeader from '@/components/PageHeader'
 import { Share2, Heart, MessageCircle, TrendingUp } from 'lucide-react'
 import { SocialAccountModal } from '@/components/SocialAccountModal'
+import { DeleteButton } from '@/components/DeleteButton'
 
 type Row = Record<string, unknown>
 
@@ -48,6 +49,7 @@ export default async function InstagramPage() {
     { key: 'shares',      label: 'Paylaşım',  render: numCell },
     { key: 'comments',    label: 'Yorum',     render: numCell },
     { key: 'campaign',    label: 'Kampanya',  render: (v: unknown) => v ? <Badge variant="orange">{String(v)}</Badge> : <span style={{ color: '#64748b' }}>—</span> },
+    { key: 'id', label: '', width: '52px', render: (_: unknown, row: Row) => <DeleteButton table="social_posts" id={row.id as string} /> },
   ]
 
   const metricCols = [

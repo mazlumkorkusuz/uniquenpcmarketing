@@ -7,6 +7,7 @@ import BarChart from '@/components/BarChart'
 import PageHeader from '@/components/PageHeader'
 import { Share2, Users, MessageCircle } from 'lucide-react'
 import { SocialAccountModal } from '@/components/SocialAccountModal'
+import { DeleteButton } from '@/components/DeleteButton'
 
 type Row = Record<string, unknown>
 
@@ -46,6 +47,7 @@ export default async function TwitterPage() {
     { key: 'following',    label: 'Takip',       render: numCell },
     { key: 'tweets',       label: 'Tweet',       render: numCell },
     { key: 'status',       label: 'Durum',       render: (v: unknown) => statusBadge(v as string) ?? <span style={{ color: '#64748b' }}>—</span> },
+    { key: 'id', label: '', width: '52px', render: (_: unknown, row: Row) => <DeleteButton table="twitter_accounts" id={row.id as string} /> },
   ]
 
   const postCols = [

@@ -5,6 +5,7 @@ import DataTable from '@/components/DataTable'
 import Badge, { statusBadge } from '@/components/Badge'
 import { Wallet } from 'lucide-react'
 import { BudgetExpenseModal } from '@/components/BudgetExpenseModal'
+import { DeleteButton } from '@/components/DeleteButton'
 
 async function getData() {
   const { data: expenses } = await supabase
@@ -50,6 +51,7 @@ export default async function ButcePage() {
         {String(v)}
       </span>
     ) : <span style={{ color: '#64748b' }}>—</span> },
+    { key: 'id', label: '', width: '52px', render: (_: unknown, row: Row) => <DeleteButton table="budget_expenses" id={row.id as string} /> },
   ]
 
   return (

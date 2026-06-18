@@ -5,6 +5,7 @@ import DataTable from '@/components/DataTable'
 import Badge, { statusBadge } from '@/components/Badge'
 import { Star } from 'lucide-react'
 import { CuratorModal } from '@/components/CuratorModal'
+import { DeleteButton } from '@/components/DeleteButton'
 
 async function getData() {
   const { data: curators } = await supabase
@@ -26,6 +27,7 @@ export default async function SteamKuratorleriPage() {
     { key: 'followers', label: 'Takipçi', render: (v: unknown) => v ? <span style={{ color: '#4ade80', fontWeight: 600 }}>{Number(v).toLocaleString('en-US')}</span> : <span style={{ color: '#64748b' }}>—</span> },
     { key: 'email', label: 'E-posta', render: (v: unknown) => v ? <span style={{ color: '#7c3aed', fontFamily: 'monospace', fontSize: '12px' }}>{String(v)}</span> : <span style={{ color: '#64748b' }}>—</span> },
     { key: 'status', label: 'Durum', render: (v: unknown) => statusBadge(v as string) ?? <span style={{ color: '#64748b' }}>—</span> },
+    { key: 'id', label: '', width: '52px', render: (_: unknown, row: Row) => <DeleteButton table="curators" id={row.id as string} /> },
   ]
 
   return (
