@@ -50,6 +50,16 @@ export default async function PlatformlarPage() {
       color: '#06b6d4',
       dot: '#06b6d4',
     },
+    {
+      key: 'mythic-talent',
+      name: 'Mythic Talent',
+      desc: 'Oyun içerik üreticileri ve yayıncılar için talent yönetim ajansı',
+      href: '/platformlar/mythic-talent',
+      externalHref: 'https://mythictalent.com',
+      gradient: 'linear-gradient(135deg, #8b5cf6, #ec4899)',
+      color: '#8b5cf6',
+      dot: '#8b5cf6',
+    },
   ]
 
   return (

@@ -45,6 +45,7 @@ const navItems: NavItem[] = [
     children: [
       { href: '/platformlar/lurkit', label: 'Lurkit' },
       { href: '/platformlar/terminals', label: 'Terminals.io' },
+      { href: '/platformlar/mythic-talent', label: 'Mythic Talent' },
     ],
   },
   {
