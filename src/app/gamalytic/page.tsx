@@ -4,7 +4,7 @@ import { useState, useRef, useCallback, useEffect } from 'react'
 import Image from 'next/image'
 import {
   BarChart2, Search, X, Star, Clock, Users, DollarSign,
-  TrendingUp, Heart, ChevronLeft, ChevronRight, Tag, Globe,
+  TrendingUp, Heart, ChevronLeft, Tag, Globe,
   ChevronDown, ChevronUp, ExternalLink, Gamepad2, Cpu,
 } from 'lucide-react'
 import {
@@ -21,15 +21,6 @@ interface SteamItem {
   price?: { final: number; initial: number; discount_percent: number }
   metascore?: string
   platforms?: { windows: boolean; mac: boolean; linux: boolean }
-}
-
-interface DemoItem {
-  appid: number
-  name: string
-  fullgame_appid: number | null
-  fullgame_name: string | null
-  image_url: string
-  release_date: string
 }
 
 interface HistoryItem {
@@ -75,8 +66,6 @@ const HISTORY_KEY = 'gamalytic_search_history'
 const MAX_HISTORY = 25
 const TOT_APPID   = 4416430
 const TOT_NAME    = 'Tales of the Trade'
-// Full loop duration in seconds — increase to slow down
-const CAROUSEL_DURATION = 40
 
 const COUNTRY_NAMES: Record<string, string> = {
   cn: 'Çin', us: 'ABD', ru: 'Rusya', de: 'Almanya', gb: 'İngiltere',
@@ -234,11 +223,6 @@ export default function GamalyticPage() {
   const [loading, setLoading]     = useState(false)
   const [error, setError]         = useState<string | null>(null)
 
-  // Carousel state
-  const [demos, setDemos]               = useState<DemoItem[]>([])
-  const [carouselPaused, setCarouselPaused] = useState(false)
-  const trackRef = useRef<HTMLDivElement>(null)
-
   // Search history
   const [searchHistory, setSearchHistory] = useState<HistoryItem[]>([])
 
@@ -249,13 +233,6 @@ export default function GamalyticPage() {
       const raw = localStorage.getItem(HISTORY_KEY)
       if (raw) setSearchHistory(JSON.parse(raw))
     } catch {}
-  }, [])
-
-  useEffect(() => {
-    fetch('/api/steam-demos')
-      .then(r => r.json())
-      .then(d => { if (d.demos?.length) setDemos(d.demos) })
-      .catch(() => {})
   }, [])
 
   // ── Actions ───────────────────────────────────────────────────────────────────
@@ -295,14 +272,6 @@ export default function GamalyticPage() {
 
   const handleBack = useCallback(() => { setSelected(null); setGameData(null); setError(null) }, [])
 
-  const handleDemoClick = useCallback((demo: DemoItem) => {
-    handleSelectGame({
-      id:         demo.fullgame_appid ?? demo.appid,
-      name:       demo.fullgame_name  ?? demo.name,
-      tiny_image: demo.image_url,
-    })
-  }, [handleSelectGame])
-
   const removeFromHistory = useCallback((appid: number) => {
     setSearchHistory(prev => {
       const next = prev.filter(h => h.appid !== appid)
@@ -318,30 +287,6 @@ export default function GamalyticPage() {
       tiny_image: `https://cdn.akamai.steamstatic.com/steam/apps/${TOT_APPID}/header.jpg`,
     })
   }, [handleSelectGame])
-
-  // Seek carousel forward/backward by roughly one card width (220px).
-  // We read the current translateX from the computed style and adjust
-  // animation-delay so the keyframe animation jumps to the new position.
-  function seekCarousel(dir: 'left' | 'right') {
-    const el = trackRef.current
-    if (!el) return
-    const halfW = el.scrollWidth / 2
-    if (halfW <= 0) return
-
-    let currentOffset = 0
-    try {
-      const m = new DOMMatrix(window.getComputedStyle(el).transform)
-      currentOffset = ((-m.m41) % halfW + halfW) % halfW
-    } catch {}
-
-    const STEP = 220
-    const newOffset = dir === 'right'
-      ? (currentOffset + STEP) % halfW
-      : (currentOffset - STEP + halfW) % halfW
-
-    // Negative delay = start the animation mid-way through
-    el.style.animationDelay = `-${(newOffset / halfW) * CAROUSEL_DURATION}s`
-  }
 
   // ── Detail view ───────────────────────────────────────────────────────────────
 
@@ -553,41 +498,9 @@ export default function GamalyticPage() {
 
   // ── Search view ────────────────────────────────────────────────────────────────
 
-  // Duplicate demos for seamless CSS animation loop
-  const carouselItems = demos.length > 0 ? [...demos, ...demos] : []
-
   return (
     <div style={{ overflowX: 'hidden', maxWidth: '100%' }}>
       <style>{`
-        @keyframes demo-scroll {
-          0%   { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
-        }
-        .demo-track {
-          display: flex;
-          gap: 12px;
-          width: max-content;
-          will-change: transform;
-          animation: demo-scroll ${CAROUSEL_DURATION}s linear infinite;
-        }
-        .demo-track.paused {
-          animation-play-state: paused;
-        }
-        .demo-card {
-          flex-shrink: 0;
-          background: none;
-          border: 1px solid #2a2a3a;
-          border-radius: 10px;
-          padding: 0;
-          cursor: pointer;
-          overflow: hidden;
-          background-color: #1a1a24;
-          transition: border-color 0.15s, transform 0.15s;
-        }
-        .demo-card:hover {
-          border-color: #7c3aed;
-          transform: translateY(-2px);
-        }
         .gama-scroll::-webkit-scrollbar { display: none; }
         .tot-btn:hover     { border-color: #7c3aed !important; }
         .search-input:focus { border-color: #7c3aed !important; }
@@ -607,62 +520,6 @@ export default function GamalyticPage() {
       </div>
 
       <div style={{ padding: '28px 32px' }}>
-
-        {/* ── Demo Vitrini carousel ── */}
-        {demos.length > 0 && (
-          <div style={{ marginBottom: '28px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
-              <div style={{ fontSize: '12px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.07em' }}>
-                Demo Vitrini
-              </div>
-              <div style={{ display: 'flex', gap: '6px' }}>
-                <button
-                  onClick={() => seekCarousel('left')}
-                  style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: '#1a1a24', border: '1px solid #2a2a3a', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#64748b' }}
-                >
-                  <ChevronLeft size={14} />
-                </button>
-                <button
-                  onClick={() => seekCarousel('right')}
-                  style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: '#1a1a24', border: '1px solid #2a2a3a', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#64748b' }}
-                >
-                  <ChevronRight size={14} />
-                </button>
-              </div>
-            </div>
-
-            {/* Overflow mask with subtle edge fade */}
-            <div style={{ overflow: 'hidden', width: '100%', borderRadius: '10px', maskImage: 'linear-gradient(90deg, transparent 0%, black 4%, black 96%, transparent 100%)' }}>
-              <div
-                ref={trackRef}
-                className={`demo-track${carouselPaused ? ' paused' : ''}`}
-                onMouseEnter={() => setCarouselPaused(true)}
-                onMouseLeave={() => setCarouselPaused(false)}
-              >
-                {carouselItems.map((demo, i) => (
-                  <button
-                    key={`${demo.appid}-${i}`}
-                    className="demo-card"
-                    onClick={() => handleDemoClick(demo)}
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={demo.image_url}
-                      alt={demo.name}
-                      width={231}
-                      height={87}
-                      style={{ display: 'block', objectFit: 'cover' }}
-                      onError={e => { (e.currentTarget.closest('.demo-card') as HTMLElement | null)?.style && ((e.currentTarget.closest('.demo-card') as HTMLElement).style.display = 'none') }}
-                    />
-                    <div style={{ padding: '6px 8px', fontSize: '11px', fontWeight: 500, color: '#64748b', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '231px' }}>
-                      {demo.fullgame_name ?? demo.name}
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* ── Search bar + Tales of the Trade button ── */}
         <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', alignItems: 'center' }}>
