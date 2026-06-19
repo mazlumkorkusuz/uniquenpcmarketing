@@ -75,7 +75,7 @@ const HISTORY_KEY = 'gamalytic_search_history'
 const MAX_HISTORY = 25
 const TOT_APPID   = 4416430
 const TOT_NAME    = 'Tales of the Trade'
-const CAROUSEL_DURATION = 60
+const CAROUSEL_DURATION = 120
 
 const COUNTRY_NAMES: Record<string, string> = {
   cn: 'Çin', us: 'ABD', ru: 'Rusya', de: 'Almanya', gb: 'İngiltere',
@@ -305,21 +305,22 @@ export default function GamalyticPage() {
   function seekCarousel(dir: 'left' | 'right') {
     const el = trackRef.current
     if (!el) return
-    const halfW = el.scrollWidth / 2
-    if (halfW <= 0) return
+    // One copy = one-third of total track width (3 copies in DOM)
+    const oneThird = el.scrollWidth / 3
+    if (oneThird <= 0) return
     let currentOffset = 0
     try {
       const m = new DOMMatrix(window.getComputedStyle(el).transform)
-      currentOffset = ((-m.m41) % halfW + halfW) % halfW
+      currentOffset = ((-m.m41) % oneThird + oneThird) % oneThird
     } catch {}
-    const STEP = 220
+    const STEP = 252 // 240px card + 12px gap
     const newOffset = dir === 'right'
-      ? (currentOffset + STEP) % halfW
-      : (currentOffset - STEP + halfW) % halfW
-    const delay = (newOffset / halfW) * CAROUSEL_DURATION
-    // Remove then reapply — the only reliable way to seek a CSS animation
+      ? (currentOffset + STEP) % oneThird
+      : (currentOffset - STEP + oneThird) % oneThird
+    const delay = (newOffset / oneThird) * CAROUSEL_DURATION
+    // Remove then reapply — the only reliable way to seek a running CSS animation
     el.style.animation = 'none'
-    void el.offsetWidth // force reflow so removal is committed
+    void el.offsetWidth // force reflow
     el.style.animation = `demo-scroll ${CAROUSEL_DURATION}s linear -${delay}s infinite`
     el.style.animationPlayState = carouselPaused ? 'paused' : 'running'
   }
@@ -550,14 +551,14 @@ export default function GamalyticPage() {
 
   // ── Search view ────────────────────────────────────────────────────────────────
 
-  const carouselItems = demos.length > 0 ? [...demos, ...demos] : []
+  const carouselItems = demos.length > 0 ? [...demos, ...demos, ...demos] : []
 
   return (
     <div style={{ overflowX: 'hidden', maxWidth: '100%' }}>
       <style>{`
         @keyframes demo-scroll {
           0%   { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
+          100% { transform: translateX(-33.333%); }
         }
         .demo-track {
           display: flex;
@@ -565,6 +566,7 @@ export default function GamalyticPage() {
           width: max-content;
           will-change: transform;
           animation: demo-scroll ${CAROUSEL_DURATION}s linear infinite;
+          animation-iteration-count: infinite;
         }
         .demo-track.paused { animation-play-state: paused; }
         .demo-card {
@@ -637,7 +639,7 @@ export default function GamalyticPage() {
                     <img
                       src={demo.image_url}
                       alt={demo.name}
-                      width={231}
+                      width={240}
                       height={87}
                       style={{ display: 'block', objectFit: 'cover' }}
                       onError={e => {
