@@ -75,7 +75,7 @@ const HISTORY_KEY = 'gamalytic_search_history'
 const MAX_HISTORY = 25
 const TOT_APPID   = 4416430
 const TOT_NAME    = 'Tales of the Trade'
-const CAROUSEL_DURATION = 40
+const CAROUSEL_DURATION = 60
 
 const COUNTRY_NAMES: Record<string, string> = {
   cn: 'Çin', us: 'ABD', ru: 'Rusya', de: 'Almanya', gb: 'İngiltere',
@@ -316,7 +316,12 @@ export default function GamalyticPage() {
     const newOffset = dir === 'right'
       ? (currentOffset + STEP) % halfW
       : (currentOffset - STEP + halfW) % halfW
-    el.style.animationDelay = `-${(newOffset / halfW) * CAROUSEL_DURATION}s`
+    const delay = (newOffset / halfW) * CAROUSEL_DURATION
+    // Remove then reapply — the only reliable way to seek a CSS animation
+    el.style.animation = 'none'
+    void el.offsetWidth // force reflow so removal is committed
+    el.style.animation = `demo-scroll ${CAROUSEL_DURATION}s linear -${delay}s infinite`
+    el.style.animationPlayState = carouselPaused ? 'paused' : 'running'
   }
 
   const removeFromHistory = useCallback((appid: number) => {
