@@ -94,7 +94,7 @@ const navItems: NavItem[] = [
     ],
   },
   { href: '/steam-kuratorleri', label: 'Steam Küratörleri', icon: Star },
-  { href: '/gamalytic', label: 'Gamalytic', icon: BarChart2 },
+  { href: '/gamalytic', label: 'Gamalytic', icon: BarChart2, imageSrc: 'https://gamalytic.com/gamalytic_logo.svg' },
   { href: '/news', label: 'News', icon: Newspaper },
 ]
 

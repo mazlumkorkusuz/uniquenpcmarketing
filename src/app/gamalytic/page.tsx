@@ -511,8 +511,9 @@ export default function GamalyticPage() {
 
       {/* Page header */}
       <div style={{ padding: '28px 32px 24px', borderBottom: '1px solid #2a2a3a', backgroundColor: '#13131a', display: 'flex', alignItems: 'center', gap: '14px' }}>
-        <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: 'linear-gradient(135deg, #7c3aed, #4f46e5)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 16px rgba(124,58,237,0.3)', flexShrink: 0 }}>
-          <BarChart2 size={22} color="white" />
+        <div style={{ width: '44px', height: '44px', borderRadius: '12px', overflow: 'hidden', backgroundColor: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 16px rgba(0,0,0,0.3)', flexShrink: 0, padding: '6px' }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="https://gamalytic.com/gamalytic_logo.svg" alt="Gamalytic" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
         </div>
         <div>
           <h1 style={{ fontSize: '22px', fontWeight: 800, color: '#f1f5f9', margin: 0 }}>Gamalytic</h1>
