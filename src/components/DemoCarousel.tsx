@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 
 interface DemoItem {
   appid: number
@@ -15,7 +15,7 @@ interface Props {
 
 export default function DemoCarousel({ onSelect }: Props) {
   const [demos, setDemos] = useState<DemoItem[]>([])
-  const trackRef = useRef<HTMLDivElement>(null)
+  const [isPaused, setIsPaused] = useState(false)
 
   useEffect(() => {
     fetch('/api/steam-demos')
@@ -26,20 +26,14 @@ export default function DemoCarousel({ onSelect }: Props) {
 
   if (!demos.length) return null
 
-  const track = [...demos, ...demos]
-
-  const pause  = () => { if (trackRef.current) trackRef.current.style.animationPlayState = 'paused' }
-  const resume = () => { if (trackRef.current) trackRef.current.style.animationPlayState = 'running' }
+  const track = [...demos, ...demos, ...demos, ...demos]
 
   return (
     <div style={{ marginBottom: '28px' }}>
       <style>{`
         @keyframes marquee {
-          0%   { transform: translateX(0px); }
+          0%   { transform: translateX(0); }
           100% { transform: translateX(-50%); }
-        }
-        .demo-marquee-track {
-          animation: marquee 90s linear infinite;
         }
         .demo-marquee-card {
           flex-shrink: 0;
@@ -60,13 +54,18 @@ export default function DemoCarousel({ onSelect }: Props) {
         🎮 Demo Vitrini
       </div>
 
-      <div style={{ overflow: 'hidden', width: '100%' }}>
+      <div style={{ overflow: 'hidden', width: '100%', position: 'relative' }}>
         <div
-          ref={trackRef}
-          className="demo-marquee-track"
-          style={{ display: 'flex', gap: '12px', width: 'max-content' }}
-          onMouseEnter={pause}
-          onMouseLeave={resume}
+          style={{
+            display: 'flex',
+            flexShrink: 0,
+            gap: '12px',
+            animation: 'marquee 150s linear infinite',
+            animationPlayState: isPaused ? 'paused' : 'running',
+            width: 'max-content',
+          }}
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
         >
           {track.map((demo, i) => (
             <button
