@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react'
 import Image from 'next/image'
+import DemoCarousel from '@/components/DemoCarousel'
 import {
   BarChart2, Search, X, Star, Clock, Users, DollarSign,
   TrendingUp, Heart, ChevronLeft, Tag, Globe,
@@ -520,6 +521,8 @@ export default function GamalyticPage() {
       </div>
 
       <div style={{ padding: '28px 32px' }}>
+
+        <DemoCarousel onSelect={handleSelectGame} />
 
         {/* ── Search bar + Tales of the Trade button ── */}
         <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', alignItems: 'center' }}>
