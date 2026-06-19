@@ -59,9 +59,9 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  // Exclude: Next.js internals, static image optimisation, favicon,
-  // and all common static file extensions served from /public
+  // Exclude: API routes, Next.js internals, static image optimisation,
+  // specific public assets, and common static file extensions
   matcher: [
-    '/((?!_next/static|_next/image|favicon\\.ico|.*\\.(?:png|jpg|jpeg|gif|svg|ico|webp|woff2?|ttf|eot|otf|mp4|mp3|pdf)$).*)',
+    '/((?!api/|_next/|icons/|favicon\\.ico|logo\\.png|uniqlogo\\.png|.*\\.(?:png|jpg|jpeg|gif|svg|ico|webp|woff2?|ttf|eot|otf|mp4|mp3|pdf)$).*)',
   ],
 }
