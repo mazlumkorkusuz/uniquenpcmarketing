@@ -4,7 +4,7 @@ import { useState, useRef, useCallback, useEffect } from 'react'
 import Image from 'next/image'
 import {
   BarChart2, Search, X, Star, Clock, Users, DollarSign,
-  TrendingUp, Heart, ChevronLeft, ChevronRight, Tag, Globe,
+  TrendingUp, Heart, ChevronLeft, Tag, Globe,
   ChevronDown, ChevronUp, ExternalLink, Gamepad2, Cpu,
 } from 'lucide-react'
 import {
@@ -21,14 +21,6 @@ interface SteamItem {
   price?: { final: number; initial: number; discount_percent: number }
   metascore?: string
   platforms?: { windows: boolean; mac: boolean; linux: boolean }
-}
-
-interface DemoItem {
-  appid: number
-  name: string
-  capsuleImage: string
-  fullGameAppId?: number
-  fullGameName?: string
 }
 
 interface HistoryItem {
@@ -73,11 +65,8 @@ interface GameData {
 const HISTORY_KEY = 'gamalytic_search_history'
 const MAX_HISTORY = 25
 
-const TOT_ITEM: SteamItem = {
-  id: 4416430,
-  name: 'Tales of the Trade',
-  tiny_image: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4416430/header.jpg',
-}
+const TOT_APPID = 4416430
+const TOT_NAME  = 'Tales of the Trade'
 
 const COUNTRY_NAMES: Record<string, string> = {
   cn: 'Çin', us: 'ABD', ru: 'Rusya', de: 'Almanya', gb: 'İngiltere',
@@ -235,51 +224,16 @@ export default function GamalyticPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // Demo carousel state
-  const [demos, setDemos] = useState<DemoItem[]>([])
-  const [demoError, setDemoError] = useState(false)
-  const [carouselPaused, setCarouselPaused] = useState(false)
-  const carouselRef = useRef<HTMLDivElement>(null)
-
   // Search history state
   const [searchHistory, setSearchHistory] = useState<HistoryItem[]>([])
 
-  // ── Effects ──────────────────────────────────────────────────────────────────
-
-  // Load search history from localStorage
+  // Load search history from localStorage on mount
   useEffect(() => {
     try {
       const raw = localStorage.getItem(HISTORY_KEY)
       if (raw) setSearchHistory(JSON.parse(raw))
     } catch {}
   }, [])
-
-  // Fetch demo carousel data
-  useEffect(() => {
-    fetch('/api/steam-demos')
-      .then(r => r.json())
-      .then(d => {
-        const list: DemoItem[] = d.demos ?? []
-        if (list.length === 0) setDemoError(true)
-        else setDemos(list)
-      })
-      .catch(() => setDemoError(true))
-  }, [])
-
-  // Carousel auto-scroll
-  useEffect(() => {
-    if (!demos.length || carouselPaused) return
-    const el = carouselRef.current
-    if (!el) return
-    const id = setInterval(() => {
-      if (el.scrollLeft + el.clientWidth >= el.scrollWidth - 10) {
-        el.scrollTo({ left: 0, behavior: 'smooth' })
-      } else {
-        el.scrollBy({ left: 216, behavior: 'smooth' })
-      }
-    }, 2800)
-    return () => clearInterval(id)
-  }, [demos.length, carouselPaused])
 
   // ── Actions ───────────────────────────────────────────────────────────────────
 
@@ -298,7 +252,6 @@ export default function GamalyticPage() {
   }, [])
 
   const handleSelectGame = useCallback(async (item: SteamItem) => {
-    // Persist to search history (functional update = always fresh state)
     setSearchHistory(prev => {
       const entry: HistoryItem = { appid: item.id, name: item.name, imageUrl: item.tiny_image }
       const next = [entry, ...prev.filter(h => h.appid !== item.id)].slice(0, MAX_HISTORY)
@@ -320,14 +273,6 @@ export default function GamalyticPage() {
 
   const handleBack = useCallback(() => { setSelected(null); setGameData(null); setError(null) }, [])
 
-  const handleDemoClick = useCallback((demo: DemoItem) => {
-    handleSelectGame({
-      id:          demo.fullGameAppId ?? demo.appid,
-      name:        demo.fullGameName  ?? demo.name,
-      tiny_image:  demo.capsuleImage,
-    })
-  }, [handleSelectGame])
-
   const removeFromHistory = useCallback((appid: number) => {
     setSearchHistory(prev => {
       const next = prev.filter(h => h.appid !== appid)
@@ -336,11 +281,15 @@ export default function GamalyticPage() {
     })
   }, [])
 
-  function scrollCarousel(dir: 'left' | 'right') {
-    carouselRef.current?.scrollBy({ left: dir === 'left' ? -432 : 432, behavior: 'smooth' })
-  }
+  const loadTalesOfTheTrade = useCallback(() => {
+    handleSelectGame({
+      id: TOT_APPID,
+      name: TOT_NAME,
+      tiny_image: `https://cdn.akamai.steamstatic.com/steam/apps/${TOT_APPID}/header.jpg`,
+    })
+  }, [handleSelectGame])
 
-  // ── Detail view (unchanged) ───────────────────────────────────────────────────
+  // ── Detail view ───────────────────────────────────────────────────────────────
 
   if (selected) {
     const d = gameData
@@ -552,7 +501,13 @@ export default function GamalyticPage() {
 
   return (
     <div>
-      <style>{`.gama-scroll::-webkit-scrollbar{display:none}`}</style>
+      <style>{`
+        .gama-scroll::-webkit-scrollbar { display: none; }
+        .tot-btn:hover { border-color: #7c3aed !important; }
+        .search-input:focus { border-color: #7c3aed !important; }
+        .history-card:hover { border-color: #7c3aed !important; }
+        .result-card:hover { border-color: #7c3aed !important; transform: translateY(-2px); }
+      `}</style>
 
       {/* Page header */}
       <div style={{ padding: '28px 32px 24px', borderBottom: '1px solid #2a2a3a', backgroundColor: '#13131a', display: 'flex', alignItems: 'center', gap: '14px' }}>
@@ -567,76 +522,6 @@ export default function GamalyticPage() {
 
       <div style={{ padding: '28px 32px' }}>
 
-        {/* ── Demo Vitrini carousel ── */}
-        {(demos.length > 0 || demoError) && (
-          <div style={{ marginBottom: '28px' }}>
-            <div style={{ fontSize: '12px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '12px' }}>
-              Demo Vitrini
-            </div>
-            {demoError ? (
-              <div style={{ padding: '14px 16px', backgroundColor: '#1a1a24', border: '1px solid #2a2a3a', borderRadius: '10px', fontSize: '13px', color: '#64748b' }}>
-                Demolar yüklenemedi
-              </div>
-            ) : (
-              <div style={{ position: 'relative' }}>
-                {/* Left arrow */}
-                <button
-                  onClick={() => scrollCarousel('left')}
-                  style={{ position: 'absolute', left: '-14px', top: '50%', transform: 'translateY(-50%)', zIndex: 2, width: '28px', height: '28px', borderRadius: '50%', backgroundColor: '#1a1a24', border: '1px solid #2a2a3a', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#94a3b8' }}
-                >
-                  <ChevronLeft size={14} />
-                </button>
-
-                {/* Scroll container */}
-                <div
-                  ref={carouselRef}
-                  className="gama-scroll"
-                  onMouseEnter={() => setCarouselPaused(true)}
-                  onMouseLeave={() => setCarouselPaused(false)}
-                  style={{ display: 'flex', gap: '12px', overflowX: 'auto', scrollbarWidth: 'none', padding: '4px 2px', scrollBehavior: 'smooth' }}
-                >
-                  {demos.map(demo => (
-                    <button
-                      key={demo.appid}
-                      onClick={() => handleDemoClick(demo)}
-                      style={{ flexShrink: 0, width: '204px', background: 'none', border: '1px solid #2a2a3a', borderRadius: '10px', padding: 0, cursor: 'pointer', overflow: 'hidden', backgroundColor: '#1a1a24', transition: 'border-color 0.15s, transform 0.15s' }}
-                      onMouseEnter={e => { e.currentTarget.style.borderColor = '#7c3aed'; e.currentTarget.style.transform = 'translateY(-2px)' }}
-                      onMouseLeave={e => { e.currentTarget.style.borderColor = '#2a2a3a'; e.currentTarget.style.transform = 'translateY(0)' }}
-                    >
-                      {/* Capsule image with Demo badge */}
-                      <div style={{ position: 'relative', width: '100%', aspectRatio: '231/87' }}>
-                        <Image
-                          src={demo.capsuleImage}
-                          alt={demo.name}
-                          fill
-                          style={{ objectFit: 'cover' }}
-                          sizes="204px"
-                          onError={() => {}}
-                        />
-                        <span style={{ position: 'absolute', top: '6px', left: '6px', backgroundColor: '#22c55e', color: '#fff', fontSize: '9px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', letterSpacing: '0.04em' }}>
-                          DEMO
-                        </span>
-                      </div>
-                      {/* Name */}
-                      <div style={{ padding: '8px 10px', fontSize: '11px', fontWeight: 500, color: '#94a3b8', textAlign: 'left', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {demo.fullGameName ?? demo.name}
-                      </div>
-                    </button>
-                  ))}
-                </div>
-
-                {/* Right arrow */}
-                <button
-                  onClick={() => scrollCarousel('right')}
-                  style={{ position: 'absolute', right: '-14px', top: '50%', transform: 'translateY(-50%)', zIndex: 2, width: '28px', height: '28px', borderRadius: '50%', backgroundColor: '#1a1a24', border: '1px solid #2a2a3a', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#94a3b8' }}
-                >
-                  <ChevronRight size={14} />
-                </button>
-              </div>
-            )}
-          </div>
-        )}
-
         {/* ── Search bar + Tales of the Trade button ── */}
         <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', alignItems: 'center' }}>
           {/* Search input */}
@@ -645,15 +530,17 @@ export default function GamalyticPage() {
               <Search size={17} color="#64748b" />
             </div>
             <input
-              type="text" value={query}
+              className="search-input"
+              type="text"
+              value={query}
               onChange={e => handleSearch(e.target.value)}
-              style={{ width: '100%', boxSizing: 'border-box', backgroundColor: '#1a1a24', border: '1px solid #2a2a3a', borderRadius: '12px', padding: '13px 42px 13px 44px', fontSize: '15px', color: '#f1f5f9', outline: 'none' }}
-              onFocus={e => { e.currentTarget.style.borderColor = '#7c3aed' }}
-              onBlur={e => { e.currentTarget.style.borderColor = '#2a2a3a' }}
+              style={{ width: '100%', boxSizing: 'border-box', backgroundColor: '#1a1a24', border: '1px solid #2a2a3a', borderRadius: '12px', padding: '13px 42px 13px 44px', fontSize: '15px', color: '#f1f5f9', outline: 'none', transition: 'border-color 0.15s' }}
             />
             {query && (
-              <button onClick={() => { setQuery(''); setResults([]) }}
-                style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#64748b', display: 'flex' }}>
+              <button
+                onClick={() => { setQuery(''); setResults([]) }}
+                style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#64748b', display: 'flex', padding: 0 }}
+              >
                 <X size={16} />
               </button>
             )}
@@ -661,22 +548,14 @@ export default function GamalyticPage() {
 
           {/* Tales of the Trade quick-load button */}
           <button
-            onClick={() => handleSelectGame(TOT_ITEM)}
-            title="Tales of the Trade'i yükle"
-            style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: '#1a1a24', border: '1px solid #2a2a3a', borderRadius: '12px', padding: '6px 10px 6px 6px', cursor: 'pointer', transition: 'border-color 0.15s' }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = '#7c3aed' }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = '#2a2a3a' }}
+            className="tot-btn"
+            onClick={loadTalesOfTheTrade}
+            title="Tales of the Trade verilerini yükle"
+            style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: '#1a1a24', border: '1px solid #2a2a3a', borderRadius: '12px', padding: '10px 16px', cursor: 'pointer', transition: 'border-color 0.15s' }}
           >
-            <div style={{ position: 'relative', width: '80px', height: '30px', borderRadius: '6px', overflow: 'hidden', flexShrink: 0 }}>
-              <Image
-                src={TOT_ITEM.tiny_image}
-                alt="Tales of the Trade"
-                fill
-                style={{ objectFit: 'cover' }}
-                sizes="80px"
-              />
-            </div>
-            <span style={{ fontSize: '12px', fontWeight: 600, color: '#94a3b8', whiteSpace: 'nowrap' }}>Tales of the Trade</span>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/uniqlogo.png" alt="Unique NPC" style={{ width: '24px', height: '24px', objectFit: 'contain', borderRadius: '4px' }} />
+            <span style={{ fontSize: '13px', fontWeight: 600, color: '#94a3b8', whiteSpace: 'nowrap' }}>Tales of the Trade</span>
           </button>
         </div>
 
@@ -688,15 +567,14 @@ export default function GamalyticPage() {
             </div>
             <div
               className="gama-scroll"
-              style={{ display: 'flex', gap: '10px', overflowX: 'auto', scrollbarWidth: 'none', padding: '2px' }}
+              style={{ display: 'flex', gap: '10px', overflowX: 'auto', scrollbarWidth: 'none', paddingBottom: '4px' }}
             >
               {searchHistory.map(item => (
                 <div key={item.appid} style={{ flexShrink: 0, position: 'relative' }}>
                   <button
+                    className="history-card"
                     onClick={() => handleSelectGame({ id: item.appid, name: item.name, tiny_image: item.imageUrl })}
                     style={{ display: 'flex', flexDirection: 'column', gap: '6px', backgroundColor: '#1a1a24', border: '1px solid #2a2a3a', borderRadius: '10px', padding: '6px 6px 8px', cursor: 'pointer', width: '140px', transition: 'border-color 0.15s', textAlign: 'left' }}
-                    onMouseEnter={e => { e.currentTarget.style.borderColor = '#7c3aed' }}
-                    onMouseLeave={e => { e.currentTarget.style.borderColor = '#2a2a3a' }}
                   >
                     <div style={{ position: 'relative', width: '100%', height: '50px', borderRadius: '6px', overflow: 'hidden', backgroundColor: '#13131a' }}>
                       <Image src={item.imageUrl} alt={item.name} fill style={{ objectFit: 'cover' }} sizes="140px" />
@@ -705,10 +583,9 @@ export default function GamalyticPage() {
                       {item.name}
                     </div>
                   </button>
-                  {/* Remove button */}
                   <button
                     onClick={e => { e.stopPropagation(); removeFromHistory(item.appid) }}
-                    style={{ position: 'absolute', top: '2px', right: '2px', width: '18px', height: '18px', borderRadius: '50%', backgroundColor: '#2a2a3a', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#64748b' }}
+                    style={{ position: 'absolute', top: '2px', right: '2px', width: '18px', height: '18px', borderRadius: '50%', backgroundColor: '#2a2a3a', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#64748b', padding: 0 }}
                   >
                     <X size={10} />
                   </button>
@@ -727,13 +604,15 @@ export default function GamalyticPage() {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '16px' }}>
               {results.map(item => {
                 const disc = item.price?.discount_percent && item.price.discount_percent > 0
-                const fin = item.price ? (item.price.final / 100).toFixed(2) : null
+                const fin  = item.price ? (item.price.final   / 100).toFixed(2) : null
                 const orig = item.price ? (item.price.initial / 100).toFixed(2) : null
                 return (
-                  <button key={item.id} onClick={() => handleSelectGame(item)}
+                  <button
+                    key={item.id}
+                    className="result-card"
+                    onClick={() => handleSelectGame(item)}
                     style={{ background: 'none', border: '1px solid #2a2a3a', borderRadius: '12px', padding: 0, cursor: 'pointer', textAlign: 'left', overflow: 'hidden', backgroundColor: '#1a1a24', transition: 'border-color 0.2s, transform 0.15s' }}
-                    onMouseEnter={e => { e.currentTarget.style.borderColor = '#7c3aed'; e.currentTarget.style.transform = 'translateY(-2px)' }}
-                    onMouseLeave={e => { e.currentTarget.style.borderColor = '#2a2a3a'; e.currentTarget.style.transform = 'translateY(0)' }}>
+                  >
                     <div style={{ position: 'relative', width: '100%', height: '120px', overflow: 'hidden', borderBottom: '1px solid #2a2a3a' }}>
                       <Image src={item.tiny_image} alt={item.name} fill style={{ objectFit: 'cover' }} sizes="280px" />
                     </div>
@@ -751,8 +630,8 @@ export default function GamalyticPage() {
                       {item.platforms && (
                         <div style={{ display: 'flex', gap: '6px', marginTop: '8px' }}>
                           {item.platforms.windows && <span style={{ fontSize: '10px', color: '#60a5fa', backgroundColor: 'rgba(59,130,246,0.1)', borderRadius: '4px', padding: '1px 6px' }}>Win</span>}
-                          {item.platforms.mac    && <span style={{ fontSize: '10px', color: '#94a3b8', backgroundColor: 'rgba(148,163,184,0.1)', borderRadius: '4px', padding: '1px 6px' }}>Mac</span>}
-                          {item.platforms.linux  && <span style={{ fontSize: '10px', color: '#fbbf24', backgroundColor: 'rgba(245,158,11,0.1)', borderRadius: '4px', padding: '1px 6px' }}>Linux</span>}
+                          {item.platforms.mac     && <span style={{ fontSize: '10px', color: '#94a3b8', backgroundColor: 'rgba(148,163,184,0.1)', borderRadius: '4px', padding: '1px 6px' }}>Mac</span>}
+                          {item.platforms.linux   && <span style={{ fontSize: '10px', color: '#fbbf24', backgroundColor: 'rgba(245,158,11,0.1)', borderRadius: '4px', padding: '1px 6px' }}>Linux</span>}
                         </div>
                       )}
                     </div>
