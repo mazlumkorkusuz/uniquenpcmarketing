@@ -30,7 +30,7 @@ export default function DemoCarousel({ onSelect }: Props) {
     if (!container || isPaused) return
     let frame: number
     const scroll = () => {
-      container.scrollLeft += 0.5
+      container.scrollLeft += 1.2
       if (container.scrollLeft >= container.scrollWidth / 2) {
         container.scrollLeft = 0
       }
