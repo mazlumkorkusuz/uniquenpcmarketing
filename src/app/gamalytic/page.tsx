@@ -348,7 +348,7 @@ export default function GamalyticPage() {
     const features = [...(d?.features ?? []), ...(s?.categories ?? [])].filter((v, i, a) => a.indexOf(v) === i)
 
     return (
-      <div>
+      <div style={{ overflowX: 'hidden', maxWidth: '100%' }}>
         <div style={{ padding: '16px 28px', borderBottom: '1px solid #2a2a3a', backgroundColor: '#13131a', display: 'flex', alignItems: 'center', gap: '12px' }}>
           <button onClick={handleBack} style={{ display: 'flex', alignItems: 'center', gap: '5px', background: 'none', border: '1px solid #2a2a3a', borderRadius: '8px', color: '#94a3b8', fontSize: '12px', padding: '5px 11px', cursor: 'pointer' }}>
             <ChevronLeft size={14} /> Geri
@@ -550,7 +550,7 @@ export default function GamalyticPage() {
   const carouselItems = demos.length > 0 ? [...demos, ...demos] : []
 
   return (
-    <div>
+    <div style={{ overflowX: 'hidden', maxWidth: '100%' }}>
       <style>{`
         @keyframes demo-scroll {
           0%   { transform: translateX(0); }
@@ -625,7 +625,7 @@ export default function GamalyticPage() {
             </div>
 
             {/* Overflow mask with subtle edge fade */}
-            <div style={{ overflow: 'hidden', borderRadius: '10px', maskImage: 'linear-gradient(90deg, transparent 0%, black 4%, black 96%, transparent 100%)' }}>
+            <div style={{ overflow: 'hidden', width: '100%', borderRadius: '10px', maskImage: 'linear-gradient(90deg, transparent 0%, black 4%, black 96%, transparent 100%)' }}>
               <div
                 ref={trackRef}
                 className={`demo-track${carouselPaused ? ' paused' : ''}`}

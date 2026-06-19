@@ -87,10 +87,13 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           style={{
             marginLeft: '260px',
             flex: 1,
+            minWidth: 0,           /* prevent flex child from overflowing */
+            maxWidth: 'calc(100vw - 260px)',
             minHeight: '100vh',
             backgroundColor: '#0a0a0f',
             display: 'flex',
             flexDirection: 'column',
+            overflowX: 'hidden',
           }}
         >
           {children}
