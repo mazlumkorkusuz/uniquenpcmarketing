@@ -224,6 +224,9 @@ export default function GamalyticPage() {
   const [loading, setLoading]     = useState(false)
   const [error, setError]         = useState<string | null>(null)
 
+  // Demo carousel
+  const [demos, setDemos] = useState<{ appid: number; name: string; fullgame_appid: number | null; image_url?: string }[]>([])
+
   // Search history
   const [searchHistory, setSearchHistory] = useState<HistoryItem[]>([])
 
@@ -234,6 +237,13 @@ export default function GamalyticPage() {
       const raw = localStorage.getItem(HISTORY_KEY)
       if (raw) setSearchHistory(JSON.parse(raw))
     } catch {}
+  }, [])
+
+  useEffect(() => {
+    fetch('/api/steam-demos')
+      .then(r => r.json())
+      .then(data => { if (Array.isArray(data) && data.length) setDemos(data) })
+      .catch(() => {})
   }, [])
 
   // ── Actions ───────────────────────────────────────────────────────────────────
@@ -522,7 +532,24 @@ export default function GamalyticPage() {
 
       <div style={{ padding: '28px 32px' }}>
 
-        <DemoCarousel onSelect={handleSelectGame} />
+        {demos.length > 0 && (
+          <div style={{ marginBottom: '28px' }}>
+            <div style={{ fontSize: '12px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '10px' }}>
+              🎮 Demo Vitrini
+            </div>
+            <DemoCarousel
+              demos={demos}
+              onSelect={id => {
+                const demo = demos.find(d => (d.fullgame_appid || d.appid) === id)
+                handleSelectGame({
+                  id,
+                  name: demo?.name ?? '',
+                  tiny_image: `https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/${id}/capsule_231x87.jpg`,
+                })
+              }}
+            />
+          </div>
+        )}
 
         {/* ── Search bar + Tales of the Trade button ── */}
         <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', alignItems: 'center' }}>
