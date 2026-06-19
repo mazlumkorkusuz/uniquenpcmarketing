@@ -4,7 +4,7 @@ import { useState, useRef, useCallback, useEffect } from 'react'
 import Image from 'next/image'
 import {
   BarChart2, Search, X, Star, Clock, Users, DollarSign,
-  TrendingUp, Heart, ChevronLeft, Tag, Globe,
+  TrendingUp, Heart, ChevronLeft, ChevronRight, Tag, Globe,
   ChevronDown, ChevronUp, ExternalLink, Gamepad2, Cpu,
 } from 'lucide-react'
 import {
@@ -21,6 +21,12 @@ interface SteamItem {
   price?: { final: number; initial: number; discount_percent: number }
   metascore?: string
   platforms?: { windows: boolean; mac: boolean; linux: boolean }
+}
+
+interface DemoItem {
+  appid: number
+  name: string
+  image_url: string
 }
 
 interface HistoryItem {
@@ -64,9 +70,10 @@ interface GameData {
 
 const HISTORY_KEY = 'gamalytic_search_history'
 const MAX_HISTORY = 25
-
-const TOT_APPID = 4416430
-const TOT_NAME  = 'Tales of the Trade'
+const TOT_APPID   = 4416430
+const TOT_NAME    = 'Tales of the Trade'
+// Full loop duration in seconds — increase to slow down
+const CAROUSEL_DURATION = 40
 
 const COUNTRY_NAMES: Record<string, string> = {
   cn: 'Çin', us: 'ABD', ru: 'Rusya', de: 'Almanya', gb: 'İngiltere',
@@ -213,26 +220,39 @@ function Collapsible({ title, icon: Icon, children }: {
 
 export default function GamalyticPage() {
   // Search state
-  const [query, setQuery] = useState('')
+  const [query, setQuery]     = useState('')
   const [results, setResults] = useState<SteamItem[]>([])
   const [searching, setSearching] = useState(false)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   // Game detail state
-  const [selected, setSelected] = useState<SteamItem | null>(null)
-  const [gameData, setGameData] = useState<GameData | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [selected, setSelected]   = useState<SteamItem | null>(null)
+  const [gameData, setGameData]   = useState<GameData | null>(null)
+  const [loading, setLoading]     = useState(false)
+  const [error, setError]         = useState<string | null>(null)
 
-  // Search history state
+  // Carousel state
+  const [demos, setDemos]               = useState<DemoItem[]>([])
+  const [carouselPaused, setCarouselPaused] = useState(false)
+  const trackRef = useRef<HTMLDivElement>(null)
+
+  // Search history
   const [searchHistory, setSearchHistory] = useState<HistoryItem[]>([])
 
-  // Load search history from localStorage on mount
+  // ── Effects ──────────────────────────────────────────────────────────────────
+
   useEffect(() => {
     try {
       const raw = localStorage.getItem(HISTORY_KEY)
       if (raw) setSearchHistory(JSON.parse(raw))
     } catch {}
+  }, [])
+
+  useEffect(() => {
+    fetch('/api/steam-demos')
+      .then(r => r.json())
+      .then(d => { if (d.demos?.length) setDemos(d.demos) })
+      .catch(() => {})
   }, [])
 
   // ── Actions ───────────────────────────────────────────────────────────────────
@@ -258,11 +278,10 @@ export default function GamalyticPage() {
       try { localStorage.setItem(HISTORY_KEY, JSON.stringify(next)) } catch {}
       return next
     })
-
     setSelected(item); setResults([]); setQuery('')
     setGameData(null); setError(null); setLoading(true)
     try {
-      const res = await fetch(`/api/gamalytic?appId=${item.id}`)
+      const res  = await fetch(`/api/gamalytic?appId=${item.id}`)
       const data = await res.json()
       if (data.error) throw new Error(data.error)
       setGameData(data)
@@ -272,6 +291,10 @@ export default function GamalyticPage() {
   }, [])
 
   const handleBack = useCallback(() => { setSelected(null); setGameData(null); setError(null) }, [])
+
+  const handleDemoClick = useCallback((demo: DemoItem) => {
+    handleSelectGame({ id: demo.appid, name: demo.name || String(demo.appid), tiny_image: demo.image_url })
+  }, [handleSelectGame])
 
   const removeFromHistory = useCallback((appid: number) => {
     setSearchHistory(prev => {
@@ -289,15 +312,39 @@ export default function GamalyticPage() {
     })
   }, [handleSelectGame])
 
+  // Seek carousel forward/backward by roughly one card width (220px).
+  // We read the current translateX from the computed style and adjust
+  // animation-delay so the keyframe animation jumps to the new position.
+  function seekCarousel(dir: 'left' | 'right') {
+    const el = trackRef.current
+    if (!el) return
+    const halfW = el.scrollWidth / 2
+    if (halfW <= 0) return
+
+    let currentOffset = 0
+    try {
+      const m = new DOMMatrix(window.getComputedStyle(el).transform)
+      currentOffset = ((-m.m41) % halfW + halfW) % halfW
+    } catch {}
+
+    const STEP = 220
+    const newOffset = dir === 'right'
+      ? (currentOffset + STEP) % halfW
+      : (currentOffset - STEP + halfW) % halfW
+
+    // Negative delay = start the animation mid-way through
+    el.style.animationDelay = `-${(newOffset / halfW) * CAROUSEL_DURATION}s`
+  }
+
   // ── Detail view ───────────────────────────────────────────────────────────────
 
   if (selected) {
     const d = gameData
     const s = d?.steam
     const headerImg = d?.headerImage ?? `https://cdn.akamai.steamstatic.com/steam/apps/${selected.id}/header.jpg`
-    const devs = s?.developers?.length ? s.developers : d?.developers ?? []
-    const pubs = s?.publishers?.length ? s.publishers : d?.publishers ?? []
-    const genres = [...(d?.genres ?? []), ...(s?.steamGenres ?? [])].filter((v, i, a) => a.indexOf(v) === i)
+    const devs    = s?.developers?.length ? s.developers : d?.developers ?? []
+    const pubs    = s?.publishers?.length ? s.publishers : d?.publishers ?? []
+    const genres  = [...(d?.genres ?? []), ...(s?.steamGenres ?? [])].filter((v, i, a) => a.indexOf(v) === i)
     const features = [...(d?.features ?? []), ...(s?.categories ?? [])].filter((v, i, a) => a.indexOf(v) === i)
 
     return (
@@ -499,14 +546,46 @@ export default function GamalyticPage() {
 
   // ── Search view ────────────────────────────────────────────────────────────────
 
+  // Duplicate demos for seamless CSS animation loop
+  const carouselItems = demos.length > 0 ? [...demos, ...demos] : []
+
   return (
     <div>
       <style>{`
+        @keyframes demo-scroll {
+          0%   { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        .demo-track {
+          display: flex;
+          gap: 12px;
+          width: max-content;
+          will-change: transform;
+          animation: demo-scroll ${CAROUSEL_DURATION}s linear infinite;
+        }
+        .demo-track.paused {
+          animation-play-state: paused;
+        }
+        .demo-card {
+          flex-shrink: 0;
+          background: none;
+          border: 1px solid #2a2a3a;
+          border-radius: 10px;
+          padding: 0;
+          cursor: pointer;
+          overflow: hidden;
+          background-color: #1a1a24;
+          transition: border-color 0.15s, transform 0.15s;
+        }
+        .demo-card:hover {
+          border-color: #7c3aed;
+          transform: translateY(-2px);
+        }
         .gama-scroll::-webkit-scrollbar { display: none; }
-        .tot-btn:hover { border-color: #7c3aed !important; }
+        .tot-btn:hover     { border-color: #7c3aed !important; }
         .search-input:focus { border-color: #7c3aed !important; }
         .history-card:hover { border-color: #7c3aed !important; }
-        .result-card:hover { border-color: #7c3aed !important; transform: translateY(-2px); }
+        .result-card:hover  { border-color: #7c3aed !important; transform: translateY(-2px); }
       `}</style>
 
       {/* Page header */}
@@ -522,9 +601,64 @@ export default function GamalyticPage() {
 
       <div style={{ padding: '28px 32px' }}>
 
+        {/* ── Demo Vitrini carousel ── */}
+        {demos.length > 0 && (
+          <div style={{ marginBottom: '28px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+              <div style={{ fontSize: '12px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.07em' }}>
+                Demo Vitrini
+              </div>
+              <div style={{ display: 'flex', gap: '6px' }}>
+                <button
+                  onClick={() => seekCarousel('left')}
+                  style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: '#1a1a24', border: '1px solid #2a2a3a', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#64748b' }}
+                >
+                  <ChevronLeft size={14} />
+                </button>
+                <button
+                  onClick={() => seekCarousel('right')}
+                  style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: '#1a1a24', border: '1px solid #2a2a3a', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#64748b' }}
+                >
+                  <ChevronRight size={14} />
+                </button>
+              </div>
+            </div>
+
+            {/* Overflow mask with subtle edge fade */}
+            <div style={{ overflow: 'hidden', borderRadius: '10px', maskImage: 'linear-gradient(90deg, transparent 0%, black 4%, black 96%, transparent 100%)' }}>
+              <div
+                ref={trackRef}
+                className={`demo-track${carouselPaused ? ' paused' : ''}`}
+                onMouseEnter={() => setCarouselPaused(true)}
+                onMouseLeave={() => setCarouselPaused(false)}
+              >
+                {carouselItems.map((demo, i) => (
+                  <button
+                    key={`${demo.appid}-${i}`}
+                    className="demo-card"
+                    onClick={() => handleDemoClick(demo)}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={demo.image_url}
+                      alt={demo.name}
+                      width={231}
+                      height={87}
+                      style={{ display: 'block', objectFit: 'cover' }}
+                      onError={e => { (e.currentTarget.closest('.demo-card') as HTMLElement | null)?.style && ((e.currentTarget.closest('.demo-card') as HTMLElement).style.display = 'none') }}
+                    />
+                    <div style={{ padding: '6px 8px', fontSize: '11px', fontWeight: 500, color: '#64748b', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '231px' }}>
+                      {demo.name}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* ── Search bar + Tales of the Trade button ── */}
         <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', alignItems: 'center' }}>
-          {/* Search input */}
           <div style={{ flex: 1, maxWidth: '560px', position: 'relative' }}>
             <div style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}>
               <Search size={17} color="#64748b" />
@@ -537,16 +671,13 @@ export default function GamalyticPage() {
               style={{ width: '100%', boxSizing: 'border-box', backgroundColor: '#1a1a24', border: '1px solid #2a2a3a', borderRadius: '12px', padding: '13px 42px 13px 44px', fontSize: '15px', color: '#f1f5f9', outline: 'none', transition: 'border-color 0.15s' }}
             />
             {query && (
-              <button
-                onClick={() => { setQuery(''); setResults([]) }}
-                style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#64748b', display: 'flex', padding: 0 }}
-              >
+              <button onClick={() => { setQuery(''); setResults([]) }}
+                style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#64748b', display: 'flex', padding: 0 }}>
                 <X size={16} />
               </button>
             )}
           </div>
 
-          {/* Tales of the Trade quick-load button */}
           <button
             className="tot-btn"
             onClick={loadTalesOfTheTrade}
@@ -559,16 +690,13 @@ export default function GamalyticPage() {
           </button>
         </div>
 
-        {/* ── Son Aramalar (search history) ── */}
+        {/* ── Son Aramalar ── */}
         {searchHistory.length > 0 && !query && !results.length && (
           <div style={{ marginBottom: '24px' }}>
             <div style={{ fontSize: '12px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '10px' }}>
               Son Aramalar
             </div>
-            <div
-              className="gama-scroll"
-              style={{ display: 'flex', gap: '10px', overflowX: 'auto', scrollbarWidth: 'none', paddingBottom: '4px' }}
-            >
+            <div className="gama-scroll" style={{ display: 'flex', gap: '10px', overflowX: 'auto', scrollbarWidth: 'none', paddingBottom: '4px' }}>
               {searchHistory.map(item => (
                 <div key={item.appid} style={{ flexShrink: 0, position: 'relative' }}>
                   <button
@@ -607,12 +735,8 @@ export default function GamalyticPage() {
                 const fin  = item.price ? (item.price.final   / 100).toFixed(2) : null
                 const orig = item.price ? (item.price.initial / 100).toFixed(2) : null
                 return (
-                  <button
-                    key={item.id}
-                    className="result-card"
-                    onClick={() => handleSelectGame(item)}
-                    style={{ background: 'none', border: '1px solid #2a2a3a', borderRadius: '12px', padding: 0, cursor: 'pointer', textAlign: 'left', overflow: 'hidden', backgroundColor: '#1a1a24', transition: 'border-color 0.2s, transform 0.15s' }}
-                  >
+                  <button key={item.id} className="result-card" onClick={() => handleSelectGame(item)}
+                    style={{ background: 'none', border: '1px solid #2a2a3a', borderRadius: '12px', padding: 0, cursor: 'pointer', textAlign: 'left', overflow: 'hidden', backgroundColor: '#1a1a24', transition: 'border-color 0.2s, transform 0.15s' }}>
                     <div style={{ position: 'relative', width: '100%', height: '120px', overflow: 'hidden', borderBottom: '1px solid #2a2a3a' }}>
                       <Image src={item.tiny_image} alt={item.name} fill style={{ objectFit: 'cover' }} sizes="280px" />
                     </div>

@@ -1,91 +1,93 @@
 import { NextResponse } from 'next/server'
+import fs from 'fs'
+import path from 'path'
 
 export interface DemoItem {
   appid: number
   name: string
-  capsuleImage: string
-  fullGameAppId?: number
-  fullGameName?: string
+  image_url: string
+}
+
+const CACHE_FILE = path.join(process.cwd(), 'public', 'demo_cache.json')
+
+function isTodayCache(): boolean {
+  try {
+    const stat = fs.statSync(CACHE_FILE)
+    const d = new Date(stat.mtime)
+    const now = new Date()
+    return (
+      d.getFullYear() === now.getFullYear() &&
+      d.getMonth()    === now.getMonth()    &&
+      d.getDate()     === now.getDate()
+    )
+  } catch { return false }
 }
 
 export async function GET() {
+  // Serve from today's cache if fresh
+  if (isTodayCache()) {
+    try {
+      const cached: DemoItem[] = JSON.parse(fs.readFileSync(CACHE_FILE, 'utf8'))
+      console.log('[steam-demos] cache hit:', cached.length)
+      return NextResponse.json({ demos: cached })
+    } catch (e) {
+      console.warn('[steam-demos] cache read error:', e)
+    }
+  }
+
+  // Fetch fresh data
   try {
     const url =
       'https://store.steampowered.com/search/results/?apptype=Demo&json=1&l=english&cc=US&count=20&start=0'
-    console.log('[steam-demos] Fetching:', url)
+    console.log('[steam-demos] fetching:', url)
 
-    const searchRes = await fetch(url, { next: { revalidate: 3600 } })
-    console.log('[steam-demos] Status:', searchRes.status)
+    const res = await fetch(url, { cache: 'no-store' })
+    if (!res.ok) throw new Error(`Steam ${res.status}`)
 
-    if (!searchRes.ok) {
-      console.error('[steam-demos] Fetch failed:', searchRes.status)
-      return NextResponse.json({ demos: [], error: `Steam returned ${searchRes.status}` })
-    }
+    const json = await res.json()
+    console.log('[steam-demos] keys:', Object.keys(json))
 
-    const searchJson = await searchRes.json()
-    console.log('[steam-demos] Response keys:', Object.keys(searchJson))
-
-    // Steam returns { items: [{ name, logo }] }
-    // items may also carry appid/id directly in other API versions
     const raw: Record<string, unknown>[] =
-      searchJson.items ?? searchJson.results ?? searchJson.apps ?? []
+      json.items ?? json.results ?? json.apps ?? []
 
-    console.log('[steam-demos] Raw items:', raw.length)
-    if (raw.length > 0) {
-      console.log('[steam-demos] First item:', JSON.stringify(raw[0]))
-    }
+    console.log('[steam-demos] raw count:', raw.length)
+    if (raw[0]) console.log('[steam-demos] first item:', JSON.stringify(raw[0]))
 
     const demos: DemoItem[] = raw
-      .slice(0, 15)
       .map(item => {
-        // Try direct id fields first; fall back to extracting from the logo/tiny_image URL
-        let id = Number(item.appid ?? item.id ?? 0)
-        if (!id) {
-          const logoUrl = String(item.logo ?? item.tiny_image ?? '')
-          const m = logoUrl.match(/\/apps\/(\d+)\//)
-          if (m) id = Number(m[1])
+        // id may be direct, or embedded in the logo/tiny_image URL
+        let appid = Number(item.appid ?? item.id ?? 0)
+        if (!appid) {
+          const logo = String(item.logo ?? item.tiny_image ?? '')
+          const m = logo.match(/\/apps\/(\d+)\//)
+          if (m) appid = Number(m[1])
         }
-        const name = String(item.name ?? '')
         return {
-          appid: id,
-          name,
-          capsuleImage: `https://cdn.akamai.steamstatic.com/steam/apps/${id}/capsule_231x87.jpg`,
+          appid,
+          name: String(item.name ?? ''),
+          image_url: `https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/${appid}/capsule_231x87.jpg`,
         }
       })
       .filter(d => d.appid > 0 && d.name)
 
-    console.log('[steam-demos] Parsed demos:', demos.map(d => `${d.appid}:${d.name}`))
+    console.log('[steam-demos] parsed:', demos.length)
 
-    // Resolve full-game appids in parallel (1-hour cache per app)
-    const resolved = await Promise.all(
-      demos.map(async demo => {
-        try {
-          const r = await fetch(
-            `https://store.steampowered.com/api/appdetails?appids=${demo.appid}&l=english`,
-            { next: { revalidate: 3600 } }
-          )
-          if (!r.ok) return demo
-          const json = await r.json()
-          const d = json?.[String(demo.appid)]?.data
-          if (d?.fullgame?.appid) {
-            console.log(`[steam-demos] ${demo.appid} → fullgame ${d.fullgame.appid}`)
-            return {
-              ...demo,
-              fullGameAppId: Number(d.fullgame.appid),
-              fullGameName: String(d.fullgame.name ?? demo.name),
-            }
-          }
-        } catch (e) {
-          console.error('[steam-demos] appdetails error for', demo.appid, e)
-        }
-        return demo
-      })
-    )
+    // Persist to daily cache
+    try {
+      fs.writeFileSync(CACHE_FILE, JSON.stringify(demos), 'utf8')
+    } catch (e) {
+      console.warn('[steam-demos] cache write error:', e)
+    }
 
-    console.log('[steam-demos] Done. With fullgame:', resolved.filter(d => d.fullGameAppId).length)
-    return NextResponse.json({ demos: resolved })
+    return NextResponse.json({ demos })
   } catch (e) {
-    console.error('[steam-demos] Unexpected error:', e)
-    return NextResponse.json({ demos: [], error: 'Failed to fetch demos' })
+    console.error('[steam-demos] fetch error:', e)
+    // Fall back to stale cache rather than returning nothing
+    try {
+      const stale: DemoItem[] = JSON.parse(fs.readFileSync(CACHE_FILE, 'utf8'))
+      console.log('[steam-demos] serving stale cache:', stale.length)
+      return NextResponse.json({ demos: stale })
+    } catch {}
+    return NextResponse.json({ demos: [] })
   }
 }
