@@ -6,33 +6,33 @@ interface DemoItem {
   appid: number
   name: string
   fullgame_appid: number | null
-  image_url?: string
+  image_url: string
 }
 
 interface Props {
-  demos: DemoItem[]
-  onSelect: (id: number) => void
+  onSelect: (item: { id: number; name: string; tiny_image: string }) => void
 }
 
-export default function DemoCarousel({ demos, onSelect }: Props) {
+export default function DemoCarousel({ onSelect }: Props) {
+  const [demos, setDemos] = useState<DemoItem[]>([])
   const containerRef = useRef<HTMLDivElement>(null)
   const [isPaused, setIsPaused] = useState(false)
 
-  const getImageUrl = (demo: DemoItem) => {
-    const id = demo.fullgame_appid || demo.appid
-    return `https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/${id}/capsule_231x87.jpg`
-  }
+  useEffect(() => {
+    fetch('/api/steam-demos')
+      .then(r => r.json())
+      .then(data => { if (Array.isArray(data) && data.length) setDemos(data) })
+      .catch(() => {})
+  }, [])
 
   useEffect(() => {
     const container = containerRef.current
-    if (!container) return
+    if (!container || isPaused) return
     let frame: number
     const scroll = () => {
-      if (!isPaused) {
-        container.scrollLeft += 1
-        if (container.scrollLeft >= container.scrollWidth / 2) {
-          container.scrollLeft = 0
-        }
+      container.scrollLeft += 0.5
+      if (container.scrollLeft >= container.scrollWidth / 2) {
+        container.scrollLeft = 0
       }
       frame = requestAnimationFrame(scroll)
     }
@@ -56,11 +56,15 @@ export default function DemoCarousel({ demos, onSelect }: Props) {
           <div
             key={i}
             style={{ flexShrink: 0, width: '220px', cursor: 'pointer' }}
-            onClick={() => onSelect(demo.fullgame_appid || demo.appid)}
+            onClick={() => onSelect({
+              id:         demo.fullgame_appid || demo.appid,
+              name:       demo.name,
+              tiny_image: demo.image_url,
+            })}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={getImageUrl(demo)}
+              src={demo.image_url}
               alt={demo.name}
               width={220}
               height={82}
