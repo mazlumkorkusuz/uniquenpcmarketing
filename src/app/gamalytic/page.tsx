@@ -76,7 +76,7 @@ const MAX_HISTORY = 25
 const TOT_ITEM: SteamItem = {
   id: 4416430,
   name: 'Tales of the Trade',
-  tiny_image: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4416430/capsule_231x87.jpg',
+  tiny_image: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4416430/header.jpg',
 }
 
 const COUNTRY_NAMES: Record<string, string> = {
@@ -237,6 +237,7 @@ export default function GamalyticPage() {
 
   // Demo carousel state
   const [demos, setDemos] = useState<DemoItem[]>([])
+  const [demoError, setDemoError] = useState(false)
   const [carouselPaused, setCarouselPaused] = useState(false)
   const carouselRef = useRef<HTMLDivElement>(null)
 
@@ -257,8 +258,12 @@ export default function GamalyticPage() {
   useEffect(() => {
     fetch('/api/steam-demos')
       .then(r => r.json())
-      .then(d => setDemos(d.demos ?? []))
-      .catch(() => {})
+      .then(d => {
+        const list: DemoItem[] = d.demos ?? []
+        if (list.length === 0) setDemoError(true)
+        else setDemos(list)
+      })
+      .catch(() => setDemoError(true))
   }, [])
 
   // Carousel auto-scroll
@@ -563,66 +568,72 @@ export default function GamalyticPage() {
       <div style={{ padding: '28px 32px' }}>
 
         {/* ── Demo Vitrini carousel ── */}
-        {demos.length > 0 && (
+        {(demos.length > 0 || demoError) && (
           <div style={{ marginBottom: '28px' }}>
             <div style={{ fontSize: '12px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '12px' }}>
               Demo Vitrini
             </div>
-            <div style={{ position: 'relative' }}>
-              {/* Left arrow */}
-              <button
-                onClick={() => scrollCarousel('left')}
-                style={{ position: 'absolute', left: '-14px', top: '50%', transform: 'translateY(-50%)', zIndex: 2, width: '28px', height: '28px', borderRadius: '50%', backgroundColor: '#1a1a24', border: '1px solid #2a2a3a', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#94a3b8' }}
-              >
-                <ChevronLeft size={14} />
-              </button>
-
-              {/* Scroll container */}
-              <div
-                ref={carouselRef}
-                className="gama-scroll"
-                onMouseEnter={() => setCarouselPaused(true)}
-                onMouseLeave={() => setCarouselPaused(false)}
-                style={{ display: 'flex', gap: '12px', overflowX: 'auto', scrollbarWidth: 'none', padding: '4px 2px', scrollBehavior: 'smooth' }}
-              >
-                {demos.map(demo => (
-                  <button
-                    key={demo.appid}
-                    onClick={() => handleDemoClick(demo)}
-                    style={{ flexShrink: 0, width: '204px', background: 'none', border: '1px solid #2a2a3a', borderRadius: '10px', padding: 0, cursor: 'pointer', overflow: 'hidden', backgroundColor: '#1a1a24', transition: 'border-color 0.15s, transform 0.15s' }}
-                    onMouseEnter={e => { e.currentTarget.style.borderColor = '#7c3aed'; e.currentTarget.style.transform = 'translateY(-2px)' }}
-                    onMouseLeave={e => { e.currentTarget.style.borderColor = '#2a2a3a'; e.currentTarget.style.transform = 'translateY(0)' }}
-                  >
-                    {/* Capsule image with Demo badge */}
-                    <div style={{ position: 'relative', width: '100%', aspectRatio: '231/87' }}>
-                      <Image
-                        src={demo.capsuleImage}
-                        alt={demo.name}
-                        fill
-                        style={{ objectFit: 'cover' }}
-                        sizes="204px"
-                        onError={() => {}}
-                      />
-                      <span style={{ position: 'absolute', top: '6px', left: '6px', backgroundColor: '#22c55e', color: '#fff', fontSize: '9px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', letterSpacing: '0.04em' }}>
-                        DEMO
-                      </span>
-                    </div>
-                    {/* Name */}
-                    <div style={{ padding: '8px 10px', fontSize: '11px', fontWeight: 500, color: '#94a3b8', textAlign: 'left', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {demo.fullGameName ?? demo.name}
-                    </div>
-                  </button>
-                ))}
+            {demoError ? (
+              <div style={{ padding: '14px 16px', backgroundColor: '#1a1a24', border: '1px solid #2a2a3a', borderRadius: '10px', fontSize: '13px', color: '#64748b' }}>
+                Demolar yüklenemedi
               </div>
+            ) : (
+              <div style={{ position: 'relative' }}>
+                {/* Left arrow */}
+                <button
+                  onClick={() => scrollCarousel('left')}
+                  style={{ position: 'absolute', left: '-14px', top: '50%', transform: 'translateY(-50%)', zIndex: 2, width: '28px', height: '28px', borderRadius: '50%', backgroundColor: '#1a1a24', border: '1px solid #2a2a3a', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#94a3b8' }}
+                >
+                  <ChevronLeft size={14} />
+                </button>
 
-              {/* Right arrow */}
-              <button
-                onClick={() => scrollCarousel('right')}
-                style={{ position: 'absolute', right: '-14px', top: '50%', transform: 'translateY(-50%)', zIndex: 2, width: '28px', height: '28px', borderRadius: '50%', backgroundColor: '#1a1a24', border: '1px solid #2a2a3a', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#94a3b8' }}
-              >
-                <ChevronRight size={14} />
-              </button>
-            </div>
+                {/* Scroll container */}
+                <div
+                  ref={carouselRef}
+                  className="gama-scroll"
+                  onMouseEnter={() => setCarouselPaused(true)}
+                  onMouseLeave={() => setCarouselPaused(false)}
+                  style={{ display: 'flex', gap: '12px', overflowX: 'auto', scrollbarWidth: 'none', padding: '4px 2px', scrollBehavior: 'smooth' }}
+                >
+                  {demos.map(demo => (
+                    <button
+                      key={demo.appid}
+                      onClick={() => handleDemoClick(demo)}
+                      style={{ flexShrink: 0, width: '204px', background: 'none', border: '1px solid #2a2a3a', borderRadius: '10px', padding: 0, cursor: 'pointer', overflow: 'hidden', backgroundColor: '#1a1a24', transition: 'border-color 0.15s, transform 0.15s' }}
+                      onMouseEnter={e => { e.currentTarget.style.borderColor = '#7c3aed'; e.currentTarget.style.transform = 'translateY(-2px)' }}
+                      onMouseLeave={e => { e.currentTarget.style.borderColor = '#2a2a3a'; e.currentTarget.style.transform = 'translateY(0)' }}
+                    >
+                      {/* Capsule image with Demo badge */}
+                      <div style={{ position: 'relative', width: '100%', aspectRatio: '231/87' }}>
+                        <Image
+                          src={demo.capsuleImage}
+                          alt={demo.name}
+                          fill
+                          style={{ objectFit: 'cover' }}
+                          sizes="204px"
+                          onError={() => {}}
+                        />
+                        <span style={{ position: 'absolute', top: '6px', left: '6px', backgroundColor: '#22c55e', color: '#fff', fontSize: '9px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', letterSpacing: '0.04em' }}>
+                          DEMO
+                        </span>
+                      </div>
+                      {/* Name */}
+                      <div style={{ padding: '8px 10px', fontSize: '11px', fontWeight: 500, color: '#94a3b8', textAlign: 'left', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {demo.fullGameName ?? demo.name}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+
+                {/* Right arrow */}
+                <button
+                  onClick={() => scrollCarousel('right')}
+                  style={{ position: 'absolute', right: '-14px', top: '50%', transform: 'translateY(-50%)', zIndex: 2, width: '28px', height: '28px', borderRadius: '50%', backgroundColor: '#1a1a24', border: '1px solid #2a2a3a', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#94a3b8' }}
+                >
+                  <ChevronRight size={14} />
+                </button>
+              </div>
+            )}
           </div>
         )}
 
