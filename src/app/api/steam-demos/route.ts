@@ -1,8 +1,5 @@
 import { NextResponse } from 'next/server'
-import fs from 'fs'
-import path from 'path'
 
-// Force Node.js runtime — route uses fs/path which are unavailable on Edge
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
 
@@ -17,17 +14,16 @@ export interface DemoItem {
   release_date: string   // YYYY-MM-DD
 }
 
-interface CacheFile {
-  date: string           // YYYY-MM-DD
-  demos: DemoItem[]
-}
+// ─── In-memory cache (module-level, survives across requests in same process) ─
+
+let memoryCache: { date: string; demos: DemoItem[] } = { date: '', demos: [] }
+let refreshing = false
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const CACHE_FILE  = path.join(process.cwd(), 'public', 'demo_cache.json')
-const DELAY_MS    = 1000   // between each appdetails call
-const MAX_PAGES   = 10     // safety cap (10 × 100 = 1 000 listings max)
-const RECENT_DAYS = 90     // only demos released within this window
+const DELAY_MS    = 1000
+const MAX_PAGES   = 10
+const RECENT_DAYS = 90
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -39,30 +35,8 @@ function sleep(ms: number): Promise<void> {
   return new Promise(r => setTimeout(r, ms))
 }
 
-/** Read and validate cache — returns null if missing, unreadable, or wrong format. */
-function readCache(): CacheFile | null {
-  try {
-    const raw  = fs.readFileSync(CACHE_FILE, 'utf8')
-    const parsed = JSON.parse(raw)
-    // Guard against old array format written by a previous version
-    if (!parsed || Array.isArray(parsed) || typeof parsed.date !== 'string') return null
-    if (!Array.isArray(parsed.demos)) return null
-    return parsed as CacheFile
-  } catch { return null }
-}
-
-function isFresh(c: CacheFile | null): boolean {
-  return c?.date === todayStr()
-}
-
-function saveCache(demos: DemoItem[]) {
-  try {
-    const data: CacheFile = { date: todayStr(), demos }
-    fs.writeFileSync(CACHE_FILE, JSON.stringify(data, null, 2), 'utf8')
-    console.log('[steam-demos] cache saved:', demos.length, 'demos')
-  } catch (e) {
-    console.warn('[steam-demos] cache write error:', e)
-  }
+function isFresh(): boolean {
+  return memoryCache.date === todayStr() && memoryCache.demos.length > 0
 }
 
 // ─── Steam helpers ────────────────────────────────────────────────────────────
@@ -126,7 +100,6 @@ async function fetchAppDetails(appid: number): Promise<AppDetails> {
       { cache: 'no-store' }
     )
     if (!res.ok) return empty
-
     const json = await res.json()
     const data = json?.[String(appid)]?.data
     if (!data) return empty
@@ -144,62 +117,64 @@ async function fetchAppDetails(appid: number): Promise<AppDetails> {
   } catch { return empty }
 }
 
-// ─── Cache builder (runs in background) ──────────────────────────────────────
+// ─── Background builder ───────────────────────────────────────────────────────
 
-async function buildAndSave(): Promise<DemoItem[]> {
-  const listings = await fetchAllListings()
+async function buildAndCache(): Promise<void> {
+  if (refreshing) return   // prevent concurrent rebuilds
+  refreshing = true
+  console.log('[steam-demos] background build started')
 
-  const cutoff = new Date()
-  cutoff.setDate(cutoff.getDate() - RECENT_DAYS)
-  const cutoffStr = cutoff.toISOString().slice(0, 10)
+  try {
+    const listings = await fetchAllListings()
 
-  const demos: DemoItem[] = []
+    const cutoff = new Date()
+    cutoff.setDate(cutoff.getDate() - RECENT_DAYS)
+    const cutoffStr = cutoff.toISOString().slice(0, 10)
 
-  for (let i = 0; i < listings.length; i++) {
-    const { appid, name } = listings[i]
-    const details = await fetchAppDetails(appid)
-    console.log(`[steam-demos] ${i + 1}/${listings.length} ${appid} isDemo=${details.isDemo} date=${details.release_date}`)
-    await sleep(DELAY_MS)
+    const demos: DemoItem[] = []
 
-    if (!details.isDemo)                  continue
-    if (!details.release_date)            continue
-    if (details.release_date < cutoffStr) continue
+    for (let i = 0; i < listings.length; i++) {
+      const { appid, name } = listings[i]
+      const details = await fetchAppDetails(appid)
+      console.log(`[steam-demos] ${i + 1}/${listings.length} ${appid} isDemo=${details.isDemo} date=${details.release_date}`)
+      await sleep(DELAY_MS)
 
-    demos.push({
-      appid,
-      name,
-      fullgame_appid: details.fullgame_appid,
-      fullgame_name:  details.fullgame_name,
-      image_url: `https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/${appid}/capsule_231x87.jpg`,
-      release_date: details.release_date,
-    })
+      if (!details.isDemo)                  continue
+      if (!details.release_date)            continue
+      if (details.release_date < cutoffStr) continue
+
+      demos.push({
+        appid,
+        name,
+        fullgame_appid: details.fullgame_appid,
+        fullgame_name:  details.fullgame_name,
+        image_url: `https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/${appid}/capsule_231x87.jpg`,
+        release_date: details.release_date,
+      })
+    }
+
+    demos.sort((a, b) => b.release_date.localeCompare(a.release_date))
+    memoryCache = { date: todayStr(), demos }
+    console.log('[steam-demos] cache updated:', demos.length, 'demos')
+  } catch (e) {
+    console.error('[steam-demos] build error:', e)
+  } finally {
+    refreshing = false
   }
-
-  demos.sort((a, b) => b.release_date.localeCompare(a.release_date))
-  console.log('[steam-demos] filtered demos:', demos.length)
-  saveCache(demos)
-  return demos
 }
 
 // ─── Route handler ────────────────────────────────────────────────────────────
 
 export async function GET() {
-  const cache = readCache()
-
-  // 1. Fresh today's cache — instant return
-  if (isFresh(cache)) {
-    console.log('[steam-demos] fresh cache hit:', cache!.demos.length)
-    return NextResponse.json({ demos: cache!.demos })
+  if (isFresh()) {
+    console.log('[steam-demos] memory cache hit:', memoryCache.demos.length)
+    return NextResponse.json({ demos: memoryCache.demos })
   }
 
-  // 2. Stale or no cache — return whatever we have NOW, refresh in background.
-  //    This means the response is always instant. The Node.js event loop keeps
-  //    the background promise alive after the HTTP response is sent.
-  const immediate = cache?.demos ?? []
-  console.log('[steam-demos] returning', immediate.length, 'stale/empty demos; refreshing in background')
+  // Return whatever is in memory now (empty on first load, stale on day rollover)
+  // and kick off a background refresh
+  console.log('[steam-demos] cache miss (date=%s demos=%d), refreshing in background', memoryCache.date, memoryCache.demos.length)
+  buildAndCache().catch(e => console.error('[steam-demos] uncaught build error:', e))
 
-  buildAndSave()
-    .catch(e => console.error('[steam-demos] background build error:', e))
-
-  return NextResponse.json({ demos: immediate })
+  return NextResponse.json({ demos: memoryCache.demos })
 }

@@ -39,9 +39,6 @@ yarn-error.log*
 # server runtime
 .server.pid
 
-# generated at runtime — not committed
-/public/demo_cache.json
-
 # typescript
 *.tsbuildinfo
 next-env.d.ts
