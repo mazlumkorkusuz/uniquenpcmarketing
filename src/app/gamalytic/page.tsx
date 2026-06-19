@@ -26,7 +26,10 @@ interface SteamItem {
 interface DemoItem {
   appid: number
   name: string
+  fullgame_appid: number | null
+  fullgame_name: string | null
   image_url: string
+  release_date: string
 }
 
 interface HistoryItem {
@@ -293,7 +296,11 @@ export default function GamalyticPage() {
   const handleBack = useCallback(() => { setSelected(null); setGameData(null); setError(null) }, [])
 
   const handleDemoClick = useCallback((demo: DemoItem) => {
-    handleSelectGame({ id: demo.appid, name: demo.name || String(demo.appid), tiny_image: demo.image_url })
+    handleSelectGame({
+      id:         demo.fullgame_appid ?? demo.appid,
+      name:       demo.fullgame_name  ?? demo.name,
+      tiny_image: demo.image_url,
+    })
   }, [handleSelectGame])
 
   const removeFromHistory = useCallback((appid: number) => {
@@ -648,7 +655,7 @@ export default function GamalyticPage() {
                       onError={e => { (e.currentTarget.closest('.demo-card') as HTMLElement | null)?.style && ((e.currentTarget.closest('.demo-card') as HTMLElement).style.display = 'none') }}
                     />
                     <div style={{ padding: '6px 8px', fontSize: '11px', fontWeight: 500, color: '#64748b', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '231px' }}>
-                      {demo.name}
+                      {demo.fullgame_name ?? demo.name}
                     </div>
                   </button>
                 ))}
