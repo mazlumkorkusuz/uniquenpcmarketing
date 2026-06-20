@@ -19,13 +19,14 @@ const PLATFORMS = [
   { key: 'ig',        label: 'IG',        color: '#c13584', icon: '/icons/instagram.png' },
 ]
 
-const DEFAULT_FORM = { title: '', content: '', url: '', scheduled_date: '', scheduled_time: '', status: 'Taslak' }
+const DEFAULT_FORM = { title: '', content: '', scheduled_date: '', scheduled_time: '', status: 'Taslak' }
 
 export function BulkPostModal() {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [toast, setToast] = useState<ToastState | null>(null)
   const [selected, setSelected] = useState<string[]>([])
+  const [platformLinks, setPlatformLinks] = useState<Record<string, string>>({})
   const [form, setForm] = useState(DEFAULT_FORM)
   const router = useRouter()
 
@@ -33,11 +34,13 @@ export function BulkPostModal() {
     setSelected(prev => prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key])
 
   const set = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }))
+  const setLink = (key: string, v: string) => setPlatformLinks(prev => ({ ...prev, [key]: v }))
 
   const close = () => {
     setOpen(false)
     setForm(DEFAULT_FORM)
     setSelected([])
+    setPlatformLinks({})
   }
 
   const submit = async (e: React.FormEvent) => {
@@ -50,7 +53,7 @@ export function BulkPostModal() {
         platform,
         title: form.title,
         content: form.content || null,
-        url: form.url || null,
+        url: platformLinks[platform] || null,
         scheduled_date: form.scheduled_date || null,
         scheduled_time: form.scheduled_time || null,
         status: form.status,
@@ -133,13 +136,35 @@ export function BulkPostModal() {
             )}
           </div>
 
+          {selected.length > 0 && (
+            <div style={{ ...fieldStyle, backgroundColor: '#13131a', borderRadius: '8px', padding: '12px', border: '1px solid #2a2a3a' }}>
+              <label style={{ ...labelStyle, marginBottom: '10px' }}>Platform Linkleri (opsiyonel)</label>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {selected.map(key => {
+                  const p = PLATFORMS.find(pl => pl.key === key)!
+                  return (
+                    <div key={key} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '5px', minWidth: '96px', flexShrink: 0 }}>
+                        <Image src={p.icon} alt={p.label} width={13} height={13} style={{ objectFit: 'contain', borderRadius: '2px' }} />
+                        <span style={{ fontSize: '12px', fontWeight: 600, color: p.color }}>{p.label}</span>
+                      </div>
+                      <input
+                        type="url"
+                        value={platformLinks[key] ?? ''}
+                        onChange={e => setLink(key, e.target.value)}
+                        placeholder="https://..."
+                        style={{ ...inputStyle, flex: 1, fontSize: '13px', padding: '7px 10px' }}
+                      />
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          )}
+
           <div style={fieldStyle}>
             <label style={labelStyle}>Başlık *</label>
             <input style={inputStyle} value={form.title} onChange={e => set('title', e.target.value)} placeholder="Gönderi başlığı" required />
-          </div>
-          <div style={fieldStyle}>
-            <label style={labelStyle}>Link (opsiyonel)</label>
-            <input style={inputStyle} type="url" value={form.url} onChange={e => set('url', e.target.value)} placeholder="https://..." />
           </div>
           <div style={fieldStyle}>
             <label style={labelStyle}>İçerik</label>
