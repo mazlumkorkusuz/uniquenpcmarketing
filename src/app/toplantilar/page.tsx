@@ -66,7 +66,7 @@ export default async function ToplantilarPage() {
       return <span style={{ fontWeight: 600, color: '#e2e8f0' }}>{meeting ? String(meeting.title ?? '—') : <span style={{ color: '#64748b' }}>—</span>}</span>
     }},
     { key: 'content', label: 'Not İçeriği', render: (v: unknown) => (
-      <span style={{ fontSize: '13px', color: '#cbd5e1', maxWidth: '400px', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+      <span style={{ fontSize: '13px', color: '#cbd5e1', display: 'block', whiteSpace: 'pre-wrap' }}>
         {String(v ?? '—')}
       </span>
     )},
