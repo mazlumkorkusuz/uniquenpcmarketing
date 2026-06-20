@@ -20,7 +20,7 @@ type Row = Record<string, unknown>
 function formatDate(v: unknown) {
   if (!v) return <span style={{ color: '#64748b' }}>—</span>
   return (
-    <span style={{ fontSize: '13px', color: '#94a3b8' }}>
+    <span style={{ fontSize: '13px', color: '#94a3b8', whiteSpace: 'nowrap' }}>
       {new Date(v as string).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}
     </span>
   )
@@ -46,7 +46,7 @@ export default async function ToplantilarPage() {
   })
 
   const meetingCols = [
-    { key: 'title', label: 'Toplantı Başlığı', render: (v: unknown) => <span style={{ fontWeight: 600, color: '#e2e8f0' }}>{String(v ?? '—')}</span> },
+    { key: 'title', label: 'Toplantı Başlığı', width: '220px', render: (v: unknown) => <span style={{ fontWeight: 600, color: '#e2e8f0' }}>{String(v ?? '—')}</span> },
     { key: 'date', label: 'Tarih', render: formatDate },
     { key: 'time', label: 'Saat', render: (v: unknown) => v ? <span style={{ fontFamily: 'monospace', color: '#94a3b8' }}>{String(v)}</span> : <span style={{ color: '#64748b' }}>—</span> },
     { key: 'platform', label: 'Platform', render: (v: unknown) => v ? <Badge variant="blue">{String(v)}</Badge> : <span style={{ color: '#64748b' }}>—</span> },
