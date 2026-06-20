@@ -20,7 +20,7 @@ export default async function RedditPage() {
   const { accounts, posts } = await getData()
 
   const totalKarma = accounts.reduce((sum, a) => sum + (Number((a as Row).karma) || 0), 0)
-  const totalComments = posts.reduce((sum, p) => sum + (Number((p as Row).comments) || 0), 0)
+  const totalComments = accounts.reduce((sum, a) => sum + (Number((a as Row).comment_karma) || 0), 0)
 
   const stats = [
     { label: 'Toplam Hesap', value: accounts.length, color: '#ff4500' },

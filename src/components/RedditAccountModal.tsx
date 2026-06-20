@@ -13,6 +13,7 @@ interface RedditAccountData {
   id?: string | number
   username?: string
   karma?: number | string
+  comment_karma?: number | string
   post_count?: number | string
   niche?: string
   status?: string
@@ -25,13 +26,14 @@ interface RedditAccountModalProps {
   onClose?: () => void
 }
 
-const DEFAULT_FORM = { username: '', karma: '', post_count: '', niche: '', status: 'Aktif' }
+const DEFAULT_FORM = { username: '', karma: '', comment_karma: '', post_count: '', niche: '', status: 'Aktif' }
 
 function buildForm(data?: RedditAccountData) {
   if (!data) return DEFAULT_FORM
   return {
     username: String(data.username ?? ''),
     karma: data.karma != null ? String(data.karma) : '',
+    comment_karma: data.comment_karma != null ? String(data.comment_karma) : '',
     post_count: data.post_count != null ? String(data.post_count) : '',
     niche: String(data.niche ?? ''),
     status: String(data.status ?? 'Aktif'),
@@ -65,6 +67,7 @@ export function RedditAccountModal({ mode = 'add', initialData, open: externalOp
         const { error } = await sb.from('reddit_accounts').update({
           username: form.username,
           karma: form.karma ? parseInt(form.karma) : null,
+          comment_karma: form.comment_karma ? parseInt(form.comment_karma) : null,
           post_count: form.post_count ? parseInt(form.post_count) : null,
           niche: form.niche || null,
           status: form.status,
@@ -75,6 +78,7 @@ export function RedditAccountModal({ mode = 'add', initialData, open: externalOp
         const { error } = await sb.from('reddit_accounts').insert({
           username: form.username,
           karma: form.karma ? parseInt(form.karma) : null,
+          comment_karma: form.comment_karma ? parseInt(form.comment_karma) : null,
           post_count: form.post_count ? parseInt(form.post_count) : null,
           niche: form.niche || null,
           status: form.status,
@@ -110,6 +114,10 @@ export function RedditAccountModal({ mode = 'add', initialData, open: externalOp
           <div style={fieldStyle}>
             <label style={labelStyle}>Karma</label>
             <input style={inputStyle} type="number" min="0" value={form.karma} onChange={e => set('karma', e.target.value)} placeholder="0" />
+          </div>
+          <div style={fieldStyle}>
+            <label style={labelStyle}>Yorum Karma</label>
+            <input style={inputStyle} type="number" min="0" value={form.comment_karma} onChange={e => set('comment_karma', e.target.value)} placeholder="0" />
           </div>
           <div style={fieldStyle}>
             <label style={labelStyle}>Toplam Paylaşım</label>
