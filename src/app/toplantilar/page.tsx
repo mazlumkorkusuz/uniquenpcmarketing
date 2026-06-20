@@ -29,8 +29,21 @@ function formatDate(v: unknown) {
 export default async function ToplantilarPage() {
   const { meetings, notes } = await getData()
 
-  const upcoming = meetings.filter((m) => m.status !== 'tamamlandı' && m.status !== 'completed' && m.status !== 'iptal' && m.status !== 'cancelled')
-  const past = meetings.filter((m) => m.status === 'tamamlandı' || m.status === 'completed')
+  const now = new Date()
+  now.setHours(0, 0, 0, 0)
+  const upcoming = meetings.filter((m) => {
+    if (m.status === 'iptal' || m.status === 'cancelled') return false
+    if (m.status === 'tamamlandı' || m.status === 'completed') return false
+    const meetingDate = new Date(m.date)
+    meetingDate.setHours(0, 0, 0, 0)
+    return meetingDate >= now
+  })
+  const past = meetings.filter((m) => {
+    if (m.status === 'tamamlandı' || m.status === 'completed') return true
+    const meetingDate = new Date(m.date)
+    meetingDate.setHours(0, 0, 0, 0)
+    return meetingDate < now
+  })
 
   const meetingCols = [
     { key: 'title', label: 'Toplantı Başlığı', render: (v: unknown) => <span style={{ fontWeight: 600, color: '#e2e8f0' }}>{String(v ?? '—')}</span> },
