@@ -155,16 +155,17 @@ export default function LoginPage() {
       >
         {/* Pigeon mascot */}
         <img
-          src="/pigeon.png"
+          src={isPigeonLooking ? '/pigeon-look.png' : '/pigeon.png'}
           alt=""
           style={{
             position: 'absolute',
-            bottom: '0px',
-            left: '-280px',
-            width: '320px',
+            bottom: '-20px',
+            left: '-200px',
+            width: '200px',
             height: 'auto',
             pointerEvents: 'none',
-            animation: 'float 3s ease-in-out infinite',
+            animation: isPigeonLooking ? 'none' : 'float 3s ease-in-out infinite',
+            transition: 'all 0.3s ease',
           }}
         />
         {/* Logo */}
