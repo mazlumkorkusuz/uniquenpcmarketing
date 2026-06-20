@@ -1,19 +1,59 @@
 'use client'
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 import { ModalBase, inputStyle, labelStyle, fieldStyle, cancelBtnStyle, submitBtnStyle, addBtnStyle } from './ModalBase'
 import { Toast } from './Toast'
 import { revalidateDashboard } from '@/app/actions'
+import { EditButton } from './EditButton'
 
 interface ToastState { message: string; type: 'success' | 'error' }
 
-export function CuratorModal() {
-  const [open, setOpen] = useState(false)
+interface CuratorData {
+  id?: string | number
+  name?: string
+  platform?: string
+  genre?: string
+  followers?: number | string
+  email?: string
+  status?: string
+}
+
+interface CuratorModalProps {
+  mode?: 'add' | 'edit'
+  initialData?: CuratorData
+  open?: boolean
+  onClose?: () => void
+}
+
+const DEFAULT_FORM = { name: '', platform: '', genre: '', followers: '', email: '', status: 'Aktif' }
+
+function buildForm(data?: CuratorData) {
+  if (!data) return DEFAULT_FORM
+  return {
+    name: String(data.name ?? ''),
+    platform: String(data.platform ?? ''),
+    genre: String(data.genre ?? ''),
+    followers: data.followers != null ? String(data.followers) : '',
+    email: String(data.email ?? ''),
+    status: String(data.status ?? 'Aktif'),
+  }
+}
+
+export function CuratorModal({ mode = 'add', initialData, open: externalOpen, onClose: externalClose }: CuratorModalProps) {
+  const isControlled = externalOpen !== undefined
+  const [internalOpen, setInternalOpen] = useState(false)
+  const open = isControlled ? externalOpen! : internalOpen
+  const closeModal = isControlled ? (externalClose ?? (() => {})) : () => setInternalOpen(false)
+
   const [loading, setLoading] = useState(false)
   const [toast, setToast] = useState<ToastState | null>(null)
-  const [form, setForm] = useState({ name: '', platform: '', genre: '', followers: '', email: '', status: 'Aktif' })
+  const [form, setForm] = useState(() => buildForm(initialData))
   const router = useRouter()
+
+  useEffect(() => {
+    if (open) setForm(buildForm(initialData))
+  }, [open])
 
   const set = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }))
 
@@ -23,18 +63,31 @@ export function CuratorModal() {
     setLoading(true)
     try {
       const sb = createSupabaseBrowserClient()
-      const { error } = await sb.from('curators').insert({
-        name: form.name,
-        platform: form.platform || null,
-        genre: form.genre || null,
-        followers: form.followers ? parseInt(form.followers) : null,
-        email: form.email || null,
-        status: form.status,
-      })
-      if (error) throw error
-      setToast({ message: 'Küratör başarıyla eklendi.', type: 'success' })
-      setForm({ name: '', platform: '', genre: '', followers: '', email: '', status: 'Aktif' })
-      setOpen(false)
+      if (mode === 'edit' && initialData?.id) {
+        const { error } = await sb.from('curators').update({
+          name: form.name,
+          platform: form.platform || null,
+          genre: form.genre || null,
+          followers: form.followers ? parseInt(form.followers) : null,
+          email: form.email || null,
+          status: form.status,
+        }).eq('id', initialData.id)
+        if (error) throw error
+        setToast({ message: 'Küratör başarıyla güncellendi.', type: 'success' })
+      } else {
+        const { error } = await sb.from('curators').insert({
+          name: form.name,
+          platform: form.platform || null,
+          genre: form.genre || null,
+          followers: form.followers ? parseInt(form.followers) : null,
+          email: form.email || null,
+          status: form.status,
+        })
+        if (error) throw error
+        setToast({ message: 'Küratör başarıyla eklendi.', type: 'success' })
+        setForm(DEFAULT_FORM)
+      }
+      closeModal()
       await revalidateDashboard()
       router.refresh()
     } catch (err: unknown) {
@@ -49,8 +102,10 @@ export function CuratorModal() {
   return (
     <>
       {toast && <Toast message={toast.message} type={toast.type} onDismiss={dismiss} />}
-      <button onClick={() => setOpen(true)} style={addBtnStyle('#14b8a6')}>+ Küratör Ekle</button>
-      <ModalBase isOpen={open} onClose={() => setOpen(false)} title="Küratör Ekle">
+      {!isControlled && (
+        <button onClick={() => setInternalOpen(true)} style={addBtnStyle('#14b8a6')}>+ Küratör Ekle</button>
+      )}
+      <ModalBase isOpen={open} onClose={closeModal} title={mode === 'edit' ? 'Küratörü Düzenle' : 'Küratör Ekle'}>
         <form onSubmit={submit}>
           <div style={fieldStyle}>
             <label style={labelStyle}>Küratör Adı *</label>
@@ -81,13 +136,23 @@ export function CuratorModal() {
             </select>
           </div>
           <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '8px' }}>
-            <button type="button" onClick={() => setOpen(false)} style={cancelBtnStyle()}>İptal</button>
+            <button type="button" onClick={closeModal} style={cancelBtnStyle()}>İptal</button>
             <button type="submit" disabled={loading} style={submitBtnStyle('#14b8a6', loading)}>
-              {loading ? 'Kaydediliyor...' : 'Kaydet'}
+              {loading ? 'Kaydediliyor...' : mode === 'edit' ? 'Düzenle' : 'Kaydet'}
             </button>
           </div>
         </form>
       </ModalBase>
+    </>
+  )
+}
+
+export function EditCuratorButton({ row }: { row: Record<string, unknown> }) {
+  const [open, setOpen] = useState(false)
+  return (
+    <>
+      <EditButton onClick={() => setOpen(true)} />
+      <CuratorModal mode="edit" initialData={row as CuratorData} open={open} onClose={() => setOpen(false)} />
     </>
   )
 }

@@ -4,7 +4,7 @@ import PageHeader from '@/components/PageHeader'
 import DataTable from '@/components/DataTable'
 import Badge, { statusBadge } from '@/components/Badge'
 import { Calendar } from 'lucide-react'
-import { MeetingModal } from '@/components/MeetingModal'
+import { MeetingModal, EditMeetingButton } from '@/components/MeetingModal'
 import { DeleteButton } from '@/components/DeleteButton'
 
 async function getData() {
@@ -52,7 +52,12 @@ export default async function ToplantilarPage() {
     { key: 'platform', label: 'Platform', render: (v: unknown) => v ? <Badge variant="blue">{String(v)}</Badge> : <span style={{ color: '#64748b' }}>—</span> },
     { key: 'attendees', label: 'Katılımcılar', render: (v: unknown) => v ? <span style={{ fontSize: '12px', color: '#94a3b8', maxWidth: '200px', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{String(v)}</span> : <span style={{ color: '#64748b' }}>—</span> },
     { key: 'status', label: 'Durum', render: (v: unknown) => statusBadge(v as string) ?? <span style={{ color: '#64748b' }}>—</span> },
-    { key: 'id', label: '', width: '52px', render: (_: unknown, row: Row) => <DeleteButton table="meetings" id={row.id as string} /> },
+    { key: 'id', label: '', width: '80px', render: (_: unknown, row: Row) => (
+      <div style={{ display: 'flex', gap: '4px' }}>
+        <EditMeetingButton row={row} />
+        <DeleteButton table="meetings" id={row.id as string} />
+      </div>
+    )},
   ]
 
   const notesCols = [

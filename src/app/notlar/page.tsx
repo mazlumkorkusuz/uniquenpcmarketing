@@ -4,7 +4,7 @@ import PageHeader from '@/components/PageHeader'
 import DataTable from '@/components/DataTable'
 import Badge from '@/components/Badge'
 import { FileText } from 'lucide-react'
-import { NoteModal } from '@/components/NoteModal'
+import { NoteModal, EditNoteButton } from '@/components/NoteModal'
 import { DeleteButton } from '@/components/DeleteButton'
 
 async function getData() {
@@ -49,7 +49,12 @@ export default async function NotlarPage() {
     }},
     { key: 'author', label: 'Yazar', render: (v: unknown) => v ? <Badge variant="purple">{String(v)}</Badge> : <span style={{ color: '#64748b' }}>—</span> },
     { key: 'created_at', label: 'Tarih', render: dateCell },
-    { key: 'id', label: '', width: '52px', render: (_: unknown, row: Row) => <DeleteButton table="notes" id={row.id as string} /> },
+    { key: 'id', label: '', width: '80px', render: (_: unknown, row: Row) => (
+      <div style={{ display: 'flex', gap: '4px' }}>
+        <EditNoteButton row={row} />
+        <DeleteButton table="notes" id={row.id as string} />
+      </div>
+    )},
   ]
 
   return (

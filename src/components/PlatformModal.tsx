@@ -1,19 +1,59 @@
 'use client'
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 import { ModalBase, inputStyle, labelStyle, fieldStyle, cancelBtnStyle, submitBtnStyle, addBtnStyle } from './ModalBase'
 import { Toast } from './Toast'
 import { revalidateDashboard } from '@/app/actions'
+import { EditButton } from './EditButton'
 
 interface ToastState { message: string; type: 'success' | 'error' }
 
-export function PlatformModal() {
-  const [open, setOpen] = useState(false)
+interface PlatformData {
+  id?: string | number
+  name?: string
+  type?: string
+  contact_name?: string
+  contact_email?: string
+  website?: string
+  status?: string
+}
+
+interface PlatformModalProps {
+  mode?: 'add' | 'edit'
+  initialData?: PlatformData
+  open?: boolean
+  onClose?: () => void
+}
+
+const DEFAULT_FORM = { name: '', type: '', contact_name: '', contact_email: '', website: '', status: 'Aktif' }
+
+function buildForm(data?: PlatformData) {
+  if (!data) return DEFAULT_FORM
+  return {
+    name: String(data.name ?? ''),
+    type: String(data.type ?? ''),
+    contact_name: String(data.contact_name ?? ''),
+    contact_email: String(data.contact_email ?? ''),
+    website: String(data.website ?? ''),
+    status: String(data.status ?? 'Aktif'),
+  }
+}
+
+export function PlatformModal({ mode = 'add', initialData, open: externalOpen, onClose: externalClose }: PlatformModalProps) {
+  const isControlled = externalOpen !== undefined
+  const [internalOpen, setInternalOpen] = useState(false)
+  const open = isControlled ? externalOpen! : internalOpen
+  const closeModal = isControlled ? (externalClose ?? (() => {})) : () => setInternalOpen(false)
+
   const [loading, setLoading] = useState(false)
   const [toast, setToast] = useState<ToastState | null>(null)
-  const [form, setForm] = useState({ name: '', type: '', contact_name: '', contact_email: '', website: '', status: 'Aktif' })
+  const [form, setForm] = useState(() => buildForm(initialData))
   const router = useRouter()
+
+  useEffect(() => {
+    if (open) setForm(buildForm(initialData))
+  }, [open])
 
   const set = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }))
 
@@ -23,18 +63,31 @@ export function PlatformModal() {
     setLoading(true)
     try {
       const sb = createSupabaseBrowserClient()
-      const { error } = await sb.from('crm_platforms').insert({
-        name: form.name,
-        type: form.type || null,
-        contact_name: form.contact_name || null,
-        contact_email: form.contact_email || null,
-        website: form.website || null,
-        status: form.status,
-      })
-      if (error) throw error
-      setToast({ message: 'Platform başarıyla eklendi.', type: 'success' })
-      setForm({ name: '', type: '', contact_name: '', contact_email: '', website: '', status: 'Aktif' })
-      setOpen(false)
+      if (mode === 'edit' && initialData?.id) {
+        const { error } = await sb.from('crm_platforms').update({
+          name: form.name,
+          type: form.type || null,
+          contact_name: form.contact_name || null,
+          contact_email: form.contact_email || null,
+          website: form.website || null,
+          status: form.status,
+        }).eq('id', initialData.id)
+        if (error) throw error
+        setToast({ message: 'Platform başarıyla güncellendi.', type: 'success' })
+      } else {
+        const { error } = await sb.from('crm_platforms').insert({
+          name: form.name,
+          type: form.type || null,
+          contact_name: form.contact_name || null,
+          contact_email: form.contact_email || null,
+          website: form.website || null,
+          status: form.status,
+        })
+        if (error) throw error
+        setToast({ message: 'Platform başarıyla eklendi.', type: 'success' })
+        setForm(DEFAULT_FORM)
+      }
+      closeModal()
       await revalidateDashboard()
       router.refresh()
     } catch (err: unknown) {
@@ -49,8 +102,10 @@ export function PlatformModal() {
   return (
     <>
       {toast && <Toast message={toast.message} type={toast.type} onDismiss={dismiss} />}
-      <button onClick={() => setOpen(true)} style={addBtnStyle('#3b82f6')}>+ Platform Ekle</button>
-      <ModalBase isOpen={open} onClose={() => setOpen(false)} title="Platform Ekle">
+      {!isControlled && (
+        <button onClick={() => setInternalOpen(true)} style={addBtnStyle('#3b82f6')}>+ Platform Ekle</button>
+      )}
+      <ModalBase isOpen={open} onClose={closeModal} title={mode === 'edit' ? 'Platformu Düzenle' : 'Platform Ekle'}>
         <form onSubmit={submit}>
           <div style={fieldStyle}>
             <label style={labelStyle}>Platform Adı *</label>
@@ -81,13 +136,23 @@ export function PlatformModal() {
             </select>
           </div>
           <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '8px' }}>
-            <button type="button" onClick={() => setOpen(false)} style={cancelBtnStyle()}>İptal</button>
+            <button type="button" onClick={closeModal} style={cancelBtnStyle()}>İptal</button>
             <button type="submit" disabled={loading} style={submitBtnStyle('#3b82f6', loading)}>
-              {loading ? 'Kaydediliyor...' : 'Kaydet'}
+              {loading ? 'Kaydediliyor...' : mode === 'edit' ? 'Düzenle' : 'Kaydet'}
             </button>
           </div>
         </form>
       </ModalBase>
+    </>
+  )
+}
+
+export function EditPlatformButton({ row }: { row: Record<string, unknown> }) {
+  const [open, setOpen] = useState(false)
+  return (
+    <>
+      <EditButton onClick={() => setOpen(true)} />
+      <PlatformModal mode="edit" initialData={row as PlatformData} open={open} onClose={() => setOpen(false)} />
     </>
   )
 }

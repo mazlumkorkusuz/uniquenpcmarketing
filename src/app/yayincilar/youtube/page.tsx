@@ -6,7 +6,7 @@ import StatCard from '@/components/StatCard'
 import BarChart from '@/components/BarChart'
 import PageHeader from '@/components/PageHeader'
 import { Tv2, Users, Eye } from 'lucide-react'
-import { StreamerModal } from '@/components/StreamerModal'
+import { StreamerModal, EditStreamerButton } from '@/components/StreamerModal'
 import { DeleteButton } from '@/components/DeleteButton'
 
 type Row = Record<string, unknown>
@@ -41,7 +41,12 @@ export default async function YouTubePage() {
     { key: 'genre',         label: 'İçerik',        render: (v: unknown) => v ? <Badge variant="orange">{String(v)}</Badge> : <span style={{ color: '#64748b' }}>—</span> },
     { key: 'contact_email', label: 'E-posta',       render: (v: unknown) => v ? <span style={{ color: '#7c3aed', fontFamily: 'monospace', fontSize: '12px' }}>{String(v)}</span> : <span style={{ color: '#64748b' }}>—</span> },
     { key: 'status',        label: 'Durum',         render: (v: unknown) => statusBadge(v as string) ?? <span style={{ color: '#64748b' }}>—</span> },
-    { key: 'id', label: '', width: '52px', render: (_: unknown, row: Row) => <DeleteButton table="youtube_channels" id={row.id as string} /> },
+    { key: 'id', label: '', width: '80px', render: (_: unknown, row: Row) => (
+      <div style={{ display: 'flex', gap: '4px' }}>
+        <EditStreamerButton row={row} table="youtube_channels" color="#ff4444" />
+        <DeleteButton table="youtube_channels" id={row.id as string} />
+      </div>
+    )},
   ]
 
   const notesCols = [

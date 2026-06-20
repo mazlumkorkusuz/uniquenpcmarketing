@@ -4,7 +4,7 @@ import PageHeader from '@/components/PageHeader'
 import DataTable from '@/components/DataTable'
 import Badge, { statusBadge } from '@/components/Badge'
 import { Wallet } from 'lucide-react'
-import { BudgetExpenseModal } from '@/components/BudgetExpenseModal'
+import { BudgetExpenseModal, EditBudgetExpenseButton } from '@/components/BudgetExpenseModal'
 import { DeleteButton } from '@/components/DeleteButton'
 
 async function getData() {
@@ -51,7 +51,12 @@ export default async function ButcePage() {
         {String(v)}
       </span>
     ) : <span style={{ color: '#64748b' }}>—</span> },
-    { key: 'id', label: '', width: '52px', render: (_: unknown, row: Row) => <DeleteButton table="budget_expenses" id={row.id as string} /> },
+    { key: 'id', label: '', width: '80px', render: (_: unknown, row: Row) => (
+      <div style={{ display: 'flex', gap: '4px' }}>
+        <EditBudgetExpenseButton row={row} accentColor="#22c55e" />
+        <DeleteButton table="budget_expenses" id={row.id as string} />
+      </div>
+    )},
   ]
 
   return (

@@ -5,7 +5,7 @@ import DataTable from '@/components/DataTable'
 import Badge, { statusBadge } from '@/components/Badge'
 import { Globe, ExternalLink, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
-import { PlatformModal } from '@/components/PlatformModal'
+import { PlatformModal, EditPlatformButton } from '@/components/PlatformModal'
 import { DeleteButton } from '@/components/DeleteButton'
 
 async function getData() {
@@ -28,7 +28,12 @@ export default async function PlatformlarPage() {
     { key: 'contact_email', label: 'E-posta', render: (v: unknown) => v ? <span style={{ color: '#7c3aed', fontFamily: 'monospace', fontSize: '12px' }}>{String(v)}</span> : <span style={{ color: '#64748b' }}>—</span> },
     { key: 'website', label: 'Website', render: (v: unknown) => v ? <span style={{ color: '#3b82f6', fontSize: '12px' }}>{String(v)}</span> : <span style={{ color: '#64748b' }}>—</span> },
     { key: 'status', label: 'Durum', render: (v: unknown) => statusBadge(v as string) ?? <span style={{ color: '#64748b' }}>—</span> },
-    { key: 'id', label: '', width: '52px', render: (_: unknown, row: Row) => <DeleteButton table="crm_platforms" id={row.id as string} /> },
+    { key: 'id', label: '', width: '80px', render: (_: unknown, row: Row) => (
+      <div style={{ display: 'flex', gap: '4px' }}>
+        <EditPlatformButton row={row} />
+        <DeleteButton table="crm_platforms" id={row.id as string} />
+      </div>
+    )},
   ]
 
   const featuredPlatforms = [

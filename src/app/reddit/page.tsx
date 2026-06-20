@@ -4,7 +4,7 @@ import PageHeader from '@/components/PageHeader'
 import DataTable from '@/components/DataTable'
 import Badge, { statusBadge } from '@/components/Badge'
 import { MessageCircle } from 'lucide-react'
-import { RedditAccountModal } from '@/components/RedditAccountModal'
+import { RedditAccountModal, EditRedditAccountButton } from '@/components/RedditAccountModal'
 import { DeleteButton } from '@/components/DeleteButton'
 
 async function getData() {
@@ -51,7 +51,12 @@ export default async function RedditPage() {
     }},
     { key: 'status', label: 'Durum', render: (v: unknown) => statusBadge(v as string) ?? <span style={{ color: '#64748b' }}>—</span> },
     { key: 'created', label: 'Oluşturulma', render: dateCell },
-    { key: 'id', label: '', width: '52px', render: (_: unknown, row: Row) => <DeleteButton table="reddit_accounts" id={row.id as string} /> },
+    { key: 'id', label: '', width: '80px', render: (_: unknown, row: Row) => (
+      <div style={{ display: 'flex', gap: '4px' }}>
+        <EditRedditAccountButton row={row} />
+        <DeleteButton table="reddit_accounts" id={row.id as string} />
+      </div>
+    )},
   ]
 
   const postCols = [

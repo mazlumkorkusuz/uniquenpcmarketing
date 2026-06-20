@@ -1,10 +1,11 @@
 'use client'
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 import { ModalBase, inputStyle, labelStyle, fieldStyle, cancelBtnStyle, submitBtnStyle, addBtnStyle } from './ModalBase'
 import { Toast } from './Toast'
 import { revalidateDashboard } from '@/app/actions'
+import { EditButton } from './EditButton'
 
 interface ToastState { message: string; type: 'success' | 'error' }
 
@@ -15,6 +16,23 @@ interface SocialAccountModalProps {
   followersField?: string
   followingField?: string
   postsField?: string
+  mode?: 'add' | 'edit'
+  initialData?: Record<string, unknown>
+  open?: boolean
+  onClose?: () => void
+}
+
+const DEFAULT_FORM = { username: '', followers: '', following: '', posts: '', status: 'Aktif' }
+
+function buildForm(data: Record<string, unknown> | undefined, usernameField: string, followersField: string, followingField: string, postsField: string) {
+  if (!data) return DEFAULT_FORM
+  return {
+    username: String(data[usernameField] ?? ''),
+    followers: data[followersField] != null ? String(data[followersField]) : '',
+    following: data[followingField] != null ? String(data[followingField]) : '',
+    posts: data[postsField] != null ? String(data[postsField]) : '',
+    status: String(data.status ?? 'Aktif'),
+  }
 }
 
 export function SocialAccountModal({
@@ -24,12 +42,24 @@ export function SocialAccountModal({
   followersField = 'followers',
   followingField = 'following',
   postsField = 'post_count',
+  mode = 'add',
+  initialData,
+  open: externalOpen,
+  onClose: externalClose,
 }: SocialAccountModalProps) {
-  const [open, setOpen] = useState(false)
+  const isControlled = externalOpen !== undefined
+  const [internalOpen, setInternalOpen] = useState(false)
+  const open = isControlled ? externalOpen! : internalOpen
+  const closeModal = isControlled ? (externalClose ?? (() => {})) : () => setInternalOpen(false)
+
   const [loading, setLoading] = useState(false)
   const [toast, setToast] = useState<ToastState | null>(null)
-  const [form, setForm] = useState({ username: '', followers: '', following: '', posts: '', status: 'Aktif' })
+  const [form, setForm] = useState(() => buildForm(initialData, usernameField, followersField, followingField, postsField))
   const router = useRouter()
+
+  useEffect(() => {
+    if (open) setForm(buildForm(initialData, usernameField, followersField, followingField, postsField))
+  }, [open])
 
   const set = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }))
 
@@ -46,11 +76,17 @@ export function SocialAccountModal({
         [postsField]: form.posts ? parseInt(form.posts) : null,
         status: form.status,
       }
-      const { error } = await sb.from(table).insert(row)
-      if (error) throw error
-      setToast({ message: 'Hesap başarıyla eklendi.', type: 'success' })
-      setForm({ username: '', followers: '', following: '', posts: '', status: 'Aktif' })
-      setOpen(false)
+      if (mode === 'edit' && initialData?.id) {
+        const { error } = await sb.from(table).update(row).eq('id', initialData.id)
+        if (error) throw error
+        setToast({ message: 'Hesap başarıyla güncellendi.', type: 'success' })
+      } else {
+        const { error } = await sb.from(table).insert(row)
+        if (error) throw error
+        setToast({ message: 'Hesap başarıyla eklendi.', type: 'success' })
+        setForm(DEFAULT_FORM)
+      }
+      closeModal()
       await revalidateDashboard()
       router.refresh()
     } catch (err: unknown) {
@@ -65,8 +101,10 @@ export function SocialAccountModal({
   return (
     <>
       {toast && <Toast message={toast.message} type={toast.type} onDismiss={dismiss} />}
-      <button onClick={() => setOpen(true)} style={addBtnStyle(color)}>+ Hesap Ekle</button>
-      <ModalBase isOpen={open} onClose={() => setOpen(false)} title="Hesap Ekle">
+      {!isControlled && (
+        <button onClick={() => setInternalOpen(true)} style={addBtnStyle(color)}>+ Hesap Ekle</button>
+      )}
+      <ModalBase isOpen={open} onClose={closeModal} title={mode === 'edit' ? 'Hesabı Düzenle' : 'Hesap Ekle'}>
         <form onSubmit={submit}>
           <div style={fieldStyle}>
             <label style={labelStyle}>Kullanıcı Adı *</label>
@@ -92,13 +130,52 @@ export function SocialAccountModal({
             </select>
           </div>
           <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '8px' }}>
-            <button type="button" onClick={() => setOpen(false)} style={cancelBtnStyle()}>İptal</button>
+            <button type="button" onClick={closeModal} style={cancelBtnStyle()}>İptal</button>
             <button type="submit" disabled={loading} style={submitBtnStyle(color, loading)}>
-              {loading ? 'Kaydediliyor...' : 'Kaydet'}
+              {loading ? 'Kaydediliyor...' : mode === 'edit' ? 'Düzenle' : 'Kaydet'}
             </button>
           </div>
         </form>
       </ModalBase>
+    </>
+  )
+}
+
+interface EditSocialAccountButtonProps {
+  row: Record<string, unknown>
+  table: string
+  color: string
+  usernameField?: string
+  followersField?: string
+  followingField?: string
+  postsField?: string
+}
+
+export function EditSocialAccountButton({
+  row,
+  table,
+  color,
+  usernameField = 'username',
+  followersField = 'followers',
+  followingField = 'following',
+  postsField = 'post_count',
+}: EditSocialAccountButtonProps) {
+  const [open, setOpen] = useState(false)
+  return (
+    <>
+      <EditButton onClick={() => setOpen(true)} />
+      <SocialAccountModal
+        mode="edit"
+        initialData={row}
+        table={table}
+        color={color}
+        usernameField={usernameField}
+        followersField={followersField}
+        followingField={followingField}
+        postsField={postsField}
+        open={open}
+        onClose={() => setOpen(false)}
+      />
     </>
   )
 }

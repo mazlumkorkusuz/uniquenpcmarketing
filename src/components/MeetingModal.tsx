@@ -1,19 +1,59 @@
 'use client'
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 import { ModalBase, inputStyle, labelStyle, fieldStyle, cancelBtnStyle, submitBtnStyle, addBtnStyle } from './ModalBase'
 import { Toast } from './Toast'
 import { revalidateDashboard } from '@/app/actions'
+import { EditButton } from './EditButton'
 
 interface ToastState { message: string; type: 'success' | 'error' }
 
-export function MeetingModal() {
-  const [open, setOpen] = useState(false)
+interface MeetingData {
+  id?: string | number
+  title?: string
+  date?: string
+  time?: string
+  attendees?: string
+  notes?: string
+  status?: string
+}
+
+interface MeetingModalProps {
+  mode?: 'add' | 'edit'
+  initialData?: MeetingData
+  open?: boolean
+  onClose?: () => void
+}
+
+const DEFAULT_FORM = { title: '', date: '', time: '', attendees: '', notes: '', status: 'Planlandı' }
+
+function buildForm(data?: MeetingData) {
+  if (!data) return DEFAULT_FORM
+  return {
+    title: String(data.title ?? ''),
+    date: String(data.date ?? ''),
+    time: String(data.time ?? ''),
+    attendees: String(data.attendees ?? ''),
+    notes: String(data.notes ?? ''),
+    status: String(data.status ?? 'Planlandı'),
+  }
+}
+
+export function MeetingModal({ mode = 'add', initialData, open: externalOpen, onClose: externalClose }: MeetingModalProps) {
+  const isControlled = externalOpen !== undefined
+  const [internalOpen, setInternalOpen] = useState(false)
+  const open = isControlled ? externalOpen! : internalOpen
+  const closeModal = isControlled ? (externalClose ?? (() => {})) : () => setInternalOpen(false)
+
   const [loading, setLoading] = useState(false)
   const [toast, setToast] = useState<ToastState | null>(null)
-  const [form, setForm] = useState({ title: '', date: '', time: '', attendees: '', notes: '', status: 'Planlandı' })
+  const [form, setForm] = useState(() => buildForm(initialData))
   const router = useRouter()
+
+  useEffect(() => {
+    if (open) setForm(buildForm(initialData))
+  }, [open])
 
   const set = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }))
 
@@ -23,18 +63,31 @@ export function MeetingModal() {
     setLoading(true)
     try {
       const sb = createSupabaseBrowserClient()
-      const { error } = await sb.from('meetings').insert({
-        title: form.title,
-        date: form.date,
-        time: form.time || null,
-        attendees: form.attendees || null,
-        notes: form.notes || null,
-        status: form.status,
-      })
-      if (error) throw error
-      setToast({ message: 'Toplantı başarıyla eklendi.', type: 'success' })
-      setForm({ title: '', date: '', time: '', attendees: '', notes: '', status: 'Planlandı' })
-      setOpen(false)
+      if (mode === 'edit' && initialData?.id) {
+        const { error } = await sb.from('meetings').update({
+          title: form.title,
+          date: form.date,
+          time: form.time || null,
+          attendees: form.attendees || null,
+          notes: form.notes || null,
+          status: form.status,
+        }).eq('id', initialData.id)
+        if (error) throw error
+        setToast({ message: 'Toplantı başarıyla güncellendi.', type: 'success' })
+      } else {
+        const { error } = await sb.from('meetings').insert({
+          title: form.title,
+          date: form.date,
+          time: form.time || null,
+          attendees: form.attendees || null,
+          notes: form.notes || null,
+          status: form.status,
+        })
+        if (error) throw error
+        setToast({ message: 'Toplantı başarıyla eklendi.', type: 'success' })
+        setForm(DEFAULT_FORM)
+      }
+      closeModal()
       await revalidateDashboard()
       router.refresh()
     } catch (err: unknown) {
@@ -49,8 +102,10 @@ export function MeetingModal() {
   return (
     <>
       {toast && <Toast message={toast.message} type={toast.type} onDismiss={dismiss} />}
-      <button onClick={() => setOpen(true)} style={addBtnStyle('#14b8a6')}>+ Toplantı Ekle</button>
-      <ModalBase isOpen={open} onClose={() => setOpen(false)} title="Toplantı Ekle">
+      {!isControlled && (
+        <button onClick={() => setInternalOpen(true)} style={addBtnStyle('#14b8a6')}>+ Toplantı Ekle</button>
+      )}
+      <ModalBase isOpen={open} onClose={closeModal} title={mode === 'edit' ? 'Toplantıyı Düzenle' : 'Toplantı Ekle'}>
         <form onSubmit={submit}>
           <div style={fieldStyle}>
             <label style={labelStyle}>Başlık *</label>
@@ -87,13 +142,23 @@ export function MeetingModal() {
             </select>
           </div>
           <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '8px' }}>
-            <button type="button" onClick={() => setOpen(false)} style={cancelBtnStyle()}>İptal</button>
+            <button type="button" onClick={closeModal} style={cancelBtnStyle()}>İptal</button>
             <button type="submit" disabled={loading} style={submitBtnStyle('#14b8a6', loading)}>
-              {loading ? 'Kaydediliyor...' : 'Kaydet'}
+              {loading ? 'Kaydediliyor...' : mode === 'edit' ? 'Düzenle' : 'Kaydet'}
             </button>
           </div>
         </form>
       </ModalBase>
+    </>
+  )
+}
+
+export function EditMeetingButton({ row }: { row: Record<string, unknown> }) {
+  const [open, setOpen] = useState(false)
+  return (
+    <>
+      <EditButton onClick={() => setOpen(true)} />
+      <MeetingModal mode="edit" initialData={row as MeetingData} open={open} onClose={() => setOpen(false)} />
     </>
   )
 }

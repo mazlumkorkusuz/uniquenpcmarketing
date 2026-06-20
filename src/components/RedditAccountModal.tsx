@@ -1,19 +1,57 @@
 'use client'
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 import { ModalBase, inputStyle, labelStyle, fieldStyle, cancelBtnStyle, submitBtnStyle, addBtnStyle } from './ModalBase'
 import { Toast } from './Toast'
 import { revalidateDashboard } from '@/app/actions'
+import { EditButton } from './EditButton'
 
 interface ToastState { message: string; type: 'success' | 'error' }
 
-export function RedditAccountModal() {
-  const [open, setOpen] = useState(false)
+interface RedditAccountData {
+  id?: string | number
+  username?: string
+  karma?: number | string
+  post_count?: number | string
+  niche?: string
+  status?: string
+}
+
+interface RedditAccountModalProps {
+  mode?: 'add' | 'edit'
+  initialData?: RedditAccountData
+  open?: boolean
+  onClose?: () => void
+}
+
+const DEFAULT_FORM = { username: '', karma: '', post_count: '', niche: '', status: 'Aktif' }
+
+function buildForm(data?: RedditAccountData) {
+  if (!data) return DEFAULT_FORM
+  return {
+    username: String(data.username ?? ''),
+    karma: data.karma != null ? String(data.karma) : '',
+    post_count: data.post_count != null ? String(data.post_count) : '',
+    niche: String(data.niche ?? ''),
+    status: String(data.status ?? 'Aktif'),
+  }
+}
+
+export function RedditAccountModal({ mode = 'add', initialData, open: externalOpen, onClose: externalClose }: RedditAccountModalProps) {
+  const isControlled = externalOpen !== undefined
+  const [internalOpen, setInternalOpen] = useState(false)
+  const open = isControlled ? externalOpen! : internalOpen
+  const closeModal = isControlled ? (externalClose ?? (() => {})) : () => setInternalOpen(false)
+
   const [loading, setLoading] = useState(false)
   const [toast, setToast] = useState<ToastState | null>(null)
-  const [form, setForm] = useState({ username: '', karma: '', post_count: '', niche: '', status: 'Aktif' })
+  const [form, setForm] = useState(() => buildForm(initialData))
   const router = useRouter()
+
+  useEffect(() => {
+    if (open) setForm(buildForm(initialData))
+  }, [open])
 
   const set = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }))
 
@@ -23,17 +61,29 @@ export function RedditAccountModal() {
     setLoading(true)
     try {
       const sb = createSupabaseBrowserClient()
-      const { error } = await sb.from('reddit_accounts').insert({
-        username: form.username,
-        karma: form.karma ? parseInt(form.karma) : null,
-        post_count: form.post_count ? parseInt(form.post_count) : null,
-        niche: form.niche || null,
-        status: form.status,
-      })
-      if (error) throw error
-      setToast({ message: 'Hesap başarıyla eklendi.', type: 'success' })
-      setForm({ username: '', karma: '', post_count: '', niche: '', status: 'Aktif' })
-      setOpen(false)
+      if (mode === 'edit' && initialData?.id) {
+        const { error } = await sb.from('reddit_accounts').update({
+          username: form.username,
+          karma: form.karma ? parseInt(form.karma) : null,
+          post_count: form.post_count ? parseInt(form.post_count) : null,
+          niche: form.niche || null,
+          status: form.status,
+        }).eq('id', initialData.id)
+        if (error) throw error
+        setToast({ message: 'Hesap başarıyla güncellendi.', type: 'success' })
+      } else {
+        const { error } = await sb.from('reddit_accounts').insert({
+          username: form.username,
+          karma: form.karma ? parseInt(form.karma) : null,
+          post_count: form.post_count ? parseInt(form.post_count) : null,
+          niche: form.niche || null,
+          status: form.status,
+        })
+        if (error) throw error
+        setToast({ message: 'Hesap başarıyla eklendi.', type: 'success' })
+        setForm(DEFAULT_FORM)
+      }
+      closeModal()
       await revalidateDashboard()
       router.refresh()
     } catch (err: unknown) {
@@ -48,8 +98,10 @@ export function RedditAccountModal() {
   return (
     <>
       {toast && <Toast message={toast.message} type={toast.type} onDismiss={dismiss} />}
-      <button onClick={() => setOpen(true)} style={addBtnStyle('#ff4500')}>+ Hesap Ekle</button>
-      <ModalBase isOpen={open} onClose={() => setOpen(false)} title="Reddit Hesabı Ekle">
+      {!isControlled && (
+        <button onClick={() => setInternalOpen(true)} style={addBtnStyle('#ff4500')}>+ Hesap Ekle</button>
+      )}
+      <ModalBase isOpen={open} onClose={closeModal} title={mode === 'edit' ? 'Reddit Hesabını Düzenle' : 'Reddit Hesabı Ekle'}>
         <form onSubmit={submit}>
           <div style={fieldStyle}>
             <label style={labelStyle}>Kullanıcı Adı *</label>
@@ -76,13 +128,23 @@ export function RedditAccountModal() {
             </select>
           </div>
           <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '8px' }}>
-            <button type="button" onClick={() => setOpen(false)} style={cancelBtnStyle()}>İptal</button>
+            <button type="button" onClick={closeModal} style={cancelBtnStyle()}>İptal</button>
             <button type="submit" disabled={loading} style={submitBtnStyle('#ff4500', loading)}>
-              {loading ? 'Kaydediliyor...' : 'Kaydet'}
+              {loading ? 'Kaydediliyor...' : mode === 'edit' ? 'Düzenle' : 'Kaydet'}
             </button>
           </div>
         </form>
       </ModalBase>
+    </>
+  )
+}
+
+export function EditRedditAccountButton({ row }: { row: Record<string, unknown> }) {
+  const [open, setOpen] = useState(false)
+  return (
+    <>
+      <EditButton onClick={() => setOpen(true)} />
+      <RedditAccountModal mode="edit" initialData={row as RedditAccountData} open={open} onClose={() => setOpen(false)} />
     </>
   )
 }

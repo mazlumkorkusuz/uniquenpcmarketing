@@ -6,7 +6,7 @@ import StatCard from '@/components/StatCard'
 import BarChart from '@/components/BarChart'
 import PageHeader from '@/components/PageHeader'
 import { Tv2, Users, Eye } from 'lucide-react'
-import { StreamerModal } from '@/components/StreamerModal'
+import { StreamerModal, EditStreamerButton } from '@/components/StreamerModal'
 import { DeleteButton } from '@/components/DeleteButton'
 
 type Row = Record<string, unknown>
@@ -38,7 +38,12 @@ export default async function SOOPPage() {
     { key: 'language',      label: 'Dil',           render: (v: unknown) => v ? <Badge variant="blue">{String(v)}</Badge> : <span style={{ color: '#64748b' }}>—</span> },
     { key: 'contact_email', label: 'E-posta',       render: (v: unknown) => v ? <span style={{ color: '#7c3aed', fontFamily: 'monospace', fontSize: '12px' }}>{String(v)}</span> : <span style={{ color: '#64748b' }}>—</span> },
     { key: 'status',        label: 'Durum',         render: (v: unknown) => statusBadge(v as string) ?? <span style={{ color: '#64748b' }}>—</span> },
-    { key: 'id', label: '', width: '52px', render: (_: unknown, row: Row) => <DeleteButton table="soop_streamers" id={row.id as string} /> },
+    { key: 'id', label: '', width: '80px', render: (_: unknown, row: Row) => (
+      <div style={{ display: 'flex', gap: '4px' }}>
+        <EditStreamerButton row={row} table="soop_streamers" color="#3b82f6" />
+        <DeleteButton table="soop_streamers" id={row.id as string} />
+      </div>
+    )},
   ]
 
   return (

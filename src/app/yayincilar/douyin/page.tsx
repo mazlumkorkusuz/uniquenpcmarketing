@@ -5,7 +5,7 @@ import Badge, { statusBadge } from '@/components/Badge'
 import StatCard from '@/components/StatCard'
 import PageHeader from '@/components/PageHeader'
 import { Tv2, Users } from 'lucide-react'
-import { StreamerModal } from '@/components/StreamerModal'
+import { StreamerModal, EditStreamerButton } from '@/components/StreamerModal'
 import { DeleteButton } from '@/components/DeleteButton'
 
 type Row = Record<string, unknown>
@@ -33,7 +33,12 @@ export default async function DouyinPage() {
     { key: 'followers',    label: 'Takipçi',       render: numCell },
     { key: 'language',     label: 'Dil',           render: (v: unknown) => v ? <Badge variant="red">{String(v)}</Badge> : <span style={{ color: '#64748b' }}>—</span> },
     { key: 'status',       label: 'Durum',         render: (v: unknown) => statusBadge(v as string) ?? <span style={{ color: '#64748b' }}>—</span> },
-    { key: 'id', label: '', width: '52px', render: (_: unknown, row: Row) => <DeleteButton table="douyin_streamers" id={row.id as string} /> },
+    { key: 'id', label: '', width: '80px', render: (_: unknown, row: Row) => (
+      <div style={{ display: 'flex', gap: '4px' }}>
+        <EditStreamerButton row={row} table="douyin_streamers" color="#fe2c55" />
+        <DeleteButton table="douyin_streamers" id={row.id as string} />
+      </div>
+    )},
   ]
 
   return (

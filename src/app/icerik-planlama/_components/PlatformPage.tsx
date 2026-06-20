@@ -4,7 +4,7 @@ import DataTable from '@/components/DataTable'
 import StatCard from '@/components/StatCard'
 import { ContentCalendar } from '@/components/ContentCalendar'
 import type { CalPost } from '@/components/ContentCalendar'
-import { PostModal } from '@/components/PostModal'
+import { PostModal, EditPostButton } from '@/components/PostModal'
 import { DeleteButton } from '@/components/DeleteButton'
 import { Calendar, CheckCircle, Clock, FileText } from 'lucide-react'
 import { LucideIcon } from 'lucide-react'
@@ -81,7 +81,12 @@ export async function PlatformPage({ platform, label, color, gradient, icon, ima
         : <span style={{ color: '#64748b' }}>—</span>,
     },
     { key: 'status', label: 'Durum', render: (v: unknown) => statusBadge(v as string | null) },
-    { key: 'id', label: '', width: '52px', render: (_: unknown, row: Row) => <DeleteButton table="social_media_posts" id={row.id as string} /> },
+    { key: 'id', label: '', width: '80px', render: (_: unknown, row: Row) => (
+      <div style={{ display: 'flex', gap: '4px' }}>
+        <EditPostButton row={row} platform={platform} platformColor={color} />
+        <DeleteButton table="social_media_posts" id={row.id as string} />
+      </div>
+    )},
   ]
 
   return (
