@@ -8,13 +8,10 @@ import { DeleteButton } from '@/components/DeleteButton'
 import { Users, TrendingUp, Zap, Star, Search, ExternalLink } from 'lucide-react'
 
 type Row = Record<string, unknown>
+type SortKey = 'score' | 'followers' | 'avg_likes'
+type SortDir = 'asc' | 'desc'
 
-const TH: React.CSSProperties = {
-  backgroundColor: '#13131a', color: '#64748b', fontSize: '11px', fontWeight: 600,
-  textTransform: 'uppercase', letterSpacing: '0.06em', padding: '11px 16px',
-  textAlign: 'left', borderBottom: '1px solid #2a2a3a', whiteSpace: 'nowrap',
-}
-const TD: React.CSSProperties = { padding: '14px 16px', verticalAlign: 'middle' }
+const TD: React.CSSProperties = { padding: '14px 16px', verticalAlign: 'top' }
 const selectStyle: React.CSSProperties = {
   backgroundColor: '#13131a', border: '1px solid #2a2a3a', borderRadius: '7px',
   padding: '7px 12px', fontSize: '13px', color: '#e2e8f0', cursor: 'pointer', outline: 'none',
@@ -39,6 +36,29 @@ function LangBadge({ lang }: { lang: unknown }) {
   )
 }
 
+function SortableTH({ label, sortKey, active, dir, onSort }: { label: string; sortKey: SortKey; active: boolean; dir: SortDir; onSort: (k: SortKey) => void }) {
+  return (
+    <th
+      onClick={() => onSort(sortKey)}
+      style={{
+        backgroundColor: '#13131a', fontSize: '11px', fontWeight: 600,
+        textTransform: 'uppercase', letterSpacing: '0.06em', padding: '11px 16px',
+        textAlign: 'left', borderBottom: '1px solid #2a2a3a', whiteSpace: 'nowrap',
+        cursor: 'pointer', userSelect: 'none',
+        color: active ? '#1d9bf0' : '#64748b',
+      }}
+    >
+      {label} <span style={{ opacity: active ? 1 : 0.35 }}>{active ? (dir === 'desc' ? '↓' : '↑') : '↕'}</span>
+    </th>
+  )
+}
+
+const STATIC_TH: React.CSSProperties = {
+  backgroundColor: '#13131a', color: '#64748b', fontSize: '11px', fontWeight: 600,
+  textTransform: 'uppercase', letterSpacing: '0.06em', padding: '11px 16px',
+  textAlign: 'left', borderBottom: '1px solid #2a2a3a', whiteSpace: 'nowrap',
+}
+
 export default function TwitterPage() {
   const [accounts, setAccounts] = useState<Row[]>([])
   const [loading, setLoading] = useState(true)
@@ -46,26 +66,39 @@ export default function TwitterPage() {
   const [regionFilter, setRegionFilter] = useState('')
   const [langFilter, setLangFilter] = useState('')
   const [priorityFilter, setPriorityFilter] = useState('')
+  const [sortKey, setSortKey] = useState<SortKey>('score')
+  const [sortDir, setSortDir] = useState<SortDir>('desc')
 
   useEffect(() => {
     createSupabaseBrowserClient()
       .from('twitter_accounts')
       .select('*')
-      .order('score', { ascending: false })
       .then(({ data }) => { setAccounts((data ?? []) as Row[]); setLoading(false) })
   }, [])
 
   const regions = useMemo(() => Array.from(new Set(accounts.map(a => String(a.region ?? '')).filter(Boolean))).sort(), [accounts])
   const langs   = useMemo(() => Array.from(new Set(accounts.map(a => String(a.language ?? '')).filter(Boolean))).sort(), [accounts])
 
-  const filtered = useMemo(() => accounts.filter(a => {
-    const q = search.toLowerCase()
-    if (q && !String(a.username ?? '').toLowerCase().includes(q) && !String(a.display_name ?? '').toLowerCase().includes(q)) return false
-    if (regionFilter && String(a.region ?? '') !== regionFilter) return false
-    if (langFilter && String(a.language ?? '') !== langFilter) return false
-    if (priorityFilter && String(a.priority ?? '') !== priorityFilter) return false
-    return true
-  }), [accounts, search, regionFilter, langFilter, priorityFilter])
+  const handleSort = (key: SortKey) => {
+    if (sortKey === key) setSortDir(d => d === 'desc' ? 'asc' : 'desc')
+    else { setSortKey(key); setSortDir('desc') }
+  }
+
+  const sorted = useMemo(() => {
+    const filtered = accounts.filter(a => {
+      const q = search.toLowerCase()
+      if (q && !String(a.username ?? '').toLowerCase().includes(q) && !String(a.display_name ?? '').toLowerCase().includes(q)) return false
+      if (regionFilter && String(a.region ?? '') !== regionFilter) return false
+      if (langFilter && String(a.language ?? '') !== langFilter) return false
+      if (priorityFilter && String(a.priority ?? '') !== priorityFilter) return false
+      return true
+    })
+    return [...filtered].sort((a, b) => {
+      const av = Number(a[sortKey] ?? 0)
+      const bv = Number(b[sortKey] ?? 0)
+      return sortDir === 'desc' ? bv - av : av - bv
+    })
+  }, [accounts, search, regionFilter, langFilter, priorityFilter, sortKey, sortDir])
 
   const totalFollowers = accounts.reduce((s, r) => s + (Number(r.followers) || 0), 0)
   const highPriority   = accounts.filter(r => String(r.priority ?? '') === 'high').length
@@ -75,6 +108,14 @@ export default function TwitterPage() {
   return (
     <div>
       <PageHeader title="Twitter / X" subtitle="Influencer takip ve analizi" imageSrc="/icons/x.png" gradient="linear-gradient(135deg, #1d9bf0, #0c6fa8)">
+        <a
+          href="https://docs.google.com/spreadsheets/d/1cawscn0JAZwLBlkMPwNM9-cSfcUVebaPFLLt7pMtCPc/edit?gid=1920292925#gid=1920292925"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '9px 16px', borderRadius: '8px', backgroundColor: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.35)', color: '#4ade80', fontWeight: 600, fontSize: '13px', textDecoration: 'none', whiteSpace: 'nowrap' }}
+        >
+          📊 Tam Liste
+        </a>
         <SocialAccountModal table="twitter_accounts" color="#1d9bf0" postsField="tweets" />
       </PageHeader>
 
@@ -96,7 +137,7 @@ export default function TwitterPage() {
             <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#1d9bf0', boxShadow: '0 0 6px rgba(29,155,240,0.5)' }} />
             <span style={{ fontSize: '15px', fontWeight: 600, color: '#f1f5f9' }}>Twitter Hesapları</span>
             <span style={{ marginLeft: 'auto', backgroundColor: 'rgba(29,155,240,0.12)', color: '#1d9bf0', border: '1px solid rgba(29,155,240,0.3)', borderRadius: '9999px', padding: '2px 10px', fontSize: '13px', fontWeight: 600 }}>
-              {filtered.length}{hasFilters ? ` / ${accounts.length}` : ''}
+              {sorted.length}{hasFilters ? ` / ${accounts.length}` : ''}
             </span>
           </div>
 
@@ -139,26 +180,26 @@ export default function TwitterPage() {
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr>
-                  <th style={TH}>Puan</th>
-                  <th style={TH}>Kullanıcı</th>
-                  <th style={TH}>Takipçi</th>
-                  <th style={TH}>Ort. Beğeni</th>
-                  <th style={TH}>Bölge</th>
-                  <th style={TH}>Dil</th>
-                  <th style={TH}>AI Yorum</th>
-                  <th style={{ ...TH, width: '80px' }}>İşlem</th>
+                  <SortableTH label="Puan"       sortKey="score"     active={sortKey === 'score'}     dir={sortDir} onSort={handleSort} />
+                  <th style={STATIC_TH}>Kullanıcı</th>
+                  <SortableTH label="Takipçi"    sortKey="followers" active={sortKey === 'followers'} dir={sortDir} onSort={handleSort} />
+                  <SortableTH label="Ort. Beğeni" sortKey="avg_likes" active={sortKey === 'avg_likes'} dir={sortDir} onSort={handleSort} />
+                  <th style={STATIC_TH}>Bölge</th>
+                  <th style={STATIC_TH}>Dil</th>
+                  <th style={STATIC_TH}>AI Yorum</th>
+                  <th style={{ ...STATIC_TH, width: '80px' }}>İşlem</th>
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
                   <tr><td colSpan={8} style={{ padding: '48px 16px', textAlign: 'center', color: '#64748b', fontSize: '14px' }}>Yükleniyor...</td></tr>
-                ) : filtered.length === 0 ? (
+                ) : sorted.length === 0 ? (
                   <tr><td colSpan={8} style={{ padding: '48px 16px', textAlign: 'center', color: '#64748b', fontSize: '14px' }}>
                     {hasFilters ? 'Filtreyle eşleşen hesap bulunamadı' : 'Henüz hesap eklenmemiş'}
                   </td></tr>
-                ) : filtered.map((row, i) => (
+                ) : sorted.map((row, i) => (
                   <tr key={String(row.id ?? i)} style={{
-                    borderBottom: i < filtered.length - 1 ? '1px solid rgba(42,42,58,0.6)' : 'none',
+                    borderBottom: i < sorted.length - 1 ? '1px solid rgba(42,42,58,0.6)' : 'none',
                     backgroundColor: i % 2 === 1 ? 'rgba(255,255,255,0.015)' : 'transparent',
                   }}>
                     <td style={TD}><ScoreBadge score={row.score} /></td>
@@ -187,11 +228,9 @@ export default function TwitterPage() {
                       {row.region ? <span style={{ fontSize: '13px', color: '#cbd5e1' }}>{String(row.region)}</span> : <span style={{ color: '#64748b' }}>—</span>}
                     </td>
                     <td style={TD}><LangBadge lang={row.language} /></td>
-                    <td style={{ ...TD, maxWidth: '260px' }}>
+                    <td style={{ ...TD, maxWidth: '300px' }}>
                       {row.ai_comment
-                        ? <span style={{ fontSize: '12px', color: '#94a3b8', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={String(row.ai_comment)}>
-                            {String(row.ai_comment).slice(0, 100)}{String(row.ai_comment).length > 100 ? '…' : ''}
-                          </span>
+                        ? <span style={{ fontSize: '12px', color: '#94a3b8', whiteSpace: 'normal', lineHeight: 1.5 }}>{String(row.ai_comment)}</span>
                         : <span style={{ color: '#64748b' }}>—</span>}
                     </td>
                     <td style={TD}>
