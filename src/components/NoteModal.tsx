@@ -13,6 +13,9 @@ interface NoteData {
   id?: string | number
   title?: string
   content?: string
+  category?: string
+  tags?: string
+  author?: string
 }
 
 interface NoteModalProps {
@@ -22,13 +25,16 @@ interface NoteModalProps {
   onClose?: () => void
 }
 
-const DEFAULT_FORM = { title: '', content: '' }
+const DEFAULT_FORM = { title: '', content: '', category: '', tags: '', author: '' }
 
 function buildForm(data?: NoteData) {
   if (!data) return DEFAULT_FORM
   return {
     title: String(data.title ?? ''),
     content: String(data.content ?? ''),
+    category: String(data.category ?? ''),
+    tags: String(data.tags ?? ''),
+    author: String(data.author ?? ''),
   }
 }
 
@@ -55,18 +61,19 @@ export function NoteModal({ mode = 'add', initialData, open: externalOpen, onClo
     setLoading(true)
     try {
       const sb = createSupabaseBrowserClient()
+      const payload = {
+        title: form.title,
+        content: form.content || null,
+        category: form.category || null,
+        tags: form.tags || null,
+        author: form.author || null,
+      }
       if (mode === 'edit' && initialData?.id) {
-        const { error } = await sb.from('notes').update({
-          title: form.title,
-          content: form.content || null,
-        }).eq('id', initialData.id)
+        const { error } = await sb.from('notes').update(payload).eq('id', initialData.id)
         if (error) throw error
         setToast({ message: 'Not başarıyla güncellendi.', type: 'success' })
       } else {
-        const { error } = await sb.from('notes').insert({
-          title: form.title,
-          content: form.content || null,
-        })
+        const { error } = await sb.from('notes').insert(payload)
         if (error) throw error
         setToast({ message: 'Not başarıyla eklendi.', type: 'success' })
         setForm(DEFAULT_FORM)
@@ -103,6 +110,18 @@ export function NoteModal({ mode = 'add', initialData, open: externalOpen, onClo
               onChange={e => set('content', e.target.value)}
               placeholder="Not içeriği..."
             />
+          </div>
+          <div style={fieldStyle}>
+            <label style={labelStyle}>Kategori</label>
+            <input style={inputStyle} value={form.category} onChange={e => set('category', e.target.value)} placeholder="örn. Pazarlama, Strateji" />
+          </div>
+          <div style={fieldStyle}>
+            <label style={labelStyle}>Etiketler</label>
+            <input style={inputStyle} value={form.tags} onChange={e => set('tags', e.target.value)} placeholder="örn. önemli, acil, fikir" />
+          </div>
+          <div style={fieldStyle}>
+            <label style={labelStyle}>Yazar</label>
+            <input style={inputStyle} value={form.author} onChange={e => set('author', e.target.value)} placeholder="İsminiz" />
           </div>
           <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '8px' }}>
             <button type="button" onClick={closeModal} style={cancelBtnStyle()}>İptal</button>
