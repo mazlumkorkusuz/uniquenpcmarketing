@@ -153,7 +153,7 @@ export default function LoginPage() {
       >
         {/* Pigeon mascot */}
         <img
-          src={isPigeonLooking ? '/pigeon-look.png' : '/pigeon-normal.png'}
+          src="/pigeon.png"
           alt=""
           style={{
             position: 'absolute',
