@@ -17,6 +17,9 @@ interface PlatformData {
   contact_email?: string
   website?: string
   status?: string
+  work_topic?: string
+  details?: string
+  last_edited_by?: string
 }
 
 interface PlatformModalProps {
@@ -26,7 +29,7 @@ interface PlatformModalProps {
   onClose?: () => void
 }
 
-const DEFAULT_FORM = { name: '', type: '', contact_name: '', contact_email: '', website: '', status: 'Aktif' }
+const DEFAULT_FORM = { name: '', type: '', contact_name: '', contact_email: '', website: '', status: 'Aktif', work_topic: '', details: '', last_edited_by: '' }
 
 function buildForm(data?: PlatformData) {
   if (!data) return DEFAULT_FORM
@@ -37,6 +40,9 @@ function buildForm(data?: PlatformData) {
     contact_email: String(data.contact_email ?? ''),
     website: String(data.website ?? ''),
     status: String(data.status ?? 'Aktif'),
+    work_topic: String(data.work_topic ?? ''),
+    details: String(data.details ?? ''),
+    last_edited_by: String(data.last_edited_by ?? ''),
   }
 }
 
@@ -63,26 +69,23 @@ export function PlatformModal({ mode = 'add', initialData, open: externalOpen, o
     setLoading(true)
     try {
       const sb = createSupabaseBrowserClient()
+      const payload = {
+        name: form.name,
+        type: form.type || null,
+        contact_name: form.contact_name || null,
+        contact_email: form.contact_email || null,
+        website: form.website || null,
+        status: form.status,
+        work_topic: form.work_topic || null,
+        details: form.details || null,
+        last_edited_by: form.last_edited_by || null,
+      }
       if (mode === 'edit' && initialData?.id) {
-        const { error } = await sb.from('crm_platforms').update({
-          name: form.name,
-          type: form.type || null,
-          contact_name: form.contact_name || null,
-          contact_email: form.contact_email || null,
-          website: form.website || null,
-          status: form.status,
-        }).eq('id', initialData.id)
+        const { error } = await sb.from('crm_platforms').update(payload).eq('id', initialData.id)
         if (error) throw error
         setToast({ message: 'Platform başarıyla güncellendi.', type: 'success' })
       } else {
-        const { error } = await sb.from('crm_platforms').insert({
-          name: form.name,
-          type: form.type || null,
-          contact_name: form.contact_name || null,
-          contact_email: form.contact_email || null,
-          website: form.website || null,
-          status: form.status,
-        })
+        const { error } = await sb.from('crm_platforms').insert(payload)
         if (error) throw error
         setToast({ message: 'Platform başarıyla eklendi.', type: 'success' })
         setForm(DEFAULT_FORM)
@@ -116,6 +119,19 @@ export function PlatformModal({ mode = 'add', initialData, open: externalOpen, o
             <input style={inputStyle} value={form.type} onChange={e => set('type', e.target.value)} placeholder="örn. Yayın, Sosyal Medya" />
           </div>
           <div style={fieldStyle}>
+            <label style={labelStyle}>Çalışma Konusu</label>
+            <input style={inputStyle} value={form.work_topic} onChange={e => set('work_topic', e.target.value)} placeholder="Creator program, Key distribution..." />
+          </div>
+          <div style={fieldStyle}>
+            <label style={labelStyle}>Detaylar / Notlar</label>
+            <textarea
+              style={{ ...inputStyle, minHeight: '90px', resize: 'vertical' }}
+              value={form.details}
+              onChange={e => set('details', e.target.value)}
+              placeholder="Detayları buraya yazın..."
+            />
+          </div>
+          <div style={fieldStyle}>
             <label style={labelStyle}>İletişim</label>
             <input style={inputStyle} value={form.contact_name} onChange={e => set('contact_name', e.target.value)} placeholder="İletişim kişisi" />
           </div>
@@ -126,6 +142,10 @@ export function PlatformModal({ mode = 'add', initialData, open: externalOpen, o
           <div style={fieldStyle}>
             <label style={labelStyle}>Website</label>
             <input style={inputStyle} value={form.website} onChange={e => set('website', e.target.value)} placeholder="https://..." />
+          </div>
+          <div style={fieldStyle}>
+            <label style={labelStyle}>Son Düzenleyen</label>
+            <input style={inputStyle} value={form.last_edited_by} onChange={e => set('last_edited_by', e.target.value)} placeholder="İsim..." />
           </div>
           <div style={fieldStyle}>
             <label style={labelStyle}>Durum</label>

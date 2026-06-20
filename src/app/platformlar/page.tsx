@@ -1,9 +1,8 @@
 export const dynamic = 'force-dynamic'
 import { supabase } from '@/lib/supabase'
 import PageHeader from '@/components/PageHeader'
-import DataTable from '@/components/DataTable'
-import Badge, { statusBadge } from '@/components/Badge'
-import { Globe, ExternalLink, ArrowRight } from 'lucide-react'
+import { statusBadge } from '@/components/Badge'
+import { Globe, ExternalLink, ArrowRight, User } from 'lucide-react'
 import Link from 'next/link'
 import { PlatformModal, EditPlatformButton } from '@/components/PlatformModal'
 import { DeleteButton } from '@/components/DeleteButton'
@@ -18,23 +17,35 @@ async function getData() {
 
 type Row = Record<string, unknown>
 
+const TH: React.CSSProperties = {
+  backgroundColor: '#13131a',
+  color: '#64748b',
+  fontSize: '11px',
+  fontWeight: 600,
+  textTransform: 'uppercase',
+  letterSpacing: '0.06em',
+  padding: '12px 20px',
+  textAlign: 'left',
+  borderBottom: '1px solid #2a2a3a',
+  whiteSpace: 'nowrap',
+}
+
+function WorkTopicBadges({ value }: { value: unknown }) {
+  if (!value) return <span style={{ color: '#64748b' }}>—</span>
+  const topics = String(value).split(',').map(t => t.trim()).filter(Boolean)
+  return (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
+      {topics.map((t, i) => (
+        <span key={i} style={{ fontSize: '12px', fontWeight: 600, color: '#60a5fa', backgroundColor: 'rgba(59,130,246,0.12)', border: '1px solid rgba(59,130,246,0.28)', borderRadius: '5px', padding: '2px 9px', whiteSpace: 'nowrap', cursor: 'default' }}>
+          {t}
+        </span>
+      ))}
+    </div>
+  )
+}
+
 export default async function PlatformlarPage() {
   const { platforms } = await getData()
-
-  const platformColumns = [
-    { key: 'name', label: 'Platform Adı', width: '200px' },
-    { key: 'type', label: 'Tür', render: (v: unknown) => v ? <Badge variant="blue">{String(v)}</Badge> : <span style={{ color: '#64748b' }}>—</span> },
-    { key: 'contact_name', label: 'İletişim', render: (v: unknown) => v ? <span style={{ color: '#e2e8f0' }}>{String(v)}</span> : <span style={{ color: '#64748b' }}>—</span> },
-    { key: 'contact_email', label: 'E-posta', render: (v: unknown) => v ? <span style={{ color: '#7c3aed', fontFamily: 'monospace', fontSize: '12px' }}>{String(v)}</span> : <span style={{ color: '#64748b' }}>—</span> },
-    { key: 'website', label: 'Website', render: (v: unknown) => v ? <span style={{ color: '#3b82f6', fontSize: '12px' }}>{String(v)}</span> : <span style={{ color: '#64748b' }}>—</span> },
-    { key: 'status', label: 'Durum', render: (v: unknown) => statusBadge(v as string) ?? <span style={{ color: '#64748b' }}>—</span> },
-    { key: 'id', label: '', width: '80px', render: (_: unknown, row: Row) => (
-      <div style={{ display: 'flex', gap: '4px' }}>
-        <EditPlatformButton row={row} />
-        <DeleteButton table="crm_platforms" id={row.id as string} />
-      </div>
-    )},
-  ]
 
   const featuredPlatforms = [
     {
@@ -218,7 +229,77 @@ export default async function PlatformlarPage() {
               <PlatformModal />
             </div>
           </div>
-          <DataTable columns={platformColumns} data={platforms as Row[]} emptyMessage="Henüz platform eklenmemiş" />
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr>
+                  <th style={TH}>Platform Adı</th>
+                  <th style={TH}>Çalışma Konusu</th>
+                  <th style={TH}>Detaylar / Notlar</th>
+                  <th style={TH}>Son Düzenleyen</th>
+                  <th style={TH}>Durum</th>
+                  <th style={{ ...TH, width: '90px' }}>İşlem</th>
+                </tr>
+              </thead>
+              <tbody>
+                {platforms.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} style={{ padding: '48px 20px', textAlign: 'center', color: '#64748b', fontSize: '14px' }}>
+                      Henüz platform eklenmemiş
+                    </td>
+                  </tr>
+                ) : (platforms as Row[]).map((p, i) => (
+                  <tr
+                    key={String(p.id ?? i)}
+                    style={{
+                      backgroundColor: i % 2 === 1 ? 'rgba(255,255,255,0.02)' : 'transparent',
+                      borderBottom: i < platforms.length - 1 ? '1px solid rgba(42,42,58,0.5)' : 'none',
+                    }}
+                  >
+                    <td style={{ padding: '16px 20px', minWidth: '160px' }}>
+                      <div style={{ fontWeight: 700, fontSize: '14px', color: '#f1f5f9' }}>{p.name ? String(p.name) : '—'}</div>
+                      {p.type && <div style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>{String(p.type)}</div>}
+                    </td>
+                    <td style={{ padding: '16px 20px', minWidth: '200px' }}>
+                      <WorkTopicBadges value={p.work_topic} />
+                    </td>
+                    <td style={{ padding: '16px 20px', minWidth: '220px', maxWidth: '320px' }}>
+                      {p.details ? (
+                        <span style={{
+                          fontSize: '13px',
+                          color: '#94a3b8',
+                          display: '-webkit-box',
+                          WebkitLineClamp: 3,
+                          WebkitBoxOrient: 'vertical',
+                          overflow: 'hidden',
+                          lineHeight: 1.55,
+                        } as React.CSSProperties}>
+                          {String(p.details)}
+                        </span>
+                      ) : <span style={{ color: '#64748b' }}>—</span>}
+                    </td>
+                    <td style={{ padding: '16px 20px', whiteSpace: 'nowrap' }}>
+                      {p.last_edited_by ? (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#94a3b8', fontSize: '13px' }}>
+                          <User size={13} color="#64748b" />
+                          {String(p.last_edited_by)}
+                        </div>
+                      ) : <span style={{ color: '#64748b' }}>—</span>}
+                    </td>
+                    <td style={{ padding: '16px 20px' }}>
+                      {statusBadge(String(p.status ?? '')) ?? <span style={{ color: '#64748b' }}>—</span>}
+                    </td>
+                    <td style={{ padding: '16px 20px' }}>
+                      <div style={{ display: 'flex', gap: '4px' }}>
+                        <EditPlatformButton row={p} />
+                        <DeleteButton table="crm_platforms" id={p.id as string} />
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
