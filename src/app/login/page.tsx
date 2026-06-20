@@ -159,9 +159,9 @@ export default function LoginPage() {
           alt=""
           style={{
             position: 'absolute',
-            bottom: '-20px',
-            left: '-200px',
-            width: '200px',
+            bottom: '40px',
+            left: '-260px',
+            width: '280px',
             height: 'auto',
             pointerEvents: 'none',
             animation: isPigeonLooking ? 'none' : 'float 3s ease-in-out infinite',
