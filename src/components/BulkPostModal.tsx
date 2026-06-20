@@ -19,7 +19,7 @@ const PLATFORMS = [
   { key: 'ig',        label: 'IG',        color: '#c13584', icon: '/icons/instagram.png' },
 ]
 
-const DEFAULT_FORM = { title: '', content: '', scheduled_date: '', scheduled_time: '', status: 'Taslak' }
+const DEFAULT_FORM = { title: '', content: '', url: '', scheduled_date: '', scheduled_time: '', status: 'Taslak' }
 
 export function BulkPostModal() {
   const [open, setOpen] = useState(false)
@@ -50,6 +50,7 @@ export function BulkPostModal() {
         platform,
         title: form.title,
         content: form.content || null,
+        url: form.url || null,
         scheduled_date: form.scheduled_date || null,
         scheduled_time: form.scheduled_time || null,
         status: form.status,
@@ -135,6 +136,10 @@ export function BulkPostModal() {
           <div style={fieldStyle}>
             <label style={labelStyle}>Başlık *</label>
             <input style={inputStyle} value={form.title} onChange={e => set('title', e.target.value)} placeholder="Gönderi başlığı" required />
+          </div>
+          <div style={fieldStyle}>
+            <label style={labelStyle}>Link (opsiyonel)</label>
+            <input style={inputStyle} type="url" value={form.url} onChange={e => set('url', e.target.value)} placeholder="https://..." />
           </div>
           <div style={fieldStyle}>
             <label style={labelStyle}>İçerik</label>

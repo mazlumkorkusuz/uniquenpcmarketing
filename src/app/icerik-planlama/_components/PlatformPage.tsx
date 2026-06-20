@@ -6,7 +6,7 @@ import { ContentCalendar } from '@/components/ContentCalendar'
 import type { CalPost } from '@/components/ContentCalendar'
 import { PostModal, EditPostButton } from '@/components/PostModal'
 import { DeleteButton } from '@/components/DeleteButton'
-import { Calendar, CheckCircle, Clock, FileText } from 'lucide-react'
+import { Calendar, CheckCircle, Clock, FileText, ExternalLink } from 'lucide-react'
 import { LucideIcon } from 'lucide-react'
 
 type Row = Record<string, unknown>
@@ -81,6 +81,12 @@ export async function PlatformPage({ platform, label, color, gradient, icon, ima
         : <span style={{ color: '#64748b' }}>—</span>,
     },
     { key: 'status', label: 'Durum', render: (v: unknown) => statusBadge(v as string | null) },
+    { key: 'url', label: 'Link', render: (v: unknown) => v ? (
+      <a href={String(v)} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '12px', fontWeight: 600, color: '#60a5fa', backgroundColor: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.25)', borderRadius: '5px', padding: '2px 8px', textDecoration: 'none', whiteSpace: 'nowrap' }}>
+        <ExternalLink size={11} />
+        Link
+      </a>
+    ) : <span style={{ color: '#64748b' }}>—</span> },
     { key: 'id', label: '', width: '80px', render: (_: unknown, row: Row) => (
       <div style={{ display: 'flex', gap: '4px' }}>
         <EditPostButton row={row} platform={platform} platformColor={color} />

@@ -10,6 +10,7 @@ interface PostData {
   id?: string | number
   title?: string
   content?: string
+  url?: string
   scheduled_date?: string
   scheduled_time?: string
   status?: string
@@ -25,13 +26,14 @@ interface PostModalProps {
 }
 
 const STATUS_OPTIONS = ['Taslak', 'Planlandı', 'Yayınlandı']
-const DEFAULT_FORM = { title: '', content: '', scheduled_date: '', scheduled_time: '', status: 'Taslak' }
+const DEFAULT_FORM = { title: '', content: '', url: '', scheduled_date: '', scheduled_time: '', status: 'Taslak' }
 
 function buildForm(data?: PostData) {
   if (!data) return DEFAULT_FORM
   return {
     title: String(data.title ?? ''),
     content: String(data.content ?? ''),
+    url: String(data.url ?? ''),
     scheduled_date: String(data.scheduled_date ?? ''),
     scheduled_time: String(data.scheduled_time ?? ''),
     status: String(data.status ?? 'Taslak'),
@@ -77,6 +79,7 @@ export function PostModal({ platform, platformColor, mode = 'add', initialData, 
         const { error: err } = await sb.from('social_media_posts').update({
           title: form.title || null,
           content: form.content || null,
+          url: form.url || null,
           scheduled_date: form.scheduled_date || null,
           scheduled_time: form.scheduled_time || null,
           status: form.status,
@@ -87,6 +90,7 @@ export function PostModal({ platform, platformColor, mode = 'add', initialData, 
           platform,
           title: form.title || null,
           content: form.content || null,
+          url: form.url || null,
           scheduled_date: form.scheduled_date || null,
           scheduled_time: form.scheduled_time || null,
           status: form.status,
@@ -166,6 +170,17 @@ export function PostModal({ platform, platformColor, mode = 'add', initialData, 
                   onChange={e => setForm(f => ({ ...f, content: e.target.value }))}
                   rows={4}
                   style={{ ...input, resize: 'vertical', minHeight: '90px', fontFamily: 'inherit' }}
+                />
+              </div>
+
+              <div>
+                <label style={label}>Link (opsiyonel)</label>
+                <input
+                  type="url"
+                  placeholder="https://..."
+                  value={form.url}
+                  onChange={e => setForm(f => ({ ...f, url: e.target.value }))}
+                  style={input}
                 />
               </div>
 
