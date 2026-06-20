@@ -157,10 +157,13 @@ export default function LoginPage() {
           alt=""
           style={{
             position: 'absolute',
-            bottom: 0,
-            left: '-180px',
-            width: '220px',
+            bottom: '0',
+            left: '-190px',
+            width: '180px',
             height: 'auto',
+            background: 'transparent',
+            mixBlendMode: 'normal',
+            pointerEvents: 'none',
           }}
         />
         {/* Logo */}
