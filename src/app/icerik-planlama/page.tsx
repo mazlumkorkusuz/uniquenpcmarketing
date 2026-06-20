@@ -5,6 +5,7 @@ import { ContentCalendar } from '@/components/ContentCalendar'
 import type { CalPost } from '@/components/ContentCalendar'
 import { CalendarCheck } from 'lucide-react'
 import Image from 'next/image'
+import { BulkPostModal } from '@/components/BulkPostModal'
 
 const PLATFORM_COLORS: Record<string, string> = {
   twitter:   '#1d9bf0',
@@ -55,7 +56,9 @@ export default async function IcerikPlanlamaPage() {
         subtitle="Tüm platformlardaki planlanmış gönderiler"
         icon={CalendarCheck}
         gradient="linear-gradient(135deg, #7c3aed, #4f46e5)"
-      />
+      >
+        <BulkPostModal />
+      </PageHeader>
 
       <div style={{ padding: '24px 32px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: '12px', marginBottom: '28px' }}>
