@@ -63,6 +63,8 @@ export function MeetingModal({ mode = 'add', initialData, open: externalOpen, on
     setLoading(true)
     try {
       const sb = createSupabaseBrowserClient()
+      const { data: { user } } = await sb.auth.getUser()
+      const authorEmail = user?.email ?? null
       if (mode === 'edit' && initialData?.id) {
         const { error } = await sb.from('meetings').update({
           title: form.title,
@@ -73,17 +75,33 @@ export function MeetingModal({ mode = 'add', initialData, open: externalOpen, on
           status: form.status,
         }).eq('id', initialData.id)
         if (error) throw error
+        if (form.notes) {
+          const { error: noteErr } = await sb.from('meeting_notes').insert({
+            meeting_id: initialData.id,
+            content: form.notes,
+            author: authorEmail,
+          })
+          if (noteErr) throw noteErr
+        }
         setToast({ message: 'Toplantı başarıyla güncellendi.', type: 'success' })
       } else {
-        const { error } = await sb.from('meetings').insert({
+        const { data: inserted, error } = await sb.from('meetings').insert({
           title: form.title,
           date: form.date,
           time: form.time || null,
           attendees: form.attendees || null,
           notes: form.notes || null,
           status: form.status,
-        })
+        }).select('id').single()
         if (error) throw error
+        if (form.notes && inserted?.id) {
+          const { error: noteErr } = await sb.from('meeting_notes').insert({
+            meeting_id: inserted.id,
+            content: form.notes,
+            author: authorEmail,
+          })
+          if (noteErr) throw noteErr
+        }
         setToast({ message: 'Toplantı başarıyla eklendi.', type: 'success' })
         setForm(DEFAULT_FORM)
       }
