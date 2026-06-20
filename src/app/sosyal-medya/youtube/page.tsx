@@ -118,11 +118,11 @@ function DetailPanel({ row, onClose, onDelete, onNoteSave }: { row: Row; onClose
           <div style={{ fontWeight: 700, fontSize: '14px', color: '#f1f5f9', marginBottom: '4px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{String(row.channel_name ?? '—')}</div>
           <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
             <PriorityBadge priority={row.priority} />
-            {row.region && <span style={{ fontSize: '11px', color: color, backgroundColor: color + '18', borderRadius: '4px', padding: '1px 6px' }}>{String(row.region)}</span>}
+            {!!row.region && <span style={{ fontSize: '11px', color: color, backgroundColor: color + '18', borderRadius: '4px', padding: '1px 6px' }}>{String(row.region)}</span>}
           </div>
         </div>
         <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
-          {row.channel_url && (
+          {!!row.channel_url && (
             <a href={String(row.channel_url)} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '28px', height: '28px', borderRadius: '6px', backgroundColor: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)', color: '#f87171', textDecoration: 'none' }}>
               <ExternalLink size={13} />
             </a>
@@ -145,7 +145,7 @@ function DetailPanel({ row, onClose, onDelete, onNoteSave }: { row: Row; onClose
         </div>
 
         {/* Oyunlar */}
-        {row.games && (
+        {!!row.games && (
           <div>
             <div style={{ fontSize: '11px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>Oyunlar</div>
             <div style={{ fontSize: '13px', color: '#cbd5e1', lineHeight: 1.6, backgroundColor: '#1a1a24', border: '1px solid #2a2a3a', borderRadius: '8px', padding: '10px 12px' }}>{String(row.games)}</div>
@@ -153,7 +153,7 @@ function DetailPanel({ row, onClose, onDelete, onNoteSave }: { row: Row; onClose
         )}
 
         {/* Bio */}
-        {row.bio && (
+        {!!row.bio && (
           <div>
             <div style={{ fontSize: '11px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>Bio</div>
             <div style={{ fontSize: '13px', color: '#94a3b8', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{String(row.bio)}</div>
@@ -161,7 +161,7 @@ function DetailPanel({ row, onClose, onDelete, onNoteSave }: { row: Row; onClose
         )}
 
         {/* AI Açıklama */}
-        {row.ai_description && (
+        {!!row.ai_description && (
           <div>
             <div style={{ fontSize: '11px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>AI Açıklama</div>
             <div style={{ fontSize: '13px', color: '#94a3b8', lineHeight: 1.6, whiteSpace: 'pre-wrap', backgroundColor: 'rgba(124,58,237,0.05)', border: '1px solid rgba(124,58,237,0.15)', borderRadius: '8px', padding: '10px 12px' }}>{String(row.ai_description)}</div>
@@ -373,7 +373,7 @@ export default function YouTubePage() {
                         </td>
                         <td style={TD}>
                           <div style={{ fontWeight: 600, fontSize: '13px', color: '#f1f5f9', maxWidth: '180px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{String(row.channel_name ?? '—')}</div>
-                          {row.region && <div style={{ fontSize: '11px', color, marginTop: '2px' }}>{String(row.region)}</div>}
+                          {!!row.region && <div style={{ fontSize: '11px', color, marginTop: '2px' }}>{String(row.region)}</div>}
                         </td>
                         <td style={TD}><span style={{ color: '#4ade80', fontWeight: 600, fontSize: '13px' }}>{fmt(row.subscribers)}</span></td>
                         <td style={TD}><span style={{ color: '#60a5fa', fontWeight: 600, fontSize: '13px' }}>{fmt(row.avg_long_views)}</span></td>
@@ -388,7 +388,7 @@ export default function YouTubePage() {
                         </td>
                         <td style={TD} onClick={e => e.stopPropagation()}>
                           <div style={{ display: 'flex', gap: '4px' }}>
-                            {row.channel_url && (
+                            {!!row.channel_url && (
                               <a href={String(row.channel_url)} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '11px', fontWeight: 600, color: '#f87171', backgroundColor: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)', borderRadius: '5px', padding: '4px 8px', textDecoration: 'none', whiteSpace: 'nowrap' }}>
                                 <ExternalLink size={10} /> Kanal
                               </a>
