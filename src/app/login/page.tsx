@@ -40,6 +40,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [isPigeonLooking, setIsPigeonLooking] = useState(false)
 
   const [lockout, setLockout] = useState<LockoutState>({ attempts: 0, lockedUntil: null })
   const [countdown, setCountdown] = useState(0)
@@ -120,28 +121,25 @@ export default function LoginPage() {
   return (
     <div
       style={{
-        minHeight: '100vh',
-        backgroundColor: '#0a0a0f',
+        position: 'fixed',
+        inset: 0,
+        zIndex: 0,
+        backgroundImage: "url('/banner.png')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         padding: '24px',
-        position: 'relative',
-        overflow: 'hidden',
       }}
     >
-      {/* Background glow */}
+      {/* Dark overlay */}
       <div
         style={{
           position: 'absolute',
-          top: '20%',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          width: '600px',
-          height: '600px',
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(124,58,237,0.08) 0%, transparent 70%)',
-          pointerEvents: 'none',
+          inset: 0,
+          backgroundColor: 'rgba(0,0,0,0.72)',
+          backdropFilter: 'blur(3px)',
         }}
       />
 
@@ -150,11 +148,16 @@ export default function LoginPage() {
           width: '100%',
           maxWidth: '420px',
           position: 'relative',
-          zIndex: 1,
+          zIndex: 2,
         }}
       >
         {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: '36px' }}>
+          <img
+            src={isPigeonLooking ? '/pigeon-look.png' : '/pigeon-normal.png'}
+            style={{ width: '160px', display: 'block', margin: '0 auto 8px', transition: 'opacity 0.2s ease' }}
+            alt=""
+          />
           <div
             style={{
               width: '200px',
@@ -316,8 +319,8 @@ export default function LoginPage() {
                     opacity: isLocked ? 0.5 : 1,
                     transition: 'border-color 0.15s',
                   }}
-                  onFocus={(e) => { (e.currentTarget as HTMLInputElement).style.borderColor = 'rgba(124,58,237,0.6)' }}
-                  onBlur={(e) => { (e.currentTarget as HTMLInputElement).style.borderColor = '#2a2a3a' }}
+                  onFocus={(e) => { (e.currentTarget as HTMLInputElement).style.borderColor = 'rgba(124,58,237,0.6)'; setIsPigeonLooking(true) }}
+                  onBlur={(e) => { (e.currentTarget as HTMLInputElement).style.borderColor = '#2a2a3a'; setIsPigeonLooking(false) }}
                 />
                 <button
                   type="button"
