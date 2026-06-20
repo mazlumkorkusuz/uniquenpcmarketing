@@ -258,7 +258,7 @@ export default async function PlatformlarPage() {
                   >
                     <td style={{ padding: '16px 20px', minWidth: '160px' }}>
                       <div style={{ fontWeight: 700, fontSize: '14px', color: '#f1f5f9' }}>{p.name ? String(p.name) : '—'}</div>
-                      {p.type && <div style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>{String(p.type)}</div>}
+                      {!!p.type && <div style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>{String(p.type)}</div>}
                     </td>
                     <td style={{ padding: '16px 20px', minWidth: '200px' }}>
                       <WorkTopicBadges value={p.work_topic} />
