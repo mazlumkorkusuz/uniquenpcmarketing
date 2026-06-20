@@ -119,6 +119,8 @@ export default function LoginPage() {
   const pct = isLocked ? (countdown / LOCKOUT_SECONDS) * 100 : 0
 
   return (
+    <>
+    <style>{`@keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-14px); } }`}</style>
     <div
       style={{
         position: 'fixed',
@@ -157,13 +159,12 @@ export default function LoginPage() {
           alt=""
           style={{
             position: 'absolute',
-            bottom: '0',
-            left: '-190px',
-            width: '180px',
+            bottom: '0px',
+            left: '-280px',
+            width: '320px',
             height: 'auto',
-            background: 'transparent',
-            mixBlendMode: 'normal',
             pointerEvents: 'none',
+            animation: 'float 3s ease-in-out infinite',
           }}
         />
         {/* Logo */}
@@ -403,5 +404,6 @@ export default function LoginPage() {
         </p>
       </div>
     </div>
+    </>
   )
 }
