@@ -218,10 +218,26 @@ export default function YouTubePage() {
   const [sortDir, setSortDir] = useState<SortDir>('desc')
 
   useEffect(() => {
-    createSupabaseBrowserClient()
-      .from('youtube_channels')
-      .select('*')
-      .then(({ data }) => { setChannels((data ?? []) as Row[]); setLoading(false) })
+    async function fetchAll() {
+      const sb = createSupabaseBrowserClient()
+      let all: Row[] = []
+      let from = 0
+      const batchSize = 1000
+      while (true) {
+        const { data, error } = await sb
+          .from('youtube_channels')
+          .select('*')
+          .order('score', { ascending: false })
+          .range(from, from + batchSize - 1)
+        if (error || !data || data.length === 0) break
+        all = [...all, ...(data as Row[])]
+        if (data.length < batchSize) break
+        from += batchSize
+      }
+      setChannels(all)
+      setLoading(false)
+    }
+    fetchAll()
   }, [])
 
   const handleSort = (key: SortKey) => {
