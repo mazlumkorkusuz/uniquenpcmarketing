@@ -61,7 +61,10 @@ export default async function ToplantilarPage() {
   ]
 
   const notesCols = [
-    { key: 'meeting_id', label: 'Toplantı', render: (v: unknown) => <span style={{ fontFamily: 'monospace', fontSize: '12px', color: '#94a3b8' }}>{String(v ?? '—')}</span> },
+    { key: 'meeting_id', label: 'Toplantı', render: (v: unknown) => {
+      const meeting = meetings.find(m => String(m.id) === String(v))
+      return <span style={{ fontWeight: 600, color: '#e2e8f0' }}>{meeting ? String(meeting.title ?? '—') : <span style={{ color: '#64748b' }}>—</span>}</span>
+    }},
     { key: 'content', label: 'Not İçeriği', render: (v: unknown) => (
       <span style={{ fontSize: '13px', color: '#cbd5e1', maxWidth: '400px', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
         {String(v ?? '—')}
