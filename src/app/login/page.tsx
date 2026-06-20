@@ -151,13 +151,20 @@ export default function LoginPage() {
           zIndex: 2,
         }}
       >
+        {/* Pigeon mascot */}
+        <img
+          src={isPigeonLooking ? '/pigeon-look.png' : '/pigeon-normal.png'}
+          alt=""
+          style={{
+            position: 'absolute',
+            bottom: 0,
+            left: '-180px',
+            width: '220px',
+            height: 'auto',
+          }}
+        />
         {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: '36px' }}>
-          <img
-            src={isPigeonLooking ? '/pigeon-look.png' : '/pigeon-normal.png'}
-            style={{ width: '160px', display: 'block', margin: '0 auto 8px', transition: 'opacity 0.2s ease' }}
-            alt=""
-          />
           <div
             style={{
               width: '200px',
