@@ -11,12 +11,26 @@ import { DeleteButton } from '@/components/DeleteButton'
 
 type Row = Record<string, unknown>
 
+async function getAllRecords(table: string): Promise<Row[]> {
+  let allData: Row[] = []
+  let from = 0
+  const batchSize = 1000
+  while (true) {
+    const { data } = await supabase.from(table).select('*').range(from, from + batchSize - 1)
+    if (!data || data.length === 0) break
+    allData = [...allData, ...data as Row[]]
+    if (data.length < batchSize) break
+    from += batchSize
+  }
+  return allData
+}
+
 async function getData() {
-  const [{ data: channels }, { data: notes }] = await Promise.all([
-    supabase.from('youtube_channels').select('*').order('subscribers', { ascending: false }),
-    supabase.from('youtube_notes').select('*').order('created_at', { ascending: false }),
+  const [channels, notes] = await Promise.all([
+    getAllRecords('youtube_channels'),
+    getAllRecords('youtube_notes'),
   ])
-  return { channels: (channels ?? []) as Row[], notes: (notes ?? []) as Row[] }
+  return { channels, notes }
 }
 
 function numCell(v: unknown) {

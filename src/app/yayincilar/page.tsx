@@ -18,24 +18,28 @@ const PLATFORMS = [
   { key: 'douyin',   label: 'Douyin',   color: '#fe2c55', href: '/yayincilar/douyin' },
 ]
 
-async function getData() {
-  const [
-    { data: twitch },
-    { data: kick },
-    { data: soop },
-    { data: youtube },
-  ] = await Promise.all([
-    supabase.from('twitch_streamers').select('username, display_name, followers').order('followers', { ascending: false }),
-    supabase.from('kick_streamers').select('username, channel_name, followers').order('followers', { ascending: false }),
-    supabase.from('soop_streamers').select('username, channel_name, followers').order('followers', { ascending: false }),
-    supabase.from('youtube_channels').select('channel_name, subscribers').order('subscribers', { ascending: false }),
-  ])
-  return {
-    twitch: (twitch ?? []) as Row[],
-    kick: (kick ?? []) as Row[],
-    soop: (soop ?? []) as Row[],
-    youtube: (youtube ?? []) as Row[],
+async function getAllRecords(table: string, columns: string): Promise<Row[]> {
+  let allData: Row[] = []
+  let from = 0
+  const batchSize = 1000
+  while (true) {
+    const { data } = await supabase.from(table).select(columns).range(from, from + batchSize - 1)
+    if (!data || data.length === 0) break
+    allData = [...allData, ...data as Row[]]
+    if (data.length < batchSize) break
+    from += batchSize
   }
+  return allData
+}
+
+async function getData() {
+  const [twitch, kick, soop, youtube] = await Promise.all([
+    getAllRecords('twitch_streamers', 'username, display_name, followers'),
+    getAllRecords('kick_streamers',   'username, channel_name, followers'),
+    getAllRecords('soop_streamers',   'username, channel_name, followers'),
+    getAllRecords('youtube_channels', 'channel_name, subscribers'),
+  ])
+  return { twitch, kick, soop, youtube }
 }
 
 export default async function YayincilarPage() {
