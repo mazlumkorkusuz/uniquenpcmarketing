@@ -18,14 +18,17 @@ const PLATFORMS = [
   { key: 'douyin',   label: 'Douyin',   color: '#fe2c55', href: '/yayincilar/douyin' },
 ]
 
-async function getAllRecords(table: string, columns: string): Promise<Row[]> {
-  let allData: Row[] = []
+async function getAllRecords(table: string): Promise<Record<string, unknown>[]> {
+  let allData: Record<string, unknown>[] = []
   let from = 0
   const batchSize = 1000
   while (true) {
-    const { data } = await supabase.from(table).select(columns).range(from, from + batchSize - 1)
+    const { data } = await supabase
+      .from(table)
+      .select('*')
+      .range(from, from + batchSize - 1)
     if (!data || data.length === 0) break
-    allData = [...allData, ...data as Row[]]
+    allData = [...allData, ...(data as Record<string, unknown>[])]
     if (data.length < batchSize) break
     from += batchSize
   }
@@ -34,10 +37,10 @@ async function getAllRecords(table: string, columns: string): Promise<Row[]> {
 
 async function getData() {
   const [twitch, kick, soop, youtube] = await Promise.all([
-    getAllRecords('twitch_streamers', 'username, display_name, followers'),
-    getAllRecords('kick_streamers',   'username, channel_name, followers'),
-    getAllRecords('soop_streamers',   'username, channel_name, followers'),
-    getAllRecords('youtube_channels', 'channel_name, subscribers'),
+    getAllRecords('twitch_streamers'),
+    getAllRecords('kick_streamers'),
+    getAllRecords('soop_streamers'),
+    getAllRecords('youtube_channels'),
   ])
   return { twitch, kick, soop, youtube }
 }
