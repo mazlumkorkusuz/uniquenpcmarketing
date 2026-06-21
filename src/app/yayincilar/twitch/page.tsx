@@ -185,12 +185,17 @@ export default function TwitchPage() {
     setSelected(prev => prev?.id === id ? null : prev)
   }, [])
 
+  const priorityOrder: Record<string, number> = { high: 0, medium: 1, low: 2 }
+
   const sorted = useMemo(() => {
     let data = streamers
     if (search) data = data.filter(r => String(r.username ?? '').toLowerCase().includes(search.toLowerCase()))
     if (emailOnly) data = data.filter(r => hasEmail(r))
     if (priorityFilter !== 'all') data = data.filter(r => String(r.priority ?? '').toLowerCase() === priorityFilter)
     return [...data].sort((a, b) => {
+      const ap = priorityOrder[String(a.priority ?? '').toLowerCase()] ?? 99
+      const bp = priorityOrder[String(b.priority ?? '').toLowerCase()] ?? 99
+      if (ap !== bp) return ap - bp
       const av = Number(a[sortKey] ?? 0), bv = Number(b[sortKey] ?? 0)
       return sortDir === 'desc' ? bv - av : av - bv
     })
