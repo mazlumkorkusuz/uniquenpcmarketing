@@ -108,7 +108,7 @@ function DetailPanel({ row, onClose, onDelete, onNoteSave }: { row: Row; onClose
   if (row.discord) contacts.push({ href: String(row.discord), icon: <Image src="/icons/discord.png" alt="Discord" width={13} height={13} onError={() => {}} />, label: String(row.discord) })
 
   return (
-    <div style={{ width: '360px', flexShrink: 0, backgroundColor: '#13131a', borderLeft: '1px solid #2a2a3a', display: 'flex', flexDirection: 'column', overflowY: 'auto', maxHeight: 'calc(100vh - 120px)', position: 'sticky', top: '24px' }}>
+    <div style={{ width: '380px', backgroundColor: '#13131a', borderLeft: '1px solid #2a2a3a', display: 'flex', flexDirection: 'column', overflowY: 'auto', position: 'fixed', top: 0, right: 0, height: '100vh', zIndex: 1000 }}>
       {/* Panel header */}
       <div style={{ padding: '16px 18px', borderBottom: '1px solid #2a2a3a', display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
         <div style={{ width: '44px', height: '44px', borderRadius: '12px', backgroundColor: color + '22', border: `2px solid ${color}55`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '16px', color, flexShrink: 0 }}>
@@ -321,10 +321,8 @@ export default function YouTubePage() {
           ))}
         </div>
 
-        {/* Main layout: table + panel */}
-        <div style={{ display: 'flex', gap: '0', alignItems: 'flex-start' }}>
-          {/* Table card */}
-          <div style={{ flex: 1, minWidth: 0, backgroundColor: '#1a1a24', border: '1px solid #2a2a3a', borderRadius: selected ? '12px 0 0 12px' : '12px', overflow: 'hidden' }}>
+        {/* Table card */}
+        <div style={{ backgroundColor: '#1a1a24', border: '1px solid #2a2a3a', borderRadius: '12px', overflow: 'hidden' }}>
             {/* Filters */}
             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', padding: '12px 16px', borderBottom: '1px solid #2a2a3a', alignItems: 'center' }}>
               <div style={{ position: 'relative', flex: 1, minWidth: '160px' }}>
@@ -422,16 +420,18 @@ export default function YouTubePage() {
             </div>
           </div>
 
-          {/* Detail panel */}
-          {selected && (
+        {/* Overlay + detail panel */}
+        {selected && (
+          <>
+            <div onClick={() => setSelected(null)} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 999 }} />
             <DetailPanel
               row={selected}
               onClose={() => setSelected(null)}
               onDelete={deleteChannel}
               onNoteSave={saveNote}
             />
-          )}
-        </div>
+          </>
+        )}
       </div>
     </div>
   )
