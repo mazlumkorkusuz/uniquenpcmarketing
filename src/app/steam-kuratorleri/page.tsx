@@ -118,6 +118,14 @@ export default function SteamKuratorleriPage() {
         imageSrc="/icons/steamlogo.png"
         gradient="linear-gradient(135deg, #14b8a6, #0891b2)"
       >
+        <a
+          href="https://docs.google.com/spreadsheets/d/1o-1cowOKi9wCoSlCXjwdkCkbQtfYv3LN/edit?gid=1554606637#gid=1554606637"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '9px 16px', borderRadius: '8px', backgroundColor: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.35)', color: '#4ade80', fontWeight: 600, fontSize: '13px', textDecoration: 'none', whiteSpace: 'nowrap' }}
+        >
+          📊 Tam Liste
+        </a>
         <CuratorModal />
       </PageHeader>
 
