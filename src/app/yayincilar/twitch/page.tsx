@@ -9,6 +9,25 @@ import Image from 'next/image'
 type Row = Record<string, unknown>
 type SortKey = 'followers' | 'avg_viewers'
 type SortDir = 'asc' | 'desc'
+type PriorityFilter = 'all' | 'high' | 'medium' | 'low'
+
+async function getAllData(): Promise<Row[]> {
+  const supabase = createSupabaseBrowserClient()
+  let allData: Row[] = []
+  let from = 0
+  const batchSize = 1000
+  while (true) {
+    const { data } = await supabase
+      .from('twitch_streamers')
+      .select('*')
+      .range(from, from + batchSize - 1)
+    if (!data || data.length === 0) break
+    allData = [...allData, ...(data as Row[])]
+    if (data.length < batchSize) break
+    from += batchSize
+  }
+  return allData
+}
 
 // ── helpers ───────────────────────────────────────────────────────────────
 function fmt(n: unknown): string {
@@ -147,29 +166,12 @@ export default function TwitchPage() {
   const [selected, setSelected] = useState<Row | null>(null)
   const [search, setSearch] = useState('')
   const [emailOnly, setEmailOnly] = useState(false)
+  const [priorityFilter, setPriorityFilter] = useState<PriorityFilter>('all')
   const [sortKey, setSortKey] = useState<SortKey>('followers')
   const [sortDir, setSortDir] = useState<SortDir>('desc')
 
   useEffect(() => {
-    async function fetchAll() {
-      const sb = createSupabaseBrowserClient()
-      let all: Row[] = []
-      let from = 0
-      const batch = 1000
-      while (true) {
-        const { data, error } = await sb
-          .from('twitch_streamers')
-          .select('*')
-          .range(from, from + batch - 1)
-        if (error || !data || data.length === 0) break
-        all = [...all, ...(data as Row[])]
-        if (data.length < batch) break
-        from += batch
-      }
-      setStreamers(all)
-      setLoading(false)
-    }
-    fetchAll()
+    getAllData().then(data => { setStreamers(data); setLoading(false) })
   }, [])
 
   const handleSort = (key: SortKey) => {
@@ -187,17 +189,18 @@ export default function TwitchPage() {
     let data = streamers
     if (search) data = data.filter(r => String(r.username ?? '').toLowerCase().includes(search.toLowerCase()))
     if (emailOnly) data = data.filter(r => hasEmail(r))
+    if (priorityFilter !== 'all') data = data.filter(r => String(r.priority ?? '').toLowerCase() === priorityFilter)
     return [...data].sort((a, b) => {
       const av = Number(a[sortKey] ?? 0), bv = Number(b[sortKey] ?? 0)
       return sortDir === 'desc' ? bv - av : av - bv
     })
-  }, [streamers, search, emailOnly, sortKey, sortDir])
+  }, [streamers, search, emailOnly, priorityFilter, sortKey, sortDir])
 
   // Stats
   const totalFollowers  = streamers.reduce((s, r) => s + (Number(r.followers) || 0), 0)
   const totalAvgViewers = streamers.reduce((s, r) => s + (Number(r.avg_viewers) || 0), 0)
   const emailCount      = streamers.filter(r => hasEmail(r)).length
-  const hasFilters      = !!(search || emailOnly)
+  const hasFilters      = !!(search || emailOnly || priorityFilter !== 'all')
 
   return (
     <div>
@@ -244,8 +247,22 @@ export default function TwitchPage() {
             >
               📧 Email Var
             </button>
+            {(['all', 'high', 'medium', 'low'] as PriorityFilter[]).map(p => {
+              const labels: Record<PriorityFilter, string> = { all: 'Tümü', high: '🟢 High', medium: '🟡 Medium', low: '🔴 Low' }
+              const colors: Record<PriorityFilter, string> = { all: '#64748b', high: '#4ade80', medium: '#fbbf24', low: '#f87171' }
+              const active = priorityFilter === p
+              return (
+                <button
+                  key={p}
+                  onClick={() => setPriorityFilter(p)}
+                  style={{ padding: '7px 14px', borderRadius: '7px', border: `1px solid ${active ? colors[p] + '80' : '#2a2a3a'}`, backgroundColor: active ? colors[p] + '18' : 'transparent', color: active ? colors[p] : '#64748b', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}
+                >
+                  {labels[p]}
+                </button>
+              )
+            })}
             {hasFilters && (
-              <button onClick={() => { setSearch(''); setEmailOnly(false) }} style={{ fontSize: '12px', color: '#64748b', background: 'none', border: '1px solid #2a2a3a', borderRadius: '7px', padding: '7px 12px', cursor: 'pointer' }}>
+              <button onClick={() => { setSearch(''); setEmailOnly(false); setPriorityFilter('all') }} style={{ fontSize: '12px', color: '#64748b', background: 'none', border: '1px solid #2a2a3a', borderRadius: '7px', padding: '7px 12px', cursor: 'pointer' }}>
                 Temizle
               </button>
             )}
@@ -273,11 +290,13 @@ export default function TwitchPage() {
                 ) : sorted.map((row, i) => {
                   const isActive = selected?.id === row.id
                   const games = String(row.simulator_games ?? row.games ?? '').trim()
+                  const priority = String(row.priority ?? '').toLowerCase()
+                  const priorityBorder = priority === 'high' ? '3px solid #4ade80' : priority === 'medium' ? '3px solid #fbbf24' : priority === 'low' ? '3px solid #f87171' : undefined
                   return (
                     <tr
                       key={String(row.id ?? i)}
                       onClick={() => setSelected(isActive ? null : row)}
-                      style={{ borderBottom: i < sorted.length - 1 ? '1px solid rgba(42,42,58,0.6)' : 'none', backgroundColor: isActive ? 'rgba(145,70,255,0.07)' : i % 2 === 1 ? 'rgba(255,255,255,0.012)' : 'transparent', cursor: 'pointer' }}
+                      style={{ borderBottom: i < sorted.length - 1 ? '1px solid rgba(42,42,58,0.6)' : 'none', backgroundColor: isActive ? 'rgba(145,70,255,0.07)' : i % 2 === 1 ? 'rgba(255,255,255,0.012)' : 'transparent', cursor: 'pointer', borderLeft: priorityBorder }}
                     >
                       <td style={{ ...TD, paddingRight: '8px' }}>
                         <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: 'rgba(145,70,255,0.18)', border: '1px solid rgba(145,70,255,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 800, color: '#a78bfa' }}>
