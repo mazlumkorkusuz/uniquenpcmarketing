@@ -93,7 +93,7 @@ const navItems: NavItem[] = [
       { href: '/icerik-planlama/ig',        label: 'IG',        imageSrc: '/icons/instagram.png' },
     ],
   },
-  { href: '/steam-kuratorleri', label: 'Steam Küratörleri', icon: Star },
+  { href: '/steam-kuratorleri', label: 'Steam Küratörleri', icon: Star, imageSrc: '/icons/steamlogo.png' },
   { href: '/gamalytic', label: 'Gamalytic', icon: BarChart2, imageSrc: 'https://gamalytic.com/gamalytic_logo.svg' },
   { href: '/news', label: 'News', icon: Newspaper },
 ]
