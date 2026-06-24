@@ -50,7 +50,7 @@ export async function GET() {
       summary: row.summary,
       link: row.link,
       image: row.image ?? '',
-      date: row.date,
+      date: row.pub_date,
     }))
     return NextResponse.json({ articles, cached: true })
   }
@@ -118,7 +118,7 @@ export async function GET() {
         summary: a.summary,
         link: a.link,
         image: a.image,
-        date: a.date,
+        pub_date: a.date,
         source: 'pcgamer',
         updated_at: new Date().toISOString(),
       }))
