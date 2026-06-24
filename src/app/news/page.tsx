@@ -249,22 +249,6 @@ export default function NewsPage() {
                   </div>
                 ))}
 
-                {/* Categories box */}
-                <div style={{ marginTop: 12, background: 'rgba(124,58,237,0.08)', border: '1px solid rgba(124,58,237,0.2)', borderRadius: 10, padding: '10px 12px' }}>
-                  <p style={{ fontSize: 11, fontWeight: 700, color: '#7c3aed', textTransform: 'uppercase', letterSpacing: 1, margin: '0 0 8px' }}>
-                    Top 5 Kategori
-                  </p>
-                  {twitchCategories.map((c, i) => (
-                    <div
-                      key={i}
-                      className="stream-row"
-                      style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '5px 6px', borderRadius: 6 }}
-                    >
-                      <span style={{ fontSize: 11, color: '#64748b', width: 20, textAlign: 'right', flexShrink: 0 }}>#{i + 1}</span>
-                      <span style={{ fontSize: 13, color: '#c4b5fd', flex: 1 }}>{c.name}</span>
-                    </div>
-                  ))}
-                </div>
               </>
             )}
           </div>
