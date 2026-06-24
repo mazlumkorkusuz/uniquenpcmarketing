@@ -23,18 +23,6 @@ interface TwitchCategory {
   id: string
 }
 
-interface KickStream {
-  slug: string
-  user: { username: string }
-  category: { name: string } | null
-  viewers: number
-  session_title?: string
-}
-
-interface KickTag {
-  tag: string
-}
-
 function formatViewers(n: number): string {
   if (n >= 1000) return (n / 1000).toFixed(1) + 'K'
   return String(n)
@@ -71,11 +59,6 @@ export default function NewsPage() {
   const [twitchLoading, setTwitchLoading] = useState(true)
   const [twitchUpdated, setTwitchUpdated] = useState<Date | null>(null)
 
-  const [kickStreams, setKickStreams] = useState<KickStream[]>([])
-  const [kickTags, setKickTags] = useState<KickTag[]>([])
-  const [kickLoading, setKickLoading] = useState(true)
-  const [kickUpdated, setKickUpdated] = useState<Date | null>(null)
-
   const fetchNews = useCallback(async () => {
     try {
       const res = await fetch('/api/news')
@@ -103,44 +86,18 @@ export default function NewsPage() {
     }
   }, [])
 
-  const fetchKick = useCallback(async () => {
-    setKickLoading(true)
-    try {
-      const [featuredRes, tagsRes] = await Promise.all([
-        fetch('https://web.kick.com/api/v1/livestreams/featured?language=tr'),
-        fetch('https://kick.com/api/v2/tags/trending?limit=10'),
-      ])
-      if (featuredRes.ok) {
-        const data = await featuredRes.json()
-        const list: KickStream[] = Array.isArray(data) ? data : (data.data ?? data.livestreams ?? [])
-        setKickStreams(list.slice(0, 10))
-      }
-      if (tagsRes.ok) {
-        const tagData = await tagsRes.json()
-        const tags: KickTag[] = Array.isArray(tagData) ? tagData : (tagData.data ?? tagData.tags ?? [])
-        setKickTags(tags.slice(0, 10))
-      }
-      setKickUpdated(new Date())
-    } finally {
-      setKickLoading(false)
-    }
-  }, [])
-
   useEffect(() => {
     fetchNews()
     fetchTwitch()
-    fetchKick()
 
     const newsInterval = setInterval(fetchNews, 5 * 60 * 1000)
     const twitchInterval = setInterval(fetchTwitch, 10 * 60 * 1000)
-    const kickInterval = setInterval(fetchKick, 10 * 60 * 1000)
 
     return () => {
       clearInterval(newsInterval)
       clearInterval(twitchInterval)
-      clearInterval(kickInterval)
     }
-  }, [fetchNews, fetchTwitch, fetchKick])
+  }, [fetchNews, fetchTwitch])
 
   const lastUpdatedLabel = (d: Date | null) =>
     d ? `Son güncelleme: ${d.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}` : ''
@@ -206,9 +163,9 @@ export default function NewsPage() {
         </div>
       </section>
 
-      {/* Twitch + Kick side by side */}
+      {/* Twitch streamers (left) + Twitch categories (right) */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
-        {/* TWITCH */}
+        {/* Left: Top 10 Streamers */}
         <section style={{ background: '#1e293b', borderRadius: 16, border: '1px solid #334155', overflow: 'hidden' }}>
           <div style={{ padding: '14px 20px', borderBottom: '1px solid #334155', display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(145,71,255,0.1)' }}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="#9147ff">
@@ -248,72 +205,42 @@ export default function NewsPage() {
                     </span>
                   </div>
                 ))}
-
               </>
             )}
           </div>
         </section>
 
-        {/* KICK */}
+        {/* Right: Top 10 Categories */}
         <section style={{ background: '#1e293b', borderRadius: 16, border: '1px solid #334155', overflow: 'hidden' }}>
-          <div style={{ padding: '14px 20px', borderBottom: '1px solid #334155', display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(83,228,62,0.08)' }}>
-            <svg width="20" height="20" viewBox="0 0 50 50" fill="#53e43e">
-              <path d="M10 5 L10 45 L20 45 L20 30 L28 38 L40 38 L26 24 L40 10 L28 10 L20 18 L20 5 Z"/>
-            </svg>
+          <div style={{ padding: '14px 20px', borderBottom: '1px solid #334155', display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(20,184,166,0.1)' }}>
+            <span style={{ fontSize: 20 }}>🎮</span>
             <div>
-              <span style={{ fontWeight: 700, fontSize: 15, color: '#86efac' }}>Kick Canlı</span>
-              {kickUpdated && <div style={{ fontSize: 11, color: '#64748b' }}>{lastUpdatedLabel(kickUpdated)}</div>}
+              <span style={{ fontWeight: 700, fontSize: 15, color: '#5eead4' }}>Twitch Top Kategoriler</span>
+              {twitchUpdated && <div style={{ fontSize: 11, color: '#64748b' }}>{lastUpdatedLabel(twitchUpdated)}</div>}
             </div>
           </div>
 
           <div style={{ padding: '12px 20px' }}>
-            {kickLoading ? (
+            {twitchLoading ? (
               <div style={{ color: '#64748b', fontSize: 13, padding: '20px 0' }}>Yükleniyor...</div>
-            ) : kickStreams.length === 0 ? (
-              <div style={{ color: '#64748b', fontSize: 13, padding: '20px 0' }}>
-                Türkçe yayın bulunamadı veya API erişilemedi.
-              </div>
             ) : (
               <>
-                <p style={{ fontSize: 11, fontWeight: 700, color: '#16a34a', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 6 }}>
-                  Top 10 Yayıncı
+                <p style={{ fontSize: 11, fontWeight: 700, color: '#0d9488', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 6 }}>
+                  Top 10 Kategori
                 </p>
-                {kickStreams.map((s, i) => (
+                {twitchCategories.map((c, i) => (
                   <div
                     key={i}
                     className="stream-row"
-                    style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 8px', borderRadius: 8, cursor: 'default' }}
+                    style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '7px 8px', borderRadius: 8, cursor: 'default' }}
                   >
                     <span style={{ fontSize: 11, color: '#64748b', width: 20, textAlign: 'right', flexShrink: 0 }}>#{i + 1}</span>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <p style={{ margin: 0, fontSize: 13, fontWeight: 600, color: '#f1f5f9', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                        {s.user?.username ?? s.slug}
-                      </p>
-                      <p style={{ margin: 0, fontSize: 11, color: '#94a3b8', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                        {s.category?.name ?? '—'}
-                      </p>
-                    </div>
-                    <span style={{ background: '#16a34a', color: '#fff', borderRadius: 20, padding: '2px 8px', fontSize: 11, fontWeight: 700, flexShrink: 0 }}>
-                      {formatViewers(s.viewers)}
+                    <div style={{ width: 3, height: 28, borderRadius: 2, background: i < 3 ? '#14b8a6' : '#0f766e', flexShrink: 0 }} />
+                    <span style={{ fontSize: 13, fontWeight: 600, color: '#ccfbf1', flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {c.name}
                     </span>
                   </div>
                 ))}
-
-                {/* Tags box */}
-                {kickTags.length > 0 && (
-                  <div style={{ marginTop: 12, background: 'rgba(83,228,62,0.06)', border: '1px solid rgba(83,228,62,0.18)', borderRadius: 10, padding: '10px 12px' }}>
-                    <p style={{ fontSize: 11, fontWeight: 700, color: '#16a34a', textTransform: 'uppercase', letterSpacing: 1, margin: '0 0 8px' }}>
-                      Trend Etiketler
-                    </p>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                      {kickTags.map((t, i) => (
-                        <span key={i} style={{ background: 'rgba(83,228,62,0.12)', color: '#86efac', borderRadius: 20, padding: '3px 10px', fontSize: 12, border: '1px solid rgba(83,228,62,0.25)' }}>
-                          {t.tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
               </>
             )}
           </div>

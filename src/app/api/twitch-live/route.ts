@@ -45,7 +45,7 @@ export async function GET() {
 
   const [streamsRes, categoriesRes] = await Promise.all([
     fetch('https://api.twitch.tv/helix/streams?first=10', { headers }),
-    fetch('https://api.twitch.tv/helix/games/top?first=5', { headers }),
+    fetch('https://api.twitch.tv/helix/games/top?first=10', { headers }),
   ])
 
   if (!streamsRes.ok || !categoriesRes.ok) {
