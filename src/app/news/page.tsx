@@ -152,21 +152,22 @@ export default function NewsPage() {
         .news-card:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
         .news-card { transition: transform 0.2s, box-shadow 0.2s; }
         .stream-row:hover { background: rgba(255,255,255,0.05) !important; }
+        .news-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+        @media (max-width: 1024px) { .news-grid { grid-template-columns: repeat(2, 1fr); } }
       `}</style>
 
-      {/* Header */}
       <h1 style={{ fontSize: 26, fontWeight: 800, margin: '0 0 28px', color: '#f1f5f9' }}>
         📰 News & Live
       </h1>
 
-      {/* TOP: PC Gamer News Grid */}
+      {/* PC Gamer News Grid */}
       <section style={{ marginBottom: 40 }}>
         <h2 style={{ fontSize: 18, fontWeight: 700, color: '#94a3b8', marginBottom: 18, textTransform: 'uppercase', letterSpacing: 1 }}>
           PC Gamer Haberleri
         </h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 18 }}>
+        <div className="news-grid">
           {newsLoading
-            ? Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)
+            ? Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)
             : articles.map((article, i) => (
                 <div
                   key={i}
@@ -205,16 +206,16 @@ export default function NewsPage() {
         </div>
       </section>
 
-      {/* BOTTOM: Twitch + Kick side by side */}
+      {/* Twitch + Kick side by side */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
         {/* TWITCH */}
         <section style={{ background: '#1e293b', borderRadius: 16, border: '1px solid #334155', overflow: 'hidden' }}>
-          <div style={{ padding: '16px 20px', borderBottom: '1px solid #334155', display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(145,71,255,0.1)' }}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="#9147ff">
+          <div style={{ padding: '14px 20px', borderBottom: '1px solid #334155', display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(145,71,255,0.1)' }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="#9147ff">
               <path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714z"/>
             </svg>
             <div>
-              <span style={{ fontWeight: 700, fontSize: 16, color: '#c4b5fd' }}>Twitch Canlı</span>
+              <span style={{ fontWeight: 700, fontSize: 15, color: '#c4b5fd' }}>Twitch Canlı</span>
               {twitchUpdated && <div style={{ fontSize: 11, color: '#64748b' }}>{lastUpdatedLabel(twitchUpdated)}</div>}
             </div>
           </div>
@@ -224,16 +225,16 @@ export default function NewsPage() {
               <div style={{ color: '#64748b', fontSize: 13, padding: '20px 0' }}>Yükleniyor...</div>
             ) : (
               <>
-                <p style={{ fontSize: 12, fontWeight: 700, color: '#7c3aed', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>
+                <p style={{ fontSize: 11, fontWeight: 700, color: '#7c3aed', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 6 }}>
                   Top 10 Yayıncı
                 </p>
                 {twitchStreams.map((s, i) => (
                   <div
                     key={i}
                     className="stream-row"
-                    style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '7px 8px', borderRadius: 8, cursor: 'default' }}
+                    style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 8px', borderRadius: 8, cursor: 'default' }}
                   >
-                    <span style={{ fontSize: 12, color: '#64748b', width: 22, textAlign: 'right', flexShrink: 0 }}>#{i + 1}</span>
+                    <span style={{ fontSize: 11, color: '#64748b', width: 20, textAlign: 'right', flexShrink: 0 }}>#{i + 1}</span>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <p style={{ margin: 0, fontSize: 13, fontWeight: 600, color: '#f1f5f9', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {s.user_name}
@@ -248,19 +249,22 @@ export default function NewsPage() {
                   </div>
                 ))}
 
-                <p style={{ fontSize: 12, fontWeight: 700, color: '#7c3aed', textTransform: 'uppercase', letterSpacing: 1, margin: '14px 0 8px' }}>
-                  Top 5 Kategori
-                </p>
-                {twitchCategories.map((c, i) => (
-                  <div
-                    key={i}
-                    className="stream-row"
-                    style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 8px', borderRadius: 8 }}
-                  >
-                    <span style={{ fontSize: 12, color: '#64748b', width: 22, textAlign: 'right', flexShrink: 0 }}>#{i + 1}</span>
-                    <span style={{ fontSize: 13, color: '#c4b5fd', flex: 1 }}>{c.name}</span>
-                  </div>
-                ))}
+                {/* Categories box */}
+                <div style={{ marginTop: 12, background: 'rgba(124,58,237,0.08)', border: '1px solid rgba(124,58,237,0.2)', borderRadius: 10, padding: '10px 12px' }}>
+                  <p style={{ fontSize: 11, fontWeight: 700, color: '#7c3aed', textTransform: 'uppercase', letterSpacing: 1, margin: '0 0 8px' }}>
+                    Top 5 Kategori
+                  </p>
+                  {twitchCategories.map((c, i) => (
+                    <div
+                      key={i}
+                      className="stream-row"
+                      style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '5px 6px', borderRadius: 6 }}
+                    >
+                      <span style={{ fontSize: 11, color: '#64748b', width: 20, textAlign: 'right', flexShrink: 0 }}>#{i + 1}</span>
+                      <span style={{ fontSize: 13, color: '#c4b5fd', flex: 1 }}>{c.name}</span>
+                    </div>
+                  ))}
+                </div>
               </>
             )}
           </div>
@@ -268,12 +272,12 @@ export default function NewsPage() {
 
         {/* KICK */}
         <section style={{ background: '#1e293b', borderRadius: 16, border: '1px solid #334155', overflow: 'hidden' }}>
-          <div style={{ padding: '16px 20px', borderBottom: '1px solid #334155', display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(83,228,62,0.08)' }}>
-            <svg width="22" height="22" viewBox="0 0 50 50" fill="#53e43e">
+          <div style={{ padding: '14px 20px', borderBottom: '1px solid #334155', display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(83,228,62,0.08)' }}>
+            <svg width="20" height="20" viewBox="0 0 50 50" fill="#53e43e">
               <path d="M10 5 L10 45 L20 45 L20 30 L28 38 L40 38 L26 24 L40 10 L28 10 L20 18 L20 5 Z"/>
             </svg>
             <div>
-              <span style={{ fontWeight: 700, fontSize: 16, color: '#86efac' }}>Kick Canlı</span>
+              <span style={{ fontWeight: 700, fontSize: 15, color: '#86efac' }}>Kick Canlı</span>
               {kickUpdated && <div style={{ fontSize: 11, color: '#64748b' }}>{lastUpdatedLabel(kickUpdated)}</div>}
             </div>
           </div>
@@ -287,16 +291,16 @@ export default function NewsPage() {
               </div>
             ) : (
               <>
-                <p style={{ fontSize: 12, fontWeight: 700, color: '#16a34a', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>
+                <p style={{ fontSize: 11, fontWeight: 700, color: '#16a34a', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 6 }}>
                   Top 10 Yayıncı
                 </p>
                 {kickStreams.map((s, i) => (
                   <div
                     key={i}
                     className="stream-row"
-                    style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '7px 8px', borderRadius: 8, cursor: 'default' }}
+                    style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 8px', borderRadius: 8, cursor: 'default' }}
                   >
-                    <span style={{ fontSize: 12, color: '#64748b', width: 22, textAlign: 'right', flexShrink: 0 }}>#{i + 1}</span>
+                    <span style={{ fontSize: 11, color: '#64748b', width: 20, textAlign: 'right', flexShrink: 0 }}>#{i + 1}</span>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <p style={{ margin: 0, fontSize: 13, fontWeight: 600, color: '#f1f5f9', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {s.user?.username ?? s.slug}
@@ -311,9 +315,10 @@ export default function NewsPage() {
                   </div>
                 ))}
 
+                {/* Tags box */}
                 {kickTags.length > 0 && (
-                  <>
-                    <p style={{ fontSize: 12, fontWeight: 700, color: '#16a34a', textTransform: 'uppercase', letterSpacing: 1, margin: '14px 0 8px' }}>
+                  <div style={{ marginTop: 12, background: 'rgba(83,228,62,0.06)', border: '1px solid rgba(83,228,62,0.18)', borderRadius: 10, padding: '10px 12px' }}>
+                    <p style={{ fontSize: 11, fontWeight: 700, color: '#16a34a', textTransform: 'uppercase', letterSpacing: 1, margin: '0 0 8px' }}>
                       Trend Etiketler
                     </p>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
@@ -323,7 +328,7 @@ export default function NewsPage() {
                         </span>
                       ))}
                     </div>
-                  </>
+                  </div>
                 )}
               </>
             )}

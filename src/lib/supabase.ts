@@ -34,6 +34,19 @@ export const supabase = new Proxy({} as SupabaseClient, {
 export type Database = {
   public: {
     Tables: {
+      news_cache: {
+        Row: {
+          id: string
+          created_at: string
+          updated_at: string
+          title: string
+          summary: string
+          link: string
+          image: string
+          date: string
+          source: string
+        }
+      }
       budget_expenses: {
         Row: {
           id: string

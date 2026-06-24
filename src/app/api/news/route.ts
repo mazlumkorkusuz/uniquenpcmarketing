@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { supabase } from '@/lib/supabase'
 
 interface Article {
   title: string
@@ -23,17 +24,38 @@ function extractMediaContent(xml: string): string {
   return match ? match[1] : ''
 }
 
-export async function GET() {
-  const rssRes = await fetch('https://www.pcgamer.com/rss/', {
-    next: { revalidate: 300 },
-  })
+function extractMediaThumbnail(xml: string): string {
+  const match = xml.match(/<media:thumbnail[^>]+url="([^"]+)"[^>]*\/?>/i)
+  return match ? match[1] : ''
+}
 
+export async function GET() {
+  const thirtyMinAgo = new Date(Date.now() - 30 * 60 * 1000).toISOString()
+
+  const { data: cached, error: cacheError } = await supabase
+    .from('news_cache')
+    .select('*')
+    .eq('source', 'pcgamer')
+    .gt('updated_at', thirtyMinAgo)
+    .order('created_at', { ascending: false })
+
+  if (!cacheError && cached && cached.length > 0) {
+    const articles: Article[] = (cached as Array<Record<string, string>>).map((row) => ({
+      title: row.title,
+      summary: row.summary,
+      link: row.link,
+      image: row.image ?? '',
+      date: row.date,
+    }))
+    return NextResponse.json({ articles, cached: true })
+  }
+
+  const rssRes = await fetch('https://www.pcgamer.com/rss/')
   if (!rssRes.ok) {
     return NextResponse.json({ error: 'Failed to fetch RSS' }, { status: 502 })
   }
 
   const xml = await rssRes.text()
-
   const itemMatches = xml.match(/<item[\s\S]*?<\/item>/gi) ?? []
   const top8 = itemMatches.slice(0, 8)
 
@@ -48,7 +70,7 @@ export async function GET() {
       const description = extractTag(item, 'description').replace(/<[^>]+>/g, '').slice(0, 500)
       const link = extractTag(item, 'link') || (item.match(/<link>([^<]+)<\/link>/i)?.[1] ?? '')
       const pubDate = extractTag(item, 'pubDate')
-      const image = extractEnclosure(item) || extractMediaContent(item)
+      const image = extractEnclosure(item) || extractMediaContent(item) || extractMediaThumbnail(item)
 
       let summary = ''
       try {
@@ -63,7 +85,7 @@ export async function GET() {
             messages: [
               {
                 role: 'user',
-                content: `Bu haber başlığı ve açıklaması için 2 cümlelik Türkçe özet yaz: Title: ${title} Description: ${description}`,
+                content: `Bu oyun haberini 2 cümleyle Türkçe özetle. Başlık: ${title}. Açıklama: ${description}`,
               },
             ],
             max_tokens: 150,
@@ -78,15 +100,25 @@ export async function GET() {
         summary = description.slice(0, 200)
       }
 
-      return {
-        title,
-        summary,
-        link,
-        image,
-        date: pubDate,
-      }
+      return { title, summary, link, image, date: pubDate }
     })
   )
+
+  await supabase.from('news_cache').delete().eq('source', 'pcgamer')
+
+  if (articles.length > 0) {
+    await supabase.from('news_cache').insert(
+      articles.map((a) => ({
+        title: a.title,
+        summary: a.summary,
+        link: a.link,
+        image: a.image,
+        date: a.date,
+        source: 'pcgamer',
+        updated_at: new Date().toISOString(),
+      }))
+    )
+  }
 
   return NextResponse.json({ articles })
 }
