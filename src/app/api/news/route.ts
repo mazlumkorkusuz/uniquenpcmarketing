@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@supabase/supabase-js'
 
 interface Article {
   title: string
@@ -30,6 +30,11 @@ function extractMediaThumbnail(xml: string): string {
 }
 
 export async function GET() {
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+
   const thirtyMinAgo = new Date(Date.now() - 30 * 60 * 1000).toISOString()
 
   const { data: cached, error: cacheError } = await supabase
