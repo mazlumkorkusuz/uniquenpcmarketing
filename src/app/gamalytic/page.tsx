@@ -294,7 +294,7 @@ export default function GamalyticPage() {
   if (selected) {
     const d = gameData
     const s = d?.steam
-    const headerImg = d?.headerImage ?? `https://cdn.akamai.steamstatic.com/steam/apps/${selected.id}/header.jpg`
+    const headerImg = selected.tiny_image
     const devs    = s?.developers?.length ? s.developers : d?.developers ?? []
     const pubs    = s?.publishers?.length ? s.publishers : d?.publishers ?? []
     const genres  = [...(d?.genres ?? []), ...(s?.steamGenres ?? [])].filter((v, i, a) => a.indexOf(v) === i)
