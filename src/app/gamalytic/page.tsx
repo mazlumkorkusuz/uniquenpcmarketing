@@ -611,7 +611,8 @@ export default function GamalyticPage() {
                   <button key={item.id} className="result-card" onClick={() => handleSelectGame(item)}
                     style={{ background: 'none', border: '1px solid #2a2a3a', borderRadius: '12px', padding: 0, cursor: 'pointer', textAlign: 'left', overflow: 'hidden', backgroundColor: '#1a1a24', transition: 'border-color 0.2s, transform 0.15s' }}>
                     <div style={{ position: 'relative', width: '100%', height: '120px', overflow: 'hidden', borderBottom: '1px solid #2a2a3a' }}>
-                      <Image src={item.tiny_image} alt={item.name} fill style={{ objectFit: 'cover' }} sizes="280px" />
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={item.tiny_image} alt={item.name} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
                     </div>
                     <div style={{ padding: '12px 14px 14px' }}>
                       <div style={{ fontSize: '13px', fontWeight: 600, color: '#f1f5f9', marginBottom: '8px', lineHeight: 1.35 }}>{item.name}</div>
