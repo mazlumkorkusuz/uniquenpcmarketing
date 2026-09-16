@@ -50,7 +50,7 @@ interface HistoryPoint {
 }
 
 interface GameData {
-  name?: string; steamId?: number; headerImage?: string; description?: string
+  name?: string; steamId?: number; headerImageUrl?: string; description?: string
   releaseDate?: string; reviewScore?: number; reviewCount?: number
   followers?: number; avgPlaytime?: number; copiesSold?: number
   revenue?: number; players?: number; wishlists?: number
@@ -294,7 +294,7 @@ export default function GamalyticPage() {
   if (selected) {
     const d = gameData
     const s = d?.steam
-    const headerImg = selected.tiny_image
+    const headerImg = d?.headerImageUrl ?? selected.tiny_image
     const devs    = s?.developers?.length ? s.developers : d?.developers ?? []
     const pubs    = s?.publishers?.length ? s.publishers : d?.publishers ?? []
     const genres  = [...(d?.genres ?? []), ...(s?.steamGenres ?? [])].filter((v, i, a) => a.indexOf(v) === i)
@@ -323,7 +323,8 @@ export default function GamalyticPage() {
             {/* LEFT COLUMN */}
             <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div style={{ position: 'relative', width: '100%', aspectRatio: '460/215', borderRadius: '12px', overflow: 'hidden', border: '1px solid #2a2a3a' }}>
-                <Image src={headerImg} alt={selected.name} fill style={{ objectFit: 'cover' }} sizes="(max-width: 1200px) 65vw, 800px" priority />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={headerImg} alt={selected.name} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
               </div>
               <div>
                 <h1 style={{ fontSize: '22px', fontWeight: 800, color: '#f1f5f9', margin: '0 0 8px' }}>{d?.name ?? selected.name}</h1>
