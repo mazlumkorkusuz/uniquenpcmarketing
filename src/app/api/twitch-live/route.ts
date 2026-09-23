@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { twitchHeaders } from '@/lib/twitch'
 
 interface Stream {
   user_name: string
@@ -13,34 +14,12 @@ interface Category {
   id: string
 }
 
-async function getTwitchToken(clientId: string, clientSecret: string): Promise<string> {
-  const res = await fetch(
-    `https://id.twitch.tv/oauth2/token?client_id=${clientId}&client_secret=${clientSecret}&grant_type=client_credentials`,
-    { method: 'POST' }
-  )
-  if (!res.ok) throw new Error('Failed to get Twitch token')
-  const data = await res.json()
-  return data.access_token as string
-}
-
 export async function GET() {
-  const clientId = process.env.TWITCH_CLIENT_ID
-  const clientSecret = process.env.TWITCH_CLIENT_SECRET
-
-  if (!clientId || !clientSecret) {
-    return NextResponse.json({ error: 'Twitch credentials not configured' }, { status: 500 })
-  }
-
-  let token: string
+  let headers: Record<string, string>
   try {
-    token = await getTwitchToken(clientId, clientSecret)
+    headers = await twitchHeaders()
   } catch {
-    return NextResponse.json({ error: 'Failed to authenticate with Twitch' }, { status: 502 })
-  }
-
-  const headers = {
-    'Client-ID': clientId,
-    Authorization: `Bearer ${token}`,
+    return NextResponse.json({ error: 'Twitch credentials not configured' }, { status: 500 })
   }
 
   const [streamsRes, categoriesRes] = await Promise.all([

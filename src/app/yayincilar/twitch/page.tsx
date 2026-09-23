@@ -2,16 +2,53 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 import PageHeader from '@/components/PageHeader'
-import { Search, X, ExternalLink, Mail, Globe, ChevronLeft, ChevronRight, Gamepad2 } from 'lucide-react'
+import { Search, X, ExternalLink, Mail, Globe, ChevronLeft, ChevronRight, Gamepad2, Users, Share2, Languages, Radio } from 'lucide-react'
 import Image from 'next/image'
 
 type Row = Record<string, unknown>
 type Region = 'global' | 'japan'
 type SortKey = 'avg_viewers' | 'followers' | 'display_name' | 'language'
 type SortDir = 'asc' | 'desc'
-type AuxRow = { region: string | null; language: string | null; followers: number | null; avg_viewers: number | null; email: string | null }
+type AuxRow = {
+  region: string | null
+  language: string | null
+  followers: number | null
+  avg_viewers: number | null
+  email: string | null
+  instagram: string | null
+  youtube: string | null
+  twitter: string | null
+  tiktok: string | null
+  discord: string | null
+  facebook: string | null
+  website: string | null
+  game: string | null
+}
+type LiveStream = { user_name: string; game_name: string; viewer_count: number }
+type LiveCategory = { name: string; id: string }
 
 const PAGE_SIZE = 350
+const CONTACT_FIELDS = ['instagram', 'youtube', 'twitter', 'tiktok', 'discord', 'facebook', 'website'] as const
+
+const LANGUAGE_FLAGS: Record<string, string> = {
+  'İngilizce': '🇬🇧', UK: '🇬🇧', Türkçe: '🇹🇷', Japonca: '🇯🇵', Korece: '🇰🇷',
+  'İspanyolca': '🇪🇸', Fransızca: '🇫🇷', Almanca: '🇩🇪', Portekizce: '🇵🇹', Rusça: '🇷🇺',
+  Çince: '🇨🇳', ZH_HK: '🇭🇰', 'İtalyanca': '🇮🇹', Arapça: '🇸🇦', Lehçe: '🇵🇱',
+  Hollandaca: '🇳🇱', Tayca: '🇹🇭', Çekçe: '🇨🇿', Danca: '🇩🇰', 'İsveççe': '🇸🇪',
+  Macarca: '🇭🇺', Fince: '🇫🇮', Hintçe: '🇮🇳', Yunanca: '🇬🇷', Rumence: '🇷🇴',
+  Norveççe: '🇳🇴', Bulgarca: '🇧🇬', 'Amerikan İşaret Dili': '🤟',
+}
+function languageFlag(lang: string): string {
+  return LANGUAGE_FLAGS[lang] ?? '🌐'
+}
+
+const AVATAR_PALETTE = ['#9146ff', '#60a5fa', '#4ade80', '#fbbf24', '#f472b6', '#f87171', '#22d3ee', '#818cf8']
+function colorForName(name: unknown): string {
+  const s = String(name ?? '')
+  let hash = 0
+  for (let i = 0; i < s.length; i++) hash = (hash * 31 + s.charCodeAt(i)) >>> 0
+  return AVATAR_PALETTE[hash % AVATAR_PALETTE.length]
+}
 
 // ── helpers ──────────────────────────────────────────────────────────────
 function fmt(n: unknown): string {
@@ -36,18 +73,29 @@ function sanitizeSearch(s: string): string {
   return s.replace(/[,()%]/g, ' ').trim()
 }
 
-// ── avatar (unavatar.io with initials fallback) ─────────────────────────
-function Avatar({ username, size }: { username: unknown; size: number }) {
+// ── avatar (Twitch Helix profile image with colored-initials fallback) ──
+function Avatar({ username, src, size }: { username: unknown; src?: string; size: number }) {
   const [broken, setBroken] = useState(false)
+  const [lastSrc, setLastSrc] = useState(src)
+  if (src !== lastSrc) {
+    setLastSrc(src)
+    setBroken(false)
+  }
   const uname = String(username ?? '').trim()
-  const fallbackStyle: React.CSSProperties = { width: size, height: size, borderRadius: size / 3.5, backgroundColor: 'rgba(145,70,255,0.18)', border: '1px solid rgba(145,70,255,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: size * 0.32, color: '#a78bfa', flexShrink: 0 }
-  if (!uname || broken) return <div style={fallbackStyle}>{initials(uname)}</div>
+  const color = colorForName(uname)
+  if (!uname || !src || broken) {
+    return (
+      <div style={{ width: size, height: size, borderRadius: size / 3.5, backgroundColor: color + '22', border: `1px solid ${color}66`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: size * 0.32, color, flexShrink: 0 }}>
+        {initials(uname)}
+      </div>
+    )
+  }
   return (
     <img
-      src={`https://unavatar.io/twitch/${encodeURIComponent(uname)}`}
+      src={src}
       alt={uname}
       onError={() => setBroken(true)}
-      style={{ width: size, height: size, borderRadius: size / 3.5, objectFit: 'cover', flexShrink: 0, border: '1px solid rgba(145,70,255,0.35)', backgroundColor: '#1a1a24' }}
+      style={{ width: size, height: size, borderRadius: size / 3.5, objectFit: 'cover', flexShrink: 0, border: `1px solid ${color}66`, backgroundColor: '#1a1a24' }}
     />
   )
 }
@@ -65,6 +113,34 @@ const STH: React.CSSProperties = { backgroundColor: '#13131a', color: '#64748b',
 const TD: React.CSSProperties = { padding: '12px 14px', verticalAlign: 'middle' }
 const SEL: React.CSSProperties = { backgroundColor: '#13131a', border: '1px solid #2a2a3a', borderRadius: '7px', padding: '7px 11px', fontSize: '13px', color: '#e2e8f0', cursor: 'pointer', outline: 'none' }
 
+// ── stats bar card styling ───────────────────────────────────────────────
+function statCardStyle(color: string): React.CSSProperties {
+  return {
+    backgroundColor: '#1a1a24',
+    backgroundImage: `linear-gradient(135deg, ${color}1c, transparent 65%)`,
+    border: `1px solid ${color}33`,
+    borderRadius: '14px',
+    padding: '22px 24px',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '12px',
+    minHeight: '132px',
+  }
+}
+const statValueStyle: React.CSSProperties = { fontSize: '26px', fontWeight: 800, color: '#f1f5f9', lineHeight: 1.15 }
+const statSubStyle: React.CSSProperties = { fontSize: '12px', color: '#64748b' }
+
+function StatCardHeader({ icon, color, label }: { icon: React.ReactNode; color: string; label: string }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+      <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: color + '22', border: `1px solid ${color}55`, display: 'flex', alignItems: 'center', justifyContent: 'center', color, flexShrink: 0 }}>
+        {icon}
+      </div>
+      <span style={{ fontSize: '12px', fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</span>
+    </div>
+  )
+}
+
 function ContactRow({ href, icon, label }: { href: string; icon: React.ReactNode; label: string }) {
   return (
     <a href={href} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#60a5fa', textDecoration: 'none', padding: '5px 0', overflow: 'hidden' }}>
@@ -75,7 +151,7 @@ function ContactRow({ href, icon, label }: { href: string; icon: React.ReactNode
 }
 
 // ── detail drawer ────────────────────────────────────────────────────────
-function DetailPanel({ row, onClose }: { row: Row; onClose: () => void }) {
+function DetailPanel({ row, profileSrc, onClose }: { row: Row; profileSrc?: string; onClose: () => void }) {
   const games = String(row.game ?? '').trim()
   const gameList = games ? games.split(/[,\n]/).map(g => g.trim()).filter(Boolean) : []
   const name = String(row.display_name ?? row.username ?? '—')
@@ -94,7 +170,7 @@ function DetailPanel({ row, onClose }: { row: Row; onClose: () => void }) {
     <div style={{ width: '380px', backgroundColor: '#13131a', borderLeft: '1px solid #2a2a3a', display: 'flex', flexDirection: 'column', overflowY: 'auto', position: 'fixed', top: 0, right: 0, height: '100vh', zIndex: 1000 }}>
       {/* Header */}
       <div style={{ padding: '18px', borderBottom: '1px solid #2a2a3a', display: 'flex', alignItems: 'center', gap: '14px' }}>
-        <Avatar key={String(row.username)} username={row.username} size={64} />
+        <Avatar key={String(row.username)} username={row.username} src={profileSrc} size={64} />
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ fontWeight: 700, fontSize: '16px', color: '#f1f5f9', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name}</div>
           <div style={{ fontSize: '12px', color: '#64748b', marginTop: '3px', display: 'flex', gap: '6px', alignItems: 'center' }}>
@@ -164,6 +240,84 @@ function DetailPanel({ row, onClose }: { row: Row; onClose: () => void }) {
   )
 }
 
+// ── "Twitch Canlı" live stats mini-card content ─────────────────────────
+function TwitchLiveCard() {
+  const [streams, setStreams] = useState<LiveStream[]>([])
+  const [categories, setCategories] = useState<LiveCategory[]>([])
+  const [error, setError] = useState(false)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    let cancelled = false
+    async function load() {
+      try {
+        const res = await fetch('/api/twitch-live')
+        if (!res.ok) throw new Error('failed')
+        const data = await res.json()
+        if (cancelled) return
+        setStreams((data.streams ?? []).slice(0, 5))
+        setCategories((data.categories ?? []).slice(0, 5))
+        setError(false)
+      } catch {
+        if (!cancelled) setError(true)
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    }
+    load()
+    const interval = setInterval(load, 60_000)
+    return () => { cancelled = true; clearInterval(interval) }
+  }, [])
+
+  return (
+    <>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: 'rgba(239,68,68,0.18)', border: '1px solid rgba(239,68,68,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#f87171', flexShrink: 0 }}>
+          <Radio size={17} />
+        </div>
+        <span style={{ fontSize: '12px', fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Twitch Canlı</span>
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', marginLeft: 'auto', fontSize: '10px', fontWeight: 700, color: '#4ade80' }}>
+          <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#4ade80', boxShadow: '0 0 6px #4ade80', animation: 'twitchLivePulse 1.6s ease-in-out infinite' }} />
+          CANLI
+        </span>
+      </div>
+
+      {loading ? (
+        <div style={{ fontSize: '12px', color: '#64748b', padding: '8px 0' }}>Yükleniyor...</div>
+      ) : error ? (
+        <div style={{ fontSize: '12px', color: '#64748b', padding: '8px 0' }}>Twitch verisi alınamadı</div>
+      ) : (
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+          <div>
+            <div style={{ fontSize: '10px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '6px' }}>En Çok İzlenen</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+              {streams.map((s, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px' }}>
+                  <span style={{ color: '#64748b', width: '12px', flexShrink: 0 }}>{i + 1}</span>
+                  <span style={{ color: '#e2e8f0', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>{s.user_name}</span>
+                  <span style={{ color: '#f87171', fontWeight: 700, flexShrink: 0 }}>{fmt(s.viewer_count)}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div>
+            <div style={{ fontSize: '10px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '6px' }}>Popüler Kategoriler</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+              {categories.map((c, i) => (
+                <div key={c.id ?? i} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px' }}>
+                  <span style={{ color: '#64748b', width: '12px', flexShrink: 0 }}>{i + 1}</span>
+                  <span style={{ color: '#e2e8f0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+      <style>{`@keyframes twitchLivePulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }`}</style>
+    </>
+  )
+}
+
 // ── main page ─────────────────────────────────────────────────────────────
 export default function TwitchPage() {
   const [activeTab, setActiveTab] = useState<Region>('global')
@@ -184,6 +338,12 @@ export default function TwitchPage() {
   const [auxRows, setAuxRows] = useState<AuxRow[]>([])
   const [auxLoading, setAuxLoading] = useState(true)
 
+  // Twitch Helix profile images for the usernames currently on screen
+  const [profileMap, setProfileMap] = useState<Record<string, string>>({})
+
+  // hover state for the "Popüler Kategoriler" stat card
+  const [categoriesHovered, setCategoriesHovered] = useState(false)
+
   // debounce search input
   useEffect(() => {
     const t = setTimeout(() => setSearch(sanitizeSearch(searchInput)), 350)
@@ -200,7 +360,7 @@ export default function TwitchPage() {
       while (true) {
         const { data, error } = await supabase
           .from('twitch_streamers')
-          .select('region, language, followers, avg_viewers, email')
+          .select('region, language, followers, avg_viewers, email, instagram, youtube, twitter, tiktok, discord, facebook, website, game')
           .range(from, from + batchSize - 1)
         if (error || !data || data.length === 0) break
         all = [...all, ...(data as AuxRow[])]
@@ -246,6 +406,31 @@ export default function TwitchPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, search, languageFilter, emailOnly, sortKey, sortDir, page])
 
+  // fetch Twitch Helix profile images for the usernames on the current page
+  useEffect(() => {
+    const usernames = Array.from(new Set(rows.map(r => String(r.username ?? '').trim().toLowerCase()).filter(Boolean)))
+      .filter(u => !(u in profileMap))
+    if (usernames.length === 0) return
+    let cancelled = false
+    ;(async () => {
+      try {
+        const res = await fetch('/api/twitch-profiles', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ usernames }),
+        })
+        if (!res.ok || cancelled) return
+        const data = await res.json()
+        if (cancelled) return
+        setProfileMap(prev => ({ ...prev, ...(data.profiles ?? {}) }))
+      } catch {
+        // Twitch API unavailable — colored-initials fallback covers this
+      }
+    })()
+    return () => { cancelled = true }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rows])
+
   const handleSort = (key: SortKey) => {
     if (sortKey === key) setSortDir(d => (d === 'desc' ? 'asc' : 'desc'))
     else { setSortKey(key); setSortDir('desc') }
@@ -255,17 +440,43 @@ export default function TwitchPage() {
   const globalCount = useMemo(() => auxRows.filter(r => (r.region ?? '').toLowerCase() === 'global').length, [auxRows])
   const japanCount = useMemo(() => auxRows.filter(r => (r.region ?? '').toLowerCase() === 'japan').length, [auxRows])
 
-  const stats = useMemo(() => ({
-    totalStreamers: tabRows.length,
-    totalFollowers: tabRows.reduce((s, r) => s + (Number(r.followers) || 0), 0),
-    totalAvgViewers: tabRows.reduce((s, r) => s + (Number(r.avg_viewers) || 0), 0),
-    emailCount: tabRows.filter(r => hasEmail(r.email)).length,
-  }), [tabRows])
+  const stats = useMemo(() => {
+    const emailCount = tabRows.filter(r => hasEmail(r.email)).length
+    const anyContactCount = tabRows.filter(r =>
+      hasEmail(r.email) || CONTACT_FIELDS.some(f => !!String(r[f] ?? '').trim())
+    ).length
+    return { totalStreamers: tabRows.length, emailCount, anyContactCount }
+  }, [tabRows])
 
   const languageOptions = useMemo(
     () => Array.from(new Set(tabRows.map(r => (r.language ?? '').trim()).filter(Boolean))).sort(),
     [tabRows]
   )
+
+  const languageStats = useMemo(() => {
+    const counts = new Map<string, number>()
+    for (const r of tabRows) {
+      const lang = (r.language ?? '').trim()
+      if (!lang) continue
+      counts.set(lang, (counts.get(lang) ?? 0) + 1)
+    }
+    return Array.from(counts.entries()).map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count)
+  }, [tabRows])
+  const topLanguage = languageStats[0]
+
+  const categoryStats = useMemo(() => {
+    const counts = new Map<string, number>()
+    for (const r of tabRows) {
+      const raw = (r.game ?? '').trim()
+      if (!raw) continue
+      const top = raw.split(',')[0].trim().replace(/\s*\(\d+\)\s*$/, '').trim()
+      if (!top) continue
+      counts.set(top, (counts.get(top) ?? 0) + 1)
+    }
+    return Array.from(counts.entries()).map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count)
+  }, [tabRows])
+  const topCategory = categoryStats[0]
+  const top3Categories = categoryStats.slice(0, 3)
 
   const hasFilters = !!(search || languageFilter || emailOnly)
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE))
@@ -310,18 +521,62 @@ export default function TwitchPage() {
         </div>
 
         {/* Stats bar */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
-          {[
-            { label: 'Toplam Yayıncı', value: auxLoading ? '…' : stats.totalStreamers.toLocaleString('tr-TR'), color: '#a78bfa' },
-            { label: 'Toplam Takipçi', value: auxLoading ? '…' : fmt(stats.totalFollowers), color: '#4ade80' },
-            { label: 'Toplam Ort. İzleyici', value: auxLoading ? '…' : fmt(stats.totalAvgViewers), color: '#60a5fa' },
-            { label: 'Email Olan', value: auxLoading ? '…' : stats.emailCount.toLocaleString('tr-TR'), color: '#fbbf24' },
-          ].map(s => (
-            <div key={s.label} style={{ backgroundColor: '#1a1a24', border: '1px solid #2a2a3a', borderRadius: '12px', padding: '18px 20px' }}>
-              <div style={{ fontSize: '26px', fontWeight: 800, color: s.color, lineHeight: 1 }}>{s.value}</div>
-              <div style={{ fontSize: '12px', color: '#64748b', marginTop: '7px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{s.label}</div>
-            </div>
-          ))}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
+          {/* Toplam Yayıncı */}
+          <div style={statCardStyle('#9146ff')}>
+            <StatCardHeader icon={<Users size={17} />} color="#9146ff" label="Toplam Yayıncı" />
+            <div style={statValueStyle}>{auxLoading ? '…' : stats.totalStreamers.toLocaleString('tr-TR')}</div>
+            <div style={statSubStyle}>Bu sekmede takip edilen kanal</div>
+          </div>
+
+          {/* Email Olan */}
+          <div style={statCardStyle('#fbbf24')}>
+            <StatCardHeader icon={<Mail size={17} />} color="#fbbf24" label="Email Olan" />
+            <div style={statValueStyle}>{auxLoading ? '…' : stats.emailCount.toLocaleString('tr-TR')}</div>
+            <div style={statSubStyle}>{auxLoading || stats.totalStreamers === 0 ? '—' : `%${Math.round((stats.emailCount / stats.totalStreamers) * 100)} kapsam`}</div>
+          </div>
+
+          {/* En az 1 iletişim/sosyal */}
+          <div style={statCardStyle('#4ade80')}>
+            <StatCardHeader icon={<Share2 size={17} />} color="#4ade80" label="İletişim / Sosyal Medya" />
+            <div style={statValueStyle}>{auxLoading ? '…' : stats.anyContactCount.toLocaleString('tr-TR')}</div>
+            <div style={statSubStyle}>{auxLoading || stats.totalStreamers === 0 ? '—' : `%${Math.round((stats.anyContactCount / stats.totalStreamers) * 100)} en az 1 kanal`}</div>
+          </div>
+
+          {/* Popüler Dil */}
+          <div style={statCardStyle('#60a5fa')}>
+            <StatCardHeader icon={<Languages size={17} />} color="#60a5fa" label="Popüler Dil" />
+            <div style={statValueStyle}>{auxLoading ? '…' : topLanguage ? `${languageFlag(topLanguage.name)} ${topLanguage.name}` : '—'}</div>
+            <div style={statSubStyle}>{auxLoading || !topLanguage ? '—' : `${topLanguage.count.toLocaleString('tr-TR')} yayıncı`}</div>
+          </div>
+
+          {/* Popüler Kategoriler (wide, hoverable) */}
+          <div
+            onMouseEnter={() => setCategoriesHovered(true)}
+            onMouseLeave={() => setCategoriesHovered(false)}
+            style={{ ...statCardStyle('#f472b6'), gridColumn: 'span 2', position: 'relative' }}
+          >
+            <StatCardHeader icon={<Gamepad2 size={17} />} color="#f472b6" label="Popüler Kategoriler" />
+            <div style={statValueStyle}>{auxLoading ? '…' : topCategory ? topCategory.name : '—'}</div>
+            <div style={statSubStyle}>{auxLoading || !topCategory ? '—' : `${topCategory.count.toLocaleString('tr-TR')} yayıncının ana kategorisi · üzerine gelip ilk 3'ü gör`}</div>
+
+            {categoriesHovered && top3Categories.length > 0 && (
+              <div style={{ position: 'absolute', top: 'calc(100% + 8px)', left: '20px', right: '20px', zIndex: 10, backgroundColor: '#1a1a24', border: '1px solid rgba(244,114,182,0.35)', borderRadius: '12px', padding: '14px', boxShadow: '0 12px 28px rgba(0,0,0,0.45)', display: 'flex', gap: '10px' }}>
+                {top3Categories.map((c, i) => (
+                  <div key={c.name} style={{ flex: 1, backgroundColor: 'rgba(244,114,182,0.08)', border: '1px solid rgba(244,114,182,0.2)', borderRadius: '8px', padding: '10px 12px' }}>
+                    <div style={{ fontSize: '10px', fontWeight: 700, color: '#f472b6', marginBottom: '4px' }}>#{i + 1}</div>
+                    <div style={{ fontSize: '12px', fontWeight: 600, color: '#f1f5f9', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.name}</div>
+                    <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '2px' }}>{c.count.toLocaleString('tr-TR')} yayıncı</div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Twitch Canlı (wide) */}
+          <div style={{ ...statCardStyle('#f87171'), gridColumn: 'span 2' }}>
+            <TwitchLiveCard />
+          </div>
         </div>
 
         {/* Table card */}
@@ -379,7 +634,7 @@ export default function TwitchPage() {
                       style={{ borderBottom: i < rows.length - 1 ? '1px solid rgba(42,42,58,0.6)' : 'none', backgroundColor: isActive ? 'rgba(145,70,255,0.07)' : i % 2 === 1 ? 'rgba(255,255,255,0.012)' : 'transparent', cursor: 'pointer' }}
                     >
                       <td style={{ ...TD, paddingRight: '8px' }}>
-                        <Avatar username={row.username} size={32} />
+                        <Avatar username={row.username} src={profileMap[String(row.username ?? '').trim().toLowerCase()]} size={32} />
                       </td>
                       <td style={TD}>
                         <a
@@ -449,7 +704,7 @@ export default function TwitchPage() {
         {selected && (
           <>
             <div onClick={() => setSelected(null)} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 999 }} />
-            <DetailPanel row={selected} onClose={() => setSelected(null)} />
+            <DetailPanel row={selected} profileSrc={profileMap[String(selected.username ?? '').trim().toLowerCase()]} onClose={() => setSelected(null)} />
           </>
         )}
       </div>
