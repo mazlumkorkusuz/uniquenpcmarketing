@@ -2,7 +2,7 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 import PageHeader from '@/components/PageHeader'
-import { Search, X, ExternalLink, Mail, Globe, ChevronLeft, ChevronRight, Gamepad2, Users, Share2, Video, TrendingUp } from 'lucide-react'
+import { Search, X, ExternalLink, Mail, Globe, ChevronLeft, ChevronRight, Gamepad2, Users, Share2, Video, TrendingUp, RefreshCw } from 'lucide-react'
 import Image from 'next/image'
 
 type Row = Record<string, unknown>
@@ -64,17 +64,17 @@ function colorForName(name: unknown): string {
   return AVATAR_PALETTE[hash % AVATAR_PALETTE.length]
 }
 
-// ── avatar (unavatar.io with colored-initials fallback) ─────────────────
-function Avatar({ username, size }: { username: unknown; size: number }) {
+// ── avatar (profile_image_url from Supabase with colored-initials fallback) ─
+function Avatar({ username, src, size }: { username: unknown; src?: string; size: number }) {
   const [broken, setBroken] = useState(false)
-  const [lastUname, setLastUname] = useState(username)
-  if (username !== lastUname) {
-    setLastUname(username)
+  const [lastSrc, setLastSrc] = useState(src)
+  if (src !== lastSrc) {
+    setLastSrc(src)
     setBroken(false)
   }
   const uname = String(username ?? '').trim()
   const color = colorForName(uname)
-  if (!uname || broken) {
+  if (!uname || !src || broken) {
     return (
       <div style={{ width: size, height: size, borderRadius: size / 3.5, backgroundColor: color + '22', border: `1px solid ${color}66`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: size * 0.32, color, flexShrink: 0 }}>
         {initials(uname)}
@@ -83,7 +83,7 @@ function Avatar({ username, size }: { username: unknown; size: number }) {
   }
   return (
     <img
-      src={`https://unavatar.io/kick/${encodeURIComponent(uname)}`}
+      src={src}
       alt={uname}
       onError={() => setBroken(true)}
       style={{ width: size, height: size, borderRadius: size / 3.5, objectFit: 'cover', flexShrink: 0, border: `1px solid ${color}66`, backgroundColor: '#1a1a24' }}
@@ -143,6 +143,7 @@ function ContactRow({ href, icon, label }: { href: string; icon: React.ReactNode
 
 // ── detail drawer ────────────────────────────────────────────────────────
 function DetailPanel({ row, onClose }: { row: Row; onClose: () => void }) {
+  const avatarSrc = row.profile_image_url ? String(row.profile_image_url) : undefined
   const games = String(row.game ?? '').trim()
   const gameList = games ? games.split(/[,\n]/).map(g => g.trim()).filter(Boolean) : []
   const name = String(row.channel_name ?? row.username ?? '—')
@@ -160,7 +161,7 @@ function DetailPanel({ row, onClose }: { row: Row; onClose: () => void }) {
     <div style={{ width: '380px', backgroundColor: '#13131a', borderLeft: '1px solid #2a2a3a', display: 'flex', flexDirection: 'column', overflowY: 'auto', position: 'fixed', top: 0, right: 0, height: '100vh', zIndex: 1000 }}>
       {/* Header */}
       <div style={{ padding: '18px', borderBottom: '1px solid #2a2a3a', display: 'flex', alignItems: 'center', gap: '14px' }}>
-        <Avatar key={String(row.username)} username={row.username} size={64} />
+        <Avatar key={String(row.username)} username={row.username} src={avatarSrc} size={64} />
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ fontWeight: 700, fontSize: '16px', color: '#f1f5f9', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name}</div>
           <div style={{ fontSize: '12px', color: '#64748b', marginTop: '3px' }}>@{String(row.username ?? '—')}</div>
@@ -249,6 +250,31 @@ export default function KickPage() {
 
   // hover state for the "Popüler Kategoriler" stat card
   const [categoriesHovered, setCategoriesHovered] = useState(false)
+
+  // admin: manual trigger for the fetch-kick-avatars edge function
+  const [avatarSync, setAvatarSync] = useState<{ loading: boolean; message: string | null; isError: boolean }>({ loading: false, message: null, isError: false })
+
+  const triggerAvatarSync = async () => {
+    setAvatarSync({ loading: true, message: null, isError: false })
+    try {
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+      const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+      if (!supabaseUrl || !anonKey) throw new Error('Supabase yapılandırması eksik')
+      const res = await fetch(`${supabaseUrl}/functions/v1/fetch-kick-avatars`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${anonKey}`, apikey: anonKey, 'Content-Type': 'application/json' },
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data?.error ?? `HTTP ${res.status}`)
+      setAvatarSync({
+        loading: false,
+        isError: false,
+        message: `${data.updated} güncellendi, ${data.failed} hata, ${data.remaining} kaldı`,
+      })
+    } catch (err) {
+      setAvatarSync({ loading: false, isError: true, message: err instanceof Error ? err.message : 'Bilinmeyen hata' })
+    }
+  }
 
   // debounce search input
   useEffect(() => {
@@ -362,6 +388,23 @@ export default function KickPage() {
       <PageHeader title="Kick Yayıncıları" subtitle="Yayıncı takip ve analizi" imageSrc="/icons/kick.png" gradient="linear-gradient(135deg, #53fc18, #2ea80e)" />
 
       <div style={{ padding: '24px 32px' }}>
+        {/* Admin */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', backgroundColor: '#1a1a24', border: '1px solid #2a2a3a', borderRadius: '10px', padding: '12px 16px', marginBottom: '20px' }}>
+          <span style={{ fontSize: '11px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Admin</span>
+          <button
+            onClick={triggerAvatarSync}
+            disabled={avatarSync.loading}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '7px', padding: '7px 14px', borderRadius: '7px', border: `1px solid ${KICK_COLOR}55`, backgroundColor: 'rgba(83,252,24,0.08)', color: KICK_COLOR, fontSize: '13px', fontWeight: 600, cursor: avatarSync.loading ? 'not-allowed' : 'pointer', opacity: avatarSync.loading ? 0.6 : 1 }}
+          >
+            <RefreshCw size={13} style={{ animation: avatarSync.loading ? 'kickAvatarSpin 1s linear infinite' : 'none' }} />
+            {avatarSync.loading ? 'Güncelleniyor...' : 'Profil Fotoğraflarını Güncelle (Kick API)'}
+          </button>
+          {avatarSync.message && (
+            <span style={{ fontSize: '12px', color: avatarSync.isError ? '#f87171' : '#4ade80' }}>{avatarSync.message}</span>
+          )}
+          <style>{`@keyframes kickAvatarSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
+        </div>
+
         {/* Stats bar */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
           {/* Toplam Yayıncı */}
@@ -475,7 +518,7 @@ export default function KickPage() {
                       style={{ borderBottom: i < rows.length - 1 ? '1px solid rgba(42,42,58,0.6)' : 'none', backgroundColor: isActive ? 'rgba(83,252,24,0.06)' : i % 2 === 1 ? 'rgba(255,255,255,0.012)' : 'transparent', cursor: 'pointer' }}
                     >
                       <td style={{ ...TD, paddingRight: '8px' }}>
-                        <Avatar username={row.username} size={32} />
+                        <Avatar username={row.username} src={row.profile_image_url ? String(row.profile_image_url) : undefined} size={32} />
                       </td>
                       <td style={TD}>
                         <a

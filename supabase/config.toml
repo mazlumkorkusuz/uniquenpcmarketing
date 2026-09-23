@@ -1,0 +1,4 @@
+project_id = "qvwncxjcvlpbwsusztds"
+
+[functions.fetch-kick-avatars]
+verify_jwt = true
