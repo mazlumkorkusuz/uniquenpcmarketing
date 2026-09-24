@@ -36,17 +36,18 @@ async function getAllRecords(table: string): Promise<Record<string, unknown>[]> 
 }
 
 async function getData() {
-  const [twitch, kick, soop, youtube] = await Promise.all([
+  const [twitch, kick, soop, youtube, chzzk] = await Promise.all([
     getAllRecords('twitch_streamers'),
     getAllRecords('kick_streamers'),
     getAllRecords('soop_streamers'),
     getAllRecords('youtube_channels'),
+    getAllRecords('chzzk_streamers'),
   ])
-  return { twitch, kick, soop, youtube }
+  return { twitch, kick, soop, youtube, chzzk }
 }
 
 export default async function YayincilarPage() {
-  const { twitch, kick, soop, youtube } = await getData()
+  const { twitch, kick, soop, youtube, chzzk } = await getData()
 
   const counts: Record<string, number> = {
     twitch:   twitch.length,
@@ -54,7 +55,7 @@ export default async function YayincilarPage() {
     soop:     soop.length,
     youtube:  youtube.length,
     niconico: 0,
-    chzzk:    0,
+    chzzk:    chzzk.length,
     bilibili: 0,
     douyin:   0,
   }
@@ -65,7 +66,7 @@ export default async function YayincilarPage() {
     soop:     soop.slice(0, 8).map((r) => ({ label: String(r.channel_name ?? r.username ?? '—'), value: Number(r.followers) || 0 })),
     youtube:  youtube.slice(0, 8).map((r) => ({ label: String(r.channel_name ?? '—'), value: Number(r.subscribers) || 0 })),
     niconico: [],
-    chzzk:    [],
+    chzzk:    chzzk.slice(0, 8).map((r) => ({ label: String(r.channel_name ?? '—'), value: Number(r.followers) || 0 })),
     bilibili: [],
     douyin:   [],
   }

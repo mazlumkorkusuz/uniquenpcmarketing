@@ -24,6 +24,7 @@ async function getDashboardStats() {
     { count: kickCount },
     { count: soopCount },
     { count: ytCount },
+    { count: chzzkCount },
     { count: platformCount },
     { count: meetingCount },
     { count: noteCount },
@@ -37,6 +38,7 @@ async function getDashboardStats() {
     supabase.from('kick_streamers').select('*', { count: 'exact', head: true }),
     supabase.from('soop_streamers').select('*', { count: 'exact', head: true }),
     supabase.from('youtube_channels').select('*', { count: 'exact', head: true }),
+    supabase.from('chzzk_streamers').select('*', { count: 'exact', head: true }),
     supabase.from('crm_platforms').select('*', { count: 'exact', head: true }),
     supabase.from('meetings').select('*', { count: 'exact', head: true }),
     supabase.from('notes').select('*', { count: 'exact', head: true }),
@@ -47,7 +49,7 @@ async function getDashboardStats() {
     supabase.from('notes').select('id, title, created_at, category').order('created_at', { ascending: false }).limit(5),
   ])
 
-  const totalStreamers = (twitchCount ?? 0) + (kickCount ?? 0) + (soopCount ?? 0) + (ytCount ?? 0)
+  const totalStreamers = (twitchCount ?? 0) + (kickCount ?? 0) + (soopCount ?? 0) + (ytCount ?? 0) + (chzzkCount ?? 0)
   const monthlyBudget = budgetData?.[0]?.monthly_budget ?? 0
   const totalExpenses = expenseData?.reduce((sum, e) => sum + (Number(e.amount) || 0), 0) ?? 0
 
@@ -77,6 +79,7 @@ async function getDashboardStats() {
     kickCount: kickCount ?? 0,
     soopCount: soopCount ?? 0,
     ytCount: ytCount ?? 0,
+    chzzkCount: chzzkCount ?? 0,
   }
 }
 
