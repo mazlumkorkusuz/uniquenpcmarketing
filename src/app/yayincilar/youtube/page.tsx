@@ -2,7 +2,7 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 import PageHeader from '@/components/PageHeader'
-import { Search, X, ExternalLink, Globe, ChevronLeft, ChevronRight, Users, Contact, Flag, TrendingUp } from 'lucide-react'
+import { Search, X, ExternalLink, Globe, Mail, ChevronLeft, ChevronRight, Users, Contact, Flag, TrendingUp } from 'lucide-react'
 
 type Row = Record<string, unknown>
 type SortKey = 'channel_name' | 'followers' | 'country' | 'total_views' | 'long_video_avg_views' | 'shorts_avg_views' | 'live_avg_views'
@@ -219,6 +219,18 @@ function DetailPanel({ row, onClose }: { row: Row; onClose: () => void }) {
           </div>
         )}
 
+        {/* Email */}
+        <div>
+          <SectionLabel>Email</SectionLabel>
+          {hasValue(row.email) ? (
+            <a href={`mailto:${row.email}`} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#60a5fa', textDecoration: 'none', wordBreak: 'break-all' }}>
+              <Mail size={13} style={{ flexShrink: 0 }} /> {String(row.email)}
+            </a>
+          ) : (
+            <div style={{ fontSize: '13px', color: '#64748b' }}>Email yok</div>
+          )}
+        </div>
+
         {/* Social links */}
         <div>
           <SectionLabel>Sosyal Medya</SectionLabel>
@@ -247,6 +259,7 @@ export default function YouTubePage() {
   const [rows, setRows] = useState<Row[]>([])
   const [totalCount, setTotalCount] = useState(0)
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState<string | null>(null)
   const [selected, setSelected] = useState<Row | null>(null)
   const [page, setPage] = useState(1)
 
@@ -254,12 +267,15 @@ export default function YouTubePage() {
   const [search, setSearch] = useState('')
   const [country, setCountry] = useState('')
   const [socialOnly, setSocialOnly] = useState(false)
+  const [emailOnly, setEmailOnly] = useState(false)
   const [sortKey, setSortKey] = useState<SortKey>('followers')
   const [sortDir, setSortDir] = useState<SortDir>('desc')
 
   // aux data (lightweight columns, whole table) — powers stats bar + country list
   const [auxRows, setAuxRows] = useState<AuxRow[]>([])
   const [contactCount, setContactCount] = useState(0)
+  const [emailCount, setEmailCount] = useState(0)
+  const [auxError, setAuxError] = useState<string | null>(null)
   const [auxLoading, setAuxLoading] = useState(true)
 
   // debounce search input
@@ -272,24 +288,29 @@ export default function YouTubePage() {
     let cancelled = false
     ;(async () => {
       const supabase = createSupabaseBrowserClient()
-      const [{ count }, contact] = await Promise.all([
+      const [total, contact, email] = await Promise.all([
         supabase.from(TABLE).select('*', { count: 'exact', head: true }),
         supabase.from(TABLE).select('*', { count: 'exact', head: true }).or(CONTACT_FILTER),
+        supabase.from(TABLE).select('*', { count: 'exact', head: true }).not('email', 'is', null),
       ])
+      const count = total.count
       const batchSize = 1000
       const batches = Array.from({ length: Math.ceil((count ?? 0) / batchSize) }, (_, i) =>
         supabase.from(TABLE).select('followers, country').order('id').range(i * batchSize, (i + 1) * batchSize - 1)
       )
       const results = await Promise.all(batches)
       if (cancelled) return
+      const firstError = [total, contact, email, ...results].find(r => r.error)?.error
+      setAuxError(firstError ? firstError.message : null)
       setAuxRows(results.flatMap(r => (r.data ?? []) as AuxRow[]))
       setContactCount(contact.count ?? 0)
+      setEmailCount(email.count ?? 0)
       setAuxLoading(false)
     })()
     return () => { cancelled = true }
   }, [])
 
-  const filterSig = `${search}|${country}|${socialOnly}|${sortKey}|${sortDir}`
+  const filterSig = `${search}|${country}|${socialOnly}|${emailOnly}|${sortKey}|${sortDir}`
   const prevSigRef = useRef(filterSig)
 
   useEffect(() => {
@@ -309,18 +330,20 @@ export default function YouTubePage() {
       if (search) query = query.ilike('channel_name', `%${search}%`)
       if (country) query = query.eq('country', country)
       if (socialOnly) query = query.or(SOCIAL_FILTER)
+      if (emailOnly) query = query.not('email', 'is', null)
       const from = (page - 1) * PAGE_SIZE
       const to = from + PAGE_SIZE - 1
       query = query.order(sortKey, { ascending: sortDir === 'asc', nullsFirst: false }).order('id').range(from, to)
       const { data, count, error } = await query
       if (cancelled) return
+      setLoadError(error ? error.message : null)
       setRows(error || !data ? [] : (data as Row[]))
       setTotalCount(count ?? 0)
       setLoading(false)
     })()
     return () => { cancelled = true }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [search, country, socialOnly, sortKey, sortDir, page])
+  }, [search, country, socialOnly, emailOnly, sortKey, sortDir, page])
 
   const handleSort = (key: SortKey) => {
     if (sortKey === key) setSortDir(d => (d === 'desc' ? 'asc' : 'desc'))
@@ -345,7 +368,7 @@ export default function YouTubePage() {
 
   const pct = (n: number) => (auxLoading || stats.totalChannels === 0 ? '—' : `%${Math.round((n / stats.totalChannels) * 100)} kapsam`)
 
-  const hasFilters = !!(search || country || socialOnly)
+  const hasFilters = !!(search || country || socialOnly || emailOnly)
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE))
   const from = (page - 1) * PAGE_SIZE
   const rangeStart = totalCount === 0 ? 0 : from + 1
@@ -367,12 +390,23 @@ export default function YouTubePage() {
       <PageHeader title="YouTube Kanalları" subtitle={auxLoading ? '…' : `${stats.totalChannels.toLocaleString('tr-TR')} kanal takip ediliyor`} imageSrc="/icons/youtube.png" gradient="linear-gradient(135deg, #ff4444, #cc0000)" />
 
       <div style={{ padding: '24px 32px' }}>
+        {auxError && (
+          <div style={{ marginBottom: '16px', padding: '10px 14px', borderRadius: '8px', border: '1px solid rgba(248,113,113,0.4)', backgroundColor: 'rgba(248,113,113,0.08)', color: '#f87171', fontSize: '13px' }}>
+            İstatistikler yüklenemedi: {auxError}
+          </div>
+        )}
         {/* Stats bar */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
           <div style={statCardStyle(YT_COLOR)}>
             <StatCardHeader icon={<Users size={17} />} color={YT_COLOR} label="Toplam Kanal" />
             <div style={statValueStyle}>{auxLoading ? '…' : stats.totalChannels.toLocaleString('tr-TR')}</div>
             <div style={statSubStyle}>Takip edilen kanal</div>
+          </div>
+
+          <div style={statCardStyle('#fbbf24')}>
+            <StatCardHeader icon={<Mail size={17} />} color="#fbbf24" label="Email Olan" />
+            <div style={statValueStyle}>{auxLoading ? '…' : emailCount.toLocaleString('tr-TR')}</div>
+            <div style={statSubStyle}>{pct(emailCount)}</div>
           </div>
 
           <div style={statCardStyle('#f472b6')}>
@@ -414,8 +448,14 @@ export default function YouTubePage() {
             >
               🔗 Sosyal Medya Var
             </button>
+            <button
+              onClick={() => setEmailOnly(v => !v)}
+              style={{ padding: '7px 14px', borderRadius: '7px', border: `1px solid ${emailOnly ? 'rgba(251,191,36,0.5)' : '#2a2a3a'}`, backgroundColor: emailOnly ? 'rgba(251,191,36,0.1)' : 'transparent', color: emailOnly ? '#fbbf24' : '#64748b', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}
+            >
+              📧 Email Var
+            </button>
             {hasFilters && (
-              <button onClick={() => { setSearchInput(''); setSearch(''); setCountry(''); setSocialOnly(false) }} style={{ fontSize: '12px', color: '#64748b', background: 'none', border: '1px solid #2a2a3a', borderRadius: '7px', padding: '7px 12px', cursor: 'pointer' }}>
+              <button onClick={() => { setSearchInput(''); setSearch(''); setCountry(''); setSocialOnly(false); setEmailOnly(false) }} style={{ fontSize: '12px', color: '#64748b', background: 'none', border: '1px solid #2a2a3a', borderRadius: '7px', padding: '7px 12px', cursor: 'pointer' }}>
                 Temizle
               </button>
             )}
@@ -435,13 +475,16 @@ export default function YouTubePage() {
                   <SortableTH label="Uzun Video Ort. İzlenme" sk="long_video_avg_views" active={sortKey === 'long_video_avg_views'} dir={sortDir} onSort={handleSort} />
                   <SortableTH label="Shorts Ort. İzlenme" sk="shorts_avg_views" active={sortKey === 'shorts_avg_views'} dir={sortDir} onSort={handleSort} />
                   <SortableTH label="Canlı Yayın Ort. İzlenme" sk="live_avg_views" active={sortKey === 'live_avg_views'} dir={sortDir} onSort={handleSort} />
+                  <th style={STH}>Email</th>
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
-                  <tr><td colSpan={8} style={{ padding: '48px', textAlign: 'center', color: '#64748b', fontSize: '14px' }}>Yükleniyor...</td></tr>
+                  <tr><td colSpan={9} style={{ padding: '48px', textAlign: 'center', color: '#64748b', fontSize: '14px' }}>Yükleniyor...</td></tr>
+                ) : loadError ? (
+                  <tr><td colSpan={9} style={{ padding: '48px', textAlign: 'center', color: '#f87171', fontSize: '14px' }}>Veri yüklenemedi: {loadError}</td></tr>
                 ) : rows.length === 0 ? (
-                  <tr><td colSpan={8} style={{ padding: '48px', textAlign: 'center', color: '#64748b', fontSize: '14px' }}>{hasFilters ? 'Eşleşen kanal bulunamadı' : 'Henüz kanal eklenmemiş'}</td></tr>
+                  <tr><td colSpan={9} style={{ padding: '48px', textAlign: 'center', color: '#64748b', fontSize: '14px' }}>{hasFilters ? 'Eşleşen kanal bulunamadı' : 'Henüz kanal eklenmemiş'}</td></tr>
                 ) : rows.map((row, i) => {
                   const isActive = selected?.id === row.id
                   const c = hasValue(row.country) ? String(row.country) : ''
@@ -475,6 +518,11 @@ export default function YouTubePage() {
                       <td style={TD}><span style={{ color: YT_COLOR, fontWeight: 600, fontSize: '13px' }}>{fmt(row.long_video_avg_views)}</span></td>
                       <td style={TD}><span style={{ color: '#f472b6', fontWeight: 600, fontSize: '13px' }}>{fmt(row.shorts_avg_views)}</span></td>
                       <td style={TD}><span style={{ color: '#a78bfa', fontWeight: 600, fontSize: '13px' }}>{fmt(row.live_avg_views)}</span></td>
+                      <td style={{ ...TD, maxWidth: '200px' }} onClick={e => e.stopPropagation()}>
+                        {hasValue(row.email)
+                          ? <a href={`mailto:${row.email}`} style={{ color: '#60a5fa', fontSize: '12px', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{String(row.email)}</a>
+                          : <span style={{ color: '#64748b' }}>—</span>}
+                      </td>
                     </tr>
                   )
                 })}
