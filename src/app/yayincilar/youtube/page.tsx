@@ -5,7 +5,7 @@ import PageHeader from '@/components/PageHeader'
 import { Search, X, ExternalLink, Globe, ChevronLeft, ChevronRight, Users, Contact, Flag, TrendingUp } from 'lucide-react'
 
 type Row = Record<string, unknown>
-type SortKey = 'channel_name' | 'followers' | 'country' | 'total_views'
+type SortKey = 'channel_name' | 'followers' | 'country' | 'total_views' | 'long_video_avg_views' | 'shorts_avg_views' | 'live_avg_views'
 type SortDir = 'asc' | 'desc'
 type AuxRow = { followers: number | null; country: string | null }
 
@@ -432,13 +432,16 @@ export default function YouTubePage() {
                   <SortableTH label="Abone" sk="followers" active={sortKey === 'followers'} dir={sortDir} onSort={handleSort} />
                   <SortableTH label="Ülke" sk="country" active={sortKey === 'country'} dir={sortDir} onSort={handleSort} />
                   <SortableTH label="Toplam İzlenme" sk="total_views" active={sortKey === 'total_views'} dir={sortDir} onSort={handleSort} />
+                  <SortableTH label="Uzun Video Ort. İzlenme" sk="long_video_avg_views" active={sortKey === 'long_video_avg_views'} dir={sortDir} onSort={handleSort} />
+                  <SortableTH label="Shorts Ort. İzlenme" sk="shorts_avg_views" active={sortKey === 'shorts_avg_views'} dir={sortDir} onSort={handleSort} />
+                  <SortableTH label="Canlı Yayın Ort. İzlenme" sk="live_avg_views" active={sortKey === 'live_avg_views'} dir={sortDir} onSort={handleSort} />
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
-                  <tr><td colSpan={5} style={{ padding: '48px', textAlign: 'center', color: '#64748b', fontSize: '14px' }}>Yükleniyor...</td></tr>
+                  <tr><td colSpan={8} style={{ padding: '48px', textAlign: 'center', color: '#64748b', fontSize: '14px' }}>Yükleniyor...</td></tr>
                 ) : rows.length === 0 ? (
-                  <tr><td colSpan={5} style={{ padding: '48px', textAlign: 'center', color: '#64748b', fontSize: '14px' }}>{hasFilters ? 'Eşleşen kanal bulunamadı' : 'Henüz kanal eklenmemiş'}</td></tr>
+                  <tr><td colSpan={8} style={{ padding: '48px', textAlign: 'center', color: '#64748b', fontSize: '14px' }}>{hasFilters ? 'Eşleşen kanal bulunamadı' : 'Henüz kanal eklenmemiş'}</td></tr>
                 ) : rows.map((row, i) => {
                   const isActive = selected?.id === row.id
                   const c = hasValue(row.country) ? String(row.country) : ''
@@ -469,6 +472,9 @@ export default function YouTubePage() {
                           : <span style={{ color: '#64748b' }}>—</span>}
                       </td>
                       <td style={TD}><span style={{ color: '#60a5fa', fontWeight: 600, fontSize: '13px' }}>{fmt(row.total_views)}</span></td>
+                      <td style={TD}><span style={{ color: YT_COLOR, fontWeight: 600, fontSize: '13px' }}>{fmt(row.long_video_avg_views)}</span></td>
+                      <td style={TD}><span style={{ color: '#f472b6', fontWeight: 600, fontSize: '13px' }}>{fmt(row.shorts_avg_views)}</span></td>
+                      <td style={TD}><span style={{ color: '#a78bfa', fontWeight: 600, fontSize: '13px' }}>{fmt(row.live_avg_views)}</span></td>
                     </tr>
                   )
                 })}
