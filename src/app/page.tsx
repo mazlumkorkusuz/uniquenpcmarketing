@@ -25,6 +25,8 @@ async function getDashboardStats() {
     { count: soopCount },
     { count: ytCount },
     { count: chzzkCount },
+    { count: bilibiliCount },
+    { count: douyinCount },
     { count: platformCount },
     { count: meetingCount },
     { count: noteCount },
@@ -39,6 +41,8 @@ async function getDashboardStats() {
     supabase.from('soop_streamers').select('*', { count: 'exact', head: true }),
     supabase.from('youtube_channels').select('*', { count: 'exact', head: true }),
     supabase.from('chzzk_streamers').select('*', { count: 'exact', head: true }),
+    supabase.from('bilibili_streamers').select('*', { count: 'exact', head: true }),
+    supabase.from('douyin_streamers').select('*', { count: 'exact', head: true }),
     supabase.from('crm_platforms').select('*', { count: 'exact', head: true }),
     supabase.from('meetings').select('*', { count: 'exact', head: true }),
     supabase.from('notes').select('*', { count: 'exact', head: true }),
@@ -49,7 +53,7 @@ async function getDashboardStats() {
     supabase.from('notes').select('id, title, created_at, category').order('created_at', { ascending: false }).limit(5),
   ])
 
-  const totalStreamers = (twitchCount ?? 0) + (kickCount ?? 0) + (soopCount ?? 0) + (ytCount ?? 0) + (chzzkCount ?? 0)
+  const totalStreamers = (twitchCount ?? 0) + (kickCount ?? 0) + (soopCount ?? 0) + (ytCount ?? 0) + (chzzkCount ?? 0) + (bilibiliCount ?? 0) + (douyinCount ?? 0)
   const monthlyBudget = budgetData?.[0]?.monthly_budget ?? 0
   const totalExpenses = expenseData?.reduce((sum, e) => sum + (Number(e.amount) || 0), 0) ?? 0
 
@@ -80,6 +84,8 @@ async function getDashboardStats() {
     soopCount: soopCount ?? 0,
     ytCount: ytCount ?? 0,
     chzzkCount: chzzkCount ?? 0,
+    bilibiliCount: bilibiliCount ?? 0,
+    douyinCount: douyinCount ?? 0,
   }
 }
 
