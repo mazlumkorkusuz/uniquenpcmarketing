@@ -34,19 +34,29 @@ async function getAllRecords(table: string): Promise<Record<string, unknown>[]> 
   return allData
 }
 
+async function getSummary(table: string) {
+  const [{ count }, { data }] = await Promise.all([
+    supabase.from(table).select('*', { count: 'exact', head: true }),
+    supabase.from(table).select('channel_name, followers').order('followers', { ascending: false, nullsFirst: false }).limit(8),
+  ])
+  return { count: count ?? 0, top: (data ?? []) as unknown as Record<string, unknown>[] }
+}
+
 async function getData() {
-  const [twitch, kick, soop, youtube, chzzk] = await Promise.all([
+  const [twitch, kick, soop, youtube, chzzk, bilibili, douyin] = await Promise.all([
     getAllRecords('twitch_streamers'),
     getAllRecords('kick_streamers'),
     getAllRecords('soop_streamers'),
     getAllRecords('youtube_channels'),
     getAllRecords('chzzk_streamers'),
+    getSummary('bilibili_streamers'),
+    getSummary('douyin_streamers'),
   ])
-  return { twitch, kick, soop, youtube, chzzk }
+  return { twitch, kick, soop, youtube, chzzk, bilibili, douyin }
 }
 
 export default async function YayincilarPage() {
-  const { twitch, kick, soop, youtube, chzzk } = await getData()
+  const { twitch, kick, soop, youtube, chzzk, bilibili, douyin } = await getData()
 
   const counts: Record<string, number> = {
     twitch:   twitch.length,
@@ -54,8 +64,8 @@ export default async function YayincilarPage() {
     soop:     soop.length,
     youtube:  youtube.length,
     chzzk:    chzzk.length,
-    bilibili: 0,
-    douyin:   0,
+    bilibili: bilibili.count,
+    douyin:   douyin.count,
   }
 
   const chartData: Record<string, { label: string; value: number }[]> = {
@@ -64,8 +74,8 @@ export default async function YayincilarPage() {
     soop:     soop.slice(0, 8).map((r) => ({ label: String(r.channel_name ?? r.username ?? '—'), value: Number(r.followers) || 0 })),
     youtube:  youtube.slice(0, 8).map((r) => ({ label: String(r.channel_name ?? '—'), value: Number(r.subscribers) || 0 })),
     chzzk:    chzzk.slice(0, 8).map((r) => ({ label: String(r.channel_name ?? '—'), value: Number(r.followers) || 0 })),
-    bilibili: [],
-    douyin:   [],
+    bilibili: bilibili.top.map((r) => ({ label: String(r.channel_name ?? '—'), value: Number(r.followers) || 0 })),
+    douyin:   douyin.top.map((r) => ({ label: String(r.channel_name ?? '—'), value: Number(r.followers) || 0 })),
   }
 
   const total = Object.values(counts).reduce((a, b) => a + b, 0)

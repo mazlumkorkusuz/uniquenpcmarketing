@@ -2,14 +2,12 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 import PageHeader from '@/components/PageHeader'
-import { Search, X, ExternalLink, Mail, Phone, MessageCircle, Link2, ChevronLeft, ChevronRight, Users, Heart, TrendingUp, Contact } from 'lucide-react'
+import { Search, X, ExternalLink, Mail, Phone, MessageCircle, Link2, ChevronLeft, ChevronRight, Users, Contact } from 'lucide-react'
 
 type Row = Record<string, unknown>
 type SortKey = 'channel_name' | 'followers' | 'total_likes' | 'avg_likes_120d'
 type SortDir = 'asc' | 'desc'
 type AuxRow = {
-  followers: number | null
-  total_likes: number | null
   email: string | null
   wechat: string | null
   qq: string | null
@@ -223,7 +221,7 @@ export default function DouyinPage() {
       while (true) {
         const { data, error } = await supabase
           .from('douyin_streamers')
-          .select('followers, total_likes, email, wechat, qq, weibo')
+          .select('email, wechat, qq, weibo')
           .order('id')
           .range(from, from + batchSize - 1)
         if (error || !data || data.length === 0) break
@@ -277,11 +275,9 @@ export default function DouyinPage() {
 
   const stats = useMemo(() => {
     const totalAccounts = auxRows.length
-    const totalFollowers = auxRows.reduce((s, r) => s + (Number(r.followers) || 0), 0)
-    const totalLikes = auxRows.reduce((s, r) => s + (Number(r.total_likes) || 0), 0)
     const emailCount = auxRows.filter(r => hasValue(r.email)).length
     const anyContactCount = auxRows.filter(r => CONTACT_FIELDS.some(f => hasValue(r[f]))).length
-    return { totalAccounts, totalFollowers, totalLikes, emailCount, anyContactCount }
+    return { totalAccounts, emailCount, anyContactCount }
   }, [auxRows])
 
   const pct = (n: number) => (auxLoading || stats.totalAccounts === 0 ? '—' : `%${Math.round((n / stats.totalAccounts) * 100)} kapsam`)
@@ -313,23 +309,11 @@ export default function DouyinPage() {
 
       <div style={{ padding: '24px 32px' }}>
         {/* Stats bar */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
           <div style={statCardStyle(DOUYIN_COLOR)}>
             <StatCardHeader icon={<Users size={17} />} color={DOUYIN_COLOR} label="Toplam Hesap" />
             <div style={statValueStyle}>{auxLoading ? '…' : stats.totalAccounts.toLocaleString('tr-TR')}</div>
             <div style={statSubStyle}>Takip edilen hesap</div>
-          </div>
-
-          <div style={statCardStyle('#4ade80')}>
-            <StatCardHeader icon={<TrendingUp size={17} />} color="#4ade80" label="Toplam Takipçi" />
-            <div style={statValueStyle}>{auxLoading ? '…' : fmt(stats.totalFollowers)}</div>
-            <div style={statSubStyle}>Tüm hesaplar toplamı</div>
-          </div>
-
-          <div style={statCardStyle('#25f4ee')}>
-            <StatCardHeader icon={<Heart size={17} />} color="#25f4ee" label="Toplam Beğeni" />
-            <div style={statValueStyle}>{auxLoading ? '…' : fmt(stats.totalLikes)}</div>
-            <div style={statSubStyle}>Tüm hesaplar toplamı</div>
           </div>
 
           <div style={statCardStyle('#fbbf24')}>
