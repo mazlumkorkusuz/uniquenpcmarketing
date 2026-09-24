@@ -2,12 +2,12 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 import PageHeader from '@/components/PageHeader'
-import { Search, X, ExternalLink, Globe, ChevronLeft, ChevronRight, Users, Image as ImageIcon, Share2 } from 'lucide-react'
+import { Search, X, ExternalLink, Globe, ChevronLeft, ChevronRight, Users, Contact, Flag, TrendingUp } from 'lucide-react'
 
 type Row = Record<string, unknown>
 type SortKey = 'channel_name' | 'followers' | 'country' | 'total_views'
 type SortDir = 'asc' | 'desc'
-type AuxRow = { country: string | null }
+type AuxRow = { followers: number | null; country: string | null }
 
 const PAGE_SIZE = 350
 const YT_COLOR = '#ff4444'
@@ -15,6 +15,9 @@ const TABLE = 'youtube_streamers'
 // fields that count toward "En Az 1 Sosyal Medya Olan" / "Sosyal Medya Var"
 const SOCIAL_STAT_FIELDS = ['instagram', 'tiktok', 'twitter', 'discord', 'facebook', 'telegram', 'website'] as const
 const SOCIAL_FILTER = SOCIAL_STAT_FIELDS.map(f => `${f}.not.is.null`).join(',')
+// fields that count toward "En Az 1 İletişim Olan"
+const CONTACT_FIELDS = [...SOCIAL_STAT_FIELDS, 'vk', 'linktree'] as const
+const CONTACT_FILTER = CONTACT_FIELDS.map(f => `${f}.not.is.null`).join(',')
 // all links shown in the drawer
 const SOCIAL_LINKS: { field: string; label: string }[] = [
   { field: 'instagram', label: 'Instagram' },
@@ -256,8 +259,7 @@ export default function YouTubePage() {
 
   // aux data (lightweight columns, whole table) — powers stats bar + country list
   const [auxRows, setAuxRows] = useState<AuxRow[]>([])
-  const [photoCount, setPhotoCount] = useState(0)
-  const [socialCount, setSocialCount] = useState(0)
+  const [contactCount, setContactCount] = useState(0)
   const [auxLoading, setAuxLoading] = useState(true)
 
   // debounce search input
@@ -270,20 +272,18 @@ export default function YouTubePage() {
     let cancelled = false
     ;(async () => {
       const supabase = createSupabaseBrowserClient()
-      const [{ count }, photo, social] = await Promise.all([
+      const [{ count }, contact] = await Promise.all([
         supabase.from(TABLE).select('*', { count: 'exact', head: true }),
-        supabase.from(TABLE).select('*', { count: 'exact', head: true }).not('profile_image_url', 'is', null),
-        supabase.from(TABLE).select('*', { count: 'exact', head: true }).or(SOCIAL_FILTER),
+        supabase.from(TABLE).select('*', { count: 'exact', head: true }).or(CONTACT_FILTER),
       ])
       const batchSize = 1000
       const batches = Array.from({ length: Math.ceil((count ?? 0) / batchSize) }, (_, i) =>
-        supabase.from(TABLE).select('country').order('id').range(i * batchSize, (i + 1) * batchSize - 1)
+        supabase.from(TABLE).select('followers, country').order('id').range(i * batchSize, (i + 1) * batchSize - 1)
       )
       const results = await Promise.all(batches)
       if (cancelled) return
       setAuxRows(results.flatMap(r => (r.data ?? []) as AuxRow[]))
-      setPhotoCount(photo.count ?? 0)
-      setSocialCount(social.count ?? 0)
+      setContactCount(contact.count ?? 0)
       setAuxLoading(false)
     })()
     return () => { cancelled = true }
@@ -328,7 +328,8 @@ export default function YouTubePage() {
   }
 
   const stats = useMemo(() => {
-    return { totalChannels: auxRows.length }
+    const totalFollowers = auxRows.reduce((s, r) => s + (Number(r.followers) || 0), 0)
+    return { totalChannels: auxRows.length, totalFollowers }
   }, [auxRows])
 
   // countries sorted by channel count
@@ -367,23 +368,29 @@ export default function YouTubePage() {
 
       <div style={{ padding: '24px 32px' }}>
         {/* Stats bar */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
           <div style={statCardStyle(YT_COLOR)}>
             <StatCardHeader icon={<Users size={17} />} color={YT_COLOR} label="Toplam Kanal" />
             <div style={statValueStyle}>{auxLoading ? '…' : stats.totalChannels.toLocaleString('tr-TR')}</div>
             <div style={statSubStyle}>Takip edilen kanal</div>
           </div>
 
-          <div style={statCardStyle('#fbbf24')}>
-            <StatCardHeader icon={<ImageIcon size={17} />} color="#fbbf24" label="Profil Fotosu Olan" />
-            <div style={statValueStyle}>{auxLoading ? '…' : photoCount.toLocaleString('tr-TR')}</div>
-            <div style={statSubStyle}>{pct(photoCount)}</div>
+          <div style={statCardStyle('#f472b6')}>
+            <StatCardHeader icon={<Contact size={17} />} color="#f472b6" label="En Az 1 İletişim Olan" />
+            <div style={statValueStyle}>{auxLoading ? '…' : contactCount.toLocaleString('tr-TR')}</div>
+            <div style={statSubStyle}>{pct(contactCount)}</div>
           </div>
 
-          <div style={statCardStyle('#f472b6')}>
-            <StatCardHeader icon={<Share2 size={17} />} color="#f472b6" label="En Az 1 Sosyal Medya Olan" />
-            <div style={statValueStyle}>{auxLoading ? '…' : socialCount.toLocaleString('tr-TR')}</div>
-            <div style={statSubStyle}>{pct(socialCount)}</div>
+          <div style={statCardStyle('#60a5fa')}>
+            <StatCardHeader icon={<Flag size={17} />} color="#60a5fa" label="Ülke Sayısı" />
+            <div style={statValueStyle}>{auxLoading ? '…' : countryOptions.length.toLocaleString('tr-TR')}</div>
+            <div style={statSubStyle}>Farklı ülke</div>
+          </div>
+
+          <div style={statCardStyle('#4ade80')}>
+            <StatCardHeader icon={<TrendingUp size={17} />} color="#4ade80" label="Toplam Abone" />
+            <div style={statValueStyle}>{auxLoading ? '…' : fmt(stats.totalFollowers)}</div>
+            <div style={statSubStyle}>Tüm kanallar toplamı</div>
           </div>
         </div>
 
