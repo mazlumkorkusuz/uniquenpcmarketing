@@ -12,7 +12,6 @@ const PLATFORMS = [
   { key: 'kick',     label: 'Kick',     color: '#53fc18', href: '/yayincilar/kick' },
   { key: 'soop',     label: 'SOOP',     color: '#3b82f6', href: '/yayincilar/soop' },
   { key: 'youtube',  label: 'YouTube',  color: '#ff4444', href: '/yayincilar/youtube' },
-  { key: 'niconico', label: 'NicoNico', color: '#e8e8e8', href: '/yayincilar/niconico' },
   { key: 'chzzk',    label: 'Chzzk',    color: '#00ffa3', href: '/yayincilar/chzzk' },
   { key: 'bilibili', label: 'BiliBili', color: '#00a1d6', href: '/yayincilar/bilibili' },
   { key: 'douyin',   label: 'Douyin',   color: '#fe2c55', href: '/yayincilar/douyin' },
@@ -54,7 +53,6 @@ export default async function YayincilarPage() {
     kick:     kick.length,
     soop:     soop.length,
     youtube:  youtube.length,
-    niconico: 0,
     chzzk:    chzzk.length,
     bilibili: 0,
     douyin:   0,
@@ -65,7 +63,6 @@ export default async function YayincilarPage() {
     kick:     kick.slice(0, 8).map((r) => ({ label: String(r.channel_name ?? r.username ?? '—'), value: Number(r.followers) || 0 })),
     soop:     soop.slice(0, 8).map((r) => ({ label: String(r.channel_name ?? r.username ?? '—'), value: Number(r.followers) || 0 })),
     youtube:  youtube.slice(0, 8).map((r) => ({ label: String(r.channel_name ?? '—'), value: Number(r.subscribers) || 0 })),
-    niconico: [],
     chzzk:    chzzk.slice(0, 8).map((r) => ({ label: String(r.channel_name ?? '—'), value: Number(r.followers) || 0 })),
     bilibili: [],
     douyin:   [],
@@ -78,7 +75,7 @@ export default async function YayincilarPage() {
     <div>
       <PageHeader
         title="Yayıncılar"
-        subtitle={`${total} toplam yayıncı · 8 platform`}
+        subtitle={`${total} toplam yayıncı · ${PLATFORMS.length} platform`}
         icon={Tv2}
         gradient="linear-gradient(135deg, #3b82f6, #14b8a6)"
       />

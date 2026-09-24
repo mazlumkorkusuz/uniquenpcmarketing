@@ -58,7 +58,6 @@ const navItems: NavItem[] = [
       { href: '/yayincilar/twitch',   label: 'Twitch',   imageSrc: '/icons/twitch.png' },
       { href: '/yayincilar/kick',     label: 'Kick',     imageSrc: '/icons/kick.png' },
       { href: '/yayincilar/soop',     label: 'SOOP',     imageSrc: '/icons/soop.jpeg' },
-      { href: '/yayincilar/niconico', label: 'NicoNico', imageSrc: '/icons/niconico.png' },
       { href: '/yayincilar/chzzk',    label: 'Chzzk',    imageSrc: '/icons/chzzk.png' },
       { href: '/yayincilar/bilibili', label: 'BiliBili', imageSrc: '/icons/bilibili.png' },
       { href: '/yayincilar/douyin',   label: 'Douyin',   imageSrc: '/icons/tiktok.png' },

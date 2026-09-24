@@ -97,7 +97,7 @@ export default async function DashboardPage() {
 
   const quickLinks = [
     { href: '/platformlar', label: 'Platformlar & Partnerler', desc: 'CRM, yayıncılar, küratörler', color: '#7c3aed' },
-    { href: '/yayincilar', label: 'Yayıncılar', desc: 'Twitch, Kick, SOOP, YouTube, Bilibili, Douyin, NicoNico, Chzzk', color: '#3b82f6' },
+    { href: '/yayincilar', label: 'Yayıncılar', desc: 'Twitch, Kick, SOOP, YouTube, Bilibili, Douyin, Chzzk', color: '#3b82f6' },
     { href: '/toplantilar', label: 'Toplantılar', desc: 'Planlama ve notlar', color: '#14b8a6' },
     { href: '/notlar', label: 'Notlar', desc: 'Tüm notlar ve kayıtlar', color: '#fb923c' },
     { href: '/sosyal-medya', label: 'Sosyal Medya', desc: 'Twitter, Instagram, TikTok, YouTube', color: '#f59e0b' },
