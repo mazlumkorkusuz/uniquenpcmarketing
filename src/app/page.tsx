@@ -39,7 +39,7 @@ async function getDashboardStats() {
     supabase.from('twitch_streamers').select('*', { count: 'exact', head: true }),
     supabase.from('kick_streamers').select('*', { count: 'exact', head: true }),
     supabase.from('soop_streamers').select('*', { count: 'exact', head: true }),
-    supabase.from('youtube_channels').select('*', { count: 'exact', head: true }),
+    supabase.from('youtube_streamers').select('*', { count: 'exact', head: true }),
     supabase.from('chzzk_streamers').select('*', { count: 'exact', head: true }),
     supabase.from('bilibili_streamers').select('*', { count: 'exact', head: true }),
     supabase.from('douyin_streamers').select('*', { count: 'exact', head: true }),

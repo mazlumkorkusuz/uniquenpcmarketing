@@ -2,12 +2,12 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 import PageHeader from '@/components/PageHeader'
-import { Search, X, ExternalLink, Globe, ChevronLeft, ChevronRight, Users, TrendingUp, Eye, Image as ImageIcon, Share2 } from 'lucide-react'
+import { Search, X, ExternalLink, Globe, ChevronLeft, ChevronRight, Users, Image as ImageIcon, Share2 } from 'lucide-react'
 
 type Row = Record<string, unknown>
 type SortKey = 'channel_name' | 'followers' | 'country' | 'total_views'
 type SortDir = 'asc' | 'desc'
-type AuxRow = { followers: number | null; total_views: number | null; country: string | null }
+type AuxRow = { country: string | null }
 
 const PAGE_SIZE = 350
 const YT_COLOR = '#ff4444'
@@ -277,7 +277,7 @@ export default function YouTubePage() {
       ])
       const batchSize = 1000
       const batches = Array.from({ length: Math.ceil((count ?? 0) / batchSize) }, (_, i) =>
-        supabase.from(TABLE).select('followers, total_views, country').order('id').range(i * batchSize, (i + 1) * batchSize - 1)
+        supabase.from(TABLE).select('country').order('id').range(i * batchSize, (i + 1) * batchSize - 1)
       )
       const results = await Promise.all(batches)
       if (cancelled) return
@@ -328,10 +328,7 @@ export default function YouTubePage() {
   }
 
   const stats = useMemo(() => {
-    const totalChannels = auxRows.length
-    const totalFollowers = auxRows.reduce((s, r) => s + (Number(r.followers) || 0), 0)
-    const totalViews = auxRows.reduce((s, r) => s + (Number(r.total_views) || 0), 0)
-    return { totalChannels, totalFollowers, totalViews }
+    return { totalChannels: auxRows.length }
   }, [auxRows])
 
   // countries sorted by channel count
@@ -366,27 +363,15 @@ export default function YouTubePage() {
 
   return (
     <div>
-      <PageHeader title="YouTube Kanalları" subtitle="Kanal takip ve analizi" imageSrc="/icons/youtube.png" gradient="linear-gradient(135deg, #ff4444, #cc0000)" />
+      <PageHeader title="YouTube Kanalları" subtitle={auxLoading ? '…' : `${stats.totalChannels.toLocaleString('tr-TR')} kanal takip ediliyor`} imageSrc="/icons/youtube.png" gradient="linear-gradient(135deg, #ff4444, #cc0000)" />
 
       <div style={{ padding: '24px 32px' }}>
         {/* Stats bar */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
           <div style={statCardStyle(YT_COLOR)}>
             <StatCardHeader icon={<Users size={17} />} color={YT_COLOR} label="Toplam Kanal" />
             <div style={statValueStyle}>{auxLoading ? '…' : stats.totalChannels.toLocaleString('tr-TR')}</div>
             <div style={statSubStyle}>Takip edilen kanal</div>
-          </div>
-
-          <div style={statCardStyle('#4ade80')}>
-            <StatCardHeader icon={<TrendingUp size={17} />} color="#4ade80" label="Toplam Abone" />
-            <div style={statValueStyle}>{auxLoading ? '…' : fmt(stats.totalFollowers)}</div>
-            <div style={statSubStyle}>Tüm kanallar toplamı</div>
-          </div>
-
-          <div style={statCardStyle('#60a5fa')}>
-            <StatCardHeader icon={<Eye size={17} />} color="#60a5fa" label="Toplam İzlenme" />
-            <div style={statValueStyle}>{auxLoading ? '…' : fmt(stats.totalViews)}</div>
-            <div style={statSubStyle}>Tüm kanallar toplamı</div>
           </div>
 
           <div style={statCardStyle('#fbbf24')}>
