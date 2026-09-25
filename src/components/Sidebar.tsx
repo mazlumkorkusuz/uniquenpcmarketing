@@ -110,7 +110,7 @@ const navItems: NavItem[] = [
   },
 ]
 
-export default function Sidebar() {
+export default function Sidebar({ open = false }: { open?: boolean }) {
   const pathname = usePathname()
   const { user, logout } = useAuth()
   const [loggingOut, setLoggingOut] = useState(false)
@@ -153,11 +153,13 @@ export default function Sidebar() {
 
   return (
     <aside
+      id="app-sidebar"
+      className={open ? 'app-sidebar open' : 'app-sidebar'}
       style={{
         width: '260px',
         minHeight: '100vh',
-        backgroundColor: '#FFFFFF',
-        borderRight: '1px solid #E0E0E0',
+        backgroundColor: 'var(--color-bg-card)',
+        borderRight: '1px solid var(--color-border-card)',
         display: 'flex',
         flexDirection: 'column',
         position: 'fixed',
@@ -171,7 +173,7 @@ export default function Sidebar() {
       <div
         style={{
           padding: '24px 20px',
-          borderBottom: '1px solid #E0E0E0',
+          borderBottom: '1px solid var(--color-border-card)',
           display: 'flex',
           alignItems: 'center',
           gap: '12px',
@@ -347,7 +349,7 @@ export default function Sidebar() {
       </nav>
 
       {/* Footer / User / Logout */}
-      <div style={{ padding: '16px 20px', borderTop: '1px solid #E0E0E0' }}>
+      <div style={{ padding: '16px 20px', borderTop: '1px solid var(--color-border-card)' }}>
         {user && (
           <div
             style={{
@@ -356,8 +358,8 @@ export default function Sidebar() {
               gap: '8px',
               padding: '8px 10px',
               borderRadius: '8px',
-              backgroundColor: '#F5F5F5',
-              border: '1px solid #E5E5E5',
+              backgroundColor: '#FFFFFF',
+              border: '1px solid var(--color-border-card)',
               marginBottom: '10px',
             }}
           >

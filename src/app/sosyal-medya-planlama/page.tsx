@@ -56,7 +56,7 @@ export default async function SosyalMedyaPlanlama() {
       <div style={{ padding: '24px 32px' }}>
 
         {/* Platform comparison */}
-        <div style={{ backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)', border: '1px solid #E0E0E0', borderRadius: '12px', padding: '20px', marginBottom: '28px' }}>
+        <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', padding: '20px', marginBottom: '28px' }}>
           <div style={{ fontSize: '14px', fontWeight: 600, color: '#111111', marginBottom: '4px' }}>Platform Karşılaştırması</div>
           <div style={{ fontSize: '12px', color: '#6B6B6B', marginBottom: '16px' }}>Platforma göre toplam planlanan gönderi sayısı</div>
           <BarChart data={platformBar} color="#7c3aed" height={100} />
@@ -70,7 +70,7 @@ export default async function SosyalMedyaPlanlama() {
             return (
               <div
                 key={platform.key}
-                style={{ backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)', border: '1px solid #E0E0E0', borderRadius: '12px', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
+                style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
               >
                 <div style={{ padding: '16px 20px', borderBottom: '1px solid #E0E0E0' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -78,7 +78,7 @@ export default async function SosyalMedyaPlanlama() {
                       <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: platform.color, boxShadow: `0 0 8px ${platform.color}60` }} />
                       <span style={{ fontSize: '15px', fontWeight: 700, color: '#111111' }}>{platform.label}</span>
                     </div>
-                    <span style={{ fontSize: '26px', fontWeight: 800, color: count > 0 ? platform.color : '#8A8A8A' }}>{count}</span>
+                    <span style={{ fontSize: '26px', fontWeight: 800, color: count > 0 ? platform.color : '#6B6B6B' }}>{count}</span>
                   </div>
                   <div style={{ fontSize: '12px', color: '#6B6B6B', marginTop: '4px' }}>
                     {count > 0 ? 'toplam gönderi' : 'henüz gönderi yok'}

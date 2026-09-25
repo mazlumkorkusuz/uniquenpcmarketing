@@ -92,7 +92,7 @@ export default async function YayincilarPage() {
       <div style={{ padding: '24px 32px' }}>
 
         {/* Platform comparison bar chart */}
-        <div style={{ backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)', border: '1px solid #E0E0E0', borderRadius: '12px', padding: '20px', marginBottom: '28px' }}>
+        <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', padding: '20px', marginBottom: '28px' }}>
           <div style={{ fontSize: '14px', fontWeight: 600, color: '#111111', marginBottom: '4px' }}>Platform Karşılaştırması</div>
           <div style={{ fontSize: '12px', color: '#6B6B6B', marginBottom: '16px' }}>Platforma göre takip edilen yayıncı sayısı</div>
           <BarChart data={platformBar} color="#3b82f6" height={100} />
@@ -107,7 +107,7 @@ export default async function YayincilarPage() {
               <div
                 key={platform.key}
                 style={{
-                  backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)',
+                  backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)',
                   border: '1px solid #E0E0E0',
                   borderRadius: '12px',
                   overflow: 'hidden',
@@ -130,7 +130,7 @@ export default async function YayincilarPage() {
                       />
                       <span style={{ fontSize: '15px', fontWeight: 700, color: '#111111' }}>{platform.label}</span>
                     </div>
-                    <span style={{ fontSize: '26px', fontWeight: 800, color: count > 0 ? platform.color : '#8A8A8A' }}>
+                    <span style={{ fontSize: '26px', fontWeight: 800, color: count > 0 ? platform.color : '#6B6B6B' }}>
                       {count}
                     </span>
                   </div>
@@ -150,7 +150,7 @@ export default async function YayincilarPage() {
                     </>
                   ) : (
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '80px' }}>
-                      <span style={{ fontSize: '12px', color: '#8A8A8A' }}>Veri bekleniyor…</span>
+                      <span style={{ fontSize: '12px', color: '#6B6B6B' }}>Veri bekleniyor…</span>
                     </div>
                   )}
                 </div>

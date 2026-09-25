@@ -38,7 +38,7 @@ function EditRedditPostButton({ row, accounts }: { row: Row; accounts: Account[]
 }
 
 const TH: React.CSSProperties = {
-  backgroundColor: '#F5F5F5', color: '#6B6B6B', fontSize: '11px', fontWeight: 600,
+  backgroundColor: 'var(--color-bg-section)', color: '#6B6B6B', fontSize: '11px', fontWeight: 600,
   textTransform: 'uppercase', letterSpacing: '0.06em', padding: '11px 16px',
   textAlign: 'left', borderBottom: '1px solid #E0E0E0', whiteSpace: 'nowrap',
 }
@@ -51,7 +51,7 @@ export function RedditPostsSection({ posts, accounts }: RedditPostsSectionProps)
   const filtered = filter ? posts.filter(p => String(p.username ?? '') === filter) : posts
 
   return (
-    <div style={{ backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)', border: '1px solid #E0E0E0', borderRadius: '12px', overflow: 'hidden', marginBottom: '24px' }}>
+    <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', overflow: 'hidden', marginBottom: '24px' }}>
       {/* Section header */}
       <div style={{ padding: '14px 20px', borderBottom: '1px solid #E0E0E0', display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
         <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#f59e0b', flexShrink: 0 }} />

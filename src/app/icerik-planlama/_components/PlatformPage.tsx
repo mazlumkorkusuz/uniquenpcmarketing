@@ -110,7 +110,7 @@ export async function PlatformPage({ platform, label, color, gradient, icon, ima
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: '24px', marginBottom: '28px', alignItems: 'start' }}>
-          <div style={{ backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)', border: '1px solid #E0E0E0', borderRadius: '12px', overflow: 'hidden' }}>
+          <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', overflow: 'hidden' }}>
             <div style={{ padding: '14px 20px', borderBottom: '1px solid #E0E0E0', display: 'flex', alignItems: 'center', gap: '10px' }}>
               <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: color }} />
               <span style={{ fontSize: '15px', fontWeight: 600, color: '#111111' }}>Gönderiler</span>
@@ -119,7 +119,7 @@ export async function PlatformPage({ platform, label, color, gradient, icon, ima
             <DataTable columns={cols} data={rows} emptyMessage="Henüz gönderi eklenmedi" />
           </div>
 
-          <div style={{ backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)', border: '1px solid #E0E0E0', borderRadius: '12px', padding: '20px' }}>
+          <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', padding: '20px' }}>
             <div style={{ fontSize: '13px', fontWeight: 600, color: '#444444', marginBottom: '14px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               Takvim
             </div>

@@ -56,7 +56,7 @@ export function Card({ title, action, children, padded = true }: {
   padded?: boolean
 }) {
   return (
-    <div style={{ backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)', border: '1px solid #E0E0E0', borderRadius: '12px', overflow: 'hidden' }}>
+    <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', overflow: 'hidden' }}>
       {title && (
         <div style={{ padding: '14px 20px', borderBottom: '1px solid #E0E0E0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
           <h2 style={{ fontSize: '14px', fontWeight: 600, color: '#111111', margin: 0 }}>{title}</h2>
@@ -110,7 +110,7 @@ export function formatDateTime(v: string | null | undefined): string {
 }
 
 export const thStyle: React.CSSProperties = {
-  backgroundColor: '#F5F5F5',
+  backgroundColor: 'var(--color-bg-section)',
   color: '#6B6B6B',
   fontSize: '11px',
   fontWeight: 600,

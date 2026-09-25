@@ -41,7 +41,7 @@ function SortableTH({ label, sortKey, active, dir, onSort }: { label: string; so
     <th
       onClick={() => onSort(sortKey)}
       style={{
-        backgroundColor: '#F5F5F5', fontSize: '11px', fontWeight: 600,
+        backgroundColor: 'var(--color-bg-section)', fontSize: '11px', fontWeight: 600,
         textTransform: 'uppercase', letterSpacing: '0.06em', padding: '11px 16px',
         textAlign: 'left', borderBottom: '1px solid #E0E0E0', whiteSpace: 'nowrap',
         cursor: 'pointer', userSelect: 'none',
@@ -54,7 +54,7 @@ function SortableTH({ label, sortKey, active, dir, onSort }: { label: string; so
 }
 
 const STATIC_TH: React.CSSProperties = {
-  backgroundColor: '#F5F5F5', color: '#6B6B6B', fontSize: '11px', fontWeight: 600,
+  backgroundColor: 'var(--color-bg-section)', color: '#6B6B6B', fontSize: '11px', fontWeight: 600,
   textTransform: 'uppercase', letterSpacing: '0.06em', padding: '11px 16px',
   textAlign: 'left', borderBottom: '1px solid #E0E0E0', whiteSpace: 'nowrap',
 }
@@ -130,7 +130,7 @@ export default function TwitterPage() {
         </div>
 
         {/* Table card */}
-        <div style={{ backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)', border: '1px solid #E0E0E0', borderRadius: '12px', overflow: 'hidden' }}>
+        <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', overflow: 'hidden' }}>
 
           {/* Header */}
           <div style={{ padding: '14px 20px', borderBottom: '1px solid #E0E0E0', display: 'flex', alignItems: 'center', gap: '10px' }}>

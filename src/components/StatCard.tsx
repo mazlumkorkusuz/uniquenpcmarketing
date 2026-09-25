@@ -14,7 +14,7 @@ export default function StatCard({ label, value, icon: Icon, iconColor, iconBg, 
   return (
     <div
       style={{
-        backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)',
+        backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)',
         border: '1px solid #E0E0E0',
         borderLeft: `3px solid ${iconColor}`,
         borderRadius: '12px',

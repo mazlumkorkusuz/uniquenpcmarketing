@@ -1,172 +1,96 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
-import { RefreshCw } from 'lucide-react'
 import s from '@/app/dashboard.module.css'
+import { useWidgetData } from './useWidgetData'
+import { RefreshButton, RowSkeletons, formatCompact } from './WidgetParts'
 
 interface Stream {
   user_name: string
   user_login: string
   game_name: string
   viewer_count: number
-  thumbnail_url: string
-  title: string
 }
 
 interface Category {
   id: string
   name: string
-  box_art_url: string
 }
 
-function formatViewers(n: number): string {
-  if (n >= 1000) return (n / 1000).toFixed(n >= 100_000 ? 0 : 1) + 'K'
-  return String(n)
+const pick = (json: unknown) => {
+  const j = json as { streams?: Stream[]; categories?: Category[] }
+  return { streams: j.streams ?? [], categories: j.categories ?? [] }
 }
 
 // Twitch category slugs: "Grand Theft Auto V" -> "grand-theft-auto-v"
 function categorySlug(name: string): string {
   return name
     .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[̀-ͯ]/g, '')
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-|-$/g, '')
 }
 
-function formatTime(d: Date): string {
-  return d.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })
-}
-
-async function fetchTwitchLive(): Promise<{ streams: Stream[]; categories: Category[] }> {
-  const res = await fetch('/api/twitch-live', { cache: 'no-store' })
-  if (!res.ok) throw new Error(`twitch-live ${res.status}`)
-  const data = await res.json()
-  return { streams: data.streams ?? [], categories: data.categories ?? [] }
-}
-
 export default function TwitchLivePanel() {
-  const [streams, setStreams] = useState<Stream[]>([])
-  const [categories, setCategories] = useState<Category[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(false)
-  const [updatedAt, setUpdatedAt] = useState<Date | null>(null)
-
-  const load = useCallback(() => {
-    return fetchTwitchLive().then(
-      (data) => {
-        setStreams(data.streams)
-        setCategories(data.categories)
-        setUpdatedAt(new Date())
-        setError(false)
-        setLoading(false)
-      },
-      () => {
-        setError(true)
-        setLoading(false)
-      },
-    )
-  }, [])
-
-  useEffect(() => {
-    load()
-  }, [load])
-
-  function refresh() {
-    setLoading(true)
-    load()
-  }
+  const { data, loading, error, reload } = useWidgetData('/api/twitch-live', pick)
 
   return (
-    <section className={`${s.panel} ${s.live}`} aria-labelledby="twitch-live-title">
-      <div className={s.panelHead}>
-        <h2 id="twitch-live-title" className={s.panelTitle}>
-          <img src="/icons/twitch.png" alt="" width={18} height={18} />
-          Twitch&apos;te şu an canlı
-        </h2>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          {updatedAt && (
-            <span style={{ fontSize: 12, color: 'var(--muted)' }}>{formatTime(updatedAt)} itibarıyla</span>
-          )}
-          <button type="button" className={s.iconButton} onClick={refresh} disabled={loading}>
-            <RefreshCw size={14} aria-hidden />
-            Yenile
-          </button>
+    <section className={`${s.card} ${s.accent}`} style={{ borderTopColor: 'var(--twitch)' }} aria-labelledby="twitch-live-title">
+      <div className={s.cardHead}>
+        <div style={{ minWidth: 0 }}>
+          <h2 id="twitch-live-title" className={s.cardTitle}>
+            <img src="/icons/twitch.png" alt="" width={18} height={18} />
+            Twitch&apos;te canlı
+          </h2>
+          <div className={s.cardSub}>En çok izlenen yayınlar</div>
         </div>
+        <RefreshButton onClick={reload} loading={loading} label="Twitch verisini yenile" />
       </div>
 
-      {error && !loading ? (
-        <p className={s.empty}>
-          Twitch verisi alınamadı. TWITCH_CLIENT_ID ve TWITCH_CLIENT_SECRET ayarlarını kontrol edip yenileyin.
-        </p>
+      {loading && !data ? (
+        <RowSkeletons count={10} art={false} />
+      ) : error || !data ? (
+        <p className={s.errorNote}>Twitch verisi alınamadı. TWITCH_CLIENT_ID ve TWITCH_CLIENT_SECRET ayarlarını kontrol edin.</p>
       ) : (
-        <div className={s.liveBody}>
-          <div className={s.streams} aria-busy={loading}>
-            {loading && streams.length === 0
-              ? Array.from({ length: 8 }).map((_, i) => (
-                  <div key={i}>
-                    <div className={`${s.thumb} ${s.skeleton}`} />
-                    <div className={s.skeleton} style={{ height: 14, width: '70%', marginTop: 10 }} />
-                    <div className={s.skeleton} style={{ height: 12, width: '45%', marginTop: 6 }} />
-                  </div>
-                ))
-              : streams.slice(0, 8).map((st) => (
-                  <a
-                    key={st.user_login || st.user_name}
-                    className={s.stream}
-                    href={`https://www.twitch.tv/${st.user_login || st.user_name}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    title={st.title}
-                  >
-                    <div className={s.thumb}>
-                      {st.thumbnail_url && <img src={st.thumbnail_url} alt="" loading="lazy" />}
-                      <span className={s.viewers}>
-                        <span className={s.liveDot} aria-hidden />
-                        {formatViewers(st.viewer_count)}
-                        <span className="sr-only"> izleyici</span>
-                      </span>
-                    </div>
-                    <div className={s.streamName}>{st.user_name}</div>
-                    <div className={s.streamGame}>{st.game_name || 'Kategori yok'}</div>
-                  </a>
-                ))}
+        <>
+          <ol className={s.rankList}>
+            {data.streams.slice(0, 10).map((st, i) => (
+              <li key={st.user_login || st.user_name}>
+                <a
+                  className={`${s.rankRow} ${s.rankRowNoArt}`}
+                  href={`https://www.twitch.tv/${st.user_login || st.user_name}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <span className={s.rank}>{i + 1}</span>
+                  <span style={{ minWidth: 0 }}>
+                    <span className={s.rowName} style={{ display: 'block' }}>{st.user_name}</span>
+                    <span className={`${s.rowSub} ${s.rowSubTwitch}`} style={{ display: 'block' }}>{st.game_name || 'Kategori yok'}</span>
+                  </span>
+                  <span className={s.rowValue}>
+                    <span className={s.liveDot} aria-hidden />
+                    {formatCompact(st.viewer_count)}
+                    <span className="sr-only"> izleyici</span>
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ol>
+          <h3 className={s.subhead}>En çok izlenen kategoriler</h3>
+          <div className={s.chips}>
+            {data.categories.slice(0, 5).map((c) => (
+              <a
+                key={c.id}
+                className={s.chip}
+                href={`https://www.twitch.tv/directory/category/${categorySlug(c.name)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {c.name}
+              </a>
+            ))}
           </div>
-
-          <div className={s.categories}>
-            <h3 id="twitch-categories-title" className={s.categoriesTitle}>
-              En çok izlenen kategoriler
-            </h3>
-            <ol className={s.categoryList} aria-labelledby="twitch-categories-title">
-            {loading && categories.length === 0
-              ? Array.from({ length: 10 }).map((_, i) => (
-                  <li key={i} className={s.category}>
-                    <span className={s.rank}>{i + 1}</span>
-                    <span className={`${s.boxArt} ${s.skeleton}`} />
-                    <span className={s.skeleton} style={{ height: 12, width: '60%' }} />
-                  </li>
-                ))
-              : categories.map((c, i) => (
-                  <li key={c.id}>
-                    <a
-                      className={s.category}
-                      href={`https://www.twitch.tv/directory/category/${categorySlug(c.name)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <span className={s.rank}>{i + 1}</span>
-                      {c.box_art_url ? (
-                        <img className={s.boxArt} src={c.box_art_url} alt="" loading="lazy" />
-                      ) : (
-                        <span className={s.boxArt} />
-                      )}
-                      <span className={s.categoryName}>{c.name}</span>
-                    </a>
-                  </li>
-                ))}
-            </ol>
-          </div>
-        </div>
+        </>
       )}
     </section>
   )

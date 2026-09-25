@@ -1,8 +1,11 @@
-// Light theme tokens shared by inline styles
+// Light theme tokens shared by inline styles.
+// Source of truth: design-system/uniquenpc/MASTER.md (mirrored as CSS variables in globals.css)
 
 export const theme = {
   bg: '#FFFFFF',
-  section: '#F5F5F5',
+  card: '#F5F5F5',
+  cardBorder: '#EBEBEB',
+  section: '#EDEDED',
   rowAlt: '#F9F9F9',
   hover: '#F0F0F0',
   border: '#E0E0E0',
@@ -12,11 +15,12 @@ export const theme = {
   textMuted: '#6B6B6B',
   primary: '#111111',
   danger: '#EF4444',
-  cardShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)',
+  cardShadow: '0 2px 8px rgba(0,0,0,0.08)',
 }
 
 export const PLATFORM_COLORS: Record<string, string> = {
   twitch: '#9146FF',
+  steam: '#1B2838',
   youtube: '#FF0000',
   kick: '#53FC18',
   soop: '#00A8FF',

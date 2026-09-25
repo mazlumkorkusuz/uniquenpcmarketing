@@ -175,7 +175,7 @@ function SalesHistoryChart({ history }: { history: HistoryPoint[] }) {
     sales: p.sales,
   }))
   if (!mounted || !data.length) return (
-    <div style={{ height: 160, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#8A8A8A', fontSize: '13px' }}>
+    <div style={{ height: 160, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6B6B6B', fontSize: '13px' }}>
       {mounted ? 'Veri yok' : ''}
     </div>
   )
@@ -307,7 +307,7 @@ export default function GamalyticPage() {
             <ChevronLeft size={14} /> Geri
           </button>
           <span style={{ fontSize: '15px', fontWeight: 700, color: '#111111' }}>{selected.name}</span>
-          <span style={{ marginLeft: 'auto', fontSize: '11px', color: '#8A8A8A' }}>Steam ID: {selected.id}</span>
+          <span style={{ marginLeft: 'auto', fontSize: '11px', color: '#6B6B6B' }}>Steam ID: {selected.id}</span>
         </div>
 
         {loading ? (
@@ -429,12 +429,12 @@ export default function GamalyticPage() {
                     {d?.prediction1Month != null && <div style={{ backgroundColor: '#FFFFFF', borderRadius: '8px', padding: '12px' }}>
                       <div style={{ fontSize: '10px', color: '#6B6B6B', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>1 Aylık Tahmin</div>
                       <div style={{ fontSize: '22px', fontWeight: 800, color: '#16A34A', lineHeight: 1 }}>{fmt(d.prediction1Month)}</div>
-                      <div style={{ fontSize: '11px', color: '#8A8A8A', marginTop: '2px' }}>kopya</div>
+                      <div style={{ fontSize: '11px', color: '#6B6B6B', marginTop: '2px' }}>kopya</div>
                     </div>}
                     {d?.prediction1Year != null && <div style={{ backgroundColor: '#FFFFFF', borderRadius: '8px', padding: '12px' }}>
                       <div style={{ fontSize: '10px', color: '#6B6B6B', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>1 Yıllık Tahmin</div>
                       <div style={{ fontSize: '22px', fontWeight: 800, color: '#6D28D9', lineHeight: 1 }}>{fmt(d.prediction1Year)}</div>
-                      <div style={{ fontSize: '11px', color: '#8A8A8A', marginTop: '2px' }}>kopya</div>
+                      <div style={{ fontSize: '11px', color: '#6B6B6B', marginTop: '2px' }}>kopya</div>
                     </div>}
                   </div>
                 </div>
@@ -447,7 +447,7 @@ export default function GamalyticPage() {
                   <div>
                     <div style={{ fontSize: '11px', color: '#6B6B6B', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>İnceleme Skoru</div>
                     <div style={{ fontSize: '13px', color: '#444444', marginTop: '2px' }}>{d.reviewScore >= 80 ? 'Çok Olumlu' : d.reviewScore >= 60 ? 'Olumlu' : 'Karışık'}</div>
-                    {d.reviewCount != null && <div style={{ fontSize: '11px', color: '#8A8A8A', marginTop: '1px' }}>{fmt(d.reviewCount)} değerlendirme</div>}
+                    {d.reviewCount != null && <div style={{ fontSize: '11px', color: '#6B6B6B', marginTop: '1px' }}>{fmt(d.reviewCount)} değerlendirme</div>}
                   </div>
                 </div>
               )}
@@ -542,7 +542,7 @@ export default function GamalyticPage() {
               type="text"
               value={query}
               onChange={e => handleSearch(e.target.value)}
-              style={{ width: '100%', boxSizing: 'border-box', backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)', border: '1px solid #E0E0E0', borderRadius: '12px', padding: '13px 42px 13px 44px', fontSize: '15px', color: '#111111', outline: 'none', transition: 'border-color 0.15s' }}
+              style={{ width: '100%', boxSizing: 'border-box', backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', padding: '13px 42px 13px 44px', fontSize: '15px', color: '#111111', outline: 'none', transition: 'border-color 0.15s' }}
             />
             {query && (
               <button onClick={() => { setQuery(''); setResults([]) }}
@@ -556,7 +556,7 @@ export default function GamalyticPage() {
             className="tot-btn"
             onClick={loadTalesOfTheTrade}
             title="Tales of the Trade verilerini yükle"
-            style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)', border: '1px solid #E0E0E0', borderRadius: '12px', padding: '10px 16px', cursor: 'pointer', transition: 'border-color 0.15s' }}
+            style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', padding: '10px 16px', cursor: 'pointer', transition: 'border-color 0.15s' }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/uniqlogo.png" alt="Unique NPC" style={{ width: '24px', height: '24px', objectFit: 'contain', borderRadius: '4px' }} />
@@ -576,7 +576,7 @@ export default function GamalyticPage() {
                   <button
                     className="history-card"
                     onClick={() => handleSelectGame({ id: item.appid, name: item.name, tiny_image: item.imageUrl })}
-                    style={{ display: 'flex', flexDirection: 'column', gap: '6px', backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)', border: '1px solid #E0E0E0', borderRadius: '10px', padding: '6px 6px 8px', cursor: 'pointer', width: '140px', transition: 'border-color 0.15s', textAlign: 'left' }}
+                    style={{ display: 'flex', flexDirection: 'column', gap: '6px', backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '10px', padding: '6px 6px 8px', cursor: 'pointer', width: '140px', transition: 'border-color 0.15s', textAlign: 'left' }}
                   >
                     <div style={{ position: 'relative', width: '100%', height: '50px', borderRadius: '6px', overflow: 'hidden', backgroundColor: '#FFFFFF' }}>
                       <Image src={item.imageUrl} alt={item.name} fill style={{ objectFit: 'cover' }} sizes="140px" />
@@ -610,7 +610,7 @@ export default function GamalyticPage() {
                 const orig = item.price ? (item.price.initial / 100).toFixed(2) : null
                 return (
                   <button key={item.id} className="result-card" onClick={() => handleSelectGame(item)}
-                    style={{ background: 'none', border: '1px solid #E0E0E0', borderRadius: '12px', padding: 0, cursor: 'pointer', textAlign: 'left', overflow: 'hidden', backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)', transition: 'border-color 0.2s, transform 0.15s' }}>
+                    style={{ background: 'none', border: '1px solid var(--color-border-card)', borderRadius: '12px', padding: 0, cursor: 'pointer', textAlign: 'left', overflow: 'hidden', backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', transition: 'border-color 0.2s, transform 0.15s' }}>
                     <div style={{ position: 'relative', width: '100%', height: '120px', overflow: 'hidden', borderBottom: '1px solid #E0E0E0' }}>
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img src={item.tiny_image} alt={item.name} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />

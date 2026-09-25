@@ -18,7 +18,7 @@ async function getData() {
 type Row = Record<string, unknown>
 
 const TH: React.CSSProperties = {
-  backgroundColor: '#F5F5F5',
+  backgroundColor: 'var(--color-bg-section)',
   color: '#6B6B6B',
   fontSize: '11px',
   fontWeight: 600,
@@ -100,7 +100,7 @@ export default async function PlatformlarPage() {
               <div
                 key={p.key}
                 style={{
-                  backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)',
+                  backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)',
                   border: '1px solid #E0E0E0',
                   borderRadius: '14px',
                   overflow: 'hidden',
@@ -179,7 +179,7 @@ export default async function PlatformlarPage() {
         </div>
         <div
           style={{
-            backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)',
+            backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)',
             border: '1px solid #E0E0E0',
             borderRadius: '12px',
             overflow: 'hidden',

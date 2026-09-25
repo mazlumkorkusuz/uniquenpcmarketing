@@ -110,7 +110,7 @@ export default async function ToplantilarPage() {
             <div
               key={c.label}
               style={{
-                backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)',
+                backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)',
                 border: '1px solid #E0E0E0',
                 borderLeft: `3px solid ${c.color}`,
                 borderRadius: '12px',
@@ -125,7 +125,7 @@ export default async function ToplantilarPage() {
         </div>
 
         {/* Upcoming */}
-        <div style={{ backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)', border: '1px solid #E0E0E0', borderRadius: '12px', overflow: 'hidden', marginBottom: '24px' }}>
+        <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', overflow: 'hidden', marginBottom: '24px' }}>
           <div style={{ padding: '14px 20px', borderBottom: '1px solid #E0E0E0', display: 'flex', alignItems: 'center', gap: '10px' }}>
             <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#22c55e', boxShadow: '0 0 6px rgba(34,197,94,0.6)' }} />
             <span style={{ fontSize: '15px', fontWeight: 600, color: '#111111' }}>Yaklaşan Toplantılar</span>
@@ -137,7 +137,7 @@ export default async function ToplantilarPage() {
         </div>
 
         {/* Past */}
-        <div style={{ backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)', border: '1px solid #E0E0E0', borderRadius: '12px', overflow: 'hidden', marginBottom: '24px' }}>
+        <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', overflow: 'hidden', marginBottom: '24px' }}>
           <div style={{ padding: '14px 20px', borderBottom: '1px solid #E0E0E0', display: 'flex', alignItems: 'center', gap: '10px' }}>
             <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#6B6B6B' }} />
             <span style={{ fontSize: '15px', fontWeight: 600, color: '#111111' }}>Geçmiş Toplantılar</span>
@@ -149,7 +149,7 @@ export default async function ToplantilarPage() {
         </div>
 
         {/* Meeting notes */}
-        <div style={{ backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)', border: '1px solid #E0E0E0', borderRadius: '12px', overflow: 'hidden' }}>
+        <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', overflow: 'hidden' }}>
           <div style={{ padding: '14px 20px', borderBottom: '1px solid #E0E0E0', display: 'flex', alignItems: 'center', gap: '10px' }}>
             <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#f59e0b' }} />
             <span style={{ fontSize: '15px', fontWeight: 600, color: '#111111' }}>Toplantı Notları</span>

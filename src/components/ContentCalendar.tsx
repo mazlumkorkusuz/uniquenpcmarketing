@@ -72,7 +72,7 @@ export function ContentCalendar({ posts, platformColors = {}, singleColor, compa
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '2px', marginBottom: '4px' }}>
         {DAYS.map(d => (
-          <div key={d} style={{ textAlign: 'center', fontSize: '10px', fontWeight: 600, color: '#8A8A8A', padding: compact ? '3px 0' : '5px 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          <div key={d} style={{ textAlign: 'center', fontSize: '10px', fontWeight: 600, color: '#6B6B6B', padding: compact ? '3px 0' : '5px 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
             {d}
           </div>
         ))}

@@ -64,7 +64,7 @@ export default function BudgetDonutChart({ data }: { data: BudgetDatum[] }) {
 
   if (data.length === 0) {
     return (
-      <div style={{ height: '160px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#8A8A8A', fontSize: '13px' }}>
+      <div style={{ height: '160px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6B6B6B', fontSize: '13px' }}>
         Harcama verisi bulunamadı
       </div>
     )

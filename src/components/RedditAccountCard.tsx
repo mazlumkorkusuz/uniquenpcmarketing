@@ -31,7 +31,7 @@ export function RedditAccountCard({ account }: { account: Account }) {
 
   return (
     <div style={{
-      backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)',
+      backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)',
       border: '1px solid #E0E0E0',
       borderRadius: '14px',
       padding: '20px',
@@ -117,7 +117,7 @@ export function RedditAccountCard({ account }: { account: Account }) {
       )}
 
       {/* Footer */}
-      <div style={{ fontSize: '11px', color: '#8A8A8A', borderTop: '1px solid #E0E0E0', paddingTop: '10px' }}>
+      <div style={{ fontSize: '11px', color: '#6B6B6B', borderTop: '1px solid #E0E0E0', paddingTop: '10px' }}>
         Son aktif: {createdDate ?? '—'}
       </div>
     </div>

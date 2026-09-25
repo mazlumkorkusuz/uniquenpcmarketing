@@ -29,7 +29,7 @@ export default async function AyarlarPage() {
               <div
                 key={a.id}
                 style={{
-                  backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)',
+                  backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)',
                   border: '1px solid #E0E0E0',
                   borderRadius: '12px',
                   padding: '20px',

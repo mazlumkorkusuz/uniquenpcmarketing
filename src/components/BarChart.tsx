@@ -24,7 +24,7 @@ export default function BarChart({
   if (bars.length === 0) {
     return (
       <div style={{ height: `${height}px`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <span style={{ fontSize: '12px', color: '#8A8A8A' }}>Veri yok</span>
+        <span style={{ fontSize: '12px', color: '#6B6B6B' }}>Veri yok</span>
       </div>
     )
   }

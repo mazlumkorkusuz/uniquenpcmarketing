@@ -65,16 +65,16 @@ function SortableTH({ label, sk, active, dir, onSort }: { label: string; sk: Sor
   )
 }
 
-const STH: React.CSSProperties = { backgroundColor: '#F5F5F5', color: '#6B6B6B', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', padding: '11px 14px', textAlign: 'left', borderBottom: '1px solid #E0E0E0', whiteSpace: 'nowrap' }
+const STH: React.CSSProperties = { backgroundColor: 'var(--color-bg-section)', color: '#6B6B6B', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', padding: '11px 14px', textAlign: 'left', borderBottom: '1px solid #E0E0E0', whiteSpace: 'nowrap' }
 const TD: React.CSSProperties = { padding: '12px 14px', verticalAlign: 'middle' }
 const SEL: React.CSSProperties = { backgroundColor: '#FFFFFF', border: '1px solid #E0E0E0', borderRadius: '7px', padding: '7px 11px', fontSize: '13px', color: '#111111', cursor: 'pointer', outline: 'none' }
 
 // ── stats bar card styling ───────────────────────────────────────────────
 function statCardStyle(color: string): React.CSSProperties {
   return {
-    backgroundColor: '#FFFFFF',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)',
-    border: '1px solid #E0E0E0',
+    backgroundColor: 'var(--color-bg-card)',
+    boxShadow: 'var(--shadow-card)',
+    border: '1px solid var(--color-border-card)',
     borderLeft: `3px solid ${color}`,
     borderRadius: '14px',
     padding: '22px 24px',
@@ -331,7 +331,7 @@ export default function DouyinPage() {
         </div>
 
         {/* Table card */}
-        <div style={{ backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)', border: '1px solid #E0E0E0', borderRadius: '12px', overflow: 'hidden' }}>
+        <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', overflow: 'hidden' }}>
           {/* Filters */}
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', padding: '12px 20px', borderBottom: '1px solid #E0E0E0', alignItems: 'center' }}>
             <div style={{ position: 'relative', flex: 1, minWidth: '180px' }}>

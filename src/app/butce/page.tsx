@@ -73,19 +73,19 @@ export default async function ButcePage() {
 
         {/* Summary cards */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '28px' }}>
-          <div style={{ backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)', border: '1px solid #E0E0E0', borderLeft: '3px solid #16A34A', borderRadius: '12px', padding: '20px' }}>
+          <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderLeft: '3px solid #16A34A', borderRadius: '12px', padding: '20px' }}>
             <div style={{ fontSize: '12px', color: '#6B6B6B', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '8px' }}>Toplam Bütçe</div>
             <div style={{ fontSize: '24px', fontWeight: 700, color: '#16A34A' }}>
               ${totalExpenses.toLocaleString('en-US', { minimumFractionDigits: 2 })}
             </div>
           </div>
-          <div style={{ backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)', border: '1px solid #E0E0E0', borderLeft: '3px solid #111111', borderRadius: '12px', padding: '20px' }}>
+          <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderLeft: '3px solid #111111', borderRadius: '12px', padding: '20px' }}>
             <div style={{ fontSize: '12px', color: '#6B6B6B', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '8px' }}>Toplam Harcama</div>
             <div style={{ fontSize: '24px', fontWeight: 700, color: '#111111' }}>
               ${totalExpenses.toLocaleString('en-US', { minimumFractionDigits: 2 })}
             </div>
           </div>
-          <div style={{ backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)', border: '1px solid #E0E0E0', borderLeft: '3px solid #111111', borderRadius: '12px', padding: '20px' }}>
+          <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderLeft: '3px solid #111111', borderRadius: '12px', padding: '20px' }}>
             <div style={{ fontSize: '12px', color: '#6B6B6B', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '8px' }}>Toplam İşlem</div>
             <div style={{ fontSize: '24px', fontWeight: 700, color: '#111111' }}>{expenses.length}</div>
           </div>
@@ -93,7 +93,7 @@ export default async function ButcePage() {
 
         {/* Category breakdown */}
         {categoryEntries.length > 0 && (
-          <div style={{ backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)', border: '1px solid #E0E0E0', borderRadius: '12px', padding: '20px', marginBottom: '28px' }}>
+          <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', padding: '20px', marginBottom: '28px' }}>
             <div style={{ fontSize: '14px', fontWeight: 600, color: '#111111', marginBottom: '16px' }}>Kategoriye Göre Harcama</div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '12px' }}>
               {categoryEntries.map(([cat, amount]) => {
@@ -111,7 +111,7 @@ export default async function ButcePage() {
         )}
 
         {/* Expenses table */}
-        <div style={{ backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)', border: '1px solid #E0E0E0', borderRadius: '12px', overflow: 'hidden' }}>
+        <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', overflow: 'hidden' }}>
           <div style={{ padding: '14px 20px', borderBottom: '1px solid #E0E0E0', display: 'flex', alignItems: 'center', gap: '10px' }}>
             <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#22c55e' }} />
             <span style={{ fontSize: '15px', fontWeight: 600, color: '#111111' }}>Harcamalar</span>

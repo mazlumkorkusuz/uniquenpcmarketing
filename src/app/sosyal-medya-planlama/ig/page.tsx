@@ -70,17 +70,17 @@ export default async function IGPlanlama() {
           <StatCard label="Yayınlandı"       value={publishedCount} icon={CheckCircle} iconColor="#16A34A" iconBg="rgba(34,197,94,0.12)" />
         </div>
 
-        <div style={{ backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)', border: '1px solid #E0E0E0', borderRadius: '12px', padding: '20px', marginBottom: '28px' }}>
+        <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', padding: '20px', marginBottom: '28px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
             <Calendar size={15} color={COLOR} />
             <span style={{ fontSize: '14px', fontWeight: 600, color: '#111111' }}>Takvim Görünümü</span>
           </div>
           <div style={{ height: '100px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FFFFFF', borderRadius: '8px', border: '1px dashed #E0E0E0' }}>
-            <span style={{ fontSize: '13px', color: '#8A8A8A' }}>Takvim görünümü yakında</span>
+            <span style={{ fontSize: '13px', color: '#6B6B6B' }}>Takvim görünümü yakında</span>
           </div>
         </div>
 
-        <div style={{ backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)', border: '1px solid #E0E0E0', borderRadius: '12px', overflow: 'hidden' }}>
+        <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', overflow: 'hidden' }}>
           <div style={{ padding: '14px 20px', borderBottom: '1px solid #E0E0E0', display: 'flex', alignItems: 'center', gap: '10px' }}>
             <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: COLOR }} />
             <span style={{ fontSize: '15px', fontWeight: 600, color: '#111111' }}>Planlanan Gönderiler</span>

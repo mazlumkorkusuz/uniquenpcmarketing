@@ -25,7 +25,7 @@ export default function DataTable<T extends Record<string, unknown>>({
               <th
                 key={String(col.key)}
                 style={{
-                  backgroundColor: '#F5F5F5',
+                  backgroundColor: 'var(--color-bg-section)',
                   color: '#6B6B6B',
                   fontSize: '11px',
                   fontWeight: 600,

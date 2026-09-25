@@ -79,14 +79,14 @@ export default async function IcerikPlanlamaPage() {
                 <div style={{ fontSize: '20px', fontWeight: 700, color: p.color }}>
                   {totalByPlatform[p.key] ?? 0}
                 </div>
-                <div style={{ fontSize: '11px', color: '#8A8A8A', marginTop: '2px' }}>gönderi</div>
+                <div style={{ fontSize: '11px', color: '#6B6B6B', marginTop: '2px' }}>gönderi</div>
               </div>
             </a>
           ))}
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 200px', gap: '24px', alignItems: 'start', marginBottom: '28px' }}>
-          <div style={{ backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)', border: '1px solid #E0E0E0', borderRadius: '12px', padding: '24px' }}>
+          <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', padding: '24px' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
               <span style={{ fontSize: '15px', fontWeight: 600, color: '#111111' }}>Takvim</span>
               <span style={{ fontSize: '12px', color: '#6B6B6B' }}>Tüm platformlar</span>
@@ -95,18 +95,18 @@ export default async function IcerikPlanlamaPage() {
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <div style={{ backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)', border: '1px solid #E0E0E0', borderLeft: '3px solid #111111', borderRadius: '12px', padding: '16px' }}>
+            <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderLeft: '3px solid #111111', borderRadius: '12px', padding: '16px' }}>
               <div style={{ fontSize: '11px', fontWeight: 600, color: '#6B6B6B', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>Toplam</div>
               <div style={{ fontSize: '26px', fontWeight: 700, color: '#111111' }}>{posts.length}</div>
               <div style={{ fontSize: '12px', color: '#6B6B6B', marginTop: '2px' }}>planlı gönderi</div>
             </div>
-            <div style={{ backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)', border: '1px solid #E0E0E0', borderLeft: '3px solid #16A34A', borderRadius: '12px', padding: '16px' }}>
+            <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderLeft: '3px solid #16A34A', borderRadius: '12px', padding: '16px' }}>
               <div style={{ fontSize: '11px', fontWeight: 600, color: '#6B6B6B', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>Yaklaşan</div>
               <div style={{ fontSize: '26px', fontWeight: 700, color: '#16A34A' }}>{upcoming}</div>
               <div style={{ fontSize: '12px', color: '#6B6B6B', marginTop: '2px' }}>bu tarihten sonra</div>
             </div>
 
-            <div style={{ backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)', border: '1px solid #E0E0E0', borderRadius: '12px', padding: '16px' }}>
+            <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', padding: '16px' }}>
               <div style={{ fontSize: '11px', fontWeight: 600, color: '#6B6B6B', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '12px' }}>Renk Kodu</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '7px' }}>
                 {PLATFORMS.map(p => (

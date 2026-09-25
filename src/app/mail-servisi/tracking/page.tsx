@@ -90,7 +90,7 @@ function Tracking() {
   }
 
   const stat = (label: string, value: number, rate: string, color: string) => (
-    <div style={{ backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)', border: '1px solid #E0E0E0', borderLeft: `3px solid ${color}`, borderRadius: '12px', padding: '16px 20px' }}>
+    <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderLeft: `3px solid ${color}`, borderRadius: '12px', padding: '16px 20px' }}>
       <div style={{ fontSize: '12px', color: '#6B6B6B', marginBottom: '6px' }}>{label}</div>
       <div style={{ fontSize: '22px', fontWeight: 700, color }}>{value.toLocaleString('tr-TR')}</div>
       <div style={{ fontSize: '12px', color: '#444444' }}>{rate}</div>

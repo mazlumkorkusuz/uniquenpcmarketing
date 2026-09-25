@@ -57,13 +57,13 @@ function ScoreBadge({ score }: { score: unknown }) {
 
 function SortableTH({ label, sk, active, dir, onSort }: { label: string; sk: SortKey; active: boolean; dir: SortDir; onSort: (k: SortKey) => void }) {
   return (
-    <th onClick={() => onSort(sk)} style={{ backgroundColor: '#F5F5F5', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase' as const, letterSpacing: '0.06em', padding: '11px 14px', textAlign: 'left' as const, borderBottom: '1px solid #E0E0E0', whiteSpace: 'nowrap' as const, cursor: 'pointer', userSelect: 'none' as const, color: active ? '#14b8a6' : '#6B6B6B' }}>
+    <th onClick={() => onSort(sk)} style={{ backgroundColor: 'var(--color-bg-section)', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase' as const, letterSpacing: '0.06em', padding: '11px 14px', textAlign: 'left' as const, borderBottom: '1px solid #E0E0E0', whiteSpace: 'nowrap' as const, cursor: 'pointer', userSelect: 'none' as const, color: active ? '#14b8a6' : '#6B6B6B' }}>
       {label} <span style={{ opacity: active ? 1 : 0.3 }}>{active ? (dir === 'desc' ? '↓' : '↑') : '↕'}</span>
     </th>
   )
 }
 
-const STH: React.CSSProperties = { backgroundColor: '#F5F5F5', color: '#6B6B6B', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', padding: '11px 14px', textAlign: 'left', borderBottom: '1px solid #E0E0E0', whiteSpace: 'nowrap' }
+const STH: React.CSSProperties = { backgroundColor: 'var(--color-bg-section)', color: '#6B6B6B', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', padding: '11px 14px', textAlign: 'left', borderBottom: '1px solid #E0E0E0', whiteSpace: 'nowrap' }
 const TD: React.CSSProperties = { padding: '13px 14px', verticalAlign: 'middle' }
 const SEL: React.CSSProperties = { backgroundColor: '#FFFFFF', border: '1px solid #E0E0E0', borderRadius: '7px', padding: '7px 11px', fontSize: '13px', color: '#111111', cursor: 'pointer', outline: 'none' }
 
@@ -138,7 +138,7 @@ export default function SteamKuratorleriPage() {
             { label: 'Ort. Tavsiye Oranı', value: avgRate + '%', color: '#D97706' },
             { label: 'Büyük Küratör', value: bigCount, color: '#DC2626' },
           ].map(s => (
-            <div key={s.label} style={{ backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)', border: '1px solid #E0E0E0', borderLeft: `3px solid ${s.color}`, borderRadius: '12px', padding: '18px 20px' }}>
+            <div key={s.label} style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderLeft: `3px solid ${s.color}`, borderRadius: '12px', padding: '18px 20px' }}>
               <div style={{ fontSize: '26px', fontWeight: 800, color: s.color, lineHeight: 1 }}>{s.value}</div>
               <div style={{ fontSize: '12px', color: '#6B6B6B', marginTop: '7px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{s.label}</div>
             </div>
@@ -146,7 +146,7 @@ export default function SteamKuratorleriPage() {
         </div>
 
         {/* Table card */}
-        <div style={{ backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)', border: '1px solid #E0E0E0', borderRadius: '12px', overflow: 'hidden' }}>
+        <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', overflow: 'hidden' }}>
           {/* Header */}
           <div style={{ padding: '14px 20px', borderBottom: '1px solid #E0E0E0', display: 'flex', alignItems: 'center', gap: '10px' }}>
             <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#14b8a6', boxShadow: '0 0 6px rgba(20,184,166,0.5)' }} />

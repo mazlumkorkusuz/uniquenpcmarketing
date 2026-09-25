@@ -45,7 +45,7 @@ export default async function RedditPage() {
         {/* Summary stats */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '32px' }}>
           {stats.map(s => (
-            <div key={s.label} style={{ backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)', border: '1px solid #E0E0E0', borderLeft: `3px solid ${s.color}`, borderRadius: '12px', padding: '20px', textAlign: 'center' }}>
+            <div key={s.label} style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderLeft: `3px solid ${s.color}`, borderRadius: '12px', padding: '20px', textAlign: 'center' }}>
               <div style={{ fontSize: '30px', fontWeight: 800, color: s.color, lineHeight: 1 }}>{s.value}</div>
               <div style={{ fontSize: '12px', color: '#6B6B6B', marginTop: '8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{s.label}</div>
             </div>
@@ -63,7 +63,7 @@ export default async function RedditPage() {
           </div>
 
           {accounts.length === 0 ? (
-            <div style={{ backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)', border: '1px solid #E0E0E0', borderRadius: '12px', padding: '48px', textAlign: 'center', color: '#6B6B6B', fontSize: '14px' }}>
+            <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', padding: '48px', textAlign: 'center', color: '#6B6B6B', fontSize: '14px' }}>
               Henüz hesap eklenmemiş
             </div>
           ) : (

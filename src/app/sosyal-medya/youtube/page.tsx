@@ -55,13 +55,13 @@ function ChannelTypeBadge({ type }: { type: unknown }) {
 
 function SortableTH({ label, sk, active, dir, onSort }: { label: string; sk: SortKey; active: boolean; dir: SortDir; onSort: (k: SortKey) => void }) {
   return (
-    <th onClick={() => onSort(sk)} style={{ backgroundColor: '#F5F5F5', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase' as const, letterSpacing: '0.06em', padding: '11px 14px', textAlign: 'left' as const, borderBottom: '1px solid #E0E0E0', whiteSpace: 'nowrap' as const, cursor: 'pointer', userSelect: 'none' as const, color: active ? '#ff4444' : '#6B6B6B' }}>
+    <th onClick={() => onSort(sk)} style={{ backgroundColor: 'var(--color-bg-section)', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase' as const, letterSpacing: '0.06em', padding: '11px 14px', textAlign: 'left' as const, borderBottom: '1px solid #E0E0E0', whiteSpace: 'nowrap' as const, cursor: 'pointer', userSelect: 'none' as const, color: active ? '#ff4444' : '#6B6B6B' }}>
       {label} <span style={{ opacity: active ? 1 : 0.3 }}>{active ? (dir === 'desc' ? '↓' : '↑') : '↕'}</span>
     </th>
   )
 }
 
-const STH: React.CSSProperties = { backgroundColor: '#F5F5F5', color: '#6B6B6B', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', padding: '11px 14px', textAlign: 'left', borderBottom: '1px solid #E0E0E0', whiteSpace: 'nowrap' }
+const STH: React.CSSProperties = { backgroundColor: 'var(--color-bg-section)', color: '#6B6B6B', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', padding: '11px 14px', textAlign: 'left', borderBottom: '1px solid #E0E0E0', whiteSpace: 'nowrap' }
 const TD: React.CSSProperties = { padding: '12px 14px', verticalAlign: 'middle' }
 const SEL: React.CSSProperties = { backgroundColor: '#FFFFFF', border: '1px solid #E0E0E0', borderRadius: '7px', padding: '7px 11px', fontSize: '13px', color: '#111111', cursor: 'pointer', outline: 'none' }
 
@@ -305,7 +305,7 @@ export default function YouTubePage() {
             { label: 'Global', value: globalCount, color: '#2563EB' },
             { label: 'Japonya', value: japonyaCount, color: '#DC2626' },
           ].map(s => (
-            <div key={s.label} style={{ backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)', border: '1px solid #E0E0E0', borderLeft: `3px solid ${s.color}`, borderRadius: '10px', padding: '16px 22px', minWidth: '140px' }}>
+            <div key={s.label} style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderLeft: `3px solid ${s.color}`, borderRadius: '10px', padding: '16px 22px', minWidth: '140px' }}>
               <div style={{ fontSize: '26px', fontWeight: 800, color: s.color, lineHeight: 1 }}>{s.value}</div>
               <div style={{ fontSize: '12px', color: '#6B6B6B', marginTop: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{s.label}</div>
             </div>
@@ -322,7 +322,7 @@ export default function YouTubePage() {
         </div>
 
         {/* Table card */}
-        <div style={{ backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)', border: '1px solid #E0E0E0', borderRadius: '12px', overflow: 'hidden' }}>
+        <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', overflow: 'hidden' }}>
             {/* Filters */}
             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', padding: '12px 16px', borderBottom: '1px solid #E0E0E0', alignItems: 'center' }}>
               <div style={{ position: 'relative', flex: 1, minWidth: '160px' }}>

@@ -88,7 +88,7 @@ export function DeleteButton({ table, id }: Props) {
         borderRadius: '6px',
         backgroundColor: 'transparent',
         border: '1px solid transparent',
-        color: '#8A8A8A',
+        color: '#6B6B6B',
         cursor: 'pointer',
         transition: 'all 0.15s ease',
       }}
@@ -100,7 +100,7 @@ export function DeleteButton({ table, id }: Props) {
       onMouseLeave={(e) => {
         e.currentTarget.style.backgroundColor = 'transparent'
         e.currentTarget.style.borderColor = 'transparent'
-        e.currentTarget.style.color = '#8A8A8A'
+        e.currentTarget.style.color = '#6B6B6B'
       }}
     >
       <Trash2 size={13} />
