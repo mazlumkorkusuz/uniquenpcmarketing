@@ -58,7 +58,7 @@ export default function AISearchBar() {
           autoComplete="off"
         />
         <kbd className={s.kbd}>⌘K</kbd>
-        <button type="submit" className={s.askButton} disabled={!query.trim()}>
+        <button type="submit" className={s.btnPrimary} disabled={!query.trim()}>
           Sor
           <CornerDownLeft size={14} aria-hidden />
         </button>

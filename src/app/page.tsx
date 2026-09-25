@@ -1,5 +1,6 @@
 export const dynamic = 'force-dynamic'
 import Link from 'next/link'
+import { Calistoga, Inter } from 'next/font/google'
 import {
   Tv2,
   Globe,
@@ -23,6 +24,10 @@ import GamalyticWishlist from '@/components/dashboard/GamalyticWishlist'
 import { getStoreItems, steamHeaderUrl, TOT_APPID } from '@/lib/steam'
 import s from './dashboard.module.css'
 
+// Typography per design-system/uniquenpc/MASTER.md: Calistoga headings, Inter body
+const calistoga = Calistoga({ subsets: ['latin', 'latin-ext'], weight: '400', variable: '--font-calistoga' })
+const inter = Inter({ subsets: ['latin', 'latin-ext'], variable: '--font-inter' })
+
 const TZ = 'Europe/Istanbul'
 
 const ROSTER = [
@@ -39,18 +44,18 @@ const MEETING_STATUS: Record<string, { fg: string; bg: string; line: string }> =
   'Planlandı': { fg: '#1D4ED8', bg: '#EFF6FF', line: '#BFDBFE' },
   'Devam Ediyor': { fg: '#B45309', bg: '#FFFBEB', line: '#FDE68A' },
   'Tamamlandı': { fg: '#15803D', bg: '#F0FDF4', line: '#BBF7D0' },
-  'İptal': { fg: '#6B6B6B', bg: '#FFFFFF', line: '#E0E0E0' },
+  'İptal': { fg: '#475569', bg: '#FFFFFF', line: '#E2E8F0' },
 }
 
 const QUICK_LINKS = [
   { href: '/platformlar', label: 'Platformlar & Partnerler', color: '#2563EB', icon: Globe },
   { href: '/yayincilar', label: 'Yayıncılar', color: '#9146FF', icon: Tv2 },
-  { href: '/toplantilar', label: 'Toplantılar', color: '#0F766E', icon: Calendar },
-  { href: '/notlar', label: 'Notlar', color: '#C2410C', icon: FileText },
+  { href: '/toplantilar', label: 'Toplantılar', color: '#2563EB', icon: Calendar },
+  { href: '/notlar', label: 'Notlar', color: '#2563EB', icon: FileText },
   { href: '/sosyal-medya', label: 'Sosyal Medya', color: '#1D9BF0', icon: Share2 },
   { href: '/reddit', label: 'Reddit', color: '#FF4500', imageSrc: '/icons/reddit.svg' },
-  { href: '/butce', label: 'Bütçe', color: '#15803D', icon: Wallet },
-  { href: '/icerik-planlama', label: 'İçerik Planlaması', color: '#111111', icon: CalendarCheck },
+  { href: '/butce', label: 'Bütçe', color: '#2563EB', icon: Wallet },
+  { href: '/icerik-planlama', label: 'İçerik Planlaması', color: '#2563EB', icon: CalendarCheck },
 ]
 
 type Row = Record<string, unknown>
@@ -133,7 +138,7 @@ export default async function DashboardPage() {
   const activeRoster = d.roster.filter((p) => p.count > 0)
 
   return (
-    <div className={s.root}>
+    <div className={`${calistoga.variable} ${inter.variable} ${s.root}`}>
       <header className={s.header}>
         <div>
           <h1 className={s.title}>Pazarlama paneli</h1>
@@ -181,7 +186,7 @@ export default async function DashboardPage() {
 
         <Link href="/toplantilar" className={`${s.card} ${s.stat}`}>
           <div className={s.statLabel}>
-            <span className={s.statIcon} style={{ color: '#0F766E' }}><CalendarDays size={16} aria-hidden /></span>
+            <span className={s.statIcon}><CalendarDays size={16} aria-hidden /></span>
             Toplantılar
           </div>
           <div className={s.statValue}>{num(d.meetingCount)}</div>
@@ -192,7 +197,7 @@ export default async function DashboardPage() {
 
         <Link href="/butce" className={`${s.card} ${s.stat}`}>
           <div className={s.statLabel}>
-            <span className={s.statIcon} style={{ color: 'var(--ok)' }}><Wallet size={16} aria-hidden /></span>
+            <span className={s.statIcon}><Wallet size={16} aria-hidden /></span>
             Bütçe kullanımı
           </div>
           <div className={s.statValue}>

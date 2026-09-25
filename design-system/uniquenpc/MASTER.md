@@ -6,40 +6,9 @@
 
 ---
 
-**Project:** uniquenpc
-**Generated:** 2026-09-25 16:22:19
+**Project:** UniqueNPC
+**Generated:** 2026-09-25 16:42:55
 **Category:** SaaS (General)
-**Design Dials:** Density 8/10 (Dense / Dashboard)
-
----
-
-## Project Decisions (override the generated values below)
-
-The sections after this one are the raw `ui-ux-pro-max --design-system` output for
-"B2B Gaming Marketing SaaS" (density 8). The generator matched a landing-page pattern
-and a Glassmorphism style, which don't fit an internal dashboard app, and the product
-owner's style brief sets colors explicitly. **Where they conflict, this section wins.**
-
-| Topic | Generated | Applied | Why |
-|---|---|---|---|
-| Page pattern | Hero + Features + CTA | Dashboard grid (stats row, 3-col, 4-col widgets) | Internal tool, not a marketing page |
-| Style | Glassmorphism | Flat light SaaS cards, soft shadow | Brief: "clean cards, subtle shadows"; blur hurts dense data |
-| Background | `#F8FAFC` | `#FFFFFF` | Brief |
-| Card | `#FFFFFF` | `#F5F5F5`, border `#EBEBEB`, radius 14px | Brief |
-| Card shadow | `0 4px 6px rgba(0,0,0,.1)` | `0 2px 8px rgba(0,0,0,0.08)` (`--shadow-card`) | Brief |
-| Text | `#1E293B` / `#475569` | `#111111` primary, `#444444` secondary, `#6B6B6B` muted | Brief; muted still ≥4.5:1 on `#F5F5F5` |
-| Primary / CTA | Blue `#2563EB`, orange `#EA580C` | Black `#111111` buttons | Platform brand colors carry all chroma; a blue/orange primary competes with them |
-| Table header fill | — | `#EDEDED` (`--color-bg-section`) | Must separate from `#F5F5F5` cards |
-| Platform colors | — | Twitch `#9146FF`, YouTube `#FF0000`, Kick `#53FC18`, Steam `#1B2838` (+ others in `src/lib/theme.ts`) | Brief |
-| Typography | Plus Jakarta Sans | Plus Jakarta Sans 400–800, tabular numbers on dashboards | Kept |
-| Spacing | Dense scale (density 8) | Kept | Data-heavy screens |
-
-**Where tokens live:** CSS variables in `src/app/globals.css` (`@theme`), mirrored in
-`src/lib/theme.ts` for inline styles. Components use `var(--color-bg-card)`,
-`var(--shadow-card)`, `var(--color-border-card)`, `var(--color-bg-section)` instead of raw hex.
-
-**Responsive:** sidebar becomes an off-canvas drawer under 900px (`.app-sidebar`, `.app-topbar`
-in `globals.css`); dashboard grids step 4 → 2 → 1 columns.
 
 ---
 
@@ -70,29 +39,27 @@ in `globals.css`); dashboard grids step 4 → 2 → 1 columns.
 
 ### Typography
 
-- **Heading Font:** Plus Jakarta Sans
-- **Body Font:** Plus Jakarta Sans
-- **Mood:** friendly, modern, saas, clean, approachable, professional
-- **Google Fonts:** [Plus Jakarta Sans + Plus Jakarta Sans](https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap)
+- **Heading Font:** Calistoga
+- **Body Font:** Inter
+- **Mood:** saas, boutique, electric, warm, editorial, bold, premium, fintech, business, dual font, human warmth
+- **Google Fonts:** [Calistoga + Inter](https://fonts.googleapis.com/css2?family=Calistoga:ital@0;1&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap)
 
 **CSS Import:**
 ```css
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Calistoga:ital@0;1&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 ```
 
 ### Spacing Variables
 
-*Density: 8/10 — Dense / Dashboard*
-
 | Token | Value | Usage |
 |-------|-------|-------|
-| `--space-xs` | `2px` / `0.125rem` | Tight gaps |
-| `--space-sm` | `4px` / `0.25rem` | Icon gaps, inline spacing |
-| `--space-md` | `8px` / `0.5rem` | Standard padding |
-| `--space-lg` | `12px` / `0.75rem` | Section padding |
-| `--space-xl` | `16px` / `1rem` | Large gaps |
-| `--space-2xl` | `24px` / `1.5rem` | Section margins |
-| `--space-3xl` | `32px` / `2rem` | Hero padding |
+| `--space-xs` | `4px` / `0.25rem` | Tight gaps |
+| `--space-sm` | `8px` / `0.5rem` | Icon gaps, inline spacing |
+| `--space-md` | `16px` / `1rem` | Standard padding |
+| `--space-lg` | `24px` / `1.5rem` | Section padding |
+| `--space-xl` | `32px` / `2rem` | Large gaps |
+| `--space-2xl` | `48px` / `3rem` | Section margins |
+| `--space-3xl` | `64px` / `4rem` | Hero padding |
 
 ### Shadow Depths
 

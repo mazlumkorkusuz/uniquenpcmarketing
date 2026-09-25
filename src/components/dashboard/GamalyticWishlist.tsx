@@ -62,7 +62,7 @@ export default function GamalyticWishlist({ coverUrl }: { coverUrl?: string | nu
             </div>
           )}
         </div>
-        <Link href="/gamalytic" className={s.buttonDark}>
+        <Link href="/gamalytic" className={s.btnSecondary}>
           <BarChart2 size={16} aria-hidden />
           Gamalytic&apos;te aç
         </Link>
