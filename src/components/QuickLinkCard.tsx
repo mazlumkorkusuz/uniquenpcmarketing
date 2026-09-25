@@ -19,8 +19,8 @@ export default function QuickLinkCard({ href, label, desc, color }: QuickLinkCar
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
         style={{
-          backgroundColor: hovered ? '#22222f' : '#1a1a24',
-          border: `1px solid ${hovered ? color + '60' : '#2a2a3a'}`,
+          backgroundColor: hovered ? '#F0F0F0' : '#FFFFFF',
+          border: `1px solid ${hovered ? color + '60' : '#E0E0E0'}`,
           borderRadius: '10px',
           padding: '16px',
           transition: 'all 0.15s ease',
@@ -36,10 +36,10 @@ export default function QuickLinkCard({ href, label, desc, color }: QuickLinkCar
             marginBottom: '10px',
           }}
         />
-        <div style={{ fontSize: '14px', fontWeight: 600, color: '#f1f5f9', marginBottom: '4px' }}>
+        <div style={{ fontSize: '14px', fontWeight: 600, color: '#111111', marginBottom: '4px' }}>
           {label}
         </div>
-        <div style={{ fontSize: '12px', color: '#64748b' }}>{desc}</div>
+        <div style={{ fontSize: '12px', color: '#6B6B6B' }}>{desc}</div>
       </div>
     </Link>
   )

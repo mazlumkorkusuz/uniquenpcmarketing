@@ -46,11 +46,11 @@ export function ContentCalendar({ posts, platformColors = {}, singleColor, compa
 
   const navBtn: React.CSSProperties = {
     background: 'none',
-    border: '1px solid #2a2a3a',
+    border: '1px solid #E0E0E0',
     borderRadius: '6px',
     cursor: 'pointer',
     padding: '4px 6px',
-    color: '#64748b',
+    color: '#6B6B6B',
     display: 'flex',
     alignItems: 'center',
     transition: 'border-color 0.15s',
@@ -62,7 +62,7 @@ export function ContentCalendar({ posts, platformColors = {}, singleColor, compa
         <button style={navBtn} onClick={() => setView(new Date(yr, mo - 1, 1))}>
           <ChevronLeft size={14} />
         </button>
-        <span style={{ fontSize: compact ? '13px' : '15px', fontWeight: 700, color: '#f1f5f9', letterSpacing: '-0.01em' }}>
+        <span style={{ fontSize: compact ? '13px' : '15px', fontWeight: 700, color: '#111111', letterSpacing: '-0.01em' }}>
           {MONTHS[mo]} {yr}
         </span>
         <button style={navBtn} onClick={() => setView(new Date(yr, mo + 1, 1))}>
@@ -72,7 +72,7 @@ export function ContentCalendar({ posts, platformColors = {}, singleColor, compa
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '2px', marginBottom: '4px' }}>
         {DAYS.map(d => (
-          <div key={d} style={{ textAlign: 'center', fontSize: '10px', fontWeight: 600, color: '#475569', padding: compact ? '3px 0' : '5px 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          <div key={d} style={{ textAlign: 'center', fontSize: '10px', fontWeight: 600, color: '#8A8A8A', padding: compact ? '3px 0' : '5px 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
             {d}
           </div>
         ))}
@@ -91,8 +91,8 @@ export function ContentCalendar({ posts, platformColors = {}, singleColor, compa
                 minHeight: `${cellH}px`,
                 borderRadius: '6px',
                 padding: compact ? '4px' : '5px 6px',
-                backgroundColor: today ? 'rgba(124,58,237,0.15)' : ps.length > 0 ? 'rgba(255,255,255,0.02)' : 'transparent',
-                border: today ? '1px solid rgba(124,58,237,0.4)' : ps.length > 0 ? '1px solid rgba(42,42,58,0.8)' : '1px solid transparent',
+                backgroundColor: today ? 'rgba(124,58,237,0.15)' : ps.length > 0 ? '#F9F9F9' : 'transparent',
+                border: today ? '1px solid rgba(124,58,237,0.4)' : ps.length > 0 ? '1px solid #E5E5E5' : '1px solid transparent',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '2px',
@@ -101,7 +101,7 @@ export function ContentCalendar({ posts, platformColors = {}, singleColor, compa
               <span style={{
                 fontSize: compact ? '11px' : '12px',
                 fontWeight: today ? 700 : 400,
-                color: today ? '#a78bfa' : '#94a3b8',
+                color: today ? '#6D28D9' : '#444444',
                 lineHeight: 1,
               }}>
                 {day}
@@ -152,7 +152,7 @@ export function ContentCalendar({ posts, platformColors = {}, singleColor, compa
                         )
                       })}
                       {ps.length > 3 && (
-                        <span style={{ fontSize: '8px', color: '#64748b', lineHeight: '13px' }}>+{ps.length - 3}</span>
+                        <span style={{ fontSize: '8px', color: '#6B6B6B', lineHeight: '13px' }}>+{ps.length - 3}</span>
                       )}
                     </>
                   )}

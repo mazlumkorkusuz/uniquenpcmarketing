@@ -135,12 +135,12 @@ export default function LoginPage() {
         padding: '24px',
       }}
     >
-      {/* Dark overlay */}
+      {/* Light overlay */}
       <div
         style={{
           position: 'absolute',
           inset: 0,
-          backgroundColor: 'rgba(0,0,0,0.72)',
+          backgroundColor: 'rgba(255,255,255,0.6)',
           backdropFilter: 'blur(3px)',
         }}
       />
@@ -178,7 +178,7 @@ export default function LoginPage() {
               overflow: 'hidden',
               margin: '0 auto 16px',
               backgroundColor: 'white',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -193,10 +193,10 @@ export default function LoginPage() {
               priority
             />
           </div>
-          <h1 style={{ fontSize: '22px', fontWeight: 800, color: '#f1f5f9', margin: '0 0 6px' }}>
+          <h1 style={{ fontSize: '22px', fontWeight: 800, color: '#111111', margin: '0 0 6px' }}>
             Unique NPC
           </h1>
-          <p style={{ fontSize: '14px', color: '#64748b', margin: 0 }}>
+          <p style={{ fontSize: '14px', color: '#6B6B6B', margin: 0 }}>
             Marketing Hub · Giriş Yap
           </p>
         </div>
@@ -204,11 +204,11 @@ export default function LoginPage() {
         {/* Card */}
         <div
           style={{
-            backgroundColor: '#13131a',
-            border: '1px solid #2a2a3a',
+            backgroundColor: '#FFFFFF',
+            border: '1px solid #E0E0E0',
             borderRadius: '16px',
             padding: '32px',
-            boxShadow: '0 20px 60px rgba(0,0,0,0.4)',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.12)',
           }}
         >
           {/* Lockout banner */}
@@ -223,17 +223,17 @@ export default function LoginPage() {
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
-                <Clock size={16} color="#f87171" />
-                <span style={{ fontSize: '14px', fontWeight: 600, color: '#f87171' }}>
+                <Clock size={16} color="#DC2626" />
+                <span style={{ fontSize: '14px', fontWeight: 600, color: '#DC2626' }}>
                   Hesap Geçici Olarak Kilitlendi
                 </span>
               </div>
-              <p style={{ fontSize: '13px', color: '#94a3b8', margin: '0 0 12px' }}>
+              <p style={{ fontSize: '13px', color: '#444444', margin: '0 0 12px' }}>
                 {MAX_ATTEMPTS} başarısız girişimden sonra hesabınız kilitlendi.
-                <strong style={{ color: '#f1f5f9' }}> {countdown} saniye</strong> sonra tekrar deneyin.
+                <strong style={{ color: '#111111' }}> {countdown} saniye</strong> sonra tekrar deneyin.
               </p>
               {/* Countdown bar */}
-              <div style={{ height: '4px', backgroundColor: '#2a2a3a', borderRadius: '2px', overflow: 'hidden' }}>
+              <div style={{ height: '4px', backgroundColor: '#E0E0E0', borderRadius: '2px', overflow: 'hidden' }}>
                 <div
                   style={{
                     height: '100%',
@@ -261,20 +261,20 @@ export default function LoginPage() {
                 marginBottom: '16px',
               }}
             >
-              <AlertCircle size={15} color="#f87171" style={{ flexShrink: 0, marginTop: '1px' }} />
-              <span style={{ fontSize: '13px', color: '#f87171' }}>{error}</span>
+              <AlertCircle size={15} color="#DC2626" style={{ flexShrink: 0, marginTop: '1px' }} />
+              <span style={{ fontSize: '13px', color: '#DC2626' }}>{error}</span>
             </div>
           )}
 
           <form onSubmit={handleLogin}>
             {/* Email */}
             <div style={{ marginBottom: '16px' }}>
-              <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, color: '#94a3b8', marginBottom: '6px' }}>
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, color: '#444444', marginBottom: '6px' }}>
                 E-posta
               </label>
               <div style={{ position: 'relative' }}>
                 <div style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}>
-                  <Mail size={15} color="#64748b" />
+                  <Mail size={15} color="#6B6B6B" />
                 </div>
                 <input
                   type="email"
@@ -285,31 +285,31 @@ export default function LoginPage() {
                   required
                   style={{
                     width: '100%',
-                    backgroundColor: '#0a0a0f',
-                    border: '1px solid #2a2a3a',
+                    backgroundColor: '#FFFFFF',
+                    border: '1px solid #E0E0E0',
                     borderRadius: '8px',
                     padding: '11px 12px 11px 38px',
                     fontSize: '14px',
-                    color: '#f1f5f9',
+                    color: '#111111',
                     outline: 'none',
                     boxSizing: 'border-box',
                     opacity: isLocked ? 0.5 : 1,
                     transition: 'border-color 0.15s',
                   }}
                   onFocus={(e) => { (e.currentTarget as HTMLInputElement).style.borderColor = 'rgba(124,58,237,0.6)' }}
-                  onBlur={(e) => { (e.currentTarget as HTMLInputElement).style.borderColor = '#2a2a3a' }}
+                  onBlur={(e) => { (e.currentTarget as HTMLInputElement).style.borderColor = '#E0E0E0' }}
                 />
               </div>
             </div>
 
             {/* Password */}
             <div style={{ marginBottom: '24px' }}>
-              <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, color: '#94a3b8', marginBottom: '6px' }}>
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, color: '#444444', marginBottom: '6px' }}>
                 Şifre
               </label>
               <div style={{ position: 'relative' }}>
                 <div style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}>
-                  <Lock size={15} color="#64748b" />
+                  <Lock size={15} color="#6B6B6B" />
                 </div>
                 <input
                   type={showPassword ? 'text' : 'password'}
@@ -320,19 +320,19 @@ export default function LoginPage() {
                   required
                   style={{
                     width: '100%',
-                    backgroundColor: '#0a0a0f',
-                    border: '1px solid #2a2a3a',
+                    backgroundColor: '#FFFFFF',
+                    border: '1px solid #E0E0E0',
                     borderRadius: '8px',
                     padding: '11px 40px 11px 38px',
                     fontSize: '14px',
-                    color: '#f1f5f9',
+                    color: '#111111',
                     outline: 'none',
                     boxSizing: 'border-box',
                     opacity: isLocked ? 0.5 : 1,
                     transition: 'border-color 0.15s',
                   }}
                   onFocus={(e) => { (e.currentTarget as HTMLInputElement).style.borderColor = 'rgba(124,58,237,0.6)'; setIsPigeonLooking(true) }}
-                  onBlur={(e) => { (e.currentTarget as HTMLInputElement).style.borderColor = '#2a2a3a'; setIsPigeonLooking(false) }}
+                  onBlur={(e) => { (e.currentTarget as HTMLInputElement).style.borderColor = '#E0E0E0'; setIsPigeonLooking(false) }}
                 />
                 <button
                   type="button"
@@ -346,7 +346,7 @@ export default function LoginPage() {
                     border: 'none',
                     cursor: 'pointer',
                     padding: 0,
-                    color: '#64748b',
+                    color: '#6B6B6B',
                     display: 'flex',
                     alignItems: 'center',
                   }}
@@ -359,7 +359,7 @@ export default function LoginPage() {
             {/* Attempt dots */}
             {lockout.attempts > 0 && lockout.attempts < MAX_ATTEMPTS && (
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '16px' }}>
-                <span style={{ fontSize: '12px', color: '#64748b' }}>Deneme:</span>
+                <span style={{ fontSize: '12px', color: '#6B6B6B' }}>Deneme:</span>
                 {Array.from({ length: MAX_ATTEMPTS }).map((_, i) => (
                   <div
                     key={i}
@@ -367,7 +367,7 @@ export default function LoginPage() {
                       width: '8px',
                       height: '8px',
                       borderRadius: '50%',
-                      backgroundColor: i < lockout.attempts ? '#f87171' : '#2a2a3a',
+                      backgroundColor: i < lockout.attempts ? '#DC2626' : '#E0E0E0',
                     }}
                   />
                 ))}
@@ -381,10 +381,10 @@ export default function LoginPage() {
               style={{
                 width: '100%',
                 background: isLocked
-                  ? '#1a1a24'
-                  : 'linear-gradient(135deg, #7c3aed, #3b82f6)',
-                color: isLocked ? '#64748b' : 'white',
-                border: isLocked ? '1px solid #2a2a3a' : 'none',
+                  ? '#FFFFFF'
+                  : '#111111',
+                color: isLocked ? '#6B6B6B' : 'white',
+                border: isLocked ? '1px solid #E0E0E0' : 'none',
                 borderRadius: '8px',
                 padding: '12px',
                 fontSize: '15px',
@@ -392,7 +392,7 @@ export default function LoginPage() {
                 cursor: isLocked || loading || !email || !password ? 'not-allowed' : 'pointer',
                 opacity: !email || !password ? 0.6 : 1,
                 transition: 'opacity 0.15s',
-                boxShadow: isLocked ? 'none' : '0 4px 16px rgba(124,58,237,0.3)',
+                boxShadow: 'none',
               }}
             >
               {loading ? 'Giriş yapılıyor…' : isLocked ? `Kilitli · ${countdown}s` : 'Giriş Yap'}
@@ -400,7 +400,7 @@ export default function LoginPage() {
           </form>
         </div>
 
-        <p style={{ textAlign: 'center', fontSize: '12px', color: '#475569', marginTop: '24px' }}>
+        <p style={{ textAlign: 'center', fontSize: '12px', color: '#444444', marginTop: '24px' }}>
           Bu sistem yalnızca yetkili kullanıcılara açıktır
         </p>
       </div>

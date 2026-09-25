@@ -92,9 +92,9 @@ export default async function YayincilarPage() {
       <div style={{ padding: '24px 32px' }}>
 
         {/* Platform comparison bar chart */}
-        <div style={{ backgroundColor: '#1a1a24', border: '1px solid #2a2a3a', borderRadius: '12px', padding: '20px', marginBottom: '28px' }}>
-          <div style={{ fontSize: '14px', fontWeight: 600, color: '#f1f5f9', marginBottom: '4px' }}>Platform Karşılaştırması</div>
-          <div style={{ fontSize: '12px', color: '#64748b', marginBottom: '16px' }}>Platforma göre takip edilen yayıncı sayısı</div>
+        <div style={{ backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)', border: '1px solid #E0E0E0', borderRadius: '12px', padding: '20px', marginBottom: '28px' }}>
+          <div style={{ fontSize: '14px', fontWeight: 600, color: '#111111', marginBottom: '4px' }}>Platform Karşılaştırması</div>
+          <div style={{ fontSize: '12px', color: '#6B6B6B', marginBottom: '16px' }}>Platforma göre takip edilen yayıncı sayısı</div>
           <BarChart data={platformBar} color="#3b82f6" height={100} />
         </div>
 
@@ -107,8 +107,8 @@ export default async function YayincilarPage() {
               <div
                 key={platform.key}
                 style={{
-                  backgroundColor: '#1a1a24',
-                  border: '1px solid #2a2a3a',
+                  backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)',
+                  border: '1px solid #E0E0E0',
                   borderRadius: '12px',
                   overflow: 'hidden',
                   display: 'flex',
@@ -116,7 +116,7 @@ export default async function YayincilarPage() {
                 }}
               >
                 {/* Card header */}
-                <div style={{ padding: '16px 20px', borderBottom: '1px solid #2a2a3a' }}>
+                <div style={{ padding: '16px 20px', borderBottom: '1px solid #E0E0E0' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                       <div
@@ -128,13 +128,13 @@ export default async function YayincilarPage() {
                           boxShadow: `0 0 8px ${platform.color}60`,
                         }}
                       />
-                      <span style={{ fontSize: '15px', fontWeight: 700, color: '#f1f5f9' }}>{platform.label}</span>
+                      <span style={{ fontSize: '15px', fontWeight: 700, color: '#111111' }}>{platform.label}</span>
                     </div>
-                    <span style={{ fontSize: '26px', fontWeight: 800, color: count > 0 ? platform.color : '#475569' }}>
+                    <span style={{ fontSize: '26px', fontWeight: 800, color: count > 0 ? platform.color : '#8A8A8A' }}>
                       {count}
                     </span>
                   </div>
-                  <div style={{ fontSize: '12px', color: '#64748b', marginTop: '4px' }}>
+                  <div style={{ fontSize: '12px', color: '#6B6B6B', marginTop: '4px' }}>
                     {count > 0 ? 'yayıncı takip ediliyor' : 'henüz veri yok'}
                   </div>
                 </div>
@@ -143,20 +143,20 @@ export default async function YayincilarPage() {
                 <div style={{ padding: '14px 20px', flex: 1 }}>
                   {bars.length > 0 ? (
                     <>
-                      <div style={{ fontSize: '11px', color: '#64748b', marginBottom: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                      <div style={{ fontSize: '11px', color: '#6B6B6B', marginBottom: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                         Takipçiye göre top yayıncılar
                       </div>
                       <BarChart data={bars} color={platform.color} height={80} maxBars={8} />
                     </>
                   ) : (
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '80px' }}>
-                      <span style={{ fontSize: '12px', color: '#475569' }}>Veri bekleniyor…</span>
+                      <span style={{ fontSize: '12px', color: '#8A8A8A' }}>Veri bekleniyor…</span>
                     </div>
                   )}
                 </div>
 
                 {/* Footer link */}
-                <div style={{ padding: '12px 20px', borderTop: '1px solid #2a2a3a' }}>
+                <div style={{ padding: '12px 20px', borderTop: '1px solid #E0E0E0' }}>
                   <Link
                     href={platform.href}
                     style={{

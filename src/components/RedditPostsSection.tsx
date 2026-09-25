@@ -16,14 +16,14 @@ interface RedditPostsSectionProps {
 function PostStatusBadge({ status }: { status: unknown }) {
   const s = String(status ?? '')
   if (s === 'Yayında') return (
-    <span style={{ fontSize: '12px', fontWeight: 600, color: '#4ade80', backgroundColor: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.3)', borderRadius: '5px', padding: '2px 8px', whiteSpace: 'nowrap' }}>Yayında</span>
+    <span style={{ fontSize: '12px', fontWeight: 600, color: '#16A34A', backgroundColor: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.3)', borderRadius: '5px', padding: '2px 8px', whiteSpace: 'nowrap' }}>Yayında</span>
   )
   if (s === 'Silindi') return (
-    <span style={{ fontSize: '12px', fontWeight: 600, color: '#f87171', backgroundColor: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: '5px', padding: '2px 8px', whiteSpace: 'nowrap' }}>Silindi</span>
+    <span style={{ fontSize: '12px', fontWeight: 600, color: '#DC2626', backgroundColor: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: '5px', padding: '2px 8px', whiteSpace: 'nowrap' }}>Silindi</span>
   )
-  if (!s) return <span style={{ color: '#64748b' }}>—</span>
+  if (!s) return <span style={{ color: '#6B6B6B' }}>—</span>
   return (
-    <span style={{ fontSize: '12px', fontWeight: 600, color: '#94a3b8', backgroundColor: 'rgba(100,116,139,0.12)', border: '1px solid rgba(100,116,139,0.3)', borderRadius: '5px', padding: '2px 8px', whiteSpace: 'nowrap' }}>{s}</span>
+    <span style={{ fontSize: '12px', fontWeight: 600, color: '#444444', backgroundColor: 'rgba(100,116,139,0.12)', border: '1px solid rgba(100,116,139,0.3)', borderRadius: '5px', padding: '2px 8px', whiteSpace: 'nowrap' }}>{s}</span>
   )
 }
 
@@ -38,9 +38,9 @@ function EditRedditPostButton({ row, accounts }: { row: Row; accounts: Account[]
 }
 
 const TH: React.CSSProperties = {
-  backgroundColor: '#13131a', color: '#64748b', fontSize: '11px', fontWeight: 600,
+  backgroundColor: '#F5F5F5', color: '#6B6B6B', fontSize: '11px', fontWeight: 600,
   textTransform: 'uppercase', letterSpacing: '0.06em', padding: '11px 16px',
-  textAlign: 'left', borderBottom: '1px solid #2a2a3a', whiteSpace: 'nowrap',
+  textAlign: 'left', borderBottom: '1px solid #E0E0E0', whiteSpace: 'nowrap',
 }
 const TD: React.CSSProperties = { padding: '12px 16px' }
 
@@ -51,19 +51,19 @@ export function RedditPostsSection({ posts, accounts }: RedditPostsSectionProps)
   const filtered = filter ? posts.filter(p => String(p.username ?? '') === filter) : posts
 
   return (
-    <div style={{ backgroundColor: '#1a1a24', border: '1px solid #2a2a3a', borderRadius: '12px', overflow: 'hidden', marginBottom: '24px' }}>
+    <div style={{ backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)', border: '1px solid #E0E0E0', borderRadius: '12px', overflow: 'hidden', marginBottom: '24px' }}>
       {/* Section header */}
-      <div style={{ padding: '14px 20px', borderBottom: '1px solid #2a2a3a', display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+      <div style={{ padding: '14px 20px', borderBottom: '1px solid #E0E0E0', display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
         <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#f59e0b', flexShrink: 0 }} />
-        <span style={{ fontSize: '15px', fontWeight: 600, color: '#f1f5f9' }}>Paylaşılan Postlar</span>
-        <span style={{ backgroundColor: 'rgba(245,158,11,0.12)', color: '#fbbf24', border: '1px solid rgba(245,158,11,0.3)', borderRadius: '9999px', padding: '2px 10px', fontSize: '13px', fontWeight: 600 }}>
+        <span style={{ fontSize: '15px', fontWeight: 600, color: '#111111' }}>Paylaşılan Postlar</span>
+        <span style={{ backgroundColor: 'rgba(245,158,11,0.12)', color: '#D97706', border: '1px solid rgba(245,158,11,0.3)', borderRadius: '9999px', padding: '2px 10px', fontSize: '13px', fontWeight: 600 }}>
           {filtered.length}
         </span>
         <div style={{ marginLeft: 'auto', display: 'flex', gap: '10px', alignItems: 'center' }}>
           <select
             value={filter}
             onChange={e => setFilter(e.target.value)}
-            style={{ backgroundColor: '#13131a', border: '1px solid #2a2a3a', borderRadius: '7px', padding: '6px 12px', fontSize: '13px', color: '#e2e8f0', cursor: 'pointer', outline: 'none' }}
+            style={{ backgroundColor: '#FFFFFF', border: '1px solid #E0E0E0', borderRadius: '7px', padding: '6px 12px', fontSize: '13px', color: '#111111', cursor: 'pointer', outline: 'none' }}
           >
             <option value="">Tüm hesaplar</option>
             {accounts.map(a => (
@@ -97,48 +97,48 @@ export function RedditPostsSection({ posts, accounts }: RedditPostsSectionProps)
           <tbody>
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan={7} style={{ padding: '48px 16px', textAlign: 'center', color: '#64748b', fontSize: '14px' }}>
+                <td colSpan={7} style={{ padding: '48px 16px', textAlign: 'center', color: '#6B6B6B', fontSize: '14px' }}>
                   Post bulunamadı
                 </td>
               </tr>
             ) : filtered.map((post, i) => (
-              <tr key={i} style={{ borderBottom: i < filtered.length - 1 ? '1px solid rgba(42,42,58,0.6)' : 'none' }}>
+              <tr key={i} style={{ borderBottom: i < filtered.length - 1 ? '1px solid #E5E5E5' : 'none' }}>
                 <td style={TD}>
                   {post.username ? (
                     <span style={{ fontSize: '12px', fontWeight: 600, color: '#ff4500', backgroundColor: 'rgba(255,69,0,0.1)', border: '1px solid rgba(255,69,0,0.22)', borderRadius: '5px', padding: '2px 8px', whiteSpace: 'nowrap' }}>
                       u/{String(post.username)}
                     </span>
-                  ) : <span style={{ color: '#64748b' }}>—</span>}
+                  ) : <span style={{ color: '#6B6B6B' }}>—</span>}
                 </td>
                 <td style={TD}>
                   {post.subreddit ? (
-                    <span style={{ fontSize: '12px', color: '#fbbf24', backgroundColor: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.22)', borderRadius: '5px', padding: '2px 8px', whiteSpace: 'nowrap' }}>
+                    <span style={{ fontSize: '12px', color: '#D97706', backgroundColor: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.22)', borderRadius: '5px', padding: '2px 8px', whiteSpace: 'nowrap' }}>
                       r/{String(post.subreddit)}
                     </span>
-                  ) : <span style={{ color: '#64748b' }}>—</span>}
+                  ) : <span style={{ color: '#6B6B6B' }}>—</span>}
                 </td>
                 <td style={TD}>
-                  <span style={{ fontWeight: 500, color: '#e2e8f0', maxWidth: '240px', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: '13px' }}>
+                  <span style={{ fontWeight: 500, color: '#111111', maxWidth: '240px', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: '13px' }}>
                     {String(post.title ?? '—')}
                   </span>
                 </td>
                 <td style={{ ...TD, whiteSpace: 'nowrap' }}>
                   {post.posted_at ? (
-                    <span style={{ fontSize: '12px', color: '#64748b' }}>
+                    <span style={{ fontSize: '12px', color: '#6B6B6B' }}>
                       {new Date(String(post.posted_at)).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', year: 'numeric' })}
                     </span>
-                  ) : <span style={{ color: '#64748b' }}>—</span>}
+                  ) : <span style={{ color: '#6B6B6B' }}>—</span>}
                 </td>
                 <td style={TD}>
                   <PostStatusBadge status={post.status} />
                 </td>
                 <td style={TD}>
                   {post.url ? (
-                    <a href={String(post.url)} target="_blank" rel="noopener noreferrer" style={{ color: '#60a5fa', display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '12px', textDecoration: 'none' }}>
+                    <a href={String(post.url)} target="_blank" rel="noopener noreferrer" style={{ color: '#2563EB', display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '12px', textDecoration: 'none' }}>
                       <ExternalLink size={12} />
                       Link
                     </a>
-                  ) : <span style={{ color: '#64748b' }}>—</span>}
+                  ) : <span style={{ color: '#6B6B6B' }}>—</span>}
                 </td>
                 <td style={TD}>
                   <div style={{ display: 'flex', gap: '4px' }}>

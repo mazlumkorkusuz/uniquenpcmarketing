@@ -1,13 +1,13 @@
 type BadgeVariant = 'green' | 'purple' | 'blue' | 'orange' | 'red' | 'gray' | 'teal'
 
 const styles: Record<BadgeVariant, { bg: string; color: string; border: string }> = {
-  green:  { bg: 'rgba(34,197,94,0.12)',  color: '#4ade80', border: 'rgba(34,197,94,0.3)' },
-  purple: { bg: 'rgba(124,58,237,0.12)', color: '#a78bfa', border: 'rgba(124,58,237,0.3)' },
-  blue:   { bg: 'rgba(59,130,246,0.12)', color: '#60a5fa', border: 'rgba(59,130,246,0.3)' },
-  orange: { bg: 'rgba(249,115,22,0.12)', color: '#fb923c', border: 'rgba(249,115,22,0.3)' },
-  red:    { bg: 'rgba(239,68,68,0.12)',  color: '#f87171', border: 'rgba(239,68,68,0.3)' },
-  gray:   { bg: 'rgba(100,116,139,0.12)',color: '#94a3b8', border: 'rgba(100,116,139,0.3)' },
-  teal:   { bg: 'rgba(20,184,166,0.12)', color: '#2dd4bf', border: 'rgba(20,184,166,0.3)' },
+  green:  { bg: 'rgba(34,197,94,0.12)',  color: '#16A34A', border: 'rgba(34,197,94,0.3)' },
+  purple: { bg: 'rgba(124,58,237,0.12)', color: '#6D28D9', border: 'rgba(124,58,237,0.3)' },
+  blue:   { bg: 'rgba(59,130,246,0.12)', color: '#2563EB', border: 'rgba(59,130,246,0.3)' },
+  orange: { bg: 'rgba(249,115,22,0.12)', color: '#EA580C', border: 'rgba(249,115,22,0.3)' },
+  red:    { bg: 'rgba(239,68,68,0.12)',  color: '#DC2626', border: 'rgba(239,68,68,0.3)' },
+  gray:   { bg: 'rgba(100,116,139,0.12)',color: '#444444', border: 'rgba(100,116,139,0.3)' },
+  teal:   { bg: 'rgba(20,184,166,0.12)', color: '#0D9488', border: 'rgba(20,184,166,0.3)' },
 }
 
 interface BadgeProps {

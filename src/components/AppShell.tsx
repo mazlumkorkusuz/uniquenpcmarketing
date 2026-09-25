@@ -59,7 +59,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             minWidth: 0,
             maxWidth: 'calc(100vw - 260px)',
             minHeight: '100vh',
-            backgroundColor: '#0a0a0f',
+            backgroundColor: '#FFFFFF',
             display: 'flex',
             flexDirection: 'column',
             overflowX: 'hidden',

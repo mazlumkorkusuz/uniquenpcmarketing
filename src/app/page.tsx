@@ -105,7 +105,7 @@ export default async function DashboardPage() {
     { href: '/platformlar', label: 'Platformlar & Partnerler', desc: 'CRM, yayıncılar, küratörler', color: '#7c3aed' },
     { href: '/yayincilar', label: 'Yayıncılar', desc: 'Twitch, Kick, SOOP, YouTube, Bilibili, Douyin, Chzzk', color: '#3b82f6' },
     { href: '/toplantilar', label: 'Toplantılar', desc: 'Planlama ve notlar', color: '#14b8a6' },
-    { href: '/notlar', label: 'Notlar', desc: 'Tüm notlar ve kayıtlar', color: '#fb923c' },
+    { href: '/notlar', label: 'Notlar', desc: 'Tüm notlar ve kayıtlar', color: '#EA580C' },
     { href: '/sosyal-medya', label: 'Sosyal Medya', desc: 'Twitter, Instagram, TikTok, YouTube', color: '#f59e0b' },
     { href: '/reddit', label: 'Reddit', desc: 'Hesaplar ve gönderiler', color: '#ef4444' },
     { href: '/butce', label: 'Bütçe Yönetimi', desc: 'Harcamalar ve planlama', color: '#22c55e' },
@@ -119,14 +119,14 @@ export default async function DashboardPage() {
       <div
         style={{
           padding: '28px 32px 24px',
-          borderBottom: '1px solid #2a2a3a',
-          backgroundColor: '#13131a',
+          borderBottom: '1px solid #E0E0E0',
+          backgroundColor: '#FFFFFF',
         }}
       >
-        <h1 style={{ fontSize: '26px', fontWeight: 800, color: '#f1f5f9', margin: 0 }}>
+        <h1 style={{ fontSize: '26px', fontWeight: 800, color: '#111111', margin: 0 }}>
           Marketing Dashboard
         </h1>
-        <p style={{ fontSize: '14px', color: '#64748b', margin: '4px 0 0 0' }}>
+        <p style={{ fontSize: '14px', color: '#6B6B6B', margin: '4px 0 0 0' }}>
           Tüm pazarlama faaliyetlerinize genel bakış
         </p>
       </div>
@@ -141,42 +141,42 @@ export default async function DashboardPage() {
             label="Toplam Yayıncı"
             value={stats.totalStreamers}
             icon={Tv2}
-            iconColor="#a78bfa"
+            iconColor="#6D28D9"
             iconBg="rgba(124,58,237,0.12)"
           />
           <StatCard
             label="Platform / Partner"
             value={stats.platformCount}
             icon={Globe}
-            iconColor="#60a5fa"
+            iconColor="#2563EB"
             iconBg="rgba(59,130,246,0.12)"
           />
           <StatCard
             label="Toplantılar"
             value={stats.meetingCount}
             icon={Calendar}
-            iconColor="#2dd4bf"
+            iconColor="#0D9488"
             iconBg="rgba(20,184,166,0.12)"
           />
           <StatCard
             label="Notlar"
             value={stats.noteCount}
             icon={FileText}
-            iconColor="#fb923c"
+            iconColor="#EA580C"
             iconBg="rgba(249,115,22,0.12)"
           />
           <StatCard
             label="Reddit Hesabı"
             value={stats.redditCount}
             icon={MessageCircle}
-            iconColor="#f87171"
+            iconColor="#DC2626"
             iconBg="rgba(239,68,68,0.12)"
           />
           <StatCard
             label="Bütçe Kullanımı"
             value={`$${stats.totalExpenses.toLocaleString('en-US')}`}
             icon={DollarSign}
-            iconColor="#4ade80"
+            iconColor="#16A34A"
             iconBg="rgba(34,197,94,0.12)"
             trend={`${formatCurrency(stats.totalExpenses)} / ${formatCurrency(stats.monthlyBudget)}`}
             trendUp={stats.budgetPercent < 80}
@@ -187,20 +187,20 @@ export default async function DashboardPage() {
         {stats.monthlyBudget > 0 && (
           <div
             style={{
-              backgroundColor: '#1a1a24',
-              border: '1px solid #2a2a3a',
+              backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)',
+              border: '1px solid #E0E0E0',
               borderRadius: '12px',
               padding: '20px',
               marginBottom: '28px',
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-              <div style={{ fontSize: '14px', fontWeight: 600, color: '#f1f5f9', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <TrendingUp size={16} color="#4ade80" />
+              <div style={{ fontSize: '14px', fontWeight: 600, color: '#111111', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <TrendingUp size={16} color="#16A34A" />
                 Aylık Bütçe Kullanımı
               </div>
-              <div style={{ fontSize: '13px', color: '#94a3b8' }}>
-                <span style={{ color: stats.budgetPercent > 80 ? '#f87171' : '#4ade80', fontWeight: 600 }}>
+              <div style={{ fontSize: '13px', color: '#444444' }}>
+                <span style={{ color: stats.budgetPercent > 80 ? '#DC2626' : '#16A34A', fontWeight: 600 }}>
                   {formatCurrency(stats.totalExpenses)}
                 </span>
                 {' / '}
@@ -210,7 +210,7 @@ export default async function DashboardPage() {
             <div
               style={{
                 height: '8px',
-                backgroundColor: '#2a2a3a',
+                backgroundColor: '#E0E0E0',
                 borderRadius: '4px',
                 overflow: 'hidden',
               }}
@@ -220,25 +220,25 @@ export default async function DashboardPage() {
                   height: '100%',
                   width: `${Math.min(stats.budgetPercent, 100)}%`,
                   background: stats.budgetPercent > 80
-                    ? 'linear-gradient(90deg, #ef4444, #f87171)'
-                    : 'linear-gradient(90deg, #22c55e, #4ade80)',
+                    ? 'linear-gradient(90deg, #ef4444, #DC2626)'
+                    : 'linear-gradient(90deg, #22c55e, #16A34A)',
                   borderRadius: '4px',
                   transition: 'width 0.3s ease',
                 }}
               />
             </div>
-            <div style={{ fontSize: '12px', color: '#64748b', marginTop: '6px' }}>
+            <div style={{ fontSize: '12px', color: '#6B6B6B', marginTop: '6px' }}>
               %{stats.budgetPercent} kullanıldı
             </div>
           </div>
         )}
 
         {/* Budget distribution donut chart */}
-        <div style={{ backgroundColor: '#1a1a24', border: '1px solid #2a2a3a', borderRadius: '12px', padding: '20px', marginBottom: '28px' }}>
+        <div style={{ backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)', border: '1px solid #E0E0E0', borderRadius: '12px', padding: '20px', marginBottom: '28px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '4px' }}>
             <div>
-              <div style={{ fontSize: '14px', fontWeight: 600, color: '#f1f5f9', marginBottom: '2px' }}>Bütçe Dağılımı</div>
-              <div style={{ fontSize: '12px', color: '#64748b' }}>Platforma göre harcama dağılımı</div>
+              <div style={{ fontSize: '14px', fontWeight: 600, color: '#111111', marginBottom: '2px' }}>Bütçe Dağılımı</div>
+              <div style={{ fontSize: '12px', color: '#6B6B6B' }}>Platforma göre harcama dağılımı</div>
             </div>
             <BudgetExpenseModal accentColor="#22c55e" buttonLabel="+ Bütçe Ekle" />
           </div>
@@ -250,8 +250,8 @@ export default async function DashboardPage() {
           {/* Recent meetings */}
           <div
             style={{
-              backgroundColor: '#1a1a24',
-              border: '1px solid #2a2a3a',
+              backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)',
+              border: '1px solid #E0E0E0',
               borderRadius: '12px',
               overflow: 'hidden',
             }}
@@ -259,26 +259,26 @@ export default async function DashboardPage() {
             <div
               style={{
                 padding: '16px 20px',
-                borderBottom: '1px solid #2a2a3a',
+                borderBottom: '1px solid #E0E0E0',
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
               }}
             >
-              <div style={{ fontSize: '14px', fontWeight: 600, color: '#f1f5f9', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Calendar size={15} color="#2dd4bf" />
+              <div style={{ fontSize: '14px', fontWeight: 600, color: '#111111', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Calendar size={15} color="#0D9488" />
                 Son Toplantılar
               </div>
               <Link
                 href="/toplantilar"
-                style={{ fontSize: '12px', color: '#7c3aed', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}
+                style={{ fontSize: '12px', color: '#111111', fontWeight: 600, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}
               >
                 Tümü <ArrowRight size={12} />
               </Link>
             </div>
             <div>
               {stats.recentMeetings.length === 0 ? (
-                <div style={{ padding: '32px', textAlign: 'center', color: '#64748b', fontSize: '13px' }}>
+                <div style={{ padding: '32px', textAlign: 'center', color: '#6B6B6B', fontSize: '13px' }}>
                   Henüz toplantı yok
                 </div>
               ) : (
@@ -287,15 +287,15 @@ export default async function DashboardPage() {
                     key={String(m.id)}
                     style={{
                       padding: '12px 20px',
-                      borderBottom: '1px solid rgba(42,42,58,0.4)',
+                      borderBottom: '1px solid #E5E5E5',
                       display: 'flex',
                       justifyContent: 'space-between',
                       alignItems: 'center',
                     }}
                   >
                     <div>
-                      <div style={{ fontSize: '13px', fontWeight: 500, color: '#e2e8f0' }}>{String(m.title ?? '—')}</div>
-                      <div style={{ fontSize: '12px', color: '#64748b', marginTop: '2px' }}>{formatDate(m.date as string)}</div>
+                      <div style={{ fontSize: '13px', fontWeight: 500, color: '#111111' }}>{String(m.title ?? '—')}</div>
+                      <div style={{ fontSize: '12px', color: '#6B6B6B', marginTop: '2px' }}>{formatDate(m.date as string)}</div>
                     </div>
                     {m.status ? (
                       <span
@@ -304,7 +304,7 @@ export default async function DashboardPage() {
                           padding: '2px 8px',
                           borderRadius: '9999px',
                           backgroundColor: 'rgba(59,130,246,0.12)',
-                          color: '#60a5fa',
+                          color: '#2563EB',
                           border: '1px solid rgba(59,130,246,0.25)',
                         }}
                       >
@@ -320,8 +320,8 @@ export default async function DashboardPage() {
           {/* Recent notes */}
           <div
             style={{
-              backgroundColor: '#1a1a24',
-              border: '1px solid #2a2a3a',
+              backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)',
+              border: '1px solid #E0E0E0',
               borderRadius: '12px',
               overflow: 'hidden',
             }}
@@ -329,26 +329,26 @@ export default async function DashboardPage() {
             <div
               style={{
                 padding: '16px 20px',
-                borderBottom: '1px solid #2a2a3a',
+                borderBottom: '1px solid #E0E0E0',
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
               }}
             >
-              <div style={{ fontSize: '14px', fontWeight: 600, color: '#f1f5f9', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <FileText size={15} color="#fb923c" />
+              <div style={{ fontSize: '14px', fontWeight: 600, color: '#111111', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <FileText size={15} color="#EA580C" />
                 Son Notlar
               </div>
               <Link
                 href="/notlar"
-                style={{ fontSize: '12px', color: '#7c3aed', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}
+                style={{ fontSize: '12px', color: '#111111', fontWeight: 600, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}
               >
                 Tümü <ArrowRight size={12} />
               </Link>
             </div>
             <div>
               {stats.recentNotes.length === 0 ? (
-                <div style={{ padding: '32px', textAlign: 'center', color: '#64748b', fontSize: '13px' }}>
+                <div style={{ padding: '32px', textAlign: 'center', color: '#6B6B6B', fontSize: '13px' }}>
                   Henüz not yok
                 </div>
               ) : (
@@ -357,15 +357,15 @@ export default async function DashboardPage() {
                     key={String(n.id)}
                     style={{
                       padding: '12px 20px',
-                      borderBottom: '1px solid rgba(42,42,58,0.4)',
+                      borderBottom: '1px solid #E5E5E5',
                       display: 'flex',
                       justifyContent: 'space-between',
                       alignItems: 'center',
                     }}
                   >
                     <div>
-                      <div style={{ fontSize: '13px', fontWeight: 500, color: '#e2e8f0' }}>{String(n.title ?? '—')}</div>
-                      <div style={{ fontSize: '12px', color: '#64748b', marginTop: '2px' }}>{formatDate(n.created_at as string)}</div>
+                      <div style={{ fontSize: '13px', fontWeight: 500, color: '#111111' }}>{String(n.title ?? '—')}</div>
+                      <div style={{ fontSize: '12px', color: '#6B6B6B', marginTop: '2px' }}>{formatDate(n.created_at as string)}</div>
                     </div>
                     {n.category ? (
                       <span
@@ -374,7 +374,7 @@ export default async function DashboardPage() {
                           padding: '2px 8px',
                           borderRadius: '9999px',
                           backgroundColor: 'rgba(249,115,22,0.12)',
-                          color: '#fb923c',
+                          color: '#EA580C',
                           border: '1px solid rgba(249,115,22,0.25)',
                         }}
                       >
@@ -390,7 +390,7 @@ export default async function DashboardPage() {
 
         {/* Quick links */}
         <div>
-          <h2 style={{ fontSize: '15px', fontWeight: 600, color: '#94a3b8', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <h2 style={{ fontSize: '15px', fontWeight: 600, color: '#444444', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Users size={15} />
             Hızlı Erişim
           </h2>

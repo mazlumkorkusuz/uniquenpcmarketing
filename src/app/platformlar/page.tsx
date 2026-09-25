@@ -18,25 +18,25 @@ async function getData() {
 type Row = Record<string, unknown>
 
 const TH: React.CSSProperties = {
-  backgroundColor: '#13131a',
-  color: '#64748b',
+  backgroundColor: '#F5F5F5',
+  color: '#6B6B6B',
   fontSize: '11px',
   fontWeight: 600,
   textTransform: 'uppercase',
   letterSpacing: '0.06em',
   padding: '12px 20px',
   textAlign: 'left',
-  borderBottom: '1px solid #2a2a3a',
+  borderBottom: '1px solid #E0E0E0',
   whiteSpace: 'nowrap',
 }
 
 function WorkTopicBadges({ value }: { value: unknown }) {
-  if (!value) return <span style={{ color: '#64748b' }}>—</span>
+  if (!value) return <span style={{ color: '#6B6B6B' }}>—</span>
   const topics = String(value).split(',').map(t => t.trim()).filter(Boolean)
   return (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
       {topics.map((t, i) => (
-        <span key={i} style={{ fontSize: '12px', fontWeight: 600, color: '#60a5fa', backgroundColor: 'rgba(59,130,246,0.12)', border: '1px solid rgba(59,130,246,0.28)', borderRadius: '5px', padding: '2px 9px', whiteSpace: 'nowrap', cursor: 'default' }}>
+        <span key={i} style={{ fontSize: '12px', fontWeight: 600, color: '#2563EB', backgroundColor: 'rgba(59,130,246,0.12)', border: '1px solid rgba(59,130,246,0.28)', borderRadius: '5px', padding: '2px 9px', whiteSpace: 'nowrap', cursor: 'default' }}>
           {t}
         </span>
       ))}
@@ -92,7 +92,7 @@ export default async function PlatformlarPage() {
 
         {/* Featured partner platforms */}
         <div style={{ marginBottom: '28px' }}>
-          <div style={{ fontSize: '13px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '14px' }}>
+          <div style={{ fontSize: '13px', fontWeight: 600, color: '#6B6B6B', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '14px' }}>
             Entegre Platformlar
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '16px' }}>
@@ -100,8 +100,8 @@ export default async function PlatformlarPage() {
               <div
                 key={p.key}
                 style={{
-                  backgroundColor: '#1a1a24',
-                  border: '1px solid #2a2a3a',
+                  backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)',
+                  border: '1px solid #E0E0E0',
                   borderRadius: '14px',
                   overflow: 'hidden',
                   display: 'flex',
@@ -113,7 +113,7 @@ export default async function PlatformlarPage() {
                 <div style={{ padding: '20px 22px' }}>
                   <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px', marginBottom: '12px' }}>
                     <div>
-                      <div style={{ fontSize: '17px', fontWeight: 700, color: '#f1f5f9', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <div style={{ fontSize: '17px', fontWeight: 700, color: '#111111', display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <span
                           style={{
                             width: '10px',
@@ -127,7 +127,7 @@ export default async function PlatformlarPage() {
                         />
                         {p.name}
                       </div>
-                      <p style={{ fontSize: '13px', color: '#64748b', margin: '6px 0 0 0', lineHeight: 1.5 }}>{p.desc}</p>
+                      <p style={{ fontSize: '13px', color: '#6B6B6B', margin: '6px 0 0 0', lineHeight: 1.5 }}>{p.desc}</p>
                     </div>
                   </div>
                   <div style={{ display: 'flex', gap: '8px', marginTop: '16px' }}>
@@ -162,8 +162,8 @@ export default async function PlatformlarPage() {
                         padding: '9px 14px',
                         borderRadius: '8px',
                         backgroundColor: 'transparent',
-                        border: '1px solid #2a2a3a',
-                        color: '#64748b',
+                        border: '1px solid #E0E0E0',
+                        color: '#6B6B6B',
                         fontWeight: 500,
                         fontSize: '13px',
                         textDecoration: 'none',
@@ -179,8 +179,8 @@ export default async function PlatformlarPage() {
         </div>
         <div
           style={{
-            backgroundColor: '#1a1a24',
-            border: '1px solid #2a2a3a',
+            backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)',
+            border: '1px solid #E0E0E0',
             borderRadius: '12px',
             overflow: 'hidden',
             marginBottom: '24px',
@@ -189,7 +189,7 @@ export default async function PlatformlarPage() {
           <div
             style={{
               padding: '16px 20px',
-              borderBottom: '1px solid #2a2a3a',
+              borderBottom: '1px solid #E0E0E0',
               display: 'flex',
               alignItems: 'center',
               gap: '12px',
@@ -209,8 +209,8 @@ export default async function PlatformlarPage() {
               <Globe size={16} color="#3b82f6" />
             </div>
             <div>
-              <div style={{ fontSize: '15px', fontWeight: 600, color: '#f1f5f9' }}>CRM Platformları</div>
-              <div style={{ fontSize: '12px', color: '#64748b' }}>İş ortağı platformlar</div>
+              <div style={{ fontSize: '15px', fontWeight: 600, color: '#111111' }}>CRM Platformları</div>
+              <div style={{ fontSize: '12px', color: '#6B6B6B' }}>İş ortağı platformlar</div>
             </div>
             <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '10px' }}>
               <div
@@ -244,7 +244,7 @@ export default async function PlatformlarPage() {
               <tbody>
                 {platforms.length === 0 ? (
                   <tr>
-                    <td colSpan={6} style={{ padding: '48px 20px', textAlign: 'center', color: '#64748b', fontSize: '14px' }}>
+                    <td colSpan={6} style={{ padding: '48px 20px', textAlign: 'center', color: '#6B6B6B', fontSize: '14px' }}>
                       Henüz platform eklenmemiş
                     </td>
                   </tr>
@@ -252,13 +252,13 @@ export default async function PlatformlarPage() {
                   <tr
                     key={String(p.id ?? i)}
                     style={{
-                      backgroundColor: i % 2 === 1 ? 'rgba(255,255,255,0.02)' : 'transparent',
-                      borderBottom: i < platforms.length - 1 ? '1px solid rgba(42,42,58,0.5)' : 'none',
+                      backgroundColor: i % 2 === 1 ? '#F9F9F9' : 'transparent',
+                      borderBottom: i < platforms.length - 1 ? '1px solid #E5E5E5' : 'none',
                     }}
                   >
                     <td style={{ padding: '16px 20px', minWidth: '160px' }}>
-                      <div style={{ fontWeight: 700, fontSize: '14px', color: '#f1f5f9' }}>{p.name ? String(p.name) : '—'}</div>
-                      {!!p.type && <div style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>{String(p.type)}</div>}
+                      <div style={{ fontWeight: 700, fontSize: '14px', color: '#111111' }}>{p.name ? String(p.name) : '—'}</div>
+                      {!!p.type && <div style={{ fontSize: '11px', color: '#6B6B6B', marginTop: '2px' }}>{String(p.type)}</div>}
                     </td>
                     <td style={{ padding: '16px 20px', minWidth: '200px' }}>
                       <WorkTopicBadges value={p.work_topic} />
@@ -267,7 +267,7 @@ export default async function PlatformlarPage() {
                       {p.details ? (
                         <span style={{
                           fontSize: '13px',
-                          color: '#94a3b8',
+                          color: '#444444',
                           display: '-webkit-box',
                           WebkitLineClamp: 3,
                           WebkitBoxOrient: 'vertical',
@@ -276,18 +276,18 @@ export default async function PlatformlarPage() {
                         } as React.CSSProperties}>
                           {String(p.details)}
                         </span>
-                      ) : <span style={{ color: '#64748b' }}>—</span>}
+                      ) : <span style={{ color: '#6B6B6B' }}>—</span>}
                     </td>
                     <td style={{ padding: '16px 20px', whiteSpace: 'nowrap' }}>
                       {p.last_edited_by ? (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#94a3b8', fontSize: '13px' }}>
-                          <User size={13} color="#64748b" />
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#444444', fontSize: '13px' }}>
+                          <User size={13} color="#6B6B6B" />
                           {String(p.last_edited_by)}
                         </div>
-                      ) : <span style={{ color: '#64748b' }}>—</span>}
+                      ) : <span style={{ color: '#6B6B6B' }}>—</span>}
                     </td>
                     <td style={{ padding: '16px 20px' }}>
-                      {statusBadge(String(p.status ?? '')) ?? <span style={{ color: '#64748b' }}>—</span>}
+                      {statusBadge(String(p.status ?? '')) ?? <span style={{ color: '#6B6B6B' }}>—</span>}
                     </td>
                     <td style={{ padding: '16px 20px' }}>
                       <div style={{ display: 'flex', gap: '4px' }}>

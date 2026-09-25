@@ -1,13 +1,14 @@
 @import "tailwindcss";
 
 @theme {
-  --color-bg-primary: #0a0a0f;
-  --color-bg-secondary: #13131a;
-  --color-bg-card: #1a1a24;
-  --color-bg-hover: #22222f;
-  --color-border-subtle: #2a2a3a;
-  --color-text-primary: #f1f5f9;
-  --color-text-secondary: #94a3b8;
+  --color-bg-primary: #FFFFFF;
+  --color-bg-secondary: #FFFFFF;
+  --color-bg-card: #FFFFFF;
+  --color-bg-hover: #F0F0F0;
+  --color-border-subtle: #E0E0E0;
+  --color-text-primary: #111111;
+  --color-text-secondary: #444444;
+  --color-accent-primary: #111111;
   --color-accent-purple: #7c3aed;
   --color-accent-blue: #3b82f6;
   --color-accent-teal: #14b8a6;
@@ -23,8 +24,8 @@ html {
 }
 
 body {
-  background-color: #0a0a0f;
-  color: #f1f5f9;
+  background-color: #FFFFFF;
+  color: #111111;
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
@@ -36,28 +37,48 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #13131a;
+  background: #F5F5F5;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #2a2a3a;
+  background: #E0E0E0;
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #3a3a4a;
+  background: #D0D0D0;
 }
 
 tr.data-row:hover td {
-  background-color: rgba(34, 34, 47, 0.6);
+  background-color: #F5F5F5;
 }
 
 .nav-item:hover {
-  background-color: rgba(124, 58, 237, 0.06) !important;
-  border-color: rgba(124, 58, 237, 0.15) !important;
+  background-color: #F0F0F0 !important;
+}
+
+.nav-item.active:hover {
+  background-color: #111111 !important;
 }
 
 .sub-nav-item:hover {
-  color: #c4b5fd !important;
-  background-color: rgba(124, 58, 237, 0.06) !important;
+  color: #111111 !important;
+  background-color: #F0F0F0 !important;
+}
+
+.sub-nav-item.active:hover {
+  color: #FFFFFF !important;
+  background-color: #111111 !important;
+}
+
+/* The X (Twitter) logo asset is white — invert it for the light theme */
+img[src$="/icons/x.png"] {
+  filter: invert(1);
+}
+
+/* On the black active nav row the original white logo already reads well */
+.nav-item.active img[src$="/icons/x.png"],
+.sub-nav-item.active img[src$="/icons/x.png"] {
+  filter: none;
+  background-color: transparent !important;
 }

@@ -156,8 +156,8 @@ export default function Sidebar() {
       style={{
         width: '260px',
         minHeight: '100vh',
-        backgroundColor: '#13131a',
-        borderRight: '1px solid #2a2a3a',
+        backgroundColor: '#FFFFFF',
+        borderRight: '1px solid #E0E0E0',
         display: 'flex',
         flexDirection: 'column',
         position: 'fixed',
@@ -171,7 +171,7 @@ export default function Sidebar() {
       <div
         style={{
           padding: '24px 20px',
-          borderBottom: '1px solid #2a2a3a',
+          borderBottom: '1px solid #E0E0E0',
           display: 'flex',
           alignItems: 'center',
           gap: '12px',
@@ -185,7 +185,7 @@ export default function Sidebar() {
             overflow: 'hidden',
             flexShrink: 0,
             backgroundColor: 'white',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -201,10 +201,10 @@ export default function Sidebar() {
           />
         </div>
         <div>
-          <div style={{ fontSize: '14px', fontWeight: 700, color: '#f1f5f9', lineHeight: 1.2 }}>
+          <div style={{ fontSize: '14px', fontWeight: 700, color: '#111111', lineHeight: 1.2 }}>
             Unique NPC
           </div>
-          <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '2px' }}>
+          <div style={{ fontSize: '11px', color: '#444444', marginTop: '2px' }}>
             Marketing
           </div>
         </div>
@@ -213,30 +213,32 @@ export default function Sidebar() {
       {/* Nav */}
       <nav style={{ padding: '12px', flex: 1, overflowY: 'auto' }}>
         <div style={{ marginBottom: '8px', paddingLeft: '8px' }}>
-          <span style={{ fontSize: '10px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+          <span style={{ fontSize: '10px', fontWeight: 600, color: '#6B6B6B', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
             Navigasyon
           </span>
         </div>
         {navItems.map((item) => {
           const Icon = item.icon
-          const isActive = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href)
-          const isExpanded = expanded.has(item.href)
           const hasChildren = !!item.children
+          const inSection = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href)
+          // Items with children only go black on their own page; on a child page the child is black instead
+          const isActive = hasChildren ? pathname === item.href : inSection
+          const isExpanded = expanded.has(item.href)
 
           return (
             <div key={item.href} style={{ marginBottom: '2px' }}>
               {/* Main nav row */}
               <div
-                className="nav-item"
+                className={isActive ? 'nav-item active' : 'nav-item'}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
                   borderRadius: '8px',
-                  color: isActive ? '#a78bfa' : '#94a3b8',
+                  color: isActive ? '#FFFFFF' : inSection ? '#111111' : '#444444',
                   fontSize: '13.5px',
-                  fontWeight: 500,
-                  backgroundColor: isActive ? 'rgba(124,58,237,0.12)' : 'transparent',
-                  border: isActive ? '1px solid rgba(124,58,237,0.25)' : '1px solid transparent',
+                  fontWeight: isActive || inSection ? 600 : 500,
+                  backgroundColor: isActive ? '#111111' : 'transparent',
+                  border: '1px solid transparent',
                   overflow: 'hidden',
                   transition: 'all 0.15s ease',
                 }}
@@ -258,7 +260,7 @@ export default function Sidebar() {
                     <img
                       src={item.imageSrc}
                       alt={item.label}
-                      style={{ width: '17px', height: '17px', objectFit: 'contain', borderRadius: '3px', flexShrink: 0, opacity: isActive ? 1 : 0.7 }}
+                      style={{ width: '17px', height: '17px', objectFit: 'contain', borderRadius: '3px', flexShrink: 0, opacity: isActive || inSection ? 1 : 0.8, backgroundColor: isActive ? '#FFFFFF' : 'transparent', padding: isActive ? '1px' : 0 }}
                     />
                   ) : (
                     <Icon size={16} strokeWidth={isActive ? 2.5 : 2} />
@@ -300,20 +302,19 @@ export default function Sidebar() {
                       <Link
                         key={child.href}
                         href={child.href}
-                        className="sub-nav-item"
+                        className={isChildActive ? 'sub-nav-item active' : 'sub-nav-item'}
                         style={{
                           display: 'flex',
                           alignItems: 'center',
                           gap: '8px',
                           padding: '6px 10px',
                           borderRadius: '6px',
-                          color: isChildActive ? '#a78bfa' : '#64748b',
+                          color: isChildActive ? '#FFFFFF' : '#444444',
                           textDecoration: 'none',
                           fontSize: '13px',
                           fontWeight: isChildActive ? 600 : 400,
                           marginBottom: '1px',
-                          backgroundColor: isChildActive ? 'rgba(124,58,237,0.08)' : 'transparent',
-                          borderLeft: isChildActive ? '2px solid #7c3aed' : '2px solid transparent',
+                          backgroundColor: isChildActive ? '#111111' : 'transparent',
                           transition: 'all 0.15s ease',
                         }}
                       >
@@ -321,7 +322,7 @@ export default function Sidebar() {
                           <img
                             src={child.imageSrc}
                             alt={child.label}
-                            style={{ width: '15px', height: '15px', objectFit: 'contain', borderRadius: '3px', flexShrink: 0, opacity: isChildActive ? 1 : 0.65 }}
+                            style={{ width: '15px', height: '15px', objectFit: 'contain', borderRadius: '3px', flexShrink: 0, opacity: isChildActive ? 1 : 0.8, backgroundColor: isChildActive ? '#FFFFFF' : 'transparent', padding: isChildActive ? '1px' : 0 }}
                           />
                         ) : (
                           <div
@@ -329,7 +330,7 @@ export default function Sidebar() {
                               width: '5px',
                               height: '5px',
                               borderRadius: '50%',
-                              backgroundColor: isChildActive ? '#a78bfa' : '#3a3a4a',
+                              backgroundColor: isChildActive ? '#FFFFFF' : '#BDBDBD',
                               flexShrink: 0,
                             }}
                           />
@@ -346,7 +347,7 @@ export default function Sidebar() {
       </nav>
 
       {/* Footer / User / Logout */}
-      <div style={{ padding: '16px 20px', borderTop: '1px solid #2a2a3a' }}>
+      <div style={{ padding: '16px 20px', borderTop: '1px solid #E0E0E0' }}>
         {user && (
           <div
             style={{
@@ -355,8 +356,8 @@ export default function Sidebar() {
               gap: '8px',
               padding: '8px 10px',
               borderRadius: '8px',
-              backgroundColor: '#1a1a24',
-              border: '1px solid #2a2a3a',
+              backgroundColor: '#F5F5F5',
+              border: '1px solid #E5E5E5',
               marginBottom: '10px',
             }}
           >
@@ -365,7 +366,7 @@ export default function Sidebar() {
                 width: '28px',
                 height: '28px',
                 borderRadius: '50%',
-                background: 'linear-gradient(135deg, #7c3aed, #3b82f6)',
+                background: '#111111',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -381,7 +382,7 @@ export default function Sidebar() {
               <div
                 style={{
                   fontSize: '12px',
-                  color: '#f1f5f9',
+                  color: '#111111',
                   fontWeight: 500,
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
@@ -390,7 +391,7 @@ export default function Sidebar() {
               >
                 {user.email}
               </div>
-              <div style={{ fontSize: '10px', color: '#4ade80' }}>● Aktif</div>
+              <div style={{ fontSize: '10px', color: '#16A34A' }}>● Aktif</div>
             </div>
           </div>
         )}
@@ -407,7 +408,7 @@ export default function Sidebar() {
             borderRadius: '8px',
             backgroundColor: 'rgba(239,68,68,0.08)',
             border: '1px solid rgba(239,68,68,0.2)',
-            color: '#f87171',
+            color: '#DC2626',
             fontSize: '13.5px',
             fontWeight: 500,
             cursor: loggingOut ? 'not-allowed' : 'pointer',

@@ -24,7 +24,7 @@ export default function BarChart({
   if (bars.length === 0) {
     return (
       <div style={{ height: `${height}px`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <span style={{ fontSize: '12px', color: '#475569' }}>Veri yok</span>
+        <span style={{ fontSize: '12px', color: '#8A8A8A' }}>Veri yok</span>
       </div>
     )
   }
@@ -44,7 +44,7 @@ export default function BarChart({
             justifyContent: 'flex-end',
           }}
         >
-          <span style={{ fontSize: '9px', color: '#94a3b8', fontWeight: 600, lineHeight: 1 }}>{fmt(d.value)}</span>
+          <span style={{ fontSize: '9px', color: '#444444', fontWeight: 600, lineHeight: 1 }}>{fmt(d.value)}</span>
           <div
             style={{
               width: '100%',
@@ -56,7 +56,7 @@ export default function BarChart({
           <span
             style={{
               fontSize: '9px',
-              color: '#64748b',
+              color: '#6B6B6B',
               textAlign: 'center',
               overflow: 'hidden',
               textOverflow: 'ellipsis',

@@ -56,7 +56,7 @@ function sanitizeSearch(s: string): string {
   return s.replace(/[,()%]/g, ' ').trim()
 }
 
-const AVATAR_PALETTE = ['#53fc18', '#60a5fa', '#4ade80', '#fbbf24', '#f472b6', '#f87171', '#22d3ee', '#818cf8']
+const AVATAR_PALETTE = ['#53fc18', '#2563EB', '#16A34A', '#D97706', '#DB2777', '#DC2626', '#0891B2', '#4F46E5']
 function colorForName(name: unknown): string {
   const s = String(name ?? '')
   let hash = 0
@@ -86,7 +86,7 @@ function Avatar({ username, src, size }: { username: unknown; src?: string; size
       src={src}
       alt={uname}
       onError={() => setBroken(true)}
-      style={{ width: size, height: size, borderRadius: size / 3.5, objectFit: 'cover', flexShrink: 0, border: `1px solid ${color}66`, backgroundColor: '#1a1a24' }}
+      style={{ width: size, height: size, borderRadius: size / 3.5, objectFit: 'cover', flexShrink: 0, border: `1px solid ${color}66`, backgroundColor: '#FFFFFF' }}
     />
   )
 }
@@ -94,22 +94,23 @@ function Avatar({ username, src, size }: { username: unknown; src?: string; size
 // ── sortable column header ──────────────────────────────────────────────
 function SortableTH({ label, sk, active, dir, onSort, style }: { label: string; sk: SortKey; active: boolean; dir: SortDir; onSort: (k: SortKey) => void; style?: React.CSSProperties }) {
   return (
-    <th onClick={() => onSort(sk)} style={{ ...STH, cursor: 'pointer', userSelect: 'none', color: active ? KICK_COLOR : '#64748b', ...style }}>
+    <th onClick={() => onSort(sk)} style={{ ...STH, cursor: 'pointer', userSelect: 'none', color: active ? KICK_COLOR : '#6B6B6B', ...style }}>
       {label} <span style={{ opacity: active ? 1 : 0.3 }}>{active ? (dir === 'desc' ? '↓' : '↑') : '↕'}</span>
     </th>
   )
 }
 
-const STH: React.CSSProperties = { backgroundColor: '#13131a', color: '#64748b', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', padding: '11px 14px', textAlign: 'left', borderBottom: '1px solid #2a2a3a', whiteSpace: 'nowrap' }
+const STH: React.CSSProperties = { backgroundColor: '#F5F5F5', color: '#6B6B6B', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', padding: '11px 14px', textAlign: 'left', borderBottom: '1px solid #E0E0E0', whiteSpace: 'nowrap' }
 const TD: React.CSSProperties = { padding: '12px 14px', verticalAlign: 'middle' }
-const SEL: React.CSSProperties = { backgroundColor: '#13131a', border: '1px solid #2a2a3a', borderRadius: '7px', padding: '7px 11px', fontSize: '13px', color: '#e2e8f0', cursor: 'pointer', outline: 'none' }
+const SEL: React.CSSProperties = { backgroundColor: '#FFFFFF', border: '1px solid #E0E0E0', borderRadius: '7px', padding: '7px 11px', fontSize: '13px', color: '#111111', cursor: 'pointer', outline: 'none' }
 
 // ── stats bar card styling ───────────────────────────────────────────────
 function statCardStyle(color: string): React.CSSProperties {
   return {
-    backgroundColor: '#1a1a24',
-    backgroundImage: `linear-gradient(135deg, ${color}1c, transparent 65%)`,
-    border: `1px solid ${color}33`,
+    backgroundColor: '#FFFFFF',
+    boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)',
+    border: '1px solid #E0E0E0',
+    borderLeft: `3px solid ${color}`,
     borderRadius: '14px',
     padding: '22px 24px',
     display: 'flex',
@@ -118,8 +119,8 @@ function statCardStyle(color: string): React.CSSProperties {
     minHeight: '132px',
   }
 }
-const statValueStyle: React.CSSProperties = { fontSize: '26px', fontWeight: 800, color: '#f1f5f9', lineHeight: 1.15 }
-const statSubStyle: React.CSSProperties = { fontSize: '12px', color: '#64748b' }
+const statValueStyle: React.CSSProperties = { fontSize: '26px', fontWeight: 800, color: '#111111', lineHeight: 1.15 }
+const statSubStyle: React.CSSProperties = { fontSize: '12px', color: '#6B6B6B' }
 
 function StatCardHeader({ icon, color, label }: { icon: React.ReactNode; color: string; label: string }) {
   return (
@@ -127,14 +128,14 @@ function StatCardHeader({ icon, color, label }: { icon: React.ReactNode; color: 
       <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: color + '22', border: `1px solid ${color}55`, display: 'flex', alignItems: 'center', justifyContent: 'center', color, flexShrink: 0 }}>
         {icon}
       </div>
-      <span style={{ fontSize: '12px', fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</span>
+      <span style={{ fontSize: '12px', fontWeight: 600, color: '#444444', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</span>
     </div>
   )
 }
 
 function ContactRow({ href, icon, label }: { href: string; icon: React.ReactNode; label: string }) {
   return (
-    <a href={href} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#60a5fa', textDecoration: 'none', padding: '5px 0', overflow: 'hidden' }}>
+    <a href={href} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#2563EB', textDecoration: 'none', padding: '5px 0', overflow: 'hidden' }}>
       <span style={{ flexShrink: 0, display: 'flex' }}>{icon}</span>
       <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{label}</span>
     </a>
@@ -158,15 +159,15 @@ function DetailPanel({ row, onClose }: { row: Row; onClose: () => void }) {
   if (row.facebook) contacts.push({ href: socialHref(row.facebook, 'https://facebook.com/'), icon: <Globe size={13} />, label: String(row.facebook) })
 
   return (
-    <div style={{ width: '380px', backgroundColor: '#13131a', borderLeft: '1px solid #2a2a3a', display: 'flex', flexDirection: 'column', overflowY: 'auto', position: 'fixed', top: 0, right: 0, height: '100vh', zIndex: 1000 }}>
+    <div style={{ width: '380px', backgroundColor: '#FFFFFF', borderLeft: '1px solid #E0E0E0', display: 'flex', flexDirection: 'column', overflowY: 'auto', position: 'fixed', top: 0, right: 0, height: '100vh', zIndex: 1000 }}>
       {/* Header */}
-      <div style={{ padding: '18px', borderBottom: '1px solid #2a2a3a', display: 'flex', alignItems: 'center', gap: '14px' }}>
+      <div style={{ padding: '18px', borderBottom: '1px solid #E0E0E0', display: 'flex', alignItems: 'center', gap: '14px' }}>
         <Avatar key={String(row.username)} username={row.username} src={avatarSrc} size={64} />
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontWeight: 700, fontSize: '16px', color: '#f1f5f9', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name}</div>
-          <div style={{ fontSize: '12px', color: '#64748b', marginTop: '3px' }}>@{String(row.username ?? '—')}</div>
+          <div style={{ fontWeight: 700, fontSize: '16px', color: '#111111', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name}</div>
+          <div style={{ fontSize: '12px', color: '#6B6B6B', marginTop: '3px' }}>@{String(row.username ?? '—')}</div>
         </div>
-        <button onClick={onClose} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '30px', borderRadius: '7px', backgroundColor: 'transparent', border: '1px solid #2a2a3a', color: '#64748b', cursor: 'pointer', flexShrink: 0 }}>
+        <button onClick={onClose} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '30px', borderRadius: '7px', backgroundColor: 'transparent', border: '1px solid #E0E0E0', color: '#6B6B6B', cursor: 'pointer', flexShrink: 0 }}>
           <X size={14} />
         </button>
       </div>
@@ -176,12 +177,12 @@ function DetailPanel({ row, onClose }: { row: Row; onClose: () => void }) {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
           {[
             { label: 'Ort. İzleyici', value: fmt(row.avg_viewers), color: KICK_COLOR },
-            { label: 'Takipçi', value: fmt(row.followers), color: '#4ade80' },
-            { label: 'Yayın Sayısı', value: row.stream_count != null ? String(row.stream_count) : '—', color: '#60a5fa' },
-            { label: 'Saat / Yayın', value: fmtHours(row.hours_per_stream), color: '#a78bfa' },
+            { label: 'Takipçi', value: fmt(row.followers), color: '#16A34A' },
+            { label: 'Yayın Sayısı', value: row.stream_count != null ? String(row.stream_count) : '—', color: '#2563EB' },
+            { label: 'Saat / Yayın', value: fmtHours(row.hours_per_stream), color: '#6D28D9' },
           ].map(s => (
-            <div key={s.label} style={{ backgroundColor: '#1a1a24', border: '1px solid #2a2a3a', borderRadius: '8px', padding: '12px 14px' }}>
-              <div style={{ fontSize: '10px', color: '#64748b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '5px' }}>{s.label}</div>
+            <div key={s.label} style={{ backgroundColor: '#FFFFFF', border: '1px solid #E0E0E0', borderRadius: '8px', padding: '12px 14px' }}>
+              <div style={{ fontSize: '10px', color: '#6B6B6B', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '5px' }}>{s.label}</div>
               <div style={{ fontSize: '18px', fontWeight: 800, color: s.color }}>{s.value}</div>
             </div>
           ))}
@@ -197,20 +198,20 @@ function DetailPanel({ row, onClose }: { row: Row; onClose: () => void }) {
         {/* Bio */}
         {!!row.bio && (
           <div>
-            <div style={{ fontSize: '11px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>Bio</div>
-            <div style={{ fontSize: '13px', color: '#94a3b8', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{String(row.bio)}</div>
+            <div style={{ fontSize: '11px', fontWeight: 600, color: '#6B6B6B', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>Bio</div>
+            <div style={{ fontSize: '13px', color: '#444444', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{String(row.bio)}</div>
           </div>
         )}
 
         {/* Games / categories */}
         {gameList.length > 0 && (
           <div>
-            <div style={{ fontSize: '11px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <div style={{ fontSize: '11px', fontWeight: 600, color: '#6B6B6B', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
               <Gamepad2 size={12} /> Oyunlar / Kategoriler
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
               {gameList.map((g, i) => (
-                <div key={i} style={{ fontSize: '13px', color: '#cbd5e1', padding: '5px 10px', backgroundColor: 'rgba(83,252,24,0.05)', border: '1px solid rgba(83,252,24,0.12)', borderRadius: '6px' }}>{g}</div>
+                <div key={i} style={{ fontSize: '13px', color: '#444444', padding: '5px 10px', backgroundColor: 'rgba(83,252,24,0.05)', border: '1px solid rgba(83,252,24,0.12)', borderRadius: '6px' }}>{g}</div>
               ))}
             </div>
           </div>
@@ -219,7 +220,7 @@ function DetailPanel({ row, onClose }: { row: Row; onClose: () => void }) {
         {/* Contacts */}
         {contacts.length > 0 && (
           <div>
-            <div style={{ fontSize: '11px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>İletişim &amp; Sosyal</div>
+            <div style={{ fontSize: '11px', fontWeight: 600, color: '#6B6B6B', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>İletişim &amp; Sosyal</div>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               {contacts.map((c, i) => <ContactRow key={i} {...c} />)}
             </div>
@@ -389,8 +390,8 @@ export default function KickPage() {
 
       <div style={{ padding: '24px 32px' }}>
         {/* Admin */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', backgroundColor: '#1a1a24', border: '1px solid #2a2a3a', borderRadius: '10px', padding: '12px 16px', marginBottom: '20px' }}>
-          <span style={{ fontSize: '11px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Admin</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)', border: '1px solid #E0E0E0', borderRadius: '10px', padding: '12px 16px', marginBottom: '20px' }}>
+          <span style={{ fontSize: '11px', fontWeight: 700, color: '#6B6B6B', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Admin</span>
           <button
             onClick={triggerAvatarSync}
             disabled={avatarSync.loading}
@@ -400,7 +401,7 @@ export default function KickPage() {
             {avatarSync.loading ? 'Güncelleniyor...' : 'Profil Fotoğraflarını Güncelle (Kick API)'}
           </button>
           {avatarSync.message && (
-            <span style={{ fontSize: '12px', color: avatarSync.isError ? '#f87171' : '#4ade80' }}>{avatarSync.message}</span>
+            <span style={{ fontSize: '12px', color: avatarSync.isError ? '#DC2626' : '#16A34A' }}>{avatarSync.message}</span>
           )}
           <style>{`@keyframes kickAvatarSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
         </div>
@@ -415,22 +416,22 @@ export default function KickPage() {
           </div>
 
           {/* Email Olan */}
-          <div style={statCardStyle('#fbbf24')}>
-            <StatCardHeader icon={<Mail size={17} />} color="#fbbf24" label="Email Olan" />
+          <div style={statCardStyle('#D97706')}>
+            <StatCardHeader icon={<Mail size={17} />} color="#D97706" label="Email Olan" />
             <div style={statValueStyle}>{auxLoading ? '…' : stats.emailCount.toLocaleString('tr-TR')}</div>
             <div style={statSubStyle}>{auxLoading || stats.totalStreamers === 0 ? '—' : `%${Math.round((stats.emailCount / stats.totalStreamers) * 100)} kapsam`}</div>
           </div>
 
           {/* En az 1 iletişim/sosyal */}
-          <div style={statCardStyle('#60a5fa')}>
-            <StatCardHeader icon={<Share2 size={17} />} color="#60a5fa" label="İletişim / Sosyal Medya" />
+          <div style={statCardStyle('#2563EB')}>
+            <StatCardHeader icon={<Share2 size={17} />} color="#2563EB" label="İletişim / Sosyal Medya" />
             <div style={statValueStyle}>{auxLoading ? '…' : stats.anyContactCount.toLocaleString('tr-TR')}</div>
             <div style={statSubStyle}>{auxLoading || stats.totalStreamers === 0 ? '—' : `%${Math.round((stats.anyContactCount / stats.totalStreamers) * 100)} en az 1 kanal`}</div>
           </div>
 
           {/* Toplam Takipçi */}
-          <div style={statCardStyle('#4ade80')}>
-            <StatCardHeader icon={<TrendingUp size={17} />} color="#4ade80" label="Toplam Takipçi" />
+          <div style={statCardStyle('#16A34A')}>
+            <StatCardHeader icon={<TrendingUp size={17} />} color="#16A34A" label="Toplam Takipçi" />
             <div style={statValueStyle}>{auxLoading ? '…' : fmt(stats.totalFollowers)}</div>
             <div style={statSubStyle}>Tüm kanallar toplamı</div>
           </div>
@@ -439,19 +440,19 @@ export default function KickPage() {
           <div
             onMouseEnter={() => setCategoriesHovered(true)}
             onMouseLeave={() => setCategoriesHovered(false)}
-            style={{ ...statCardStyle('#f472b6'), gridColumn: 'span 2', position: 'relative' }}
+            style={{ ...statCardStyle('#DB2777'), gridColumn: 'span 2', position: 'relative' }}
           >
-            <StatCardHeader icon={<Gamepad2 size={17} />} color="#f472b6" label="Popüler Kategoriler" />
+            <StatCardHeader icon={<Gamepad2 size={17} />} color="#DB2777" label="Popüler Kategoriler" />
             <div style={statValueStyle}>{auxLoading ? '…' : topCategory ? topCategory.name : '—'}</div>
             <div style={statSubStyle}>{auxLoading || !topCategory ? '—' : `${topCategory.count.toLocaleString('tr-TR')} yayıncının ana kategorisi · üzerine gelip ilk 3'ü gör`}</div>
 
             {categoriesHovered && top3Categories.length > 0 && (
-              <div style={{ position: 'absolute', top: 'calc(100% + 8px)', left: '20px', right: '20px', zIndex: 10, backgroundColor: '#1a1a24', border: '1px solid rgba(244,114,182,0.35)', borderRadius: '12px', padding: '14px', boxShadow: '0 12px 28px rgba(0,0,0,0.45)', display: 'flex', gap: '10px' }}>
+              <div style={{ position: 'absolute', top: 'calc(100% + 8px)', left: '20px', right: '20px', zIndex: 10, backgroundColor: '#FFFFFF', border: '1px solid rgba(244,114,182,0.35)', borderRadius: '12px', padding: '14px', boxShadow: '0 12px 28px rgba(0,0,0,0.12)', display: 'flex', gap: '10px' }}>
                 {top3Categories.map((c, i) => (
                   <div key={c.name} style={{ flex: 1, backgroundColor: 'rgba(244,114,182,0.08)', border: '1px solid rgba(244,114,182,0.2)', borderRadius: '8px', padding: '10px 12px' }}>
-                    <div style={{ fontSize: '10px', fontWeight: 700, color: '#f472b6', marginBottom: '4px' }}>#{i + 1}</div>
-                    <div style={{ fontSize: '12px', fontWeight: 600, color: '#f1f5f9', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.name}</div>
-                    <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '2px' }}>{c.count.toLocaleString('tr-TR')} yayıncı</div>
+                    <div style={{ fontSize: '10px', fontWeight: 700, color: '#DB2777', marginBottom: '4px' }}>#{i + 1}</div>
+                    <div style={{ fontSize: '12px', fontWeight: 600, color: '#111111', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.name}</div>
+                    <div style={{ fontSize: '11px', color: '#444444', marginTop: '2px' }}>{c.count.toLocaleString('tr-TR')} yayıncı</div>
                   </div>
                 ))}
               </div>
@@ -459,33 +460,33 @@ export default function KickPage() {
           </div>
 
           {/* Ortalama Yayın Sayısı (wide) */}
-          <div style={{ ...statCardStyle('#a78bfa'), gridColumn: 'span 2' }}>
-            <StatCardHeader icon={<Video size={17} />} color="#a78bfa" label="Ortalama Yayın Sayısı" />
+          <div style={{ ...statCardStyle('#6D28D9'), gridColumn: 'span 2' }}>
+            <StatCardHeader icon={<Video size={17} />} color="#6D28D9" label="Ortalama Yayın Sayısı" />
             <div style={statValueStyle}>{auxLoading ? '…' : stats.avgStreamCount.toLocaleString('tr-TR', { maximumFractionDigits: 1 })}</div>
             <div style={statSubStyle}>Kanal başına ortalama yayın sayısı</div>
           </div>
         </div>
 
         {/* Table card */}
-        <div style={{ backgroundColor: '#1a1a24', border: '1px solid #2a2a3a', borderRadius: '12px', overflow: 'hidden' }}>
+        <div style={{ backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)', border: '1px solid #E0E0E0', borderRadius: '12px', overflow: 'hidden' }}>
           {/* Filters */}
-          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', padding: '12px 20px', borderBottom: '1px solid #2a2a3a', alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', padding: '12px 20px', borderBottom: '1px solid #E0E0E0', alignItems: 'center' }}>
             <div style={{ position: 'relative', flex: 1, minWidth: '180px' }}>
-              <Search size={13} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#64748b', pointerEvents: 'none' }} />
+              <Search size={13} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#6B6B6B', pointerEvents: 'none' }} />
               <input value={searchInput} onChange={e => setSearchInput(e.target.value)} placeholder="Kanal veya kullanıcı adı ara..." style={{ ...SEL, paddingLeft: '30px', width: '100%', boxSizing: 'border-box' }} />
             </div>
             <button
               onClick={() => setEmailOnly(v => !v)}
-              style={{ padding: '7px 14px', borderRadius: '7px', border: `1px solid ${emailOnly ? 'rgba(251,191,36,0.5)' : '#2a2a3a'}`, backgroundColor: emailOnly ? 'rgba(251,191,36,0.1)' : 'transparent', color: emailOnly ? '#fbbf24' : '#64748b', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}
+              style={{ padding: '7px 14px', borderRadius: '7px', border: `1px solid ${emailOnly ? 'rgba(251,191,36,0.5)' : '#E0E0E0'}`, backgroundColor: emailOnly ? 'rgba(251,191,36,0.1)' : 'transparent', color: emailOnly ? '#D97706' : '#6B6B6B', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}
             >
               📧 Email Var
             </button>
             {hasFilters && (
-              <button onClick={() => { setSearchInput(''); setSearch(''); setEmailOnly(false) }} style={{ fontSize: '12px', color: '#64748b', background: 'none', border: '1px solid #2a2a3a', borderRadius: '7px', padding: '7px 12px', cursor: 'pointer' }}>
+              <button onClick={() => { setSearchInput(''); setSearch(''); setEmailOnly(false) }} style={{ fontSize: '12px', color: '#6B6B6B', background: 'none', border: '1px solid #E0E0E0', borderRadius: '7px', padding: '7px 12px', cursor: 'pointer' }}>
                 Temizle
               </button>
             )}
-            <span style={{ marginLeft: 'auto', fontSize: '12px', color: '#64748b', whiteSpace: 'nowrap' }}>
+            <span style={{ marginLeft: 'auto', fontSize: '12px', color: '#6B6B6B', whiteSpace: 'nowrap' }}>
               {totalCount === 0 ? '0 yayıncı' : `${rangeStart.toLocaleString('tr-TR')} - ${rangeEnd.toLocaleString('tr-TR')} / ${totalCount.toLocaleString('tr-TR')} yayıncı`}
             </span>
           </div>
@@ -506,16 +507,16 @@ export default function KickPage() {
               </thead>
               <tbody>
                 {loading ? (
-                  <tr><td colSpan={7} style={{ padding: '48px', textAlign: 'center', color: '#64748b', fontSize: '14px' }}>Yükleniyor...</td></tr>
+                  <tr><td colSpan={7} style={{ padding: '48px', textAlign: 'center', color: '#6B6B6B', fontSize: '14px' }}>Yükleniyor...</td></tr>
                 ) : rows.length === 0 ? (
-                  <tr><td colSpan={7} style={{ padding: '48px', textAlign: 'center', color: '#64748b', fontSize: '14px' }}>{hasFilters ? 'Eşleşen yayıncı bulunamadı' : 'Henüz yayıncı eklenmemiş'}</td></tr>
+                  <tr><td colSpan={7} style={{ padding: '48px', textAlign: 'center', color: '#6B6B6B', fontSize: '14px' }}>{hasFilters ? 'Eşleşen yayıncı bulunamadı' : 'Henüz yayıncı eklenmemiş'}</td></tr>
                 ) : rows.map((row, i) => {
                   const isActive = selected?.id === row.id
                   return (
                     <tr
                       key={String(row.id ?? i)}
                       onClick={() => setSelected(isActive ? null : row)}
-                      style={{ borderBottom: i < rows.length - 1 ? '1px solid rgba(42,42,58,0.6)' : 'none', backgroundColor: isActive ? 'rgba(83,252,24,0.06)' : i % 2 === 1 ? 'rgba(255,255,255,0.012)' : 'transparent', cursor: 'pointer' }}
+                      style={{ borderBottom: i < rows.length - 1 ? '1px solid #E5E5E5' : 'none', backgroundColor: isActive ? 'rgba(83,252,24,0.06)' : i % 2 === 1 ? '#F9F9F9' : 'transparent', cursor: 'pointer' }}
                     >
                       <td style={{ ...TD, paddingRight: '8px' }}>
                         <Avatar username={row.username} src={row.profile_image_url ? String(row.profile_image_url) : undefined} size={32} />
@@ -531,17 +532,17 @@ export default function KickPage() {
                           {String(row.channel_name ?? row.username ?? '—')}
                         </a>
                         {!!row.username && String(row.channel_name ?? '') !== String(row.username) && (
-                          <div style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>@{String(row.username)}</div>
+                          <div style={{ fontSize: '11px', color: '#6B6B6B', marginTop: '2px' }}>@{String(row.username)}</div>
                         )}
                       </td>
                       <td style={TD}><span style={{ color: KICK_COLOR, fontWeight: 600, fontSize: '13px' }}>{fmt(row.avg_viewers)}</span></td>
-                      <td style={TD}><span style={{ color: '#4ade80', fontWeight: 600, fontSize: '13px' }}>{fmt(row.followers)}</span></td>
-                      <td style={TD}><span style={{ fontSize: '13px', color: '#cbd5e1' }}>{row.stream_count != null ? String(row.stream_count) : <span style={{ color: '#64748b' }}>—</span>}</span></td>
-                      <td style={TD}><span style={{ fontSize: '13px', color: '#cbd5e1' }}>{fmtHours(row.hours_per_stream)}</span></td>
+                      <td style={TD}><span style={{ color: '#16A34A', fontWeight: 600, fontSize: '13px' }}>{fmt(row.followers)}</span></td>
+                      <td style={TD}><span style={{ fontSize: '13px', color: '#444444' }}>{row.stream_count != null ? String(row.stream_count) : <span style={{ color: '#6B6B6B' }}>—</span>}</span></td>
+                      <td style={TD}><span style={{ fontSize: '13px', color: '#444444' }}>{fmtHours(row.hours_per_stream)}</span></td>
                       <td style={{ ...TD, maxWidth: '180px' }} onClick={e => e.stopPropagation()}>
                         {hasEmail(row.email)
-                          ? <a href={`mailto:${row.email}`} style={{ color: '#60a5fa', fontSize: '12px', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{String(row.email)}</a>
-                          : <span style={{ color: '#64748b' }}>—</span>}
+                          ? <a href={`mailto:${row.email}`} style={{ color: '#2563EB', fontSize: '12px', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{String(row.email)}</a>
+                          : <span style={{ color: '#6B6B6B' }}>—</span>}
                       </td>
                     </tr>
                   )
@@ -551,33 +552,33 @@ export default function KickPage() {
           </div>
 
           {/* Pagination */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 20px', borderTop: '1px solid #2a2a3a', gap: '12px', flexWrap: 'wrap' }}>
-            <span style={{ fontSize: '12px', color: '#64748b' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 20px', borderTop: '1px solid #E0E0E0', gap: '12px', flexWrap: 'wrap' }}>
+            <span style={{ fontSize: '12px', color: '#6B6B6B' }}>
               {totalCount === 0 ? '0 yayıncı' : `${rangeStart.toLocaleString('tr-TR')} - ${rangeEnd.toLocaleString('tr-TR')} / ${totalCount.toLocaleString('tr-TR')} yayıncı`}
             </span>
             <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
               <button
                 onClick={() => setPage(p => Math.max(1, p - 1))}
                 disabled={page <= 1}
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '30px', borderRadius: '7px', border: '1px solid #2a2a3a', backgroundColor: 'transparent', color: page <= 1 ? '#3a3a4a' : '#94a3b8', cursor: page <= 1 ? 'not-allowed' : 'pointer' }}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '30px', borderRadius: '7px', border: '1px solid #E0E0E0', backgroundColor: 'transparent', color: page <= 1 ? '#D0D0D0' : '#444444', cursor: page <= 1 ? 'not-allowed' : 'pointer' }}
               >
                 <ChevronLeft size={14} />
               </button>
-              {pageNumbers[0] > 1 && <span style={{ color: '#64748b', fontSize: '12px', padding: '0 4px' }}>…</span>}
+              {pageNumbers[0] > 1 && <span style={{ color: '#6B6B6B', fontSize: '12px', padding: '0 4px' }}>…</span>}
               {pageNumbers.map(n => (
                 <button
                   key={n}
                   onClick={() => setPage(n)}
-                  style={{ minWidth: '30px', height: '30px', borderRadius: '7px', border: `1px solid ${n === page ? KICK_COLOR : '#2a2a3a'}`, backgroundColor: n === page ? 'rgba(83,252,24,0.15)' : 'transparent', color: n === page ? KICK_COLOR : '#94a3b8', fontSize: '12px', fontWeight: 600, cursor: 'pointer', padding: '0 6px' }}
+                  style={{ minWidth: '30px', height: '30px', borderRadius: '7px', border: `1px solid ${n === page ? KICK_COLOR : '#E0E0E0'}`, backgroundColor: n === page ? 'rgba(83,252,24,0.15)' : 'transparent', color: n === page ? KICK_COLOR : '#444444', fontSize: '12px', fontWeight: 600, cursor: 'pointer', padding: '0 6px' }}
                 >
                   {n}
                 </button>
               ))}
-              {pageNumbers[pageNumbers.length - 1] < totalPages && <span style={{ color: '#64748b', fontSize: '12px', padding: '0 4px' }}>…</span>}
+              {pageNumbers[pageNumbers.length - 1] < totalPages && <span style={{ color: '#6B6B6B', fontSize: '12px', padding: '0 4px' }}>…</span>}
               <button
                 onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                 disabled={page >= totalPages}
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '30px', borderRadius: '7px', border: '1px solid #2a2a3a', backgroundColor: 'transparent', color: page >= totalPages ? '#3a3a4a' : '#94a3b8', cursor: page >= totalPages ? 'not-allowed' : 'pointer' }}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '30px', borderRadius: '7px', border: '1px solid #E0E0E0', backgroundColor: 'transparent', color: page >= totalPages ? '#D0D0D0' : '#444444', cursor: page >= totalPages ? 'not-allowed' : 'pointer' }}
               >
                 <ChevronRight size={14} />
               </button>
@@ -588,7 +589,7 @@ export default function KickPage() {
         {/* Overlay + drawer */}
         {selected && (
           <>
-            <div onClick={() => setSelected(null)} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 999 }} />
+            <div onClick={() => setSelected(null)} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.35)', zIndex: 999 }} />
             <DetailPanel row={selected} onClose={() => setSelected(null)} />
           </>
         )}

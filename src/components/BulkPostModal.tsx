@@ -85,13 +85,12 @@ export function BulkPostModal() {
           gap: '8px',
           padding: '9px 18px',
           borderRadius: '9px',
-          background: 'linear-gradient(135deg, #7c3aed, #4f46e5)',
+          background: '#111111',
           border: 'none',
           color: '#fff',
           fontWeight: 700,
           fontSize: '14px',
           cursor: 'pointer',
-          boxShadow: '0 2px 12px rgba(124,58,237,0.35)',
           whiteSpace: 'nowrap',
         }}
       >
@@ -115,9 +114,9 @@ export function BulkPostModal() {
                       gap: '6px',
                       padding: '6px 12px',
                       borderRadius: '7px',
-                      border: `1px solid ${isSelected ? p.color : '#2a2a3a'}`,
-                      backgroundColor: isSelected ? `${p.color}22` : '#13131a',
-                      color: isSelected ? p.color : '#64748b',
+                      border: `1px solid ${isSelected ? p.color : '#E0E0E0'}`,
+                      backgroundColor: isSelected ? `${p.color}22` : '#FFFFFF',
+                      color: isSelected ? p.color : '#6B6B6B',
                       fontWeight: 600,
                       fontSize: '12px',
                       cursor: 'pointer',
@@ -130,14 +129,14 @@ export function BulkPostModal() {
               })}
             </div>
             {selected.length > 0 && (
-              <div style={{ fontSize: '11px', color: '#64748b', marginTop: '6px' }}>
+              <div style={{ fontSize: '11px', color: '#6B6B6B', marginTop: '6px' }}>
                 {selected.length} platform seçildi
               </div>
             )}
           </div>
 
           {selected.length > 0 && (
-            <div style={{ ...fieldStyle, backgroundColor: '#13131a', borderRadius: '8px', padding: '12px', border: '1px solid #2a2a3a' }}>
+            <div style={{ ...fieldStyle, backgroundColor: '#FFFFFF', borderRadius: '8px', padding: '12px', border: '1px solid #E0E0E0' }}>
               <label style={{ ...labelStyle, marginBottom: '10px' }}>Platform Linkleri (opsiyonel)</label>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {selected.map(key => {

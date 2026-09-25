@@ -24,9 +24,9 @@ export default async function RedditPage() {
 
   const stats = [
     { label: 'Toplam Hesap', value: accounts.length, color: '#ff4500' },
-    { label: 'Toplam Karma', value: totalKarma.toLocaleString('tr-TR'), color: '#fbbf24' },
-    { label: 'Toplam Yorum', value: totalComments.toLocaleString('tr-TR'), color: '#4ade80' },
-    { label: 'Toplam Post', value: posts.length, color: '#60a5fa' },
+    { label: 'Toplam Karma', value: totalKarma.toLocaleString('tr-TR'), color: '#D97706' },
+    { label: 'Toplam Yorum', value: totalComments.toLocaleString('tr-TR'), color: '#16A34A' },
+    { label: 'Toplam Post', value: posts.length, color: '#2563EB' },
   ]
 
   return (
@@ -45,9 +45,9 @@ export default async function RedditPage() {
         {/* Summary stats */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '32px' }}>
           {stats.map(s => (
-            <div key={s.label} style={{ backgroundColor: '#1a1a24', border: '1px solid #2a2a3a', borderRadius: '12px', padding: '20px', textAlign: 'center' }}>
+            <div key={s.label} style={{ backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)', border: '1px solid #E0E0E0', borderLeft: `3px solid ${s.color}`, borderRadius: '12px', padding: '20px', textAlign: 'center' }}>
               <div style={{ fontSize: '30px', fontWeight: 800, color: s.color, lineHeight: 1 }}>{s.value}</div>
-              <div style={{ fontSize: '12px', color: '#64748b', marginTop: '8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{s.label}</div>
+              <div style={{ fontSize: '12px', color: '#6B6B6B', marginTop: '8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{s.label}</div>
             </div>
           ))}
         </div>
@@ -56,14 +56,14 @@ export default async function RedditPage() {
         <div style={{ marginBottom: '28px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
             <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#ff4500', boxShadow: '0 0 6px rgba(255,69,0,0.6)' }} />
-            <span style={{ fontSize: '15px', fontWeight: 600, color: '#f1f5f9' }}>Reddit Hesapları</span>
+            <span style={{ fontSize: '15px', fontWeight: 600, color: '#111111' }}>Reddit Hesapları</span>
             <span style={{ backgroundColor: 'rgba(255,69,0,0.12)', color: '#ff6534', border: '1px solid rgba(255,69,0,0.3)', borderRadius: '9999px', padding: '2px 10px', fontSize: '13px', fontWeight: 600 }}>
               {accounts.length}
             </span>
           </div>
 
           {accounts.length === 0 ? (
-            <div style={{ backgroundColor: '#1a1a24', border: '1px solid #2a2a3a', borderRadius: '12px', padding: '48px', textAlign: 'center', color: '#64748b', fontSize: '14px' }}>
+            <div style={{ backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)', border: '1px solid #E0E0E0', borderRadius: '12px', padding: '48px', textAlign: 'center', color: '#6B6B6B', fontSize: '14px' }}>
               Henüz hesap eklenmemiş
             </div>
           ) : (

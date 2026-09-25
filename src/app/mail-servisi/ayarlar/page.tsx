@@ -22,15 +22,15 @@ export default async function AyarlarPage() {
 
       <div style={{ padding: '24px 32px' }}>
         {accounts.length === 0 ? (
-          <p style={{ fontSize: '13px', color: '#64748b', margin: 0 }}>Henüz mail hesabı yok.</p>
+          <p style={{ fontSize: '13px', color: '#6B6B6B', margin: 0 }}>Henüz mail hesabı yok.</p>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '16px' }}>
             {accounts.map((a) => (
               <div
                 key={a.id}
                 style={{
-                  backgroundColor: '#1a1a24',
-                  border: '1px solid #2a2a3a',
+                  backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)',
+                  border: '1px solid #E0E0E0',
                   borderRadius: '12px',
                   padding: '20px',
                   display: 'flex',
@@ -53,8 +53,8 @@ export default async function AyarlarPage() {
                   <Mail size={18} color="white" />
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: '14px', fontWeight: 600, color: '#e2e8f0' }}>{a.name}</div>
-                  <div style={{ fontSize: '13px', color: '#94a3b8', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.email}</div>
+                  <div style={{ fontSize: '14px', fontWeight: 600, color: '#111111' }}>{a.name}</div>
+                  <div style={{ fontSize: '13px', color: '#444444', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.email}</div>
                 </div>
                 <Badge variant={a.status === 'active' ? 'green' : 'gray'}>{a.status === 'active' ? 'Aktif' : 'Pasif'}</Badge>
               </div>

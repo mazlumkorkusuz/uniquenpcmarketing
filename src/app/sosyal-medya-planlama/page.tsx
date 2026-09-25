@@ -56,9 +56,9 @@ export default async function SosyalMedyaPlanlama() {
       <div style={{ padding: '24px 32px' }}>
 
         {/* Platform comparison */}
-        <div style={{ backgroundColor: '#1a1a24', border: '1px solid #2a2a3a', borderRadius: '12px', padding: '20px', marginBottom: '28px' }}>
-          <div style={{ fontSize: '14px', fontWeight: 600, color: '#f1f5f9', marginBottom: '4px' }}>Platform Karşılaştırması</div>
-          <div style={{ fontSize: '12px', color: '#64748b', marginBottom: '16px' }}>Platforma göre toplam planlanan gönderi sayısı</div>
+        <div style={{ backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)', border: '1px solid #E0E0E0', borderRadius: '12px', padding: '20px', marginBottom: '28px' }}>
+          <div style={{ fontSize: '14px', fontWeight: 600, color: '#111111', marginBottom: '4px' }}>Platform Karşılaştırması</div>
+          <div style={{ fontSize: '12px', color: '#6B6B6B', marginBottom: '16px' }}>Platforma göre toplam planlanan gönderi sayısı</div>
           <BarChart data={platformBar} color="#7c3aed" height={100} />
         </div>
 
@@ -70,17 +70,17 @@ export default async function SosyalMedyaPlanlama() {
             return (
               <div
                 key={platform.key}
-                style={{ backgroundColor: '#1a1a24', border: '1px solid #2a2a3a', borderRadius: '12px', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
+                style={{ backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)', border: '1px solid #E0E0E0', borderRadius: '12px', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
               >
-                <div style={{ padding: '16px 20px', borderBottom: '1px solid #2a2a3a' }}>
+                <div style={{ padding: '16px 20px', borderBottom: '1px solid #E0E0E0' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                       <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: platform.color, boxShadow: `0 0 8px ${platform.color}60` }} />
-                      <span style={{ fontSize: '15px', fontWeight: 700, color: '#f1f5f9' }}>{platform.label}</span>
+                      <span style={{ fontSize: '15px', fontWeight: 700, color: '#111111' }}>{platform.label}</span>
                     </div>
-                    <span style={{ fontSize: '26px', fontWeight: 800, color: count > 0 ? platform.color : '#475569' }}>{count}</span>
+                    <span style={{ fontSize: '26px', fontWeight: 800, color: count > 0 ? platform.color : '#8A8A8A' }}>{count}</span>
                   </div>
-                  <div style={{ fontSize: '12px', color: '#64748b', marginTop: '4px' }}>
+                  <div style={{ fontSize: '12px', color: '#6B6B6B', marginTop: '4px' }}>
                     {count > 0 ? 'toplam gönderi' : 'henüz gönderi yok'}
                   </div>
                 </div>
@@ -88,21 +88,21 @@ export default async function SosyalMedyaPlanlama() {
                 <div style={{ padding: '14px 20px', flex: 1 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div style={{ textAlign: 'center' }}>
-                      <div style={{ fontSize: '20px', fontWeight: 700, color: '#60a5fa' }}>{sched}</div>
-                      <div style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>Planlandı</div>
+                      <div style={{ fontSize: '20px', fontWeight: 700, color: '#2563EB' }}>{sched}</div>
+                      <div style={{ fontSize: '11px', color: '#6B6B6B', marginTop: '2px' }}>Planlandı</div>
                     </div>
                     <div style={{ textAlign: 'center' }}>
-                      <div style={{ fontSize: '20px', fontWeight: 700, color: '#4ade80' }}>{count - sched}</div>
-                      <div style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>Diğer</div>
+                      <div style={{ fontSize: '20px', fontWeight: 700, color: '#16A34A' }}>{count - sched}</div>
+                      <div style={{ fontSize: '11px', color: '#6B6B6B', marginTop: '2px' }}>Diğer</div>
                     </div>
                     <div style={{ textAlign: 'center' }}>
                       <div style={{ fontSize: '20px', fontWeight: 700, color: platform.color }}>{count}</div>
-                      <div style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>Toplam</div>
+                      <div style={{ fontSize: '11px', color: '#6B6B6B', marginTop: '2px' }}>Toplam</div>
                     </div>
                   </div>
                 </div>
 
-                <div style={{ padding: '12px 20px', borderTop: '1px solid #2a2a3a' }}>
+                <div style={{ padding: '12px 20px', borderTop: '1px solid #E0E0E0' }}>
                   <Link
                     href={platform.href}
                     style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: 500, color: platform.color, textDecoration: 'none' }}

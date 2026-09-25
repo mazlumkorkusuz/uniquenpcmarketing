@@ -38,21 +38,21 @@ export default async function MailServisiPage() {
 
       <div style={{ padding: '24px 32px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px' }}>
-          <StatCard label="Kampanya" value={campaigns.length} icon={Users} iconColor="#a78bfa" iconBg="rgba(124,58,237,0.15)" />
-          <StatCard label="Gönderilen" value={sent.toLocaleString('tr-TR')} icon={Send} iconColor="#60a5fa" iconBg="rgba(59,130,246,0.15)" />
-          <StatCard label="Açılma Oranı" value={percent(opens, sent)} icon={MailOpen} iconColor="#2dd4bf" iconBg="rgba(20,184,166,0.15)" />
-          <StatCard label="Yanıt Oranı" value={percent(replies, sent)} icon={Reply} iconColor="#4ade80" iconBg="rgba(34,197,94,0.15)" />
-          <StatCard label="Bounce Oranı" value={percent(bounces, sent + bounces)} icon={AlertTriangle} iconColor="#f87171" iconBg="rgba(239,68,68,0.15)" />
+          <StatCard label="Kampanya" value={campaigns.length} icon={Users} iconColor="#6D28D9" iconBg="rgba(124,58,237,0.15)" />
+          <StatCard label="Gönderilen" value={sent.toLocaleString('tr-TR')} icon={Send} iconColor="#2563EB" iconBg="rgba(59,130,246,0.15)" />
+          <StatCard label="Açılma Oranı" value={percent(opens, sent)} icon={MailOpen} iconColor="#0D9488" iconBg="rgba(20,184,166,0.15)" />
+          <StatCard label="Yanıt Oranı" value={percent(replies, sent)} icon={Reply} iconColor="#16A34A" iconBg="rgba(34,197,94,0.15)" />
+          <StatCard label="Bounce Oranı" value={percent(bounces, sent + bounces)} icon={AlertTriangle} iconColor="#DC2626" iconBg="rgba(239,68,68,0.15)" />
         </div>
 
         <Card
           title="Mail Hesapları"
           padded={false}
-          action={<Link href="/mail-servisi/ayarlar" style={{ fontSize: '12px', color: '#a78bfa', textDecoration: 'none' }}>Yönet →</Link>}
+          action={<Link href="/mail-servisi/ayarlar" style={{ fontSize: '12px', color: '#111111', fontWeight: 600, textDecoration: 'none' }}>Yönet →</Link>}
         >
           {accounts.length === 0 ? (
-            <p style={{ padding: '20px', margin: 0, fontSize: '13px', color: '#64748b' }}>
-              Henüz hesap yok. <Link href="/mail-servisi/ayarlar" style={{ color: '#a78bfa' }}>Ayarlar</Link> sayfasından SMTP hesabı ekleyin.
+            <p style={{ padding: '20px', margin: 0, fontSize: '13px', color: '#6B6B6B' }}>
+              Henüz hesap yok. <Link href="/mail-servisi/ayarlar" style={{ color: '#111111', fontWeight: 600 }}>Ayarlar</Link> sayfasından SMTP hesabı ekleyin.
             </p>
           ) : (
             <div style={{ overflowX: 'auto' }}>
@@ -69,10 +69,10 @@ export default async function MailServisiPage() {
                   {accounts.map((a) => (
                     <tr key={a.id}>
                       <td style={tdStyle}>
-                        <div style={{ fontWeight: 600, color: '#e2e8f0' }}>{a.name}</div>
-                        <div style={{ fontSize: '12px', color: '#64748b' }}>{a.email}</div>
+                        <div style={{ fontWeight: 600, color: '#111111' }}>{a.name}</div>
+                        <div style={{ fontSize: '12px', color: '#6B6B6B' }}>{a.email}</div>
                       </td>
-                      <td style={{ ...tdStyle, color: '#94a3b8' }}>{a.smtp_host}:{a.smtp_port}</td>
+                      <td style={{ ...tdStyle, color: '#444444' }}>{a.smtp_host}:{a.smtp_port}</td>
                       <td style={tdStyle}><ProgressBar value={a.sent_today} total={a.daily_limit} /></td>
                       <td style={tdStyle}>
                         <Badge variant={a.status === 'active' ? 'green' : 'gray'}>{a.status === 'active' ? 'Aktif' : 'Pasif'}</Badge>
@@ -88,10 +88,10 @@ export default async function MailServisiPage() {
         <Card
           title="Son Kampanyalar"
           padded={false}
-          action={<Link href="/mail-servisi/kampanyalar" style={{ fontSize: '12px', color: '#a78bfa', textDecoration: 'none' }}>Tümü →</Link>}
+          action={<Link href="/mail-servisi/kampanyalar" style={{ fontSize: '12px', color: '#111111', fontWeight: 600, textDecoration: 'none' }}>Tümü →</Link>}
         >
           {recent.length === 0 ? (
-            <p style={{ padding: '20px', margin: 0, fontSize: '13px', color: '#64748b' }}>Henüz kampanya yok.</p>
+            <p style={{ padding: '20px', margin: 0, fontSize: '13px', color: '#6B6B6B' }}>Henüz kampanya yok.</p>
           ) : (
             <div style={{ overflowX: 'auto' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -108,14 +108,14 @@ export default async function MailServisiPage() {
                 <tbody>
                   {recent.map((c) => (
                     <tr key={c.id}>
-                      <td style={{ ...tdStyle, fontWeight: 600, color: '#e2e8f0' }}>
+                      <td style={{ ...tdStyle, fontWeight: 600, color: '#111111' }}>
                         <Link href={`/mail-servisi/tracking?campaign=${c.id}`} style={{ color: 'inherit', textDecoration: 'none' }}>{c.name}</Link>
                       </td>
                       <td style={tdStyle}><CampaignStatusBadge status={c.status} /></td>
                       <td style={tdStyle}><ProgressBar value={c.sent_count + c.bounce_count} total={c.total_recipients} /></td>
                       <td style={tdStyle}>{percent(c.open_count, c.sent_count)}</td>
                       <td style={tdStyle}>{percent(c.reply_count, c.sent_count)}</td>
-                      <td style={{ ...tdStyle, color: '#64748b', fontSize: '12px' }}>{formatDateTime(c.created_at)}</td>
+                      <td style={{ ...tdStyle, color: '#6B6B6B', fontSize: '12px' }}>{formatDateTime(c.created_at)}</td>
                     </tr>
                   ))}
                 </tbody>

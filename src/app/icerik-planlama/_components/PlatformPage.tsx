@@ -21,18 +21,18 @@ interface PlatformPageProps {
 }
 
 function dateCell(v: unknown) {
-  if (!v) return <span style={{ color: '#64748b' }}>—</span>
-  return <span style={{ fontSize: '12px', color: '#64748b' }}>{new Date(v as string).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+  if (!v) return <span style={{ color: '#6B6B6B' }}>—</span>
+  return <span style={{ fontSize: '12px', color: '#6B6B6B' }}>{new Date(v as string).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
 }
 
 function statusBadge(status: string | null) {
-  if (!status) return <span style={{ color: '#64748b' }}>—</span>
+  if (!status) return <span style={{ color: '#6B6B6B' }}>—</span>
   const map: Record<string, [string, string]> = {
-    'Taslak':     ['rgba(100,116,139,0.15)', '#94a3b8'],
-    'Planlandı':  ['rgba(59,130,246,0.15)',  '#60a5fa'],
-    'Yayınlandı': ['rgba(34,197,94,0.15)',   '#4ade80'],
+    'Taslak':     ['rgba(100,116,139,0.15)', '#444444'],
+    'Planlandı':  ['rgba(59,130,246,0.15)',  '#2563EB'],
+    'Yayınlandı': ['rgba(34,197,94,0.15)',   '#16A34A'],
   }
-  const [bg, text] = map[status] ?? ['rgba(100,116,139,0.15)', '#94a3b8']
+  const [bg, text] = map[status] ?? ['rgba(100,116,139,0.15)', '#444444']
   return <span style={{ fontSize: '12px', fontWeight: 600, color: text, backgroundColor: bg, borderRadius: '5px', padding: '2px 8px' }}>{status}</span>
 }
 
@@ -62,31 +62,31 @@ export async function PlatformPage({ platform, label, color, gradient, icon, ima
       key: 'title',
       label: 'Başlık',
       render: (v: unknown) => v
-        ? <span style={{ fontWeight: 600, color: '#e2e8f0' }}>{String(v)}</span>
-        : <span style={{ color: '#64748b', fontStyle: 'italic' }}>Başlıksız</span>,
+        ? <span style={{ fontWeight: 600, color: '#111111' }}>{String(v)}</span>
+        : <span style={{ color: '#6B6B6B', fontStyle: 'italic' }}>Başlıksız</span>,
     },
     {
       key: 'content',
       label: 'İçerik',
       render: (v: unknown) => v
-        ? <span style={{ fontSize: '13px', color: '#94a3b8', maxWidth: '300px', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{String(v)}</span>
-        : <span style={{ color: '#64748b' }}>—</span>,
+        ? <span style={{ fontSize: '13px', color: '#444444', maxWidth: '300px', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{String(v)}</span>
+        : <span style={{ color: '#6B6B6B' }}>—</span>,
     },
     { key: 'scheduled_date', label: 'Tarih', render: dateCell },
     {
       key: 'scheduled_time',
       label: 'Saat',
       render: (v: unknown) => v
-        ? <span style={{ fontSize: '12px', color: '#64748b', fontFamily: 'monospace' }}>{String(v).slice(0, 5)}</span>
-        : <span style={{ color: '#64748b' }}>—</span>,
+        ? <span style={{ fontSize: '12px', color: '#6B6B6B', fontFamily: 'monospace' }}>{String(v).slice(0, 5)}</span>
+        : <span style={{ color: '#6B6B6B' }}>—</span>,
     },
     { key: 'status', label: 'Durum', render: (v: unknown) => statusBadge(v as string | null) },
     { key: 'url', label: 'Link', render: (v: unknown) => v ? (
-      <a href={String(v)} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '12px', fontWeight: 600, color: '#60a5fa', backgroundColor: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.25)', borderRadius: '5px', padding: '2px 8px', textDecoration: 'none', whiteSpace: 'nowrap' }}>
+      <a href={String(v)} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '12px', fontWeight: 600, color: '#2563EB', backgroundColor: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.25)', borderRadius: '5px', padding: '2px 8px', textDecoration: 'none', whiteSpace: 'nowrap' }}>
         <ExternalLink size={11} />
         Link
       </a>
-    ) : <span style={{ color: '#64748b' }}>—</span> },
+    ) : <span style={{ color: '#6B6B6B' }}>—</span> },
     { key: 'id', label: '', width: '80px', render: (_: unknown, row: Row) => (
       <div style={{ display: 'flex', gap: '4px' }}>
         <EditPostButton row={row} platform={platform} platformColor={color} />
@@ -104,23 +104,23 @@ export async function PlatformPage({ platform, label, color, gradient, icon, ima
       <div style={{ padding: '24px 32px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '16px', marginBottom: '28px' }}>
           <StatCard label="Toplam Gönderi" value={total}     icon={FileText}    iconColor={color}    iconBg={color + '20'} />
-          <StatCard label="Planlandı"      value={planned}   icon={Calendar}    iconColor="#60a5fa"  iconBg="rgba(59,130,246,0.12)" />
-          <StatCard label="Yayınlandı"     value={published} icon={CheckCircle} iconColor="#4ade80"  iconBg="rgba(34,197,94,0.12)" />
-          <StatCard label="Taslak"         value={drafts}    icon={Clock}       iconColor="#94a3b8"  iconBg="rgba(100,116,139,0.12)" />
+          <StatCard label="Planlandı"      value={planned}   icon={Calendar}    iconColor="#2563EB"  iconBg="rgba(59,130,246,0.12)" />
+          <StatCard label="Yayınlandı"     value={published} icon={CheckCircle} iconColor="#16A34A"  iconBg="rgba(34,197,94,0.12)" />
+          <StatCard label="Taslak"         value={drafts}    icon={Clock}       iconColor="#444444"  iconBg="rgba(100,116,139,0.12)" />
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: '24px', marginBottom: '28px', alignItems: 'start' }}>
-          <div style={{ backgroundColor: '#1a1a24', border: '1px solid #2a2a3a', borderRadius: '12px', overflow: 'hidden' }}>
-            <div style={{ padding: '14px 20px', borderBottom: '1px solid #2a2a3a', display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{ backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)', border: '1px solid #E0E0E0', borderRadius: '12px', overflow: 'hidden' }}>
+            <div style={{ padding: '14px 20px', borderBottom: '1px solid #E0E0E0', display: 'flex', alignItems: 'center', gap: '10px' }}>
               <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: color }} />
-              <span style={{ fontSize: '15px', fontWeight: 600, color: '#f1f5f9' }}>Gönderiler</span>
+              <span style={{ fontSize: '15px', fontWeight: 600, color: '#111111' }}>Gönderiler</span>
               <span style={{ marginLeft: 'auto', backgroundColor: color + '20', color, border: `1px solid ${color}44`, borderRadius: '9999px', padding: '2px 10px', fontSize: '13px', fontWeight: 600 }}>{total}</span>
             </div>
             <DataTable columns={cols} data={rows} emptyMessage="Henüz gönderi eklenmedi" />
           </div>
 
-          <div style={{ backgroundColor: '#1a1a24', border: '1px solid #2a2a3a', borderRadius: '12px', padding: '20px' }}>
-            <div style={{ fontSize: '13px', fontWeight: 600, color: '#94a3b8', marginBottom: '14px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          <div style={{ backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)', border: '1px solid #E0E0E0', borderRadius: '12px', padding: '20px' }}>
+            <div style={{ fontSize: '13px', fontWeight: 600, color: '#444444', marginBottom: '14px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               Takvim
             </div>
             <ContentCalendar posts={calPosts} singleColor={color} compact={true} />

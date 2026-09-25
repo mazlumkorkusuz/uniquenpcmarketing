@@ -18,13 +18,13 @@ async function getData() {
 type Row = Record<string, unknown>
 
 function currency(v: unknown) {
-  if (v === null || v === undefined) return <span style={{ color: '#64748b' }}>—</span>
-  return <span style={{ color: '#4ade80', fontWeight: 600 }}>${Number(v).toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+  if (v === null || v === undefined) return <span style={{ color: '#6B6B6B' }}>—</span>
+  return <span style={{ color: '#16A34A', fontWeight: 600 }}>${Number(v).toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
 }
 
 function dateCell(v: unknown) {
-  if (!v) return <span style={{ color: '#64748b' }}>—</span>
-  return <span style={{ fontSize: '12px', color: '#64748b' }}>{new Date(v as string).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+  if (!v) return <span style={{ color: '#6B6B6B' }}>—</span>
+  return <span style={{ fontSize: '12px', color: '#6B6B6B' }}>{new Date(v as string).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
 }
 
 export default async function ButcePage() {
@@ -40,17 +40,17 @@ export default async function ButcePage() {
   const categoryEntries = Object.entries(byCategory).sort((a, b) => b[1] - a[1])
 
   const expenseCols = [
-    { key: 'title', label: 'Başlık', render: (v: unknown) => <span style={{ fontWeight: 600, color: '#e2e8f0' }}>{String(v ?? '—')}</span> },
+    { key: 'title', label: 'Başlık', render: (v: unknown) => <span style={{ fontWeight: 600, color: '#111111' }}>{String(v ?? '—')}</span> },
     { key: 'amount', label: 'Tutar', render: currency },
-    { key: 'category', label: 'Kategori', render: (v: unknown) => v ? <Badge variant="purple">{String(v)}</Badge> : <span style={{ color: '#64748b' }}>—</span> },
-    { key: 'platform', label: 'Platform', render: (v: unknown) => v ? <Badge variant="blue">{String(v)}</Badge> : <span style={{ color: '#64748b' }}>—</span> },
+    { key: 'category', label: 'Kategori', render: (v: unknown) => v ? <Badge variant="purple">{String(v)}</Badge> : <span style={{ color: '#6B6B6B' }}>—</span> },
+    { key: 'platform', label: 'Platform', render: (v: unknown) => v ? <Badge variant="blue">{String(v)}</Badge> : <span style={{ color: '#6B6B6B' }}>—</span> },
     { key: 'date', label: 'Tarih', render: dateCell },
-    { key: 'status', label: 'Durum', render: (v: unknown) => statusBadge(v as string) ?? <span style={{ color: '#64748b' }}>—</span> },
+    { key: 'status', label: 'Durum', render: (v: unknown) => statusBadge(v as string) ?? <span style={{ color: '#6B6B6B' }}>—</span> },
     { key: 'description', label: 'Açıklama', render: (v: unknown) => v ? (
-      <span style={{ fontSize: '12px', color: '#94a3b8', maxWidth: '200px', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+      <span style={{ fontSize: '12px', color: '#444444', maxWidth: '200px', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
         {String(v)}
       </span>
-    ) : <span style={{ color: '#64748b' }}>—</span> },
+    ) : <span style={{ color: '#6B6B6B' }}>—</span> },
     { key: 'id', label: '', width: '80px', render: (_: unknown, row: Row) => (
       <div style={{ display: 'flex', gap: '4px' }}>
         <EditBudgetExpenseButton row={row} accentColor="#22c55e" />
@@ -73,36 +73,36 @@ export default async function ButcePage() {
 
         {/* Summary cards */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '28px' }}>
-          <div style={{ backgroundColor: '#1a1a24', border: '1px solid #2a2a3a', borderRadius: '12px', padding: '20px' }}>
-            <div style={{ fontSize: '12px', color: '#64748b', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '8px' }}>Toplam Bütçe</div>
-            <div style={{ fontSize: '24px', fontWeight: 700, color: '#4ade80' }}>
+          <div style={{ backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)', border: '1px solid #E0E0E0', borderLeft: '3px solid #16A34A', borderRadius: '12px', padding: '20px' }}>
+            <div style={{ fontSize: '12px', color: '#6B6B6B', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '8px' }}>Toplam Bütçe</div>
+            <div style={{ fontSize: '24px', fontWeight: 700, color: '#16A34A' }}>
               ${totalExpenses.toLocaleString('en-US', { minimumFractionDigits: 2 })}
             </div>
           </div>
-          <div style={{ backgroundColor: '#1a1a24', border: '1px solid #2a2a3a', borderRadius: '12px', padding: '20px' }}>
-            <div style={{ fontSize: '12px', color: '#64748b', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '8px' }}>Toplam Harcama</div>
-            <div style={{ fontSize: '24px', fontWeight: 700, color: '#f1f5f9' }}>
+          <div style={{ backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)', border: '1px solid #E0E0E0', borderLeft: '3px solid #111111', borderRadius: '12px', padding: '20px' }}>
+            <div style={{ fontSize: '12px', color: '#6B6B6B', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '8px' }}>Toplam Harcama</div>
+            <div style={{ fontSize: '24px', fontWeight: 700, color: '#111111' }}>
               ${totalExpenses.toLocaleString('en-US', { minimumFractionDigits: 2 })}
             </div>
           </div>
-          <div style={{ backgroundColor: '#1a1a24', border: '1px solid #2a2a3a', borderRadius: '12px', padding: '20px' }}>
-            <div style={{ fontSize: '12px', color: '#64748b', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '8px' }}>Toplam İşlem</div>
-            <div style={{ fontSize: '24px', fontWeight: 700, color: '#f1f5f9' }}>{expenses.length}</div>
+          <div style={{ backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)', border: '1px solid #E0E0E0', borderLeft: '3px solid #111111', borderRadius: '12px', padding: '20px' }}>
+            <div style={{ fontSize: '12px', color: '#6B6B6B', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '8px' }}>Toplam İşlem</div>
+            <div style={{ fontSize: '24px', fontWeight: 700, color: '#111111' }}>{expenses.length}</div>
           </div>
         </div>
 
         {/* Category breakdown */}
         {categoryEntries.length > 0 && (
-          <div style={{ backgroundColor: '#1a1a24', border: '1px solid #2a2a3a', borderRadius: '12px', padding: '20px', marginBottom: '28px' }}>
-            <div style={{ fontSize: '14px', fontWeight: 600, color: '#f1f5f9', marginBottom: '16px' }}>Kategoriye Göre Harcama</div>
+          <div style={{ backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)', border: '1px solid #E0E0E0', borderRadius: '12px', padding: '20px', marginBottom: '28px' }}>
+            <div style={{ fontSize: '14px', fontWeight: 600, color: '#111111', marginBottom: '16px' }}>Kategoriye Göre Harcama</div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '12px' }}>
               {categoryEntries.map(([cat, amount]) => {
                 const pct = totalExpenses > 0 ? Math.round((amount / totalExpenses) * 100) : 0
                 return (
-                  <div key={cat} style={{ backgroundColor: '#13131a', borderRadius: '8px', padding: '12px' }}>
-                    <div style={{ fontSize: '12px', color: '#64748b', marginBottom: '4px' }}>{cat}</div>
-                    <div style={{ fontSize: '16px', fontWeight: 700, color: '#4ade80' }}>${amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</div>
-                    <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '2px' }}>%{pct}</div>
+                  <div key={cat} style={{ backgroundColor: '#FFFFFF', borderRadius: '8px', padding: '12px' }}>
+                    <div style={{ fontSize: '12px', color: '#6B6B6B', marginBottom: '4px' }}>{cat}</div>
+                    <div style={{ fontSize: '16px', fontWeight: 700, color: '#16A34A' }}>${amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</div>
+                    <div style={{ fontSize: '11px', color: '#444444', marginTop: '2px' }}>%{pct}</div>
                   </div>
                 )
               })}
@@ -111,11 +111,11 @@ export default async function ButcePage() {
         )}
 
         {/* Expenses table */}
-        <div style={{ backgroundColor: '#1a1a24', border: '1px solid #2a2a3a', borderRadius: '12px', overflow: 'hidden' }}>
-          <div style={{ padding: '14px 20px', borderBottom: '1px solid #2a2a3a', display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <div style={{ backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)', border: '1px solid #E0E0E0', borderRadius: '12px', overflow: 'hidden' }}>
+          <div style={{ padding: '14px 20px', borderBottom: '1px solid #E0E0E0', display: 'flex', alignItems: 'center', gap: '10px' }}>
             <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#22c55e' }} />
-            <span style={{ fontSize: '15px', fontWeight: 600, color: '#f1f5f9' }}>Harcamalar</span>
-            <span style={{ marginLeft: 'auto', backgroundColor: 'rgba(34,197,94,0.12)', color: '#4ade80', border: '1px solid rgba(34,197,94,0.3)', borderRadius: '9999px', padding: '2px 10px', fontSize: '13px', fontWeight: 600 }}>
+            <span style={{ fontSize: '15px', fontWeight: 600, color: '#111111' }}>Harcamalar</span>
+            <span style={{ marginLeft: 'auto', backgroundColor: 'rgba(34,197,94,0.12)', color: '#16A34A', border: '1px solid rgba(34,197,94,0.3)', borderRadius: '9999px', padding: '2px 10px', fontSize: '13px', fontWeight: 600 }}>
               {expenses.length}
             </span>
           </div>

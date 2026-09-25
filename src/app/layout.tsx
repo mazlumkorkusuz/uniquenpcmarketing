@@ -24,7 +24,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="tr" className={geistSans.variable}>
-      <body style={{ margin: 0, minHeight: '100vh', backgroundColor: '#0a0a0f' }}>
+      <body style={{ margin: 0, minHeight: '100vh', backgroundColor: '#FFFFFF' }}>
         <AppShell>{children}</AppShell>
       </body>
     </html>

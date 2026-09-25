@@ -14,8 +14,9 @@ export default function StatCard({ label, value, icon: Icon, iconColor, iconBg, 
   return (
     <div
       style={{
-        backgroundColor: '#1a1a24',
-        border: '1px solid #2a2a3a',
+        backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)',
+        border: '1px solid #E0E0E0',
+        borderLeft: `3px solid ${iconColor}`,
         borderRadius: '12px',
         padding: '20px',
         display: 'flex',
@@ -39,14 +40,14 @@ export default function StatCard({ label, value, icon: Icon, iconColor, iconBg, 
         <Icon size={20} color={iconColor} />
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: '12px', color: '#64748b', fontWeight: 500, marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+        <div style={{ fontSize: '12px', color: '#6B6B6B', fontWeight: 500, marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
           {label}
         </div>
-        <div style={{ fontSize: '26px', fontWeight: 700, color: '#f1f5f9', lineHeight: 1 }}>
+        <div style={{ fontSize: '26px', fontWeight: 700, color: '#111111', lineHeight: 1 }}>
           {value}
         </div>
         {trend && (
-          <div style={{ fontSize: '12px', color: trendUp ? '#2dd4bf' : '#f87171', marginTop: '4px' }}>
+          <div style={{ fontSize: '12px', color: trendUp ? '#0D9488' : '#DC2626', marginTop: '4px' }}>
             {trendUp ? '↑' : '↓'} {trend}
           </div>
         )}

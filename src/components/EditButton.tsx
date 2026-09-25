@@ -14,19 +14,19 @@ export function EditButton({ onClick }: { onClick: () => void }) {
         borderRadius: '6px',
         backgroundColor: 'transparent',
         border: '1px solid transparent',
-        color: '#475569',
+        color: '#8A8A8A',
         cursor: 'pointer',
         transition: 'all 0.15s ease',
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.backgroundColor = 'rgba(59,130,246,0.1)'
         e.currentTarget.style.borderColor = 'rgba(59,130,246,0.3)'
-        e.currentTarget.style.color = '#60a5fa'
+        e.currentTarget.style.color = '#2563EB'
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.backgroundColor = 'transparent'
         e.currentTarget.style.borderColor = 'transparent'
-        e.currentTarget.style.color = '#475569'
+        e.currentTarget.style.color = '#8A8A8A'
       }}
     >
       <Edit2 size={13} />

@@ -13,22 +13,22 @@ type SortDir = 'asc' | 'desc'
 
 const TD: React.CSSProperties = { padding: '14px 16px', verticalAlign: 'top' }
 const selectStyle: React.CSSProperties = {
-  backgroundColor: '#13131a', border: '1px solid #2a2a3a', borderRadius: '7px',
-  padding: '7px 12px', fontSize: '13px', color: '#e2e8f0', cursor: 'pointer', outline: 'none',
+  backgroundColor: '#FFFFFF', border: '1px solid #E0E0E0', borderRadius: '7px',
+  padding: '7px 12px', fontSize: '13px', color: '#111111', cursor: 'pointer', outline: 'none',
 }
 
 function ScoreBadge({ score }: { score: unknown }) {
   const n = Number(score)
-  if (!score && score !== 0) return <span style={{ color: '#64748b' }}>—</span>
-  const [bg, fg] = n >= 90 ? ['rgba(34,197,94,0.15)', '#4ade80']
-    : n >= 80 ? ['rgba(234,179,8,0.15)', '#fbbf24']
-    : n >= 70 ? ['rgba(249,115,22,0.15)', '#fb923c']
-    : ['rgba(100,116,139,0.15)', '#94a3b8']
+  if (!score && score !== 0) return <span style={{ color: '#6B6B6B' }}>—</span>
+  const [bg, fg] = n >= 90 ? ['rgba(34,197,94,0.15)', '#16A34A']
+    : n >= 80 ? ['rgba(234,179,8,0.15)', '#D97706']
+    : n >= 70 ? ['rgba(249,115,22,0.15)', '#EA580C']
+    : ['rgba(100,116,139,0.15)', '#444444']
   return <span style={{ fontSize: '13px', fontWeight: 700, color: fg, backgroundColor: bg, borderRadius: '6px', padding: '3px 9px', whiteSpace: 'nowrap' }}>{n}</span>
 }
 
 function LangBadge({ lang }: { lang: unknown }) {
-  if (!lang) return <span style={{ color: '#64748b' }}>—</span>
+  if (!lang) return <span style={{ color: '#6B6B6B' }}>—</span>
   return (
     <span style={{ fontSize: '11px', fontWeight: 700, color: '#7c3aed', backgroundColor: 'rgba(124,58,237,0.12)', border: '1px solid rgba(124,58,237,0.25)', borderRadius: '4px', padding: '2px 7px', letterSpacing: '0.05em' }}>
       {String(lang).toUpperCase()}
@@ -41,11 +41,11 @@ function SortableTH({ label, sortKey, active, dir, onSort }: { label: string; so
     <th
       onClick={() => onSort(sortKey)}
       style={{
-        backgroundColor: '#13131a', fontSize: '11px', fontWeight: 600,
+        backgroundColor: '#F5F5F5', fontSize: '11px', fontWeight: 600,
         textTransform: 'uppercase', letterSpacing: '0.06em', padding: '11px 16px',
-        textAlign: 'left', borderBottom: '1px solid #2a2a3a', whiteSpace: 'nowrap',
+        textAlign: 'left', borderBottom: '1px solid #E0E0E0', whiteSpace: 'nowrap',
         cursor: 'pointer', userSelect: 'none',
-        color: active ? '#1d9bf0' : '#64748b',
+        color: active ? '#1d9bf0' : '#6B6B6B',
       }}
     >
       {label} <span style={{ opacity: active ? 1 : 0.35 }}>{active ? (dir === 'desc' ? '↓' : '↑') : '↕'}</span>
@@ -54,9 +54,9 @@ function SortableTH({ label, sortKey, active, dir, onSort }: { label: string; so
 }
 
 const STATIC_TH: React.CSSProperties = {
-  backgroundColor: '#13131a', color: '#64748b', fontSize: '11px', fontWeight: 600,
+  backgroundColor: '#F5F5F5', color: '#6B6B6B', fontSize: '11px', fontWeight: 600,
   textTransform: 'uppercase', letterSpacing: '0.06em', padding: '11px 16px',
-  textAlign: 'left', borderBottom: '1px solid #2a2a3a', whiteSpace: 'nowrap',
+  textAlign: 'left', borderBottom: '1px solid #E0E0E0', whiteSpace: 'nowrap',
 }
 
 export default function TwitterPage() {
@@ -112,7 +112,7 @@ export default function TwitterPage() {
           href="https://docs.google.com/spreadsheets/d/1cawscn0JAZwLBlkMPwNM9-cSfcUVebaPFLLt7pMtCPc/edit?gid=1920292925#gid=1920292925"
           target="_blank"
           rel="noopener noreferrer"
-          style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '9px 16px', borderRadius: '8px', backgroundColor: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.35)', color: '#4ade80', fontWeight: 600, fontSize: '13px', textDecoration: 'none', whiteSpace: 'nowrap' }}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '9px 16px', borderRadius: '8px', backgroundColor: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.35)', color: '#16A34A', fontWeight: 600, fontSize: '13px', textDecoration: 'none', whiteSpace: 'nowrap' }}
         >
           📊 Tam Liste
         </a>
@@ -124,27 +124,27 @@ export default function TwitterPage() {
         {/* Stats */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px', marginBottom: '28px' }}>
           <StatCard label="Toplam Hesap"   value={accounts.length}                        icon={Users}      iconColor="#1d9bf0" iconBg="rgba(29,155,240,0.12)" />
-          <StatCard label="Toplam Takipçi" value={totalFollowers.toLocaleString('en-US')} icon={TrendingUp} iconColor="#4ade80" iconBg="rgba(34,197,94,0.12)" />
-          <StatCard label="Yüksek Öncelik" value={highPriority}                           icon={Zap}        iconColor="#f87171" iconBg="rgba(239,68,68,0.12)" />
-          <StatCard label="Ort. Puan"      value={avgScore}                               icon={Star}       iconColor="#fbbf24" iconBg="rgba(234,179,8,0.12)" />
+          <StatCard label="Toplam Takipçi" value={totalFollowers.toLocaleString('en-US')} icon={TrendingUp} iconColor="#16A34A" iconBg="rgba(34,197,94,0.12)" />
+          <StatCard label="Yüksek Öncelik" value={highPriority}                           icon={Zap}        iconColor="#DC2626" iconBg="rgba(239,68,68,0.12)" />
+          <StatCard label="Ort. Puan"      value={avgScore}                               icon={Star}       iconColor="#D97706" iconBg="rgba(234,179,8,0.12)" />
         </div>
 
         {/* Table card */}
-        <div style={{ backgroundColor: '#1a1a24', border: '1px solid #2a2a3a', borderRadius: '12px', overflow: 'hidden' }}>
+        <div style={{ backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)', border: '1px solid #E0E0E0', borderRadius: '12px', overflow: 'hidden' }}>
 
           {/* Header */}
-          <div style={{ padding: '14px 20px', borderBottom: '1px solid #2a2a3a', display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{ padding: '14px 20px', borderBottom: '1px solid #E0E0E0', display: 'flex', alignItems: 'center', gap: '10px' }}>
             <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#1d9bf0', boxShadow: '0 0 6px rgba(29,155,240,0.5)' }} />
-            <span style={{ fontSize: '15px', fontWeight: 600, color: '#f1f5f9' }}>Twitter Hesapları</span>
+            <span style={{ fontSize: '15px', fontWeight: 600, color: '#111111' }}>Twitter Hesapları</span>
             <span style={{ marginLeft: 'auto', backgroundColor: 'rgba(29,155,240,0.12)', color: '#1d9bf0', border: '1px solid rgba(29,155,240,0.3)', borderRadius: '9999px', padding: '2px 10px', fontSize: '13px', fontWeight: 600 }}>
               {sorted.length}{hasFilters ? ` / ${accounts.length}` : ''}
             </span>
           </div>
 
           {/* Filters */}
-          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', padding: '12px 20px', borderBottom: '1px solid #2a2a3a', alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', padding: '12px 20px', borderBottom: '1px solid #E0E0E0', alignItems: 'center' }}>
             <div style={{ position: 'relative', flex: '1', minWidth: '180px' }}>
-              <Search size={13} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#64748b', pointerEvents: 'none' }} />
+              <Search size={13} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#6B6B6B', pointerEvents: 'none' }} />
               <input
                 value={search}
                 onChange={e => setSearch(e.target.value)}
@@ -168,7 +168,7 @@ export default function TwitterPage() {
             {hasFilters && (
               <button
                 onClick={() => { setSearch(''); setRegionFilter(''); setLangFilter(''); setPriorityFilter('') }}
-                style={{ fontSize: '12px', color: '#64748b', background: 'none', border: '1px solid #2a2a3a', borderRadius: '7px', padding: '7px 12px', cursor: 'pointer' }}
+                style={{ fontSize: '12px', color: '#6B6B6B', background: 'none', border: '1px solid #E0E0E0', borderRadius: '7px', padding: '7px 12px', cursor: 'pointer' }}
               >
                 Temizle
               </button>
@@ -192,15 +192,15 @@ export default function TwitterPage() {
               </thead>
               <tbody>
                 {loading ? (
-                  <tr><td colSpan={8} style={{ padding: '48px 16px', textAlign: 'center', color: '#64748b', fontSize: '14px' }}>Yükleniyor...</td></tr>
+                  <tr><td colSpan={8} style={{ padding: '48px 16px', textAlign: 'center', color: '#6B6B6B', fontSize: '14px' }}>Yükleniyor...</td></tr>
                 ) : sorted.length === 0 ? (
-                  <tr><td colSpan={8} style={{ padding: '48px 16px', textAlign: 'center', color: '#64748b', fontSize: '14px' }}>
+                  <tr><td colSpan={8} style={{ padding: '48px 16px', textAlign: 'center', color: '#6B6B6B', fontSize: '14px' }}>
                     {hasFilters ? 'Filtreyle eşleşen hesap bulunamadı' : 'Henüz hesap eklenmemiş'}
                   </td></tr>
                 ) : sorted.map((row, i) => (
                   <tr key={String(row.id ?? i)} style={{
-                    borderBottom: i < sorted.length - 1 ? '1px solid rgba(42,42,58,0.6)' : 'none',
-                    backgroundColor: i % 2 === 1 ? 'rgba(255,255,255,0.015)' : 'transparent',
+                    borderBottom: i < sorted.length - 1 ? '1px solid #E5E5E5' : 'none',
+                    backgroundColor: i % 2 === 1 ? '#F9F9F9' : 'transparent',
                   }}>
                     <td style={TD}><ScoreBadge score={row.score} /></td>
                     <td style={TD}>
@@ -212,26 +212,26 @@ export default function TwitterPage() {
                       ) : (
                         <span style={{ fontWeight: 700, color: '#1d9bf0', fontSize: '14px' }}>@{String(row.username ?? '')}</span>
                       )}
-                      {!!row.display_name && <div style={{ fontSize: '12px', color: '#64748b', marginTop: '2px' }}>{String(row.display_name)}</div>}
+                      {!!row.display_name && <div style={{ fontSize: '12px', color: '#6B6B6B', marginTop: '2px' }}>{String(row.display_name)}</div>}
                     </td>
                     <td style={TD}>
                       {row.followers
-                        ? <span style={{ color: '#4ade80', fontWeight: 600, fontSize: '13px' }}>{Number(row.followers).toLocaleString('en-US')}</span>
-                        : <span style={{ color: '#64748b' }}>—</span>}
+                        ? <span style={{ color: '#16A34A', fontWeight: 600, fontSize: '13px' }}>{Number(row.followers).toLocaleString('en-US')}</span>
+                        : <span style={{ color: '#6B6B6B' }}>—</span>}
                     </td>
                     <td style={TD}>
                       {row.avg_likes
-                        ? <span style={{ color: '#fb923c', fontWeight: 600, fontSize: '13px' }}>{Number(row.avg_likes).toLocaleString('en-US')}</span>
-                        : <span style={{ color: '#64748b' }}>—</span>}
+                        ? <span style={{ color: '#EA580C', fontWeight: 600, fontSize: '13px' }}>{Number(row.avg_likes).toLocaleString('en-US')}</span>
+                        : <span style={{ color: '#6B6B6B' }}>—</span>}
                     </td>
                     <td style={TD}>
-                      {row.region ? <span style={{ fontSize: '13px', color: '#cbd5e1' }}>{String(row.region)}</span> : <span style={{ color: '#64748b' }}>—</span>}
+                      {row.region ? <span style={{ fontSize: '13px', color: '#444444' }}>{String(row.region)}</span> : <span style={{ color: '#6B6B6B' }}>—</span>}
                     </td>
                     <td style={TD}><LangBadge lang={row.language} /></td>
                     <td style={{ ...TD, maxWidth: '300px' }}>
                       {row.ai_comment
-                        ? <span style={{ fontSize: '12px', color: '#94a3b8', whiteSpace: 'normal', lineHeight: 1.5 }}>{String(row.ai_comment)}</span>
-                        : <span style={{ color: '#64748b' }}>—</span>}
+                        ? <span style={{ fontSize: '12px', color: '#444444', whiteSpace: 'normal', lineHeight: 1.5 }}>{String(row.ai_comment)}</span>
+                        : <span style={{ color: '#6B6B6B' }}>—</span>}
                     </td>
                     <td style={TD}>
                       <div style={{ display: 'flex', gap: '4px' }}>

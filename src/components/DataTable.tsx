@@ -25,15 +25,15 @@ export default function DataTable<T extends Record<string, unknown>>({
               <th
                 key={String(col.key)}
                 style={{
-                  backgroundColor: '#13131a',
-                  color: '#64748b',
+                  backgroundColor: '#F5F5F5',
+                  color: '#6B6B6B',
                   fontSize: '11px',
                   fontWeight: 600,
                   textTransform: 'uppercase',
                   letterSpacing: '0.06em',
                   padding: '11px 16px',
                   textAlign: 'left',
-                  borderBottom: '1px solid #2a2a3a',
+                  borderBottom: '1px solid #E0E0E0',
                   whiteSpace: 'nowrap',
                   width: col.width,
                 }}
@@ -51,7 +51,7 @@ export default function DataTable<T extends Record<string, unknown>>({
                 style={{
                   padding: '48px 16px',
                   textAlign: 'center',
-                  color: '#64748b',
+                  color: '#6B6B6B',
                   fontSize: '14px',
                 }}
               >
@@ -64,7 +64,8 @@ export default function DataTable<T extends Record<string, unknown>>({
                 key={i}
                 className="data-row"
                 style={{
-                  borderBottom: i < data.length - 1 ? '1px solid rgba(42,42,58,0.6)' : 'none',
+                  borderBottom: i < data.length - 1 ? '1px solid #E5E5E5' : 'none',
+                  backgroundColor: i % 2 === 1 ? '#F9F9F9' : '#FFFFFF',
                 }}
               >
                 {columns.map((col) => (
@@ -72,7 +73,7 @@ export default function DataTable<T extends Record<string, unknown>>({
                     key={String(col.key)}
                     style={{
                       padding: '12px 16px',
-                      color: '#f1f5f9',
+                      color: '#111111',
                       fontSize: '13.5px',
                     }}
                   >
