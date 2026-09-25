@@ -1,46 +1,27 @@
-'use client'
-
 import Link from 'next/link'
-import { useState } from 'react'
+import { ChevronRight, type LucideIcon } from 'lucide-react'
+import s from '@/app/dashboard.module.css'
 
 interface QuickLinkCardProps {
   href: string
   label: string
   desc: string
   color: string
+  icon?: LucideIcon
+  imageSrc?: string
 }
 
-export default function QuickLinkCard({ href, label, desc, color }: QuickLinkCardProps) {
-  const [hovered, setHovered] = useState(false)
-
+export default function QuickLinkCard({ href, label, desc, color, icon: Icon, imageSrc }: QuickLinkCardProps) {
   return (
-    <Link href={href} style={{ textDecoration: 'none' }}>
-      <div
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-        style={{
-          backgroundColor: hovered ? '#F0F0F0' : '#FFFFFF',
-          border: `1px solid ${hovered ? color + '60' : '#E0E0E0'}`,
-          borderRadius: '10px',
-          padding: '16px',
-          transition: 'all 0.15s ease',
-          cursor: 'pointer',
-        }}
-      >
-        <div
-          style={{
-            width: '8px',
-            height: '8px',
-            borderRadius: '50%',
-            backgroundColor: color,
-            marginBottom: '10px',
-          }}
-        />
-        <div style={{ fontSize: '14px', fontWeight: 600, color: '#111111', marginBottom: '4px' }}>
-          {label}
-        </div>
-        <div style={{ fontSize: '12px', color: '#6B6B6B' }}>{desc}</div>
-      </div>
+    <Link href={href} className={s.quickCard}>
+      <span className={s.quickIcon} style={{ backgroundColor: color + '14', color }} aria-hidden>
+        {imageSrc ? <img src={imageSrc} alt="" /> : Icon ? <Icon size={20} /> : null}
+      </span>
+      <span style={{ minWidth: 0 }}>
+        <span className={s.quickLabel} style={{ display: 'block' }}>{label}</span>
+        <span className={s.quickDesc} style={{ display: 'block' }}>{desc}</span>
+      </span>
+      <ChevronRight size={18} className={s.quickArrow} aria-hidden />
     </Link>
   )
 }

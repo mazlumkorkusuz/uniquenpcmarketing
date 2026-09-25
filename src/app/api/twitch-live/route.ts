@@ -3,6 +3,7 @@ import { twitchHeaders } from '@/lib/twitch'
 
 interface Stream {
   user_name: string
+  user_login: string
   game_name: string
   viewer_count: number
   thumbnail_url: string
@@ -12,6 +13,7 @@ interface Stream {
 interface Category {
   name: string
   id: string
+  box_art_url: string
 }
 
 export async function GET() {
@@ -36,6 +38,7 @@ export async function GET() {
 
   const streams: Stream[] = (streamsData.data ?? []).map((s: Record<string, unknown>) => ({
     user_name: s.user_name,
+    user_login: s.user_login,
     game_name: s.game_name,
     viewer_count: s.viewer_count,
     thumbnail_url: (s.thumbnail_url as string)?.replace('{width}', '320').replace('{height}', '180') ?? '',
@@ -45,6 +48,7 @@ export async function GET() {
   const categories: Category[] = (categoriesData.data ?? []).map((g: Record<string, unknown>) => ({
     name: g.name,
     id: g.id,
+    box_art_url: (g.box_art_url as string)?.replace('{width}', '72').replace('{height}', '96') ?? '',
   }))
 
   return NextResponse.json({ streams, categories })
