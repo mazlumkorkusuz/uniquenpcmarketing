@@ -1,6 +1,5 @@
 export const dynamic = 'force-dynamic'
 import Link from 'next/link'
-import { Calistoga, Inter } from 'next/font/google'
 import {
   Tv2,
   Globe,
@@ -24,10 +23,6 @@ import GamalyticWishlist from '@/components/dashboard/GamalyticWishlist'
 import { getStoreItems, steamHeaderUrl, TOT_APPID } from '@/lib/steam'
 import s from './dashboard.module.css'
 
-// Typography per design-system/uniquenpc/MASTER.md: Calistoga headings, Inter body
-const calistoga = Calistoga({ subsets: ['latin', 'latin-ext'], weight: '400', variable: '--font-calistoga' })
-const inter = Inter({ subsets: ['latin', 'latin-ext'], variable: '--font-inter' })
-
 const TZ = 'Europe/Istanbul'
 
 const ROSTER = [
@@ -41,21 +36,21 @@ const ROSTER = [
 ] as const
 
 const MEETING_STATUS: Record<string, { fg: string; bg: string; line: string }> = {
-  'Planlandı': { fg: '#1D4ED8', bg: '#EFF6FF', line: '#BFDBFE' },
-  'Devam Ediyor': { fg: '#B45309', bg: '#FFFBEB', line: '#FDE68A' },
-  'Tamamlandı': { fg: '#15803D', bg: '#F0FDF4', line: '#BBF7D0' },
-  'İptal': { fg: '#475569', bg: '#FFFFFF', line: '#E2E8F0' },
+  'Planlandı': { fg: '#70B8FF', bg: '#0D1826', line: '#1B3350' },
+  'Devam Ediyor': { fg: '#FFB224', bg: '#1F1A0B', line: '#3D3113' },
+  'Tamamlandı': { fg: '#3DD68C', bg: '#0F1F16', line: '#1B3D2A' },
+  'İptal': { fg: '#B4B4B4', bg: '#0A0A0A', line: '#262626' },
 }
 
 const QUICK_LINKS = [
-  { href: '/platformlar', label: 'Platformlar & Partnerler', color: '#2563EB', icon: Globe },
+  { href: '/platformlar', label: 'Platformlar & Partnerler', color: '#70B8FF', icon: Globe },
   { href: '/yayincilar', label: 'Yayıncılar', color: '#9146FF', icon: Tv2 },
-  { href: '/toplantilar', label: 'Toplantılar', color: '#2563EB', icon: Calendar },
-  { href: '/notlar', label: 'Notlar', color: '#2563EB', icon: FileText },
+  { href: '/toplantilar', label: 'Toplantılar', color: '#70B8FF', icon: Calendar },
+  { href: '/notlar', label: 'Notlar', color: '#70B8FF', icon: FileText },
   { href: '/sosyal-medya', label: 'Sosyal Medya', color: '#1D9BF0', icon: Share2 },
   { href: '/reddit', label: 'Reddit', color: '#FF4500', imageSrc: '/icons/reddit.svg' },
-  { href: '/butce', label: 'Bütçe', color: '#2563EB', icon: Wallet },
-  { href: '/icerik-planlama', label: 'İçerik Planlaması', color: '#2563EB', icon: CalendarCheck },
+  { href: '/butce', label: 'Bütçe', color: '#70B8FF', icon: Wallet },
+  { href: '/icerik-planlama', label: 'İçerik Planlaması', color: '#70B8FF', icon: CalendarCheck },
 ]
 
 type Row = Record<string, unknown>
@@ -138,7 +133,7 @@ export default async function DashboardPage() {
   const activeRoster = d.roster.filter((p) => p.count > 0)
 
   return (
-    <div className={`${calistoga.variable} ${inter.variable} ${s.root}`}>
+    <div className={s.root}>
       <header className={s.header}>
         <div>
           <h1 className={s.title}>Pazarlama paneli</h1>

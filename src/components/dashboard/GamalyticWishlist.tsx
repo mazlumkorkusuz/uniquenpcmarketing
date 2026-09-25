@@ -50,7 +50,7 @@ export default function GamalyticWishlist({ coverUrl }: { coverUrl?: string | nu
             </p>
           ) : (
             <div className={s.gamaValue}>
-              <Heart size={28} aria-hidden style={{ color: '#E11D48', marginRight: 10, verticalAlign: -2 }} />
+              <Heart size={28} aria-hidden style={{ color: '#FF5C7A', marginRight: 10, verticalAlign: -2 }} />
               {data.wishlists.toLocaleString('tr-TR')}
             </div>
           )}

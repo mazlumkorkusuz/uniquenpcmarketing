@@ -25,15 +25,13 @@ export default function DataTable<T extends Record<string, unknown>>({
               <th
                 key={String(col.key)}
                 style={{
-                  backgroundColor: 'var(--color-bg-section)',
-                  color: '#6B6B6B',
-                  fontSize: '11px',
-                  fontWeight: 600,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.06em',
-                  padding: '11px 16px',
+                  backgroundColor: 'rgba(255,255,255,0.02)',
+                  color: '#A1A4A5',
+                  fontSize: '13px',
+                  fontWeight: 500,
+                  padding: '10px 16px',
                   textAlign: 'left',
-                  borderBottom: '1px solid #E0E0E0',
+                  borderBottom: '1px solid rgba(255,255,255,0.08)',
                   whiteSpace: 'nowrap',
                   width: col.width,
                 }}
@@ -51,7 +49,7 @@ export default function DataTable<T extends Record<string, unknown>>({
                 style={{
                   padding: '48px 16px',
                   textAlign: 'center',
-                  color: '#6B6B6B',
+                  color: '#8F8F8F',
                   fontSize: '14px',
                 }}
               >
@@ -64,8 +62,8 @@ export default function DataTable<T extends Record<string, unknown>>({
                 key={i}
                 className="data-row"
                 style={{
-                  borderBottom: i < data.length - 1 ? '1px solid #E5E5E5' : 'none',
-                  backgroundColor: i % 2 === 1 ? '#F9F9F9' : '#FFFFFF',
+                  borderBottom: i < data.length - 1 ? '1px solid #1F1F1F' : 'none',
+                  backgroundColor: i % 2 === 1 ? '#0E0E0E' : '#0A0A0A',
                 }}
               >
                 {columns.map((col) => (
@@ -73,7 +71,7 @@ export default function DataTable<T extends Record<string, unknown>>({
                     key={String(col.key)}
                     style={{
                       padding: '12px 16px',
-                      color: '#111111',
+                      color: '#EDEDED',
                       fontSize: '13.5px',
                     }}
                   >

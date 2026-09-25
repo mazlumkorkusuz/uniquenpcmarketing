@@ -46,11 +46,11 @@ export function ContentCalendar({ posts, platformColors = {}, singleColor, compa
 
   const navBtn: React.CSSProperties = {
     background: 'none',
-    border: '1px solid #E0E0E0',
+    border: '1px solid #262626',
     borderRadius: '6px',
     cursor: 'pointer',
     padding: '4px 6px',
-    color: '#6B6B6B',
+    color: '#8F8F8F',
     display: 'flex',
     alignItems: 'center',
     transition: 'border-color 0.15s',
@@ -62,7 +62,7 @@ export function ContentCalendar({ posts, platformColors = {}, singleColor, compa
         <button style={navBtn} onClick={() => setView(new Date(yr, mo - 1, 1))}>
           <ChevronLeft size={14} />
         </button>
-        <span style={{ fontSize: compact ? '13px' : '15px', fontWeight: 700, color: '#111111', letterSpacing: '-0.01em' }}>
+        <span style={{ fontSize: compact ? '13px' : '15px', fontWeight: 700, color: '#EDEDED', letterSpacing: '-0.01em' }}>
           {MONTHS[mo]} {yr}
         </span>
         <button style={navBtn} onClick={() => setView(new Date(yr, mo + 1, 1))}>
@@ -72,7 +72,7 @@ export function ContentCalendar({ posts, platformColors = {}, singleColor, compa
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '2px', marginBottom: '4px' }}>
         {DAYS.map(d => (
-          <div key={d} style={{ textAlign: 'center', fontSize: '10px', fontWeight: 600, color: '#6B6B6B', padding: compact ? '3px 0' : '5px 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          <div key={d} style={{ textAlign: 'center', fontSize: '10px', fontWeight: 600, color: '#8F8F8F', padding: compact ? '3px 0' : '5px 0', }}>
             {d}
           </div>
         ))}
@@ -91,8 +91,8 @@ export function ContentCalendar({ posts, platformColors = {}, singleColor, compa
                 minHeight: `${cellH}px`,
                 borderRadius: '6px',
                 padding: compact ? '4px' : '5px 6px',
-                backgroundColor: today ? 'rgba(124,58,237,0.15)' : ps.length > 0 ? '#F9F9F9' : 'transparent',
-                border: today ? '1px solid rgba(124,58,237,0.4)' : ps.length > 0 ? '1px solid #E5E5E5' : '1px solid transparent',
+                backgroundColor: today ? 'rgba(124,58,237,0.15)' : ps.length > 0 ? '#0E0E0E' : 'transparent',
+                border: today ? '1px solid rgba(124,58,237,0.4)' : ps.length > 0 ? '1px solid #1F1F1F' : '1px solid transparent',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '2px',
@@ -101,7 +101,7 @@ export function ContentCalendar({ posts, platformColors = {}, singleColor, compa
               <span style={{
                 fontSize: compact ? '11px' : '12px',
                 fontWeight: today ? 700 : 400,
-                color: today ? '#6D28D9' : '#444444',
+                color: today ? '#BAA7FF' : '#B4B4B4',
                 lineHeight: 1,
               }}>
                 {day}
@@ -118,7 +118,7 @@ export function ContentCalendar({ posts, platformColors = {}, singleColor, compa
                           width: '5px',
                           height: '5px',
                           borderRadius: '50%',
-                          backgroundColor: singleColor ?? (platformColors[p.platform?.toLowerCase?.() ?? ''] ?? '#7c3aed'),
+                          backgroundColor: singleColor ?? (platformColors[p.platform?.toLowerCase?.() ?? ''] ?? '#9E8CFC'),
                           flexShrink: 0,
                         }}
                       />
@@ -127,7 +127,7 @@ export function ContentCalendar({ posts, platformColors = {}, singleColor, compa
                     <>
                       {ps.slice(0, 3).map((p, pi) => {
                         const plat = p.platform?.toLowerCase?.() ?? ''
-                        const c = singleColor ?? platformColors[plat] ?? '#7c3aed'
+                        const c = singleColor ?? platformColors[plat] ?? '#9E8CFC'
                         return (
                           <div
                             key={pi}
@@ -152,7 +152,7 @@ export function ContentCalendar({ posts, platformColors = {}, singleColor, compa
                         )
                       })}
                       {ps.length > 3 && (
-                        <span style={{ fontSize: '8px', color: '#6B6B6B', lineHeight: '13px' }}>+{ps.length - 3}</span>
+                        <span style={{ fontSize: '8px', color: '#8F8F8F', lineHeight: '13px' }}>+{ps.length - 3}</span>
                       )}
                     </>
                   )}

@@ -9,9 +9,9 @@ export const inputStyle: React.CSSProperties = {
   width: '100%',
   padding: '9px 12px',
   borderRadius: '8px',
-  border: '1px solid #E0E0E0',
-  backgroundColor: '#FFFFFF',
-  color: '#111111',
+  border: '1px solid #262626',
+  backgroundColor: '#0A0A0A',
+  color: '#EDEDED',
   fontSize: '13px',
   outline: 'none',
   boxSizing: 'border-box',
@@ -21,15 +21,15 @@ export const labelStyle: React.CSSProperties = {
   display: 'block',
   fontSize: '12px',
   fontWeight: 600,
-  color: '#444444',
+  color: '#B4B4B4',
   marginBottom: '6px',
 }
 
 export function buttonStyle(variant: 'primary' | 'secondary' | 'danger' = 'primary', disabled = false): React.CSSProperties {
   const colors = {
-    primary: { bg: '#111111', color: '#FFFFFF', border: '#111111' },
-    secondary: { bg: '#FFFFFF', color: '#111111', border: '#111111' },
-    danger: { bg: '#EF4444', color: '#FFFFFF', border: '#EF4444' },
+    primary: { bg: '#EDEDED', color: '#0A0A0A', border: '#EDEDED' },
+    secondary: { bg: '#0A0A0A', color: '#EDEDED', border: '#EDEDED' },
+    danger: { bg: '#EF4444', color: '#0A0A0A', border: '#EF4444' },
   }[variant]
   return {
     padding: '9px 16px',
@@ -58,8 +58,8 @@ export function Card({ title, action, children, padded = true }: {
   return (
     <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', overflow: 'hidden' }}>
       {title && (
-        <div style={{ padding: '14px 20px', borderBottom: '1px solid #E0E0E0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
-          <h2 style={{ fontSize: '14px', fontWeight: 600, color: '#111111', margin: 0 }}>{title}</h2>
+        <div style={{ padding: '14px 20px', borderBottom: '1px solid #262626', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
+          <h2 style={{ fontSize: '14px', fontWeight: 600, color: '#EDEDED', margin: 0 }}>{title}</h2>
           {action}
         </div>
       )}
@@ -96,10 +96,10 @@ export function ProgressBar({ value, total }: { value: number; total: number }) 
   const pct = total ? Math.min(100, (value / total) * 100) : 0
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: '120px' }}>
-      <div style={{ flex: 1, height: '6px', borderRadius: '3px', backgroundColor: '#E0E0E0', overflow: 'hidden' }}>
-        <div style={{ width: `${pct}%`, height: '100%', backgroundColor: '#111111', transition: 'width 0.3s' }} />
+      <div style={{ flex: 1, height: '6px', borderRadius: '3px', backgroundColor: '#262626', overflow: 'hidden' }}>
+        <div style={{ width: `${pct}%`, height: '100%', backgroundColor: '#EDEDED', transition: 'width 0.3s' }} />
       </div>
-      <span style={{ fontSize: '12px', color: '#444444', whiteSpace: 'nowrap' }}>{value}/{total}</span>
+      <span style={{ fontSize: '12px', color: '#B4B4B4', whiteSpace: 'nowrap' }}>{value}/{total}</span>
     </div>
   )
 }
@@ -111,21 +111,20 @@ export function formatDateTime(v: string | null | undefined): string {
 
 export const thStyle: React.CSSProperties = {
   backgroundColor: 'var(--color-bg-section)',
-  color: '#6B6B6B',
+  color: '#8F8F8F',
   fontSize: '11px',
   fontWeight: 600,
-  textTransform: 'uppercase',
   letterSpacing: '0.06em',
   padding: '11px 16px',
   textAlign: 'left',
-  borderBottom: '1px solid #E0E0E0',
+  borderBottom: '1px solid #262626',
   whiteSpace: 'nowrap',
 }
 
 export const tdStyle: React.CSSProperties = {
   padding: '11px 16px',
-  borderBottom: '1px solid #E5E5E5',
+  borderBottom: '1px solid #1F1F1F',
   fontSize: '13px',
-  color: '#444444',
+  color: '#B4B4B4',
   verticalAlign: 'middle',
 }

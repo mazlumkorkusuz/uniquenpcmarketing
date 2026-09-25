@@ -90,10 +90,10 @@ function Tracking() {
   }
 
   const stat = (label: string, value: number, rate: string, color: string) => (
-    <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderLeft: `3px solid ${color}`, borderRadius: '12px', padding: '16px 20px' }}>
-      <div style={{ fontSize: '12px', color: '#6B6B6B', marginBottom: '6px' }}>{label}</div>
+    <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', padding: '16px 20px' }}>
+      <div style={{ fontSize: '12px', color: '#8F8F8F', marginBottom: '6px' }}>{label}</div>
       <div style={{ fontSize: '22px', fontWeight: 700, color }}>{value.toLocaleString('tr-TR')}</div>
-      <div style={{ fontSize: '12px', color: '#444444' }}>{rate}</div>
+      <div style={{ fontSize: '12px', color: '#B4B4B4' }}>{rate}</div>
     </div>
   )
 
@@ -104,10 +104,10 @@ function Tracking() {
 
       <div style={{ padding: '24px 32px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '16px' }}>
-          {stat('Gönderilen', totals.sent, campaignId ? campaignName[campaignId] ?? '' : 'Tüm kampanyalar', '#2563EB')}
-          {stat('Açan', totals.opens, percent(totals.opens, totals.sent) + ' açılma', '#0D9488')}
-          {stat('Yanıtlayan', totals.replies, percent(totals.replies, totals.sent) + ' yanıt', '#16A34A')}
-          {stat('Bounce', totals.bounces, percent(totals.bounces, totals.sent + totals.bounces) + ' bounce', '#DC2626')}
+          {stat('Gönderilen', totals.sent, campaignId ? campaignName[campaignId] ?? '' : 'Tüm kampanyalar', '#70B8FF')}
+          {stat('Açan', totals.opens, percent(totals.opens, totals.sent) + ' açılma', '#0BD8B6')}
+          {stat('Yanıtlayan', totals.replies, percent(totals.replies, totals.sent) + ' yanıt', '#3DD68C')}
+          {stat('Bounce', totals.bounces, percent(totals.bounces, totals.sent + totals.bounces) + ' bounce', '#FF6369')}
         </div>
 
         <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
@@ -131,9 +131,9 @@ function Tracking() {
 
         <Card padded={false}>
           {loading ? (
-            <p style={{ padding: '20px', margin: 0, fontSize: '13px', color: '#6B6B6B' }}>Yükleniyor…</p>
+            <p style={{ padding: '20px', margin: 0, fontSize: '13px', color: '#8F8F8F' }}>Yükleniyor…</p>
           ) : rows.length === 0 ? (
-            <p style={{ padding: '20px', margin: 0, fontSize: '13px', color: '#6B6B6B' }}>Kayıt yok.</p>
+            <p style={{ padding: '20px', margin: 0, fontSize: '13px', color: '#8F8F8F' }}>Kayıt yok.</p>
           ) : (
             <div style={{ overflowX: 'auto' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -153,19 +153,19 @@ function Tracking() {
                   {rows.map((r) => (
                     <tr key={r.id}>
                       <td style={tdStyle}>
-                        <div style={{ fontWeight: 600, color: '#111111' }}>{r.name ?? '—'}</div>
-                        <div style={{ fontSize: '12px', color: '#6B6B6B' }}>{r.email}{r.platform ? ` · ${r.platform}` : ''}</div>
+                        <div style={{ fontWeight: 600, color: '#EDEDED' }}>{r.name ?? '—'}</div>
+                        <div style={{ fontSize: '12px', color: '#8F8F8F' }}>{r.email}{r.platform ? ` · ${r.platform}` : ''}</div>
                       </td>
                       {!campaignId && <td style={{ ...tdStyle, fontSize: '12px' }}>{campaignName[r.campaign_id] ?? '—'}</td>}
                       <td style={tdStyle}><RecipientStatusBadge status={r.status} /></td>
-                      <td style={{ ...tdStyle, fontSize: '12px', color: '#444444' }}>{formatDateTime(r.sent_at)}</td>
-                      <td style={{ ...tdStyle, fontSize: '12px', color: '#444444' }}>{formatDateTime(r.opened_at)}</td>
+                      <td style={{ ...tdStyle, fontSize: '12px', color: '#B4B4B4' }}>{formatDateTime(r.sent_at)}</td>
+                      <td style={{ ...tdStyle, fontSize: '12px', color: '#B4B4B4' }}>{formatDateTime(r.opened_at)}</td>
                       <td style={tdStyle}>{r.open_count > 0 ? `${r.open_count}×` : '—'}</td>
-                      <td style={{ ...tdStyle, fontSize: '12px', color: '#444444' }}>
+                      <td style={{ ...tdStyle, fontSize: '12px', color: '#B4B4B4' }}>
                         {r.replied_at
                           ? formatDateTime(r.replied_at)
                           : r.bounced_at
-                            ? <span style={{ color: '#DC2626' }}>{formatDateTime(r.bounced_at)} ({r.bounce_type})</span>
+                            ? <span style={{ color: '#FF6369' }}>{formatDateTime(r.bounced_at)} ({r.bounce_type})</span>
                             : '—'}
                       </td>
                       <td style={{ ...tdStyle, textAlign: 'right' }}>
@@ -180,7 +180,7 @@ function Tracking() {
                 </tbody>
               </table>
               {rows.length === ROW_LIMIT && (
-                <p style={{ fontSize: '12px', color: '#6B6B6B', margin: 0, padding: '10px 16px' }}>İlk {ROW_LIMIT} kayıt gösteriliyor — daraltmak için kampanya seçin veya arayın.</p>
+                <p style={{ fontSize: '12px', color: '#8F8F8F', margin: 0, padding: '10px 16px' }}>İlk {ROW_LIMIT} kayıt gösteriliyor — daraltmak için kampanya seçin veya arayın.</p>
               )}
             </div>
           )}

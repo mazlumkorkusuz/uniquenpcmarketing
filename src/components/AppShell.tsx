@@ -71,7 +71,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             flex: 1,
             minWidth: 0,
             minHeight: '100vh',
-            backgroundColor: '#FFFFFF',
+            backgroundColor: '#000000',
             display: 'flex',
             flexDirection: 'column',
             overflowX: 'hidden',
@@ -84,14 +84,17 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               aria-label="Menüyü aç"
               aria-expanded={navOpen}
               aria-controls="app-sidebar"
-              style={{ width: 44, height: 44, display: 'grid', placeItems: 'center', background: 'none', border: 0, borderRadius: 8, cursor: 'pointer', color: '#111111' }}
+              style={{ width: 44, height: 44, display: 'grid', placeItems: 'center', background: 'none', border: 0, borderRadius: 8, cursor: 'pointer', color: '#F0F0F0' }}
             >
               <Menu size={22} />
             </button>
             <Image src="/uniqlogo.png" alt="" width={28} height={28} style={{ borderRadius: 6 }} />
-            <span style={{ fontSize: 15, fontWeight: 700, color: '#111111' }}>Unique NPC Marketing</span>
+            <span style={{ fontSize: 14, fontWeight: 600, color: '#F0F0F0', letterSpacing: '-0.01em' }}>Unique NPC Marketing</span>
           </div>
-          {children}
+          {/* Keyed on the path so each page gets the enter animation */}
+          <div key={pathname} className="page-enter" style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+            {children}
+          </div>
         </main>
       </div>
     </AuthContext.Provider>

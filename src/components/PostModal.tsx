@@ -112,12 +112,12 @@ export function PostModal({ platform, platformColor, mode = 'add', initialData, 
     display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '20px',
   }
   const modal: React.CSSProperties = {
-    backgroundColor: '#FFFFFF', border: '1px solid #E0E0E0', borderRadius: '14px',
+    backgroundColor: '#0A0A0A', border: '1px solid #262626', borderRadius: '14px',
     width: '100%', maxWidth: '480px', padding: '28px', position: 'relative',
     boxShadow: '0 25px 60px rgba(0,0,0,0.12)',
   }
-  const label: React.CSSProperties = { display: 'block', fontSize: '12px', fontWeight: 600, color: '#444444', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' }
-  const input: React.CSSProperties = { width: '100%', backgroundColor: '#FFFFFF', border: '1px solid #E0E0E0', borderRadius: '8px', padding: '10px 12px', fontSize: '14px', color: '#111111', outline: 'none', boxSizing: 'border-box' }
+  const label: React.CSSProperties = { display: 'block', fontSize: '12px', fontWeight: 600, color: '#B4B4B4', marginBottom: '6px', }
+  const input: React.CSSProperties = { width: '100%', backgroundColor: '#0A0A0A', border: '1px solid #262626', borderRadius: '8px', padding: '10px 12px', fontSize: '14px', color: '#EDEDED', outline: 'none', boxSizing: 'border-box' }
 
   const TitleIcon = mode === 'edit' ? Edit2 : PlusCircle
 
@@ -136,7 +136,7 @@ export function PostModal({ platform, platformColor, mode = 'add', initialData, 
       {open && (
         <div style={overlay} onClick={(e) => e.target === e.currentTarget && close()}>
           <div style={modal}>
-            <button onClick={close} style={{ position: 'absolute', top: '18px', right: '18px', background: 'none', border: 'none', color: '#6B6B6B', cursor: 'pointer', padding: '2px', display: 'flex', alignItems: 'center' }}>
+            <button onClick={close} style={{ position: 'absolute', top: '18px', right: '18px', background: 'none', border: 'none', color: '#8F8F8F', cursor: 'pointer', padding: '2px', display: 'flex', alignItems: 'center' }}>
               <X size={18} />
             </button>
 
@@ -144,10 +144,10 @@ export function PostModal({ platform, platformColor, mode = 'add', initialData, 
               <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: platformColor + '25', border: `1px solid ${platformColor}44`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}>
                 <TitleIcon size={18} color={platformColor} />
               </div>
-              <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#111111', margin: 0, marginBottom: '4px' }}>
+              <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#EDEDED', margin: 0, marginBottom: '4px' }}>
                 {mode === 'edit' ? 'Gönderiyi Düzenle' : 'Gönderi Ekle'}
               </h2>
-              <p style={{ fontSize: '13px', color: '#6B6B6B', margin: 0 }}>{platform.charAt(0).toUpperCase() + platform.slice(1)} için içerik {mode === 'edit' ? 'düzenle' : 'planla'}</p>
+              <p style={{ fontSize: '13px', color: '#8F8F8F', margin: 0 }}>{platform.charAt(0).toUpperCase() + platform.slice(1)} için içerik {mode === 'edit' ? 'düzenle' : 'planla'}</p>
             </div>
 
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -212,18 +212,18 @@ export function PostModal({ platform, platformColor, mode = 'add', initialData, 
                   onChange={e => setForm(f => ({ ...f, status: e.target.value }))}
                   style={{ ...input, cursor: 'pointer', appearance: 'none' }}
                 >
-                  {STATUS_OPTIONS.map(s => <option key={s} value={s} style={{ backgroundColor: '#FFFFFF' }}>{s}</option>)}
+                  {STATUS_OPTIONS.map(s => <option key={s} value={s} style={{ backgroundColor: '#0A0A0A' }}>{s}</option>)}
                 </select>
               </div>
 
               {error && (
-                <div style={{ padding: '10px 12px', backgroundColor: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: '8px', fontSize: '13px', color: '#DC2626' }}>
+                <div style={{ padding: '10px 12px', backgroundColor: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: '8px', fontSize: '13px', color: '#FF6369' }}>
                   {error}
                 </div>
               )}
 
               <div style={{ display: 'flex', gap: '10px', paddingTop: '4px' }}>
-                <button type="button" onClick={close} style={{ flex: 1, padding: '10px', borderRadius: '8px', border: '1px solid #E0E0E0', backgroundColor: 'transparent', color: '#6B6B6B', fontSize: '14px', fontWeight: 500, cursor: 'pointer' }}>
+                <button type="button" onClick={close} style={{ flex: 1, padding: '10px', borderRadius: '8px', border: '1px solid #262626', backgroundColor: 'transparent', color: '#8F8F8F', fontSize: '14px', fontWeight: 500, cursor: 'pointer' }}>
                   İptal
                 </button>
                 <button

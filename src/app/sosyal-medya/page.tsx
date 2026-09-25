@@ -66,8 +66,8 @@ export default async function SosyalMedyaPage() {
 
         {/* Platform comparison chart */}
         <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', padding: '20px', marginBottom: '28px' }}>
-          <div style={{ fontSize: '14px', fontWeight: 600, color: '#111111', marginBottom: '4px' }}>Platform Karşılaştırması</div>
-          <div style={{ fontSize: '12px', color: '#6B6B6B', marginBottom: '16px' }}>Platforma göre toplam gönderi sayısı</div>
+          <div style={{ fontSize: '14px', fontWeight: 600, color: '#EDEDED', marginBottom: '4px' }}>Platform Karşılaştırması</div>
+          <div style={{ fontSize: '12px', color: '#8F8F8F', marginBottom: '16px' }}>Platforma göre toplam gönderi sayısı</div>
           <BarChart data={platformBar} color="#ec4899" height={100} />
         </div>
 
@@ -84,20 +84,20 @@ export default async function SosyalMedyaPage() {
                 <div style={{ padding: '20px', flex: 1 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '18px' }}>
                     <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: platform.color, boxShadow: `0 0 8px ${platform.color}60` }} />
-                    <span style={{ fontSize: '16px', fontWeight: 700, color: '#111111' }}>{platform.label}</span>
+                    <span style={{ fontSize: '16px', fontWeight: 700, color: '#EDEDED' }}>{platform.label}</span>
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                    <div style={{ backgroundColor: '#FFFFFF', borderRadius: '8px', padding: '12px' }}>
-                      <div style={{ fontSize: '11px', color: '#6B6B6B', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '6px' }}>Gönderi</div>
-                      <div style={{ fontSize: '24px', fontWeight: 800, color: pCount > 0 ? platform.color : '#6B6B6B' }}>{pCount}</div>
+                    <div style={{ backgroundColor: '#0A0A0A', borderRadius: '8px', padding: '12px' }}>
+                      <div style={{ fontSize: '11px', color: '#8F8F8F', marginBottom: '6px' }}>Gönderi</div>
+                      <div style={{ fontSize: '24px', fontWeight: 800, color: pCount > 0 ? platform.color : '#8F8F8F' }}>{pCount}</div>
                     </div>
-                    <div style={{ backgroundColor: '#FFFFFF', borderRadius: '8px', padding: '12px' }}>
-                      <div style={{ fontSize: '11px', color: '#6B6B6B', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '6px' }}>{platform.followersLabel}</div>
-                      <div style={{ fontSize: '24px', fontWeight: 800, color: fCount > 0 ? '#16A34A' : '#6B6B6B' }}>{fmtNum(fCount)}</div>
+                    <div style={{ backgroundColor: '#0A0A0A', borderRadius: '8px', padding: '12px' }}>
+                      <div style={{ fontSize: '11px', color: '#8F8F8F', marginBottom: '6px' }}>{platform.followersLabel}</div>
+                      <div style={{ fontSize: '24px', fontWeight: 800, color: fCount > 0 ? '#3DD68C' : '#8F8F8F' }}>{fmtNum(fCount)}</div>
                     </div>
                   </div>
                 </div>
-                <div style={{ padding: '12px 20px', borderTop: '1px solid #E0E0E0' }}>
+                <div style={{ padding: '12px 20px', borderTop: '1px solid #262626' }}>
                   <Link
                     href={platform.href}
                     style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: 500, color: platform.color, textDecoration: 'none' }}

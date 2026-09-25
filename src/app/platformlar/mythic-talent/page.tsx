@@ -16,9 +16,9 @@ async function getData() {
 }
 
 function dateCell(v: unknown) {
-  if (!v) return <span style={{ color: '#6B6B6B' }}>—</span>
+  if (!v) return <span style={{ color: '#8F8F8F' }}>—</span>
   return (
-    <span style={{ fontSize: '12px', color: '#6B6B6B' }}>
+    <span style={{ fontSize: '12px', color: '#8F8F8F' }}>
       {new Date(v as string).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', year: 'numeric' })}
     </span>
   )
@@ -28,13 +28,13 @@ export default async function MythicTalentPage() {
   const { notes } = await getData()
 
   const noteCols = [
-    { key: 'title', label: 'Başlık', render: (v: unknown) => <span style={{ fontWeight: 600, color: '#111111' }}>{String(v ?? '—')}</span> },
+    { key: 'title', label: 'Başlık', render: (v: unknown) => <span style={{ fontWeight: 600, color: '#EDEDED' }}>{String(v ?? '—')}</span> },
     { key: 'content', label: 'İçerik', render: (v: unknown) => {
       const s = String(v ?? '')
-      return <span style={{ fontSize: '13px', color: '#444444' }}>{s.length > 80 ? s.slice(0, 80) + '…' : s || <span style={{ color: '#6B6B6B' }}>—</span>}</span>
+      return <span style={{ fontSize: '13px', color: '#B4B4B4' }}>{s.length > 80 ? s.slice(0, 80) + '…' : s || <span style={{ color: '#8F8F8F' }}>—</span>}</span>
     }},
     { key: 'tags', label: 'Etiketler', render: (v: unknown) => {
-      if (!v) return <span style={{ color: '#6B6B6B' }}>—</span>
+      if (!v) return <span style={{ color: '#8F8F8F' }}>—</span>
       return (
         <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
           {String(v).split(',').map(t => t.trim()).filter(Boolean).map((t, i) => <Badge key={i} variant="purple">{t}</Badge>)}
@@ -47,8 +47,8 @@ export default async function MythicTalentPage() {
   const stats = [
     { label: 'Platform', value: 'Mythic Talent', color: '#8b5cf6', icon: Star },
     { label: 'Odak', value: 'Talent Ajansı', color: '#ec4899', icon: Sparkles },
-    { label: 'Kapsam', value: 'Global', color: '#16A34A', icon: Target },
-    { label: 'Notlar', value: notes.length, color: '#6D28D9', icon: FileText },
+    { label: 'Kapsam', value: 'Global', color: '#3DD68C', icon: Target },
+    { label: 'Notlar', value: notes.length, color: '#BAA7FF', icon: FileText },
   ]
 
   return (
@@ -93,8 +93,7 @@ export default async function MythicTalentPage() {
                 key={s.label}
                 style={{
                   backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)',
-                  border: '1px solid #E0E0E0',
-                  borderLeft: `3px solid ${s.color}`,
+                  border: '1px solid #262626',
                   borderRadius: '12px',
                   padding: '20px',
                   display: 'flex',
@@ -117,7 +116,7 @@ export default async function MythicTalentPage() {
                   <Icon size={18} color={s.color} />
                 </div>
                 <div>
-                  <div style={{ fontSize: '12px', color: '#6B6B6B', fontWeight: 500, marginBottom: '4px' }}>{s.label}</div>
+                  <div style={{ fontSize: '12px', color: '#8F8F8F', fontWeight: 500, marginBottom: '4px' }}>{s.label}</div>
                   <div style={{ fontSize: '18px', fontWeight: 700, color: s.color }}>{s.value}</div>
                 </div>
               </div>
@@ -129,7 +128,7 @@ export default async function MythicTalentPage() {
         <div
           style={{
             backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)',
-            border: '1px solid #E0E0E0',
+            border: '1px solid #262626',
             borderRadius: '12px',
             padding: '24px',
             marginBottom: '24px',
@@ -137,18 +136,18 @@ export default async function MythicTalentPage() {
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
             <div style={{ flex: 1, minWidth: '280px' }}>
-              <div style={{ fontSize: '15px', fontWeight: 700, color: '#111111', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div style={{ fontSize: '15px', fontWeight: 700, color: '#EDEDED', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#8b5cf6', boxShadow: '0 0 8px #8b5cf680', display: 'inline-block' }} />
                 Mythic Talent Hakkında
               </div>
-              <p style={{ fontSize: '14px', color: '#444444', lineHeight: 1.7, margin: 0 }}>
+              <p style={{ fontSize: '14px', color: '#B4B4B4', lineHeight: 1.7, margin: 0 }}>
                 Mythic Talent, oyun dünyasındaki içerik üreticileri ve yayıncıları için uzmanlaşmış bir talent yönetim ajansıdır.
                 Marka ortaklıkları, sponsorluklar ve kariyer gelişimi konularında içerik üreticilerine rehberlik ederek
                 oyun şirketleri ile yaratıcılar arasında köprü kurar.
               </p>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', minWidth: '180px' }}>
-              <div style={{ fontSize: '12px', color: '#6B6B6B', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '4px' }}>
+              <div style={{ fontSize: '12px', color: '#8F8F8F', fontWeight: 500, marginBottom: '4px' }}>
                 Hızlı Erişim
               </div>
               {[
@@ -185,9 +184,9 @@ export default async function MythicTalentPage() {
 
         {/* Notes */}
         <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', overflow: 'hidden' }}>
-          <div style={{ padding: '14px 20px', borderBottom: '1px solid #E0E0E0', display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{ padding: '14px 20px', borderBottom: '1px solid #262626', display: 'flex', alignItems: 'center', gap: '10px' }}>
             <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#8b5cf6' }} />
-            <span style={{ fontSize: '15px', fontWeight: 600, color: '#111111' }}>Notlar</span>
+            <span style={{ fontSize: '15px', fontWeight: 600, color: '#EDEDED' }}>Notlar</span>
             <span
               style={{
                 marginLeft: 'auto',
@@ -205,8 +204,8 @@ export default async function MythicTalentPage() {
           </div>
           {notes.length === 0 ? (
             <div style={{ padding: '40px', textAlign: 'center' }}>
-              <FileText size={28} color="#E0E0E0" style={{ margin: '0 auto 12px' }} />
-              <div style={{ fontSize: '14px', color: '#6B6B6B' }}>
+              <FileText size={28} color="#262626" style={{ margin: '0 auto 12px' }} />
+              <div style={{ fontSize: '14px', color: '#8F8F8F' }}>
                 Henüz Mythic Talent notu yok.{' '}
                 <Link href="/notlar" style={{ color: '#8b5cf6', textDecoration: 'none' }}>
                   Notlar sayfasından

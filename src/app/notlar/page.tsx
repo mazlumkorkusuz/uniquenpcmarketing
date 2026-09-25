@@ -17,29 +17,29 @@ type Row = Record<string, unknown>
 function truncate(v: unknown, len = 80) {
   const s = String(v ?? '')
   return (
-    <span style={{ fontSize: '13px', color: '#444444' }}>
-      {s.length > len ? s.slice(0, len) + '…' : s || <span style={{ color: '#6B6B6B' }}>—</span>}
+    <span style={{ fontSize: '13px', color: '#B4B4B4' }}>
+      {s.length > len ? s.slice(0, len) + '…' : s || <span style={{ color: '#8F8F8F' }}>—</span>}
     </span>
   )
 }
 
 function dateCell(v: unknown) {
   return v ? (
-    <span style={{ fontSize: '12px', color: '#6B6B6B' }}>
+    <span style={{ fontSize: '12px', color: '#8F8F8F' }}>
       {new Date(v as string).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', year: 'numeric' })}
     </span>
-  ) : <span style={{ color: '#6B6B6B' }}>—</span>
+  ) : <span style={{ color: '#8F8F8F' }}>—</span>
 }
 
 export default async function NotlarPage() {
   const { notes } = await getData()
 
   const generalCols = [
-    { key: 'title', label: 'Başlık', render: (v: unknown) => <span style={{ fontWeight: 600, color: '#111111' }}>{String(v ?? '—')}</span> },
+    { key: 'title', label: 'Başlık', render: (v: unknown) => <span style={{ fontWeight: 600, color: '#EDEDED' }}>{String(v ?? '—')}</span> },
     { key: 'content', label: 'İçerik', render: (v: unknown) => truncate(v) },
-    { key: 'category', label: 'Kategori', render: (v: unknown) => v ? <Badge variant="orange">{String(v)}</Badge> : <span style={{ color: '#6B6B6B' }}>—</span> },
+    { key: 'category', label: 'Kategori', render: (v: unknown) => v ? <Badge variant="orange">{String(v)}</Badge> : <span style={{ color: '#8F8F8F' }}>—</span> },
     { key: 'tags', label: 'Etiketler', render: (v: unknown) => {
-      if (!v) return <span style={{ color: '#6B6B6B' }}>—</span>
+      if (!v) return <span style={{ color: '#8F8F8F' }}>—</span>
       const tags = String(v).split(',').map(t => t.trim()).filter(Boolean)
       return (
         <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
@@ -47,7 +47,7 @@ export default async function NotlarPage() {
         </div>
       )
     }},
-    { key: 'author', label: 'Yazar', render: (v: unknown) => v ? <Badge variant="purple">{String(v)}</Badge> : <span style={{ color: '#6B6B6B' }}>—</span> },
+    { key: 'author', label: 'Yazar', render: (v: unknown) => v ? <Badge variant="purple">{String(v)}</Badge> : <span style={{ color: '#8F8F8F' }}>—</span> },
     { key: 'created_at', label: 'Tarih', render: dateCell },
     { key: 'id', label: '', width: '80px', render: (_: unknown, row: Row) => (
       <div style={{ display: 'flex', gap: '4px' }}>
@@ -69,9 +69,9 @@ export default async function NotlarPage() {
       </PageHeader>
       <div style={{ padding: '24px 32px' }}>
         <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', overflow: 'hidden', marginBottom: '24px' }}>
-          <div style={{ padding: '14px 20px', borderBottom: '1px solid #E0E0E0', display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{ padding: '14px 20px', borderBottom: '1px solid #262626', display: 'flex', alignItems: 'center', gap: '10px' }}>
             <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#f59e0b' }} />
-            <span style={{ fontSize: '15px', fontWeight: 600, color: '#111111' }}>Genel Notlar</span>
+            <span style={{ fontSize: '15px', fontWeight: 600, color: '#EDEDED' }}>Genel Notlar</span>
             <span style={{ marginLeft: 'auto', backgroundColor: '#f59e0b20', color: '#f59e0b', border: '1px solid #f59e0b40', borderRadius: '9999px', padding: '2px 10px', fontSize: '13px', fontWeight: 600 }}>
               {notes.length}
             </span>

@@ -23,9 +23,9 @@ function initials(name: unknown): string {
 }
 function regionColor(region: unknown): string {
   const r = String(region ?? '').toLowerCase()
-  if (r === 'japonya') return '#DC2626'
-  if (r === 'global' || r === 'dünya') return '#2563EB'
-  return '#6D28D9'
+  if (r === 'japonya') return '#FF6369'
+  if (r === 'global' || r === 'dünya') return '#70B8FF'
+  return '#BAA7FF'
 }
 function isJaponya(region: unknown) {
   return String(region ?? '').toLowerCase() === 'japonya'
@@ -34,41 +34,41 @@ function isJaponya(region: unknown) {
 // ── sub-components ────────────────────────────────────────────────────────
 function PriorityBadge({ priority }: { priority: unknown }) {
   const p = String(priority ?? '').toLowerCase()
-  if (p === 'high') return <span style={{ fontSize: '10px', fontWeight: 700, color: '#DC2626', backgroundColor: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: '4px', padding: '1px 6px', letterSpacing: '0.04em' }}>HIGH</span>
-  if (p === 'medium') return <span style={{ fontSize: '10px', fontWeight: 700, color: '#D97706', backgroundColor: 'rgba(234,179,8,0.12)', border: '1px solid rgba(234,179,8,0.3)', borderRadius: '4px', padding: '1px 6px', letterSpacing: '0.04em' }}>MED</span>
+  if (p === 'high') return <span style={{ fontSize: '10px', fontWeight: 700, color: '#FF6369', backgroundColor: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: '4px', padding: '1px 6px', letterSpacing: '0.04em' }}>HIGH</span>
+  if (p === 'medium') return <span style={{ fontSize: '10px', fontWeight: 700, color: '#FFB224', backgroundColor: 'rgba(234,179,8,0.12)', border: '1px solid rgba(234,179,8,0.3)', borderRadius: '4px', padding: '1px 6px', letterSpacing: '0.04em' }}>MED</span>
   return null
 }
 
 function ChannelTypeBadge({ type }: { type: unknown }) {
-  if (!type) return <span style={{ color: '#6B6B6B' }}>—</span>
+  if (!type) return <span style={{ color: '#8F8F8F' }}>—</span>
   const colors: Record<string, [string, string]> = {
-    gaming: ['rgba(124,58,237,0.15)', '#6D28D9'],
-    vlog: ['rgba(59,130,246,0.15)', '#2563EB'],
-    review: ['rgba(249,115,22,0.15)', '#EA580C'],
-    esports: ['rgba(239,68,68,0.15)', '#DC2626'],
-    educational: ['rgba(34,197,94,0.15)', '#16A34A'],
+    gaming: ['rgba(124,58,237,0.15)', '#BAA7FF'],
+    vlog: ['rgba(59,130,246,0.15)', '#70B8FF'],
+    review: ['rgba(249,115,22,0.15)', '#FF8B3E'],
+    esports: ['rgba(239,68,68,0.15)', '#FF6369'],
+    educational: ['rgba(34,197,94,0.15)', '#3DD68C'],
   }
   const key = String(type).toLowerCase()
-  const [bg, fg] = colors[key] ?? ['rgba(100,116,139,0.15)', '#444444']
+  const [bg, fg] = colors[key] ?? ['rgba(100,116,139,0.15)', '#B4B4B4']
   return <span style={{ fontSize: '11px', fontWeight: 600, color: fg, backgroundColor: bg, borderRadius: '4px', padding: '2px 7px', whiteSpace: 'nowrap' }}>{String(type)}</span>
 }
 
 function SortableTH({ label, sk, active, dir, onSort }: { label: string; sk: SortKey; active: boolean; dir: SortDir; onSort: (k: SortKey) => void }) {
   return (
-    <th onClick={() => onSort(sk)} style={{ backgroundColor: 'var(--color-bg-section)', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase' as const, letterSpacing: '0.06em', padding: '11px 14px', textAlign: 'left' as const, borderBottom: '1px solid #E0E0E0', whiteSpace: 'nowrap' as const, cursor: 'pointer', userSelect: 'none' as const, color: active ? '#ff4444' : '#6B6B6B' }}>
+    <th onClick={() => onSort(sk)} style={{ backgroundColor: 'rgba(255,255,255,0.02)', fontSize: '12.5px', fontWeight: 500, padding: '11px 14px', textAlign: 'left' as const, borderBottom: '1px solid #262626', whiteSpace: 'nowrap' as const, cursor: 'pointer', userSelect: 'none' as const, color: active ? '#ff4444' : '#8F8F8F' }}>
       {label} <span style={{ opacity: active ? 1 : 0.3 }}>{active ? (dir === 'desc' ? '↓' : '↑') : '↕'}</span>
     </th>
   )
 }
 
-const STH: React.CSSProperties = { backgroundColor: 'var(--color-bg-section)', color: '#6B6B6B', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', padding: '11px 14px', textAlign: 'left', borderBottom: '1px solid #E0E0E0', whiteSpace: 'nowrap' }
+const STH: React.CSSProperties = { backgroundColor: 'rgba(255,255,255,0.02)', color: '#8F8F8F', fontSize: '12.5px', fontWeight: 500, padding: '11px 14px', textAlign: 'left', borderBottom: '1px solid #262626', whiteSpace: 'nowrap' }
 const TD: React.CSSProperties = { padding: '12px 14px', verticalAlign: 'middle' }
-const SEL: React.CSSProperties = { backgroundColor: '#FFFFFF', border: '1px solid #E0E0E0', borderRadius: '7px', padding: '7px 11px', fontSize: '13px', color: '#111111', cursor: 'pointer', outline: 'none' }
+const SEL: React.CSSProperties = { backgroundColor: '#0A0A0A', border: '1px solid #262626', borderRadius: '7px', padding: '7px 11px', fontSize: '13px', color: '#EDEDED', cursor: 'pointer', outline: 'none' }
 
 // ── contact link helper ───────────────────────────────────────────────────
 function ContactLink({ href, icon, label }: { href: string; icon: React.ReactNode; label: string }) {
   return (
-    <a href={href} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: '#2563EB', textDecoration: 'none', padding: '5px 0' }}>
+    <a href={href} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: '#70B8FF', textDecoration: 'none', padding: '5px 0' }}>
       {icon} <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '220px' }}>{label}</span>
     </a>
   )
@@ -108,14 +108,14 @@ function DetailPanel({ row, onClose, onDelete, onNoteSave }: { row: Row; onClose
   if (row.discord) contacts.push({ href: String(row.discord), icon: <Image src="/icons/discord.png" alt="Discord" width={13} height={13} onError={() => {}} />, label: String(row.discord) })
 
   return (
-    <div style={{ width: '380px', backgroundColor: '#FFFFFF', borderLeft: '1px solid #E0E0E0', display: 'flex', flexDirection: 'column', overflowY: 'auto', position: 'fixed', top: 0, right: 0, height: '100vh', zIndex: 1000 }}>
+    <div style={{ width: '380px', backgroundColor: '#0A0A0A', borderLeft: '1px solid #262626', display: 'flex', flexDirection: 'column', overflowY: 'auto', position: 'fixed', top: 0, right: 0, height: '100vh', zIndex: 1000 }}>
       {/* Panel header */}
-      <div style={{ padding: '16px 18px', borderBottom: '1px solid #E0E0E0', display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+      <div style={{ padding: '16px 18px', borderBottom: '1px solid #262626', display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
         <div style={{ width: '44px', height: '44px', borderRadius: '12px', backgroundColor: color + '22', border: `2px solid ${color}55`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '16px', color, flexShrink: 0 }}>
           {ini}
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontWeight: 700, fontSize: '14px', color: '#111111', marginBottom: '4px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{String(row.channel_name ?? '—')}</div>
+          <div style={{ fontWeight: 700, fontSize: '14px', color: '#EDEDED', marginBottom: '4px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{String(row.channel_name ?? '—')}</div>
           <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
             <PriorityBadge priority={row.priority} />
             {!!row.region && <span style={{ fontSize: '11px', color: color, backgroundColor: color + '18', borderRadius: '4px', padding: '1px 6px' }}>{String(row.region)}</span>}
@@ -123,11 +123,11 @@ function DetailPanel({ row, onClose, onDelete, onNoteSave }: { row: Row; onClose
         </div>
         <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
           {!!row.channel_url && (
-            <a href={String(row.channel_url)} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '28px', height: '28px', borderRadius: '6px', backgroundColor: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)', color: '#DC2626', textDecoration: 'none' }}>
+            <a href={String(row.channel_url)} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '28px', height: '28px', borderRadius: '6px', backgroundColor: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)', color: '#FF6369', textDecoration: 'none' }}>
               <ExternalLink size={13} />
             </a>
           )}
-          <button onClick={onClose} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '28px', height: '28px', borderRadius: '6px', backgroundColor: 'transparent', border: '1px solid #E0E0E0', color: '#6B6B6B', cursor: 'pointer' }}>
+          <button onClick={onClose} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '28px', height: '28px', borderRadius: '6px', backgroundColor: 'transparent', border: '1px solid #262626', color: '#8F8F8F', cursor: 'pointer' }}>
             <X size={13} />
           </button>
         </div>
@@ -137,9 +137,9 @@ function DetailPanel({ row, onClose, onDelete, onNoteSave }: { row: Row; onClose
         {/* Stats grid */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
           {stats.map(s => (
-            <div key={s.label} style={{ backgroundColor: '#FFFFFF', border: '1px solid #E0E0E0', borderRadius: '8px', padding: '10px 12px' }}>
-              <div style={{ fontSize: '10px', color: '#6B6B6B', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>{s.label}</div>
-              <div style={{ fontSize: '15px', fontWeight: 700, color: '#111111' }}>{s.value}</div>
+            <div key={s.label} style={{ backgroundColor: '#0A0A0A', border: '1px solid #262626', borderRadius: '8px', padding: '10px 12px' }}>
+              <div style={{ fontSize: '10px', color: '#8F8F8F', fontWeight: 600, marginBottom: '4px' }}>{s.label}</div>
+              <div style={{ fontSize: '15px', fontWeight: 700, color: '#EDEDED' }}>{s.value}</div>
             </div>
           ))}
         </div>
@@ -147,31 +147,31 @@ function DetailPanel({ row, onClose, onDelete, onNoteSave }: { row: Row; onClose
         {/* Oyunlar */}
         {!!row.games && (
           <div>
-            <div style={{ fontSize: '11px', fontWeight: 600, color: '#6B6B6B', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>Oyunlar</div>
-            <div style={{ fontSize: '13px', color: '#444444', lineHeight: 1.6, backgroundColor: '#FFFFFF', border: '1px solid #E0E0E0', borderRadius: '8px', padding: '10px 12px' }}>{String(row.games)}</div>
+            <div style={{ fontSize: '11px', fontWeight: 600, color: '#8F8F8F', marginBottom: '8px' }}>Oyunlar</div>
+            <div style={{ fontSize: '13px', color: '#B4B4B4', lineHeight: 1.6, backgroundColor: '#0A0A0A', border: '1px solid #262626', borderRadius: '8px', padding: '10px 12px' }}>{String(row.games)}</div>
           </div>
         )}
 
         {/* Bio */}
         {!!row.bio && (
           <div>
-            <div style={{ fontSize: '11px', fontWeight: 600, color: '#6B6B6B', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>Bio</div>
-            <div style={{ fontSize: '13px', color: '#444444', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{String(row.bio)}</div>
+            <div style={{ fontSize: '11px', fontWeight: 600, color: '#8F8F8F', marginBottom: '8px' }}>Bio</div>
+            <div style={{ fontSize: '13px', color: '#B4B4B4', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{String(row.bio)}</div>
           </div>
         )}
 
         {/* AI Açıklama */}
         {!!row.ai_description && (
           <div>
-            <div style={{ fontSize: '11px', fontWeight: 600, color: '#6B6B6B', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>AI Açıklama</div>
-            <div style={{ fontSize: '13px', color: '#444444', lineHeight: 1.6, whiteSpace: 'pre-wrap', backgroundColor: 'rgba(124,58,237,0.05)', border: '1px solid rgba(124,58,237,0.15)', borderRadius: '8px', padding: '10px 12px' }}>{String(row.ai_description)}</div>
+            <div style={{ fontSize: '11px', fontWeight: 600, color: '#8F8F8F', marginBottom: '8px' }}>AI Açıklama</div>
+            <div style={{ fontSize: '13px', color: '#B4B4B4', lineHeight: 1.6, whiteSpace: 'pre-wrap', backgroundColor: 'rgba(124,58,237,0.05)', border: '1px solid rgba(124,58,237,0.15)', borderRadius: '8px', padding: '10px 12px' }}>{String(row.ai_description)}</div>
           </div>
         )}
 
         {/* İletişim */}
         {contacts.length > 0 && (
           <div>
-            <div style={{ fontSize: '11px', fontWeight: 600, color: '#6B6B6B', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>İletişim</div>
+            <div style={{ fontSize: '11px', fontWeight: 600, color: '#8F8F8F', marginBottom: '8px' }}>İletişim</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
               {contacts.map((c, i) => <ContactLink key={i} {...c} />)}
             </div>
@@ -180,14 +180,14 @@ function DetailPanel({ row, onClose, onDelete, onNoteSave }: { row: Row; onClose
 
         {/* Notlar */}
         <div>
-          <div style={{ fontSize: '11px', fontWeight: 600, color: '#6B6B6B', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>Notlar</div>
+          <div style={{ fontSize: '11px', fontWeight: 600, color: '#8F8F8F', marginBottom: '8px' }}>Notlar</div>
           <textarea
             value={noteText}
             onChange={e => setNoteText(e.target.value)}
             placeholder="Notunuzu buraya yazın..."
-            style={{ width: '100%', backgroundColor: '#FFFFFF', border: '1px solid #E0E0E0', borderRadius: '8px', padding: '10px 12px', fontSize: '13px', color: '#111111', outline: 'none', resize: 'vertical', minHeight: '90px', boxSizing: 'border-box', fontFamily: 'inherit', lineHeight: 1.55 }}
+            style={{ width: '100%', backgroundColor: '#0A0A0A', border: '1px solid #262626', borderRadius: '8px', padding: '10px 12px', fontSize: '13px', color: '#EDEDED', outline: 'none', resize: 'vertical', minHeight: '90px', boxSizing: 'border-box', fontFamily: 'inherit', lineHeight: 1.55 }}
           />
-          <button onClick={saveNote} disabled={saving} style={{ marginTop: '8px', width: '100%', padding: '8px', borderRadius: '7px', backgroundColor: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', color: '#DC2626', fontWeight: 600, fontSize: '13px', cursor: saving ? 'not-allowed' : 'pointer', opacity: saving ? 0.6 : 1 }}>
+          <button onClick={saveNote} disabled={saving} style={{ marginTop: '8px', width: '100%', padding: '8px', borderRadius: '7px', backgroundColor: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', color: '#FF6369', fontWeight: 600, fontSize: '13px', cursor: saving ? 'not-allowed' : 'pointer', opacity: saving ? 0.6 : 1 }}>
             {saving ? 'Kaydediliyor...' : 'Notu Kaydet'}
           </button>
         </div>
@@ -195,7 +195,7 @@ function DetailPanel({ row, onClose, onDelete, onNoteSave }: { row: Row; onClose
         {/* Delete */}
         <button
           onClick={() => { if (confirm('Bu kanalı silmek istediğinizden emin misiniz?')) onDelete(row.id) }}
-          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '8px', borderRadius: '7px', backgroundColor: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', color: '#DC2626', fontWeight: 600, fontSize: '13px', cursor: 'pointer', marginTop: '4px' }}
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '8px', borderRadius: '7px', backgroundColor: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', color: '#FF6369', fontWeight: 600, fontSize: '13px', cursor: 'pointer', marginTop: '4px' }}
         >
           <Trash2 size={13} /> Kanalı Sil
         </button>
@@ -291,7 +291,7 @@ export default function YouTubePage() {
         <a
           href="https://docs.google.com/spreadsheets/d/148n9k7zHQyBrgGxrnAuFZ4pMIXqrTVCUPd59nrEkcDg/edit?gid=1299085038#gid=1920292925"
           target="_blank" rel="noopener noreferrer"
-          style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '9px 16px', borderRadius: '8px', backgroundColor: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.35)', color: '#16A34A', fontWeight: 600, fontSize: '13px', textDecoration: 'none', whiteSpace: 'nowrap' }}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '9px 16px', borderRadius: '8px', backgroundColor: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.35)', color: '#3DD68C', fontWeight: 600, fontSize: '13px', textDecoration: 'none', whiteSpace: 'nowrap' }}
         >
           📊 Tam Liste
         </a>
@@ -302,12 +302,12 @@ export default function YouTubePage() {
         <div style={{ display: 'flex', gap: '16px', marginBottom: '24px', flexWrap: 'wrap' }}>
           {[
             { label: 'Toplam Kanal', value: totalCount, color: '#ff4444' },
-            { label: 'Global', value: globalCount, color: '#2563EB' },
-            { label: 'Japonya', value: japonyaCount, color: '#DC2626' },
+            { label: 'Global', value: globalCount, color: '#70B8FF' },
+            { label: 'Japonya', value: japonyaCount, color: '#FF6369' },
           ].map(s => (
-            <div key={s.label} style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderLeft: `3px solid ${s.color}`, borderRadius: '10px', padding: '16px 22px', minWidth: '140px' }}>
+            <div key={s.label} style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '10px', padding: '16px 22px', minWidth: '140px' }}>
               <div style={{ fontSize: '26px', fontWeight: 800, color: s.color, lineHeight: 1 }}>{s.value}</div>
-              <div style={{ fontSize: '12px', color: '#6B6B6B', marginTop: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{s.label}</div>
+              <div style={{ fontSize: '12px', color: '#8F8F8F', marginTop: '6px', }}>{s.label}</div>
             </div>
           ))}
         </div>
@@ -315,7 +315,7 @@ export default function YouTubePage() {
         {/* Tabs */}
         <div style={{ display: 'flex', gap: '4px', marginBottom: '16px' }}>
           {TABS.map(t => (
-            <button key={t.key} onClick={() => setTab(t.key)} style={{ padding: '7px 16px', borderRadius: '7px', border: 'none', fontWeight: 600, fontSize: '13px', cursor: 'pointer', backgroundColor: tab === t.key ? '#ff4444' : 'transparent', color: tab === t.key ? '#fff' : '#6B6B6B', transition: 'all 0.15s' }}>
+            <button key={t.key} onClick={() => setTab(t.key)} style={{ padding: '7px 16px', borderRadius: '7px', border: 'none', fontWeight: 600, fontSize: '13px', cursor: 'pointer', backgroundColor: tab === t.key ? '#ff4444' : 'transparent', color: tab === t.key ? '#0A0A0A' : '#8F8F8F', transition: 'all 0.15s' }}>
               {t.label}
             </button>
           ))}
@@ -324,9 +324,9 @@ export default function YouTubePage() {
         {/* Table card */}
         <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', overflow: 'hidden' }}>
             {/* Filters */}
-            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', padding: '12px 16px', borderBottom: '1px solid #E0E0E0', alignItems: 'center' }}>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', padding: '12px 16px', borderBottom: '1px solid #262626', alignItems: 'center' }}>
               <div style={{ position: 'relative', flex: 1, minWidth: '160px' }}>
-                <Search size={12} style={{ position: 'absolute', left: '9px', top: '50%', transform: 'translateY(-50%)', color: '#6B6B6B', pointerEvents: 'none' }} />
+                <Search size={12} style={{ position: 'absolute', left: '9px', top: '50%', transform: 'translateY(-50%)', color: '#8F8F8F', pointerEvents: 'none' }} />
                 <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Kanal ara..." style={{ ...SEL, paddingLeft: '28px', width: '100%', boxSizing: 'border-box' }} />
               </div>
               <select value={regionFilter} onChange={e => setRegionFilter(e.target.value)} style={SEL}>
@@ -343,11 +343,11 @@ export default function YouTubePage() {
                 <option value="medium">Orta</option>
               </select>
               {hasFilters && (
-                <button onClick={() => { setSearch(''); setRegionFilter(''); setTypeFilter(''); setPriorityFilter('') }} style={{ fontSize: '12px', color: '#6B6B6B', background: 'none', border: '1px solid #E0E0E0', borderRadius: '7px', padding: '7px 11px', cursor: 'pointer' }}>
+                <button onClick={() => { setSearch(''); setRegionFilter(''); setTypeFilter(''); setPriorityFilter('') }} style={{ fontSize: '12px', color: '#8F8F8F', background: 'none', border: '1px solid #262626', borderRadius: '7px', padding: '7px 11px', cursor: 'pointer' }}>
                   Temizle
                 </button>
               )}
-              <span style={{ marginLeft: 'auto', fontSize: '12px', color: '#6B6B6B', whiteSpace: 'nowrap' }}>{sorted.length}{hasFilters ? ` / ${channels.length}` : ''} kanal</span>
+              <span style={{ marginLeft: 'auto', fontSize: '12px', color: '#8F8F8F', whiteSpace: 'nowrap' }}>{sorted.length}{hasFilters ? ` / ${channels.length}` : ''} kanal</span>
             </div>
 
             {/* Table */}
@@ -368,9 +368,9 @@ export default function YouTubePage() {
                 </thead>
                 <tbody>
                   {loading ? (
-                    <tr><td colSpan={9} style={{ padding: '48px', textAlign: 'center', color: '#6B6B6B', fontSize: '14px' }}>Yükleniyor...</td></tr>
+                    <tr><td colSpan={9} style={{ padding: '48px', textAlign: 'center', color: '#8F8F8F', fontSize: '14px' }}>Yükleniyor...</td></tr>
                   ) : sorted.length === 0 ? (
-                    <tr><td colSpan={9} style={{ padding: '48px', textAlign: 'center', color: '#6B6B6B', fontSize: '14px' }}>{hasFilters ? 'Eşleşen kanal bulunamadı' : 'Henüz kanal eklenmemiş'}</td></tr>
+                    <tr><td colSpan={9} style={{ padding: '48px', textAlign: 'center', color: '#8F8F8F', fontSize: '14px' }}>{hasFilters ? 'Eşleşen kanal bulunamadı' : 'Henüz kanal eklenmemiş'}</td></tr>
                   ) : sorted.map((row, i) => {
                     const isActive = selected?.id === row.id
                     const color = regionColor(row.region)
@@ -378,7 +378,7 @@ export default function YouTubePage() {
                       <tr
                         key={String(row.id ?? i)}
                         onClick={() => setSelected(isActive ? null : row)}
-                        style={{ borderBottom: i < sorted.length - 1 ? '1px solid #E5E5E5' : 'none', backgroundColor: isActive ? 'rgba(239,68,68,0.06)' : i % 2 === 1 ? '#F9F9F9' : 'transparent', cursor: 'pointer', transition: 'background-color 0.1s' }}
+                        style={{ borderBottom: i < sorted.length - 1 ? '1px solid #1F1F1F' : 'none', backgroundColor: isActive ? 'rgba(239,68,68,0.06)' : i % 2 === 1 ? '#0E0E0E' : 'transparent', cursor: 'pointer', transition: 'background-color 0.1s' }}
                       >
                         <td style={{ ...TD, paddingRight: '8px' }}>
                           <div style={{ width: '30px', height: '30px', borderRadius: '8px', backgroundColor: color + '22', border: `1px solid ${color}44`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 800, color, flexShrink: 0 }}>
@@ -386,28 +386,28 @@ export default function YouTubePage() {
                           </div>
                         </td>
                         <td style={TD}>
-                          <div style={{ fontWeight: 600, fontSize: '13px', color: '#111111', maxWidth: '180px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{String(row.channel_name ?? '—')}</div>
+                          <div style={{ fontWeight: 600, fontSize: '13px', color: '#EDEDED', maxWidth: '180px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{String(row.channel_name ?? '—')}</div>
                           {!!row.region && <div style={{ fontSize: '11px', color, marginTop: '2px' }}>{String(row.region)}</div>}
                         </td>
-                        <td style={TD}><span style={{ color: '#16A34A', fontWeight: 600, fontSize: '13px' }}>{fmt(row.subscribers)}</span></td>
-                        <td style={TD}><span style={{ color: '#2563EB', fontWeight: 600, fontSize: '13px' }}>{fmt(row.avg_long_views)}</span></td>
-                        <td style={TD}><span style={{ color: '#6D28D9', fontWeight: 600, fontSize: '13px' }}>{fmt(row.avg_shorts_views)}</span></td>
-                        <td style={TD}><span style={{ color: '#EA580C', fontWeight: 600, fontSize: '13px' }}>{row.game_count != null ? String(row.game_count) : '—'}</span></td>
+                        <td style={TD}><span style={{ color: '#3DD68C', fontWeight: 600, fontSize: '13px' }}>{fmt(row.subscribers)}</span></td>
+                        <td style={TD}><span style={{ color: '#70B8FF', fontWeight: 600, fontSize: '13px' }}>{fmt(row.avg_long_views)}</span></td>
+                        <td style={TD}><span style={{ color: '#BAA7FF', fontWeight: 600, fontSize: '13px' }}>{fmt(row.avg_shorts_views)}</span></td>
+                        <td style={TD}><span style={{ color: '#FF8B3E', fontWeight: 600, fontSize: '13px' }}>{row.game_count != null ? String(row.game_count) : '—'}</span></td>
                         <td style={TD}><ChannelTypeBadge type={row.channel_type} /></td>
                         <td style={TD}>
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                            {row.score != null && <span style={{ fontWeight: 700, fontSize: '14px', color: '#111111' }}>{String(row.score)}</span>}
+                            {row.score != null && <span style={{ fontWeight: 700, fontSize: '14px', color: '#EDEDED' }}>{String(row.score)}</span>}
                             <PriorityBadge priority={row.priority} />
                           </div>
                         </td>
                         <td style={TD} onClick={e => e.stopPropagation()}>
                           <div style={{ display: 'flex', gap: '4px' }}>
                             {!!row.channel_url && (
-                              <a href={String(row.channel_url)} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '11px', fontWeight: 600, color: '#DC2626', backgroundColor: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)', borderRadius: '5px', padding: '4px 8px', textDecoration: 'none', whiteSpace: 'nowrap' }}>
+                              <a href={String(row.channel_url)} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '11px', fontWeight: 600, color: '#FF6369', backgroundColor: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)', borderRadius: '5px', padding: '4px 8px', textDecoration: 'none', whiteSpace: 'nowrap' }}>
                                 <ExternalLink size={10} /> Kanal
                               </a>
                             )}
-                            <button onClick={() => { if (confirm('Silmek istediğinizden emin misiniz?')) deleteChannel(row.id) }} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '11px', fontWeight: 600, color: '#6B6B6B', backgroundColor: 'transparent', border: '1px solid #E0E0E0', borderRadius: '5px', padding: '4px 8px', cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                            <button onClick={() => { if (confirm('Silmek istediğinizden emin misiniz?')) deleteChannel(row.id) }} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '11px', fontWeight: 600, color: '#8F8F8F', backgroundColor: 'transparent', border: '1px solid #262626', borderRadius: '5px', padding: '4px 8px', cursor: 'pointer', whiteSpace: 'nowrap' }}>
                               <Trash2 size={10} /> Sil
                             </button>
                           </div>

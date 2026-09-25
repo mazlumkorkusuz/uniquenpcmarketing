@@ -39,12 +39,12 @@ function formatDate(dateStr: string): string {
 
 function SkeletonCard() {
   return (
-    <div style={{ background: '#FFFFFF', borderRadius: 12, overflow: 'hidden', border: '1px solid #E5E5E5' }}>
-      <div style={{ height: 160, background: '#E5E5E5', animation: 'pulse 1.5s infinite' }} />
+    <div style={{ background: '#0A0A0A', borderRadius: 12, overflow: 'hidden', border: '1px solid #1F1F1F' }}>
+      <div style={{ height: 160, background: '#1F1F1F', animation: 'pulse 1.5s infinite' }} />
       <div style={{ padding: '14px 16px 16px' }}>
-        <div style={{ height: 16, background: '#E5E5E5', borderRadius: 4, marginBottom: 10, animation: 'pulse 1.5s infinite' }} />
-        <div style={{ height: 12, background: '#E5E5E5', borderRadius: 4, marginBottom: 6, animation: 'pulse 1.5s infinite' }} />
-        <div style={{ height: 12, background: '#E5E5E5', borderRadius: 4, width: '70%', animation: 'pulse 1.5s infinite' }} />
+        <div style={{ height: 16, background: '#1F1F1F', borderRadius: 4, marginBottom: 10, animation: 'pulse 1.5s infinite' }} />
+        <div style={{ height: 12, background: '#1F1F1F', borderRadius: 4, marginBottom: 6, animation: 'pulse 1.5s infinite' }} />
+        <div style={{ height: 12, background: '#1F1F1F', borderRadius: 4, width: '70%', animation: 'pulse 1.5s infinite' }} />
       </div>
     </div>
   )
@@ -103,23 +103,23 @@ export default function NewsPage() {
     d ? `Son güncelleme: ${d.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}` : ''
 
   return (
-    <div style={{ padding: '24px 32px', minHeight: '100vh', color: '#111111' }}>
+    <div style={{ padding: '24px 32px', minHeight: '100vh', color: '#EDEDED' }}>
       <style>{`
         @keyframes pulse { 0%,100% { opacity:1 } 50% { opacity:0.4 } }
         .news-card:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,0,0,0.12); }
         .news-card { transition: transform 0.2s, box-shadow 0.2s; }
-        .stream-row:hover { background: #F5F5F5 !important; }
+        .stream-row:hover { background: #111111 !important; }
         .news-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
         @media (max-width: 1024px) { .news-grid { grid-template-columns: repeat(2, 1fr); } }
       `}</style>
 
-      <h1 style={{ fontSize: 26, fontWeight: 800, margin: '0 0 28px', color: '#111111' }}>
+      <h1 style={{ fontSize: 26, fontWeight: 800, margin: '0 0 28px', color: '#EDEDED' }}>
         📰 News & Live
       </h1>
 
       {/* PC Gamer News Grid */}
       <section style={{ marginBottom: 40 }}>
-        <h2 style={{ fontSize: 18, fontWeight: 700, color: '#444444', marginBottom: 18, textTransform: 'uppercase', letterSpacing: 1 }}>
+        <h2 style={{ fontSize: 18, fontWeight: 700, color: '#B4B4B4', marginBottom: 18, letterSpacing: 1 }}>
           PC Gamer Haberleri
         </h2>
         <div className="news-grid">
@@ -129,7 +129,7 @@ export default function NewsPage() {
                 <div
                   key={i}
                   className="news-card"
-                  style={{ background: '#FFFFFF', borderRadius: 12, overflow: 'hidden', border: '1px solid #E5E5E5', display: 'flex', flexDirection: 'column' }}
+                  style={{ background: '#0A0A0A', borderRadius: 12, overflow: 'hidden', border: '1px solid #1F1F1F', display: 'flex', flexDirection: 'column' }}
                 >
                   {article.image && (
                     <img
@@ -140,14 +140,14 @@ export default function NewsPage() {
                     />
                   )}
                   <div style={{ padding: '14px 16px 16px', flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                    <p style={{ fontWeight: 700, fontSize: 14, color: '#111111', margin: 0, lineHeight: 1.4 }}>
+                    <p style={{ fontWeight: 700, fontSize: 14, color: '#EDEDED', margin: 0, lineHeight: 1.4 }}>
                       {article.title}
                     </p>
-                    <p style={{ fontSize: 12, color: '#444444', margin: 0, lineHeight: 1.5, flex: 1 }}>
+                    <p style={{ fontSize: 12, color: '#B4B4B4', margin: 0, lineHeight: 1.5, flex: 1 }}>
                       {article.summary}
                     </p>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 4 }}>
-                      <span style={{ fontSize: 11, color: '#6B6B6B' }}>{formatDate(article.date)}</span>
+                      <span style={{ fontSize: 11, color: '#8F8F8F' }}>{formatDate(article.date)}</span>
                       <a
                         href={article.link}
                         target="_blank"
@@ -166,23 +166,23 @@ export default function NewsPage() {
       {/* Twitch streamers (left) + Twitch categories (right) */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
         {/* Left: Top 10 Streamers */}
-        <section style={{ background: '#FFFFFF', borderRadius: 16, border: '1px solid #E5E5E5', overflow: 'hidden' }}>
-          <div style={{ padding: '14px 20px', borderBottom: '1px solid #E5E5E5', display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(145,71,255,0.1)' }}>
+        <section style={{ background: '#0A0A0A', borderRadius: 16, border: '1px solid #1F1F1F', overflow: 'hidden' }}>
+          <div style={{ padding: '14px 20px', borderBottom: '1px solid #1F1F1F', display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(145,71,255,0.1)' }}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="#9147ff">
               <path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714z"/>
             </svg>
             <div>
               <span style={{ fontWeight: 700, fontSize: 15, color: '#9146FF' }}>Twitch Canlı</span>
-              {twitchUpdated && <div style={{ fontSize: 11, color: '#6B6B6B' }}>{lastUpdatedLabel(twitchUpdated)}</div>}
+              {twitchUpdated && <div style={{ fontSize: 11, color: '#8F8F8F' }}>{lastUpdatedLabel(twitchUpdated)}</div>}
             </div>
           </div>
 
           <div style={{ padding: '12px 20px' }}>
             {twitchLoading ? (
-              <div style={{ color: '#6B6B6B', fontSize: 13, padding: '20px 0' }}>Yükleniyor...</div>
+              <div style={{ color: '#8F8F8F', fontSize: 13, padding: '20px 0' }}>Yükleniyor...</div>
             ) : (
               <>
-                <p style={{ fontSize: 11, fontWeight: 700, color: '#7c3aed', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 6 }}>
+                <p style={{ fontSize: 11, fontWeight: 700, color: '#9E8CFC', letterSpacing: 1, marginBottom: 6 }}>
                   Top 10 Yayıncı
                 </p>
                 {twitchStreams.map((s, i) => (
@@ -191,16 +191,16 @@ export default function NewsPage() {
                     className="stream-row"
                     style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 8px', borderRadius: 8, cursor: 'default' }}
                   >
-                    <span style={{ fontSize: 11, color: '#6B6B6B', width: 20, textAlign: 'right', flexShrink: 0 }}>#{i + 1}</span>
+                    <span style={{ fontSize: 11, color: '#8F8F8F', width: 20, textAlign: 'right', flexShrink: 0 }}>#{i + 1}</span>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <p style={{ margin: 0, fontSize: 13, fontWeight: 600, color: '#111111', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      <p style={{ margin: 0, fontSize: 13, fontWeight: 600, color: '#EDEDED', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {s.user_name}
                       </p>
-                      <p style={{ margin: 0, fontSize: 11, color: '#444444', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      <p style={{ margin: 0, fontSize: 11, color: '#B4B4B4', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {s.game_name}
                       </p>
                     </div>
-                    <span style={{ background: '#9146FF', color: '#fff', borderRadius: 20, padding: '2px 8px', fontSize: 11, fontWeight: 700, flexShrink: 0 }}>
+                    <span style={{ background: '#9146FF', color: '#0A0A0A', borderRadius: 20, padding: '2px 8px', fontSize: 11, fontWeight: 700, flexShrink: 0 }}>
                       {formatViewers(s.viewer_count)}
                     </span>
                   </div>
@@ -211,21 +211,21 @@ export default function NewsPage() {
         </section>
 
         {/* Right: Top 10 Categories */}
-        <section style={{ background: '#FFFFFF', borderRadius: 16, border: '1px solid #E5E5E5', overflow: 'hidden' }}>
-          <div style={{ padding: '14px 20px', borderBottom: '1px solid #E5E5E5', display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(20,184,166,0.1)' }}>
+        <section style={{ background: '#0A0A0A', borderRadius: 16, border: '1px solid #1F1F1F', overflow: 'hidden' }}>
+          <div style={{ padding: '14px 20px', borderBottom: '1px solid #1F1F1F', display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(20,184,166,0.1)' }}>
             <span style={{ fontSize: 20 }}>🎮</span>
             <div>
-              <span style={{ fontWeight: 700, fontSize: 15, color: '#0D9488' }}>Twitch Top Kategoriler</span>
-              {twitchUpdated && <div style={{ fontSize: 11, color: '#6B6B6B' }}>{lastUpdatedLabel(twitchUpdated)}</div>}
+              <span style={{ fontWeight: 700, fontSize: 15, color: '#0BD8B6' }}>Twitch Top Kategoriler</span>
+              {twitchUpdated && <div style={{ fontSize: 11, color: '#8F8F8F' }}>{lastUpdatedLabel(twitchUpdated)}</div>}
             </div>
           </div>
 
           <div style={{ padding: '12px 20px' }}>
             {twitchLoading ? (
-              <div style={{ color: '#6B6B6B', fontSize: 13, padding: '20px 0' }}>Yükleniyor...</div>
+              <div style={{ color: '#8F8F8F', fontSize: 13, padding: '20px 0' }}>Yükleniyor...</div>
             ) : (
               <>
-                <p style={{ fontSize: 11, fontWeight: 700, color: '#0d9488', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 6 }}>
+                <p style={{ fontSize: 11, fontWeight: 700, color: '#0BD8B6', letterSpacing: 1, marginBottom: 6 }}>
                   Top 10 Kategori
                 </p>
                 {twitchCategories.map((c, i) => (
@@ -234,9 +234,9 @@ export default function NewsPage() {
                     className="stream-row"
                     style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '7px 8px', borderRadius: 8, cursor: 'default' }}
                   >
-                    <span style={{ fontSize: 11, color: '#6B6B6B', width: 20, textAlign: 'right', flexShrink: 0 }}>#{i + 1}</span>
-                    <div style={{ width: 3, height: 28, borderRadius: 2, background: i < 3 ? '#14b8a6' : '#0f766e', flexShrink: 0 }} />
-                    <span style={{ fontSize: 13, fontWeight: 600, color: '#ccfbf1', flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    <span style={{ fontSize: 11, color: '#8F8F8F', width: 20, textAlign: 'right', flexShrink: 0 }}>#{i + 1}</span>
+                    <div style={{ width: 3, height: 28, borderRadius: 2, background: i < 3 ? '#14b8a6' : '#0BD8B6', flexShrink: 0 }} />
+                    <span style={{ fontSize: 13, fontWeight: 600, color: '#0B1F1C', flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       {c.name}
                     </span>
                   </div>

@@ -21,7 +21,10 @@ export function ModalBase({
         position: 'fixed',
         inset: 0,
         zIndex: 1000,
-        backgroundColor: 'rgba(0,0,0,0.35)',
+        backgroundColor: 'rgba(0,0,0,0.7)',
+        backdropFilter: 'blur(4px)',
+        WebkitBackdropFilter: 'blur(4px)',
+        animation: 'fade-in 200ms var(--ease-out-soft)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -31,15 +34,16 @@ export function ModalBase({
     >
       <div
         style={{
-          backgroundColor: '#FFFFFF',
-          border: '1px solid #E0E0E0',
-          borderRadius: '14px',
-          padding: '28px',
+          backgroundColor: '#0A0A0A',
+          border: '1px solid rgba(255,255,255,0.1)',
+          borderRadius: '16px',
+          padding: '24px',
           width: '100%',
           maxWidth: '500px',
           maxHeight: '92vh',
           overflowY: 'auto',
-          boxShadow: '0 25px 60px rgba(0,0,0,0.12)',
+          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05), 0 24px 80px rgba(0,0,0,0.8)',
+          animation: 'pop-in 250ms var(--ease-out-soft)',
         }}
         onClick={e => e.stopPropagation()}
       >
@@ -51,17 +55,19 @@ export function ModalBase({
             marginBottom: '24px',
           }}
         >
-          <h2 style={{ fontSize: '17px', fontWeight: 700, color: '#111111', margin: 0 }}>{title}</h2>
+          <h2 style={{ fontSize: '18px', fontWeight: 500, color: '#F0F0F0', margin: 0 }}>{title}</h2>
           <button
             onClick={onClose}
+            aria-label="Kapat"
             style={{
-              background: 'none',
-              border: '1px solid #E0E0E0',
-              borderRadius: '6px',
-              color: '#6B6B6B',
+              background: 'rgba(255,255,255,0.04)',
+              border: '1px solid rgba(255,255,255,0.08)',
+              borderRadius: '8px',
+              color: '#A1A4A5',
               cursor: 'pointer',
-              fontSize: '16px',
-              padding: '3px 8px',
+              fontSize: '13px',
+              width: '28px',
+              height: '28px',
               lineHeight: 1,
             }}
           >
@@ -75,11 +81,11 @@ export function ModalBase({
 }
 
 export const inputStyle: React.CSSProperties = {
-  backgroundColor: '#FFFFFF',
-  border: '1px solid #E0E0E0',
-  borderRadius: '8px',
-  padding: '10px 12px',
-  color: '#111111',
+  backgroundColor: 'rgba(255,255,255,0.03)',
+  border: '1px solid rgba(255,255,255,0.1)',
+  borderRadius: '10px',
+  padding: '9px 12px',
+  color: '#F0F0F0',
   fontSize: '14px',
   width: '100%',
   outline: 'none',
@@ -90,7 +96,7 @@ export const labelStyle: React.CSSProperties = {
   display: 'block',
   fontSize: '13px',
   fontWeight: 500,
-  color: '#444444',
+  color: '#A1A4A5',
   marginBottom: '6px',
 }
 
@@ -99,10 +105,10 @@ export const fieldStyle: React.CSSProperties = { marginBottom: '16px' }
 export function cancelBtnStyle(): React.CSSProperties {
   return {
     padding: '9px 18px',
-    borderRadius: '8px',
-    border: '1px solid #111111',
-    background: '#FFFFFF',
-    color: '#111111',
+    borderRadius: '12px',
+    border: '1px solid rgba(255,255,255,0.1)',
+    background: 'transparent',
+    color: '#F0F0F0',
     cursor: 'pointer',
     fontSize: '14px',
   }
@@ -111,7 +117,7 @@ export function cancelBtnStyle(): React.CSSProperties {
 export function submitBtnStyle(color: string, loading: boolean): React.CSSProperties {
   return {
     padding: '9px 20px',
-    borderRadius: '8px',
+    borderRadius: '12px',
     border: 'none',
     backgroundColor: buttonColor(color).background,
     color: buttonColor(color).text,
@@ -126,8 +132,8 @@ export function addBtnStyle(color: string): React.CSSProperties {
   return {
     backgroundColor: buttonColor(color).background,
     border: 'none',
-    borderRadius: '8px',
-    padding: '8px 16px',
+    borderRadius: '12px',
+    padding: '8px 14px',
     color: buttonColor(color).text,
     fontSize: '13px',
     fontWeight: 600,

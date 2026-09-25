@@ -21,18 +21,18 @@ interface PlatformPageProps {
 }
 
 function dateCell(v: unknown) {
-  if (!v) return <span style={{ color: '#6B6B6B' }}>—</span>
-  return <span style={{ fontSize: '12px', color: '#6B6B6B' }}>{new Date(v as string).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+  if (!v) return <span style={{ color: '#8F8F8F' }}>—</span>
+  return <span style={{ fontSize: '12px', color: '#8F8F8F' }}>{new Date(v as string).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
 }
 
 function statusBadge(status: string | null) {
-  if (!status) return <span style={{ color: '#6B6B6B' }}>—</span>
+  if (!status) return <span style={{ color: '#8F8F8F' }}>—</span>
   const map: Record<string, [string, string]> = {
-    'Taslak':     ['rgba(100,116,139,0.15)', '#444444'],
-    'Planlandı':  ['rgba(59,130,246,0.15)',  '#2563EB'],
-    'Yayınlandı': ['rgba(34,197,94,0.15)',   '#16A34A'],
+    'Taslak':     ['rgba(100,116,139,0.15)', '#B4B4B4'],
+    'Planlandı':  ['rgba(59,130,246,0.15)',  '#70B8FF'],
+    'Yayınlandı': ['rgba(34,197,94,0.15)',   '#3DD68C'],
   }
-  const [bg, text] = map[status] ?? ['rgba(100,116,139,0.15)', '#444444']
+  const [bg, text] = map[status] ?? ['rgba(100,116,139,0.15)', '#B4B4B4']
   return <span style={{ fontSize: '12px', fontWeight: 600, color: text, backgroundColor: bg, borderRadius: '5px', padding: '2px 8px' }}>{status}</span>
 }
 
@@ -62,31 +62,31 @@ export async function PlatformPage({ platform, label, color, gradient, icon, ima
       key: 'title',
       label: 'Başlık',
       render: (v: unknown) => v
-        ? <span style={{ fontWeight: 600, color: '#111111' }}>{String(v)}</span>
-        : <span style={{ color: '#6B6B6B', fontStyle: 'italic' }}>Başlıksız</span>,
+        ? <span style={{ fontWeight: 600, color: '#EDEDED' }}>{String(v)}</span>
+        : <span style={{ color: '#8F8F8F', fontStyle: 'italic' }}>Başlıksız</span>,
     },
     {
       key: 'content',
       label: 'İçerik',
       render: (v: unknown) => v
-        ? <span style={{ fontSize: '13px', color: '#444444', maxWidth: '300px', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{String(v)}</span>
-        : <span style={{ color: '#6B6B6B' }}>—</span>,
+        ? <span style={{ fontSize: '13px', color: '#B4B4B4', maxWidth: '300px', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{String(v)}</span>
+        : <span style={{ color: '#8F8F8F' }}>—</span>,
     },
     { key: 'scheduled_date', label: 'Tarih', render: dateCell },
     {
       key: 'scheduled_time',
       label: 'Saat',
       render: (v: unknown) => v
-        ? <span style={{ fontSize: '12px', color: '#6B6B6B', fontFamily: 'monospace' }}>{String(v).slice(0, 5)}</span>
-        : <span style={{ color: '#6B6B6B' }}>—</span>,
+        ? <span style={{ fontSize: '12px', color: '#8F8F8F', fontFamily: 'monospace' }}>{String(v).slice(0, 5)}</span>
+        : <span style={{ color: '#8F8F8F' }}>—</span>,
     },
     { key: 'status', label: 'Durum', render: (v: unknown) => statusBadge(v as string | null) },
     { key: 'url', label: 'Link', render: (v: unknown) => v ? (
-      <a href={String(v)} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '12px', fontWeight: 600, color: '#2563EB', backgroundColor: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.25)', borderRadius: '5px', padding: '2px 8px', textDecoration: 'none', whiteSpace: 'nowrap' }}>
+      <a href={String(v)} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '12px', fontWeight: 600, color: '#70B8FF', backgroundColor: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.25)', borderRadius: '5px', padding: '2px 8px', textDecoration: 'none', whiteSpace: 'nowrap' }}>
         <ExternalLink size={11} />
         Link
       </a>
-    ) : <span style={{ color: '#6B6B6B' }}>—</span> },
+    ) : <span style={{ color: '#8F8F8F' }}>—</span> },
     { key: 'id', label: '', width: '80px', render: (_: unknown, row: Row) => (
       <div style={{ display: 'flex', gap: '4px' }}>
         <EditPostButton row={row} platform={platform} platformColor={color} />
@@ -104,23 +104,23 @@ export async function PlatformPage({ platform, label, color, gradient, icon, ima
       <div style={{ padding: '24px 32px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '16px', marginBottom: '28px' }}>
           <StatCard label="Toplam Gönderi" value={total}     icon={FileText}    iconColor={color}    iconBg={color + '20'} />
-          <StatCard label="Planlandı"      value={planned}   icon={Calendar}    iconColor="#2563EB"  iconBg="rgba(59,130,246,0.12)" />
-          <StatCard label="Yayınlandı"     value={published} icon={CheckCircle} iconColor="#16A34A"  iconBg="rgba(34,197,94,0.12)" />
-          <StatCard label="Taslak"         value={drafts}    icon={Clock}       iconColor="#444444"  iconBg="rgba(100,116,139,0.12)" />
+          <StatCard label="Planlandı"      value={planned}   icon={Calendar}    iconColor="#70B8FF"  iconBg="rgba(59,130,246,0.12)" />
+          <StatCard label="Yayınlandı"     value={published} icon={CheckCircle} iconColor="#3DD68C"  iconBg="rgba(34,197,94,0.12)" />
+          <StatCard label="Taslak"         value={drafts}    icon={Clock}       iconColor="#B4B4B4"  iconBg="rgba(100,116,139,0.12)" />
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: '24px', marginBottom: '28px', alignItems: 'start' }}>
           <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', overflow: 'hidden' }}>
-            <div style={{ padding: '14px 20px', borderBottom: '1px solid #E0E0E0', display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div style={{ padding: '14px 20px', borderBottom: '1px solid #262626', display: 'flex', alignItems: 'center', gap: '10px' }}>
               <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: color }} />
-              <span style={{ fontSize: '15px', fontWeight: 600, color: '#111111' }}>Gönderiler</span>
+              <span style={{ fontSize: '15px', fontWeight: 600, color: '#EDEDED' }}>Gönderiler</span>
               <span style={{ marginLeft: 'auto', backgroundColor: color + '20', color, border: `1px solid ${color}44`, borderRadius: '9999px', padding: '2px 10px', fontSize: '13px', fontWeight: 600 }}>{total}</span>
             </div>
             <DataTable columns={cols} data={rows} emptyMessage="Henüz gönderi eklenmedi" />
           </div>
 
           <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', padding: '20px' }}>
-            <div style={{ fontSize: '13px', fontWeight: 600, color: '#444444', marginBottom: '14px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            <div style={{ fontSize: '13px', fontWeight: 600, color: '#B4B4B4', marginBottom: '14px', }}>
               Takvim
             </div>
             <ContentCalendar posts={calPosts} singleColor={color} compact={true} />

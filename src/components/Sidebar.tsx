@@ -16,7 +16,6 @@ import {
   Newspaper,
   Star,
   CalendarCheck,
-  ChevronRight,
   ChevronDown,
   LogOut,
   Mail,
@@ -152,191 +151,86 @@ export default function Sidebar({ open = false }: { open?: boolean }) {
   }
 
   return (
-    <aside
-      id="app-sidebar"
-      className={open ? 'app-sidebar open' : 'app-sidebar'}
-      style={{
-        width: '260px',
-        minHeight: '100vh',
-        backgroundColor: 'var(--color-bg-card)',
-        borderRight: '1px solid var(--color-border-card)',
-        display: 'flex',
-        flexDirection: 'column',
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        bottom: 0,
-        zIndex: 50,
-      }}
-    >
-      {/* Logo */}
-      <div
-        style={{
-          padding: '24px 20px',
-          borderBottom: '1px solid var(--color-border-card)',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '12px',
-        }}
-      >
+    <aside id="app-sidebar" className={open ? 'app-sidebar open' : 'app-sidebar'}>
+      {/* Workspace */}
+      <div style={{ padding: '16px 14px 8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
         <div
           style={{
-            width: '40px',
-            height: '40px',
-            borderRadius: '10px',
+            width: '28px',
+            height: '28px',
+            borderRadius: '8px',
             overflow: 'hidden',
             flexShrink: 0,
-            backgroundColor: 'white',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
+            backgroundColor: '#FFFFFF',
+            boxShadow: '0 0 0 1px rgba(255,255,255,0.1)',
           }}
         >
           <Image
             src="/uniqlogo.png"
             alt="Unique NPC Games"
-            width={40}
-            height={40}
+            width={28}
+            height={28}
             style={{ display: 'block', width: '100%', height: '100%', objectFit: 'contain' }}
             priority
           />
         </div>
-        <div>
-          <div style={{ fontSize: '14px', fontWeight: 700, color: '#111111', lineHeight: 1.2 }}>
+        <div style={{ minWidth: 0 }}>
+          <div style={{ fontSize: '14px', fontWeight: 600, color: '#F0F0F0', lineHeight: 1.2, letterSpacing: '-0.01em' }}>
             Unique NPC
           </div>
-          <div style={{ fontSize: '11px', color: '#444444', marginTop: '2px' }}>
-            Marketing
-          </div>
+          <div style={{ fontSize: '12px', color: '#707070', marginTop: '1px' }}>Marketing</div>
         </div>
       </div>
 
       {/* Nav */}
-      <nav style={{ padding: '12px', flex: 1, overflowY: 'auto' }}>
-        <div style={{ marginBottom: '8px', paddingLeft: '8px' }}>
-          <span style={{ fontSize: '10px', fontWeight: 600, color: '#6B6B6B', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-            Navigasyon
-          </span>
-        </div>
+      <nav style={{ padding: '8px 10px', flex: 1, overflowY: 'auto' }}>
         {navItems.map((item) => {
           const Icon = item.icon
           const hasChildren = !!item.children
           const inSection = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href)
-          // Items with children only go black on their own page; on a child page the child is black instead
+          // Items with children are only active on their own page; on a child page the child is active instead
           const isActive = hasChildren ? pathname === item.href : inSection
           const isExpanded = expanded.has(item.href)
 
           return (
-            <div key={item.href} style={{ marginBottom: '2px' }}>
-              {/* Main nav row */}
-              <div
-                className={isActive ? 'nav-item active' : 'nav-item'}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  borderRadius: '8px',
-                  color: isActive ? '#FFFFFF' : inSection ? '#111111' : '#444444',
-                  fontSize: '13.5px',
-                  fontWeight: isActive || inSection ? 600 : 500,
-                  backgroundColor: isActive ? '#111111' : 'transparent',
-                  border: '1px solid transparent',
-                  overflow: 'hidden',
-                  transition: 'all 0.15s ease',
-                }}
-              >
+            <div key={item.href} style={{ marginBottom: '1px' }}>
+              <div className={`nav-item${isActive ? ' active' : inSection ? ' in-section' : ''}`}>
                 <Link
                   href={item.href}
+                  aria-current={isActive ? 'page' : undefined}
                   onClick={hasChildren ? () => setExpanded((prev) => { const n = new Set(prev); n.add(item.href); return n }) : undefined}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                    padding: '9px 4px 9px 12px',
-                    flex: 1,
-                    color: 'inherit',
-                    textDecoration: 'none',
-                  }}
                 >
                   {item.imageSrc ? (
-                    <img
-                      src={item.imageSrc}
-                      alt={item.label}
-                      style={{ width: '17px', height: '17px', objectFit: 'contain', borderRadius: '3px', flexShrink: 0, opacity: isActive || inSection ? 1 : 0.8, backgroundColor: isActive ? '#FFFFFF' : 'transparent', padding: isActive ? '1px' : 0 }}
-                    />
+                    <img src={item.imageSrc} alt="" />
                   ) : (
-                    <Icon size={16} strokeWidth={isActive ? 2.5 : 2} />
+                    <Icon size={16} strokeWidth={1.75} />
                   )}
-                  <span style={{ flex: 1 }}>{item.label}</span>
-                  {!hasChildren && isActive && <ChevronRight size={14} style={{ marginRight: '8px' }} />}
+                  <span>{item.label}</span>
                 </Link>
                 {hasChildren && (
                   <button
+                    className="nav-expand"
                     onClick={() => toggleExpand(item.href)}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      cursor: 'pointer',
-                      padding: '9px 10px',
-                      color: 'inherit',
-                      display: 'flex',
-                      alignItems: 'center',
-                      flexShrink: 0,
-                    }}
+                    aria-label={isExpanded ? `${item.label} menüsünü kapat` : `${item.label} menüsünü aç`}
+                    aria-expanded={isExpanded}
                   >
-                    <ChevronDown
-                      size={14}
-                      style={{
-                        transform: isExpanded ? 'rotate(0deg)' : 'rotate(-90deg)',
-                        transition: 'transform 0.2s ease',
-                      }}
-                    />
+                    <ChevronDown size={14} style={{ transform: isExpanded ? 'none' : 'rotate(-90deg)' }} />
                   </button>
                 )}
               </div>
 
-              {/* Sub-items */}
               {hasChildren && isExpanded && (
-                <div style={{ paddingLeft: '14px', paddingTop: '2px', paddingBottom: '2px' }}>
+                <div className="sub-nav">
                   {item.children!.map((child) => {
                     const isChildActive = pathname === child.href
                     return (
                       <Link
                         key={child.href}
                         href={child.href}
+                        aria-current={isChildActive ? 'page' : undefined}
                         className={isChildActive ? 'sub-nav-item active' : 'sub-nav-item'}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '8px',
-                          padding: '6px 10px',
-                          borderRadius: '6px',
-                          color: isChildActive ? '#FFFFFF' : '#444444',
-                          textDecoration: 'none',
-                          fontSize: '13px',
-                          fontWeight: isChildActive ? 600 : 400,
-                          marginBottom: '1px',
-                          backgroundColor: isChildActive ? '#111111' : 'transparent',
-                          transition: 'all 0.15s ease',
-                        }}
                       >
-                        {child.imageSrc ? (
-                          <img
-                            src={child.imageSrc}
-                            alt={child.label}
-                            style={{ width: '15px', height: '15px', objectFit: 'contain', borderRadius: '3px', flexShrink: 0, opacity: isChildActive ? 1 : 0.8, backgroundColor: isChildActive ? '#FFFFFF' : 'transparent', padding: isChildActive ? '1px' : 0 }}
-                          />
-                        ) : (
-                          <div
-                            style={{
-                              width: '5px',
-                              height: '5px',
-                              borderRadius: '50%',
-                              backgroundColor: isChildActive ? '#FFFFFF' : '#BDBDBD',
-                              flexShrink: 0,
-                            }}
-                          />
-                        )}
+                        {child.imageSrc ? <img src={child.imageSrc} alt="" /> : <span className="sub-nav-dot" />}
                         {child.label}
                       </Link>
                     )
@@ -348,89 +242,45 @@ export default function Sidebar({ open = false }: { open?: boolean }) {
         })}
       </nav>
 
-      {/* Footer / User / Logout */}
-      <div style={{ padding: '16px 20px', borderTop: '1px solid var(--color-border-card)' }}>
-        {user && (
+      {/* Account */}
+      <div style={{ padding: '10px', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+        <div className="sidebar-user">
           <div
             style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              padding: '8px 10px',
-              borderRadius: '8px',
-              backgroundColor: '#FFFFFF',
-              border: '1px solid var(--color-border-card)',
-              marginBottom: '10px',
+              width: '28px',
+              height: '28px',
+              borderRadius: '50%',
+              background: 'linear-gradient(135deg, #3A3A3A, #1A1A1A)',
+              boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)',
+              display: 'grid',
+              placeItems: 'center',
+              flexShrink: 0,
+              fontSize: '12px',
+              fontWeight: 600,
+              color: '#F0F0F0',
             }}
           >
-            <div
-              style={{
-                width: '28px',
-                height: '28px',
-                borderRadius: '50%',
-                background: '#111111',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexShrink: 0,
-                fontSize: '11px',
-                fontWeight: 700,
-                color: 'white',
-              }}
-            >
-              {user.email?.[0].toUpperCase() ?? 'U'}
+            {user?.email?.[0].toUpperCase() ?? 'U'}
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: '13px', color: '#F0F0F0', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {user?.email ?? '—'}
             </div>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div
-                style={{
-                  fontSize: '12px',
-                  color: '#111111',
-                  fontWeight: 500,
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                {user.email}
-              </div>
-              <div style={{ fontSize: '10px', color: '#16A34A' }}>● Aktif</div>
+            <div style={{ fontSize: '11px', color: '#707070', display: 'flex', alignItems: 'center', gap: '5px' }}>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: '#3DD68C', boxShadow: '0 0 6px #3DD68C' }} />
+              Aktif
             </div>
           </div>
-        )}
-
-        <button
-          onClick={handleLogout}
-          disabled={loggingOut}
-          style={{
-            width: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            padding: '9px 12px',
-            borderRadius: '8px',
-            backgroundColor: 'rgba(239,68,68,0.08)',
-            border: '1px solid rgba(239,68,68,0.2)',
-            color: '#DC2626',
-            fontSize: '13.5px',
-            fontWeight: 500,
-            cursor: loggingOut ? 'not-allowed' : 'pointer',
-            opacity: loggingOut ? 0.6 : 1,
-            transition: 'all 0.15s ease',
-          }}
-          onMouseEnter={(e) => {
-            if (!loggingOut) {
-              ;(e.currentTarget as HTMLButtonElement).style.backgroundColor = 'rgba(239,68,68,0.15)'
-              ;(e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(239,68,68,0.4)'
-            }
-          }}
-          onMouseLeave={(e) => {
-            ;(e.currentTarget as HTMLButtonElement).style.backgroundColor = 'rgba(239,68,68,0.08)'
-            ;(e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(239,68,68,0.2)'
-          }}
-        >
-          <LogOut size={15} />
-          <span>{loggingOut ? 'Çıkış yapılıyor…' : 'Çıkış Yap'}</span>
-        </button>
+          <button
+            className="sidebar-logout"
+            onClick={handleLogout}
+            disabled={loggingOut}
+            title="Çıkış Yap"
+            aria-label={loggingOut ? 'Çıkış yapılıyor…' : 'Çıkış Yap'}
+          >
+            <LogOut size={15} />
+          </button>
+        </div>
       </div>
     </aside>
   )

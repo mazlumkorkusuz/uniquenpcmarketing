@@ -85,9 +85,9 @@ export function BulkPostModal() {
           gap: '8px',
           padding: '9px 18px',
           borderRadius: '9px',
-          background: '#111111',
+          background: '#EDEDED',
           border: 'none',
-          color: '#fff',
+          color: '#0A0A0A',
           fontWeight: 700,
           fontSize: '14px',
           cursor: 'pointer',
@@ -114,9 +114,9 @@ export function BulkPostModal() {
                       gap: '6px',
                       padding: '6px 12px',
                       borderRadius: '7px',
-                      border: `1px solid ${isSelected ? p.color : '#E0E0E0'}`,
-                      backgroundColor: isSelected ? `${p.color}22` : '#FFFFFF',
-                      color: isSelected ? p.color : '#6B6B6B',
+                      border: `1px solid ${isSelected ? p.color : '#262626'}`,
+                      backgroundColor: isSelected ? `${p.color}22` : '#0A0A0A',
+                      color: isSelected ? p.color : '#8F8F8F',
                       fontWeight: 600,
                       fontSize: '12px',
                       cursor: 'pointer',
@@ -129,14 +129,14 @@ export function BulkPostModal() {
               })}
             </div>
             {selected.length > 0 && (
-              <div style={{ fontSize: '11px', color: '#6B6B6B', marginTop: '6px' }}>
+              <div style={{ fontSize: '11px', color: '#8F8F8F', marginTop: '6px' }}>
                 {selected.length} platform seçildi
               </div>
             )}
           </div>
 
           {selected.length > 0 && (
-            <div style={{ ...fieldStyle, backgroundColor: '#FFFFFF', borderRadius: '8px', padding: '12px', border: '1px solid #E0E0E0' }}>
+            <div style={{ ...fieldStyle, backgroundColor: '#0A0A0A', borderRadius: '8px', padding: '12px', border: '1px solid #262626' }}>
               <label style={{ ...labelStyle, marginBottom: '10px' }}>Platform Linkleri (opsiyonel)</label>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {selected.map(key => {
@@ -194,7 +194,7 @@ export function BulkPostModal() {
           </div>
           <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '8px' }}>
             <button type="button" onClick={close} style={cancelBtnStyle()}>İptal</button>
-            <button type="submit" disabled={isDisabled} style={submitBtnStyle('#7c3aed', isDisabled)}>
+            <button type="submit" disabled={isDisabled} style={submitBtnStyle('#9E8CFC', isDisabled)}>
               {loading ? 'Oluşturuluyor...' : `${selected.length > 0 ? selected.length + ' Platform İçin ' : ''}Gönderi Oluştur`}
             </button>
           </div>

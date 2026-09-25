@@ -1,12 +1,17 @@
 import type { Metadata } from 'next'
-import { Plus_Jakarta_Sans } from 'next/font/google'
+import { Inter, Geist } from 'next/font/google'
 import './globals.css'
 import AppShell from '@/components/AppShell'
 
-const jakarta = Plus_Jakarta_Sans({
-  variable: '--font-jakarta',
+// Resend-style type: Inter for UI text, Geist (closest free match to ABC Favorit) for display headings
+const inter = Inter({
+  variable: '--font-inter',
   subsets: ['latin', 'latin-ext'],
-  weight: ['400', '500', '600', '700', '800'],
+})
+
+const geist = Geist({
+  variable: '--font-display',
+  subsets: ['latin', 'latin-ext'],
 })
 
 export const metadata: Metadata = {
@@ -24,8 +29,8 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="tr" className={jakarta.variable}>
-      <body style={{ margin: 0, minHeight: '100vh', backgroundColor: '#FFFFFF' }}>
+    <html lang="tr" className={`${inter.variable} ${geist.variable}`}>
+      <body style={{ margin: 0, minHeight: '100vh', backgroundColor: '#000000' }}>
         <AppShell>{children}</AppShell>
       </body>
     </html>

@@ -42,7 +42,7 @@ function languageFlag(lang: string): string {
   return LANGUAGE_FLAGS[lang] ?? '🌐'
 }
 
-const AVATAR_PALETTE = ['#9146ff', '#2563EB', '#16A34A', '#D97706', '#DB2777', '#DC2626', '#0891B2', '#4F46E5']
+const AVATAR_PALETTE = ['#9146ff', '#70B8FF', '#3DD68C', '#FFB224', '#FF8DCC', '#FF6369', '#4CCCE6', '#9EB1FF']
 function colorForName(name: unknown): string {
   const s = String(name ?? '')
   let hash = 0
@@ -95,7 +95,7 @@ function Avatar({ username, src, size }: { username: unknown; src?: string; size
       src={src}
       alt={uname}
       onError={() => setBroken(true)}
-      style={{ width: size, height: size, borderRadius: size / 3.5, objectFit: 'cover', flexShrink: 0, border: `1px solid ${color}66`, backgroundColor: '#FFFFFF' }}
+      style={{ width: size, height: size, borderRadius: size / 3.5, objectFit: 'cover', flexShrink: 0, border: `1px solid ${color}66`, backgroundColor: '#0A0A0A' }}
     />
   )
 }
@@ -103,15 +103,15 @@ function Avatar({ username, src, size }: { username: unknown; src?: string; size
 // ── sortable column header ──────────────────────────────────────────────
 function SortableTH({ label, sk, active, dir, onSort, style }: { label: string; sk: SortKey; active: boolean; dir: SortDir; onSort: (k: SortKey) => void; style?: React.CSSProperties }) {
   return (
-    <th onClick={() => onSort(sk)} style={{ ...STH, cursor: 'pointer', userSelect: 'none', color: active ? '#9146ff' : '#6B6B6B', ...style }}>
+    <th onClick={() => onSort(sk)} style={{ ...STH, cursor: 'pointer', userSelect: 'none', color: active ? '#9146ff' : '#8F8F8F', ...style }}>
       {label} <span style={{ opacity: active ? 1 : 0.3 }}>{active ? (dir === 'desc' ? '↓' : '↑') : '↕'}</span>
     </th>
   )
 }
 
-const STH: React.CSSProperties = { backgroundColor: 'var(--color-bg-section)', color: '#6B6B6B', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', padding: '11px 14px', textAlign: 'left', borderBottom: '1px solid #E0E0E0', whiteSpace: 'nowrap' }
+const STH: React.CSSProperties = { backgroundColor: 'rgba(255,255,255,0.02)', color: '#8F8F8F', fontSize: '12.5px', fontWeight: 500, padding: '11px 14px', textAlign: 'left', borderBottom: '1px solid #262626', whiteSpace: 'nowrap' }
 const TD: React.CSSProperties = { padding: '12px 14px', verticalAlign: 'middle' }
-const SEL: React.CSSProperties = { backgroundColor: '#FFFFFF', border: '1px solid #E0E0E0', borderRadius: '7px', padding: '7px 11px', fontSize: '13px', color: '#111111', cursor: 'pointer', outline: 'none' }
+const SEL: React.CSSProperties = { backgroundColor: '#0A0A0A', border: '1px solid #262626', borderRadius: '7px', padding: '7px 11px', fontSize: '13px', color: '#EDEDED', cursor: 'pointer', outline: 'none' }
 
 // ── stats bar card styling ───────────────────────────────────────────────
 function statCardStyle(color: string): React.CSSProperties {
@@ -119,7 +119,6 @@ function statCardStyle(color: string): React.CSSProperties {
     backgroundColor: 'var(--color-bg-card)',
     boxShadow: 'var(--shadow-card)',
     border: '1px solid var(--color-border-card)',
-    borderLeft: `3px solid ${color}`,
     borderRadius: '14px',
     padding: '22px 24px',
     display: 'flex',
@@ -128,8 +127,8 @@ function statCardStyle(color: string): React.CSSProperties {
     minHeight: '132px',
   }
 }
-const statValueStyle: React.CSSProperties = { fontSize: '26px', fontWeight: 800, color: '#111111', lineHeight: 1.15 }
-const statSubStyle: React.CSSProperties = { fontSize: '12px', color: '#6B6B6B' }
+const statValueStyle: React.CSSProperties = { fontSize: '26px', fontWeight: 800, color: '#EDEDED', lineHeight: 1.15 }
+const statSubStyle: React.CSSProperties = { fontSize: '12px', color: '#8F8F8F' }
 
 function StatCardHeader({ icon, color, label }: { icon: React.ReactNode; color: string; label: string }) {
   return (
@@ -137,14 +136,14 @@ function StatCardHeader({ icon, color, label }: { icon: React.ReactNode; color: 
       <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: color + '22', border: `1px solid ${color}55`, display: 'flex', alignItems: 'center', justifyContent: 'center', color, flexShrink: 0 }}>
         {icon}
       </div>
-      <span style={{ fontSize: '12px', fontWeight: 600, color: '#444444', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</span>
+      <span style={{ fontSize: '12px', fontWeight: 600, color: '#B4B4B4', }}>{label}</span>
     </div>
   )
 }
 
 function ContactRow({ href, icon, label }: { href: string; icon: React.ReactNode; label: string }) {
   return (
-    <a href={href} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#2563EB', textDecoration: 'none', padding: '5px 0', overflow: 'hidden' }}>
+    <a href={href} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#70B8FF', textDecoration: 'none', padding: '5px 0', overflow: 'hidden' }}>
       <span style={{ flexShrink: 0, display: 'flex' }}>{icon}</span>
       <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{label}</span>
     </a>
@@ -168,18 +167,18 @@ function DetailPanel({ row, profileSrc, onClose }: { row: Row; profileSrc?: stri
   if (row.facebook) contacts.push({ href: socialHref(row.facebook, 'https://facebook.com/'), icon: <Globe size={13} />, label: String(row.facebook) })
 
   return (
-    <div style={{ width: '380px', backgroundColor: '#FFFFFF', borderLeft: '1px solid #E0E0E0', display: 'flex', flexDirection: 'column', overflowY: 'auto', position: 'fixed', top: 0, right: 0, height: '100vh', zIndex: 1000 }}>
+    <div style={{ width: '380px', backgroundColor: '#0A0A0A', borderLeft: '1px solid #262626', display: 'flex', flexDirection: 'column', overflowY: 'auto', position: 'fixed', top: 0, right: 0, height: '100vh', zIndex: 1000 }}>
       {/* Header */}
-      <div style={{ padding: '18px', borderBottom: '1px solid #E0E0E0', display: 'flex', alignItems: 'center', gap: '14px' }}>
+      <div style={{ padding: '18px', borderBottom: '1px solid #262626', display: 'flex', alignItems: 'center', gap: '14px' }}>
         <Avatar key={String(row.username)} username={row.username} src={profileSrc} size={64} />
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontWeight: 700, fontSize: '16px', color: '#111111', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name}</div>
-          <div style={{ fontSize: '12px', color: '#6B6B6B', marginTop: '3px', display: 'flex', gap: '6px', alignItems: 'center' }}>
+          <div style={{ fontWeight: 700, fontSize: '16px', color: '#EDEDED', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name}</div>
+          <div style={{ fontSize: '12px', color: '#8F8F8F', marginTop: '3px', display: 'flex', gap: '6px', alignItems: 'center' }}>
             @{String(row.username ?? '—')}
             {!!row.language && <span style={{ backgroundColor: 'rgba(145,70,255,0.12)', color: '#9146FF', borderRadius: '4px', padding: '1px 6px' }}>{String(row.language)}</span>}
           </div>
         </div>
-        <button onClick={onClose} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '30px', borderRadius: '7px', backgroundColor: 'transparent', border: '1px solid #E0E0E0', color: '#6B6B6B', cursor: 'pointer', flexShrink: 0 }}>
+        <button onClick={onClose} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '30px', borderRadius: '7px', backgroundColor: 'transparent', border: '1px solid #262626', color: '#8F8F8F', cursor: 'pointer', flexShrink: 0 }}>
           <X size={14} />
         </button>
       </div>
@@ -189,10 +188,10 @@ function DetailPanel({ row, profileSrc, onClose }: { row: Row; profileSrc?: stri
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
           {[
             { label: 'Ort. İzleyici', value: fmt(row.avg_viewers), color: '#9146FF' },
-            { label: 'Takipçi', value: fmt(row.followers), color: '#16A34A' },
+            { label: 'Takipçi', value: fmt(row.followers), color: '#3DD68C' },
           ].map(s => (
-            <div key={s.label} style={{ backgroundColor: '#FFFFFF', border: '1px solid #E0E0E0', borderRadius: '8px', padding: '12px 14px' }}>
-              <div style={{ fontSize: '10px', color: '#6B6B6B', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '5px' }}>{s.label}</div>
+            <div key={s.label} style={{ backgroundColor: '#0A0A0A', border: '1px solid #262626', borderRadius: '8px', padding: '12px 14px' }}>
+              <div style={{ fontSize: '10px', color: '#8F8F8F', fontWeight: 600, marginBottom: '5px' }}>{s.label}</div>
               <div style={{ fontSize: '18px', fontWeight: 800, color: s.color }}>{s.value}</div>
             </div>
           ))}
@@ -208,20 +207,20 @@ function DetailPanel({ row, profileSrc, onClose }: { row: Row; profileSrc?: stri
         {/* Bio */}
         {!!row.bio && (
           <div>
-            <div style={{ fontSize: '11px', fontWeight: 600, color: '#6B6B6B', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>Bio</div>
-            <div style={{ fontSize: '13px', color: '#444444', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{String(row.bio)}</div>
+            <div style={{ fontSize: '11px', fontWeight: 600, color: '#8F8F8F', marginBottom: '8px' }}>Bio</div>
+            <div style={{ fontSize: '13px', color: '#B4B4B4', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{String(row.bio)}</div>
           </div>
         )}
 
         {/* Games / categories */}
         {gameList.length > 0 && (
           <div>
-            <div style={{ fontSize: '11px', fontWeight: 600, color: '#6B6B6B', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <div style={{ fontSize: '11px', fontWeight: 600, color: '#8F8F8F', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
               <Gamepad2 size={12} /> Oyunlar / Kategoriler
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
               {gameList.map((g, i) => (
-                <div key={i} style={{ fontSize: '13px', color: '#444444', padding: '5px 10px', backgroundColor: 'rgba(145,70,255,0.06)', border: '1px solid rgba(145,70,255,0.12)', borderRadius: '6px' }}>{g}</div>
+                <div key={i} style={{ fontSize: '13px', color: '#B4B4B4', padding: '5px 10px', backgroundColor: 'rgba(145,70,255,0.06)', border: '1px solid rgba(145,70,255,0.12)', borderRadius: '6px' }}>{g}</div>
               ))}
             </div>
           </div>
@@ -230,7 +229,7 @@ function DetailPanel({ row, profileSrc, onClose }: { row: Row; profileSrc?: stri
         {/* Contacts */}
         {contacts.length > 0 && (
           <div>
-            <div style={{ fontSize: '11px', fontWeight: 600, color: '#6B6B6B', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>İletişim &amp; Sosyal</div>
+            <div style={{ fontSize: '11px', fontWeight: 600, color: '#8F8F8F', marginBottom: '8px' }}>İletişim &amp; Sosyal</div>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               {contacts.map((c, i) => <ContactRow key={i} {...c} />)}
             </div>
@@ -273,41 +272,41 @@ function TwitchLiveCard() {
   return (
     <>
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-        <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: 'rgba(239,68,68,0.18)', border: '1px solid rgba(239,68,68,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#DC2626', flexShrink: 0 }}>
+        <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: 'rgba(239,68,68,0.18)', border: '1px solid rgba(239,68,68,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FF6369', flexShrink: 0 }}>
           <Radio size={17} />
         </div>
-        <span style={{ fontSize: '12px', fontWeight: 600, color: '#444444', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Twitch Canlı</span>
-        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', marginLeft: 'auto', fontSize: '10px', fontWeight: 700, color: '#16A34A' }}>
-          <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#16A34A', boxShadow: '0 0 6px #16A34A', animation: 'twitchLivePulse 1.6s ease-in-out infinite' }} />
+        <span style={{ fontSize: '12px', fontWeight: 600, color: '#B4B4B4', }}>Twitch Canlı</span>
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', marginLeft: 'auto', fontSize: '10px', fontWeight: 700, color: '#3DD68C' }}>
+          <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#3DD68C', boxShadow: '0 0 6px #3DD68C', animation: 'twitchLivePulse 1.6s ease-in-out infinite' }} />
           CANLI
         </span>
       </div>
 
       {loading ? (
-        <div style={{ fontSize: '12px', color: '#6B6B6B', padding: '8px 0' }}>Yükleniyor...</div>
+        <div style={{ fontSize: '12px', color: '#8F8F8F', padding: '8px 0' }}>Yükleniyor...</div>
       ) : error ? (
-        <div style={{ fontSize: '12px', color: '#6B6B6B', padding: '8px 0' }}>Twitch verisi alınamadı</div>
+        <div style={{ fontSize: '12px', color: '#8F8F8F', padding: '8px 0' }}>Twitch verisi alınamadı</div>
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
           <div>
-            <div style={{ fontSize: '10px', fontWeight: 600, color: '#6B6B6B', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '6px' }}>En Çok İzlenen</div>
+            <div style={{ fontSize: '10px', fontWeight: 600, color: '#8F8F8F', marginBottom: '6px' }}>En Çok İzlenen</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
               {streams.map((s, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px' }}>
-                  <span style={{ color: '#6B6B6B', width: '12px', flexShrink: 0 }}>{i + 1}</span>
-                  <span style={{ color: '#111111', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>{s.user_name}</span>
-                  <span style={{ color: '#DC2626', fontWeight: 700, flexShrink: 0 }}>{fmt(s.viewer_count)}</span>
+                  <span style={{ color: '#8F8F8F', width: '12px', flexShrink: 0 }}>{i + 1}</span>
+                  <span style={{ color: '#EDEDED', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>{s.user_name}</span>
+                  <span style={{ color: '#FF6369', fontWeight: 700, flexShrink: 0 }}>{fmt(s.viewer_count)}</span>
                 </div>
               ))}
             </div>
           </div>
           <div>
-            <div style={{ fontSize: '10px', fontWeight: 600, color: '#6B6B6B', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '6px' }}>Popüler Kategoriler</div>
+            <div style={{ fontSize: '10px', fontWeight: 600, color: '#8F8F8F', marginBottom: '6px' }}>Popüler Kategoriler</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
               {categories.map((c, i) => (
                 <div key={c.id ?? i} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px' }}>
-                  <span style={{ color: '#6B6B6B', width: '12px', flexShrink: 0 }}>{i + 1}</span>
-                  <span style={{ color: '#111111', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.name}</span>
+                  <span style={{ color: '#8F8F8F', width: '12px', flexShrink: 0 }}>{i + 1}</span>
+                  <span style={{ color: '#EDEDED', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.name}</span>
                 </div>
               ))}
             </div>
@@ -514,7 +513,7 @@ export default function TwitchPage() {
             <button
               key={t.key}
               onClick={() => switchTab(t.key)}
-              style={{ padding: '8px 18px', borderRadius: '8px', border: 'none', fontWeight: 600, fontSize: '13px', cursor: 'pointer', backgroundColor: activeTab === t.key ? '#9146ff' : 'transparent', color: activeTab === t.key ? '#fff' : '#6B6B6B', transition: 'all 0.15s' }}
+              style={{ padding: '8px 18px', borderRadius: '8px', border: 'none', fontWeight: 600, fontSize: '13px', cursor: 'pointer', backgroundColor: activeTab === t.key ? '#9146ff' : 'transparent', color: activeTab === t.key ? '#0A0A0A' : '#8F8F8F', transition: 'all 0.15s' }}
             >
               {t.label}
             </button>
@@ -531,22 +530,22 @@ export default function TwitchPage() {
           </div>
 
           {/* Email Olan */}
-          <div style={statCardStyle('#D97706')}>
-            <StatCardHeader icon={<Mail size={17} />} color="#D97706" label="Email Olan" />
+          <div style={statCardStyle('#FFB224')}>
+            <StatCardHeader icon={<Mail size={17} />} color="#FFB224" label="Email Olan" />
             <div style={statValueStyle}>{auxLoading ? '…' : stats.emailCount.toLocaleString('tr-TR')}</div>
             <div style={statSubStyle}>{auxLoading || stats.totalStreamers === 0 ? '—' : `%${Math.round((stats.emailCount / stats.totalStreamers) * 100)} kapsam`}</div>
           </div>
 
           {/* En az 1 iletişim/sosyal */}
-          <div style={statCardStyle('#16A34A')}>
-            <StatCardHeader icon={<Share2 size={17} />} color="#16A34A" label="İletişim / Sosyal Medya" />
+          <div style={statCardStyle('#3DD68C')}>
+            <StatCardHeader icon={<Share2 size={17} />} color="#3DD68C" label="İletişim / Sosyal Medya" />
             <div style={statValueStyle}>{auxLoading ? '…' : stats.anyContactCount.toLocaleString('tr-TR')}</div>
             <div style={statSubStyle}>{auxLoading || stats.totalStreamers === 0 ? '—' : `%${Math.round((stats.anyContactCount / stats.totalStreamers) * 100)} en az 1 kanal`}</div>
           </div>
 
           {/* Popüler Dil */}
-          <div style={statCardStyle('#2563EB')}>
-            <StatCardHeader icon={<Languages size={17} />} color="#2563EB" label="Popüler Dil" />
+          <div style={statCardStyle('#70B8FF')}>
+            <StatCardHeader icon={<Languages size={17} />} color="#70B8FF" label="Popüler Dil" />
             <div style={statValueStyle}>{auxLoading ? '…' : topLanguage ? `${languageFlag(topLanguage.name)} ${topLanguage.name}` : '—'}</div>
             <div style={statSubStyle}>{auxLoading || !topLanguage ? '—' : `${topLanguage.count.toLocaleString('tr-TR')} yayıncı`}</div>
           </div>
@@ -555,19 +554,19 @@ export default function TwitchPage() {
           <div
             onMouseEnter={() => setCategoriesHovered(true)}
             onMouseLeave={() => setCategoriesHovered(false)}
-            style={{ ...statCardStyle('#DB2777'), gridColumn: 'span 2', position: 'relative' }}
+            style={{ ...statCardStyle('#FF8DCC'), gridColumn: 'span 2', position: 'relative' }}
           >
-            <StatCardHeader icon={<Gamepad2 size={17} />} color="#DB2777" label="Popüler Kategoriler" />
+            <StatCardHeader icon={<Gamepad2 size={17} />} color="#FF8DCC" label="Popüler Kategoriler" />
             <div style={statValueStyle}>{auxLoading ? '…' : topCategory ? topCategory.name : '—'}</div>
             <div style={statSubStyle}>{auxLoading || !topCategory ? '—' : `${topCategory.count.toLocaleString('tr-TR')} yayıncının ana kategorisi · üzerine gelip ilk 3'ü gör`}</div>
 
             {categoriesHovered && top3Categories.length > 0 && (
-              <div style={{ position: 'absolute', top: 'calc(100% + 8px)', left: '20px', right: '20px', zIndex: 10, backgroundColor: '#FFFFFF', border: '1px solid rgba(244,114,182,0.35)', borderRadius: '12px', padding: '14px', boxShadow: '0 12px 28px rgba(0,0,0,0.12)', display: 'flex', gap: '10px' }}>
+              <div style={{ position: 'absolute', top: 'calc(100% + 8px)', left: '20px', right: '20px', zIndex: 10, backgroundColor: '#0A0A0A', border: '1px solid rgba(244,114,182,0.35)', borderRadius: '12px', padding: '14px', boxShadow: '0 12px 28px rgba(0,0,0,0.12)', display: 'flex', gap: '10px' }}>
                 {top3Categories.map((c, i) => (
                   <div key={c.name} style={{ flex: 1, backgroundColor: 'rgba(244,114,182,0.08)', border: '1px solid rgba(244,114,182,0.2)', borderRadius: '8px', padding: '10px 12px' }}>
-                    <div style={{ fontSize: '10px', fontWeight: 700, color: '#DB2777', marginBottom: '4px' }}>#{i + 1}</div>
-                    <div style={{ fontSize: '12px', fontWeight: 600, color: '#111111', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.name}</div>
-                    <div style={{ fontSize: '11px', color: '#444444', marginTop: '2px' }}>{c.count.toLocaleString('tr-TR')} yayıncı</div>
+                    <div style={{ fontSize: '10px', fontWeight: 700, color: '#FF8DCC', marginBottom: '4px' }}>#{i + 1}</div>
+                    <div style={{ fontSize: '12px', fontWeight: 600, color: '#EDEDED', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.name}</div>
+                    <div style={{ fontSize: '11px', color: '#B4B4B4', marginTop: '2px' }}>{c.count.toLocaleString('tr-TR')} yayıncı</div>
                   </div>
                 ))}
               </div>
@@ -575,7 +574,7 @@ export default function TwitchPage() {
           </div>
 
           {/* Twitch Canlı (wide) */}
-          <div style={{ ...statCardStyle('#DC2626'), gridColumn: 'span 2' }}>
+          <div style={{ ...statCardStyle('#FF6369'), gridColumn: 'span 2' }}>
             <TwitchLiveCard />
           </div>
         </div>
@@ -583,9 +582,9 @@ export default function TwitchPage() {
         {/* Table card */}
         <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', overflow: 'hidden' }}>
           {/* Filters */}
-          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', padding: '12px 20px', borderBottom: '1px solid #E0E0E0', alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', padding: '12px 20px', borderBottom: '1px solid #262626', alignItems: 'center' }}>
             <div style={{ position: 'relative', flex: 1, minWidth: '180px' }}>
-              <Search size={13} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#6B6B6B', pointerEvents: 'none' }} />
+              <Search size={13} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#8F8F8F', pointerEvents: 'none' }} />
               <input value={searchInput} onChange={e => setSearchInput(e.target.value)} placeholder="Kanal ara..." style={{ ...SEL, paddingLeft: '30px', width: '100%', boxSizing: 'border-box' }} />
             </div>
             <select value={languageFilter} onChange={e => setLanguageFilter(e.target.value)} style={SEL}>
@@ -594,16 +593,16 @@ export default function TwitchPage() {
             </select>
             <button
               onClick={() => setEmailOnly(v => !v)}
-              style={{ padding: '7px 14px', borderRadius: '7px', border: `1px solid ${emailOnly ? 'rgba(251,191,36,0.5)' : '#E0E0E0'}`, backgroundColor: emailOnly ? 'rgba(251,191,36,0.1)' : 'transparent', color: emailOnly ? '#D97706' : '#6B6B6B', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}
+              style={{ padding: '7px 14px', borderRadius: '7px', border: `1px solid ${emailOnly ? 'rgba(251,191,36,0.5)' : '#262626'}`, backgroundColor: emailOnly ? 'rgba(251,191,36,0.1)' : 'transparent', color: emailOnly ? '#FFB224' : '#8F8F8F', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}
             >
               📧 Email Var
             </button>
             {hasFilters && (
-              <button onClick={() => { setSearchInput(''); setSearch(''); setLanguageFilter(''); setEmailOnly(false) }} style={{ fontSize: '12px', color: '#6B6B6B', background: 'none', border: '1px solid #E0E0E0', borderRadius: '7px', padding: '7px 12px', cursor: 'pointer' }}>
+              <button onClick={() => { setSearchInput(''); setSearch(''); setLanguageFilter(''); setEmailOnly(false) }} style={{ fontSize: '12px', color: '#8F8F8F', background: 'none', border: '1px solid #262626', borderRadius: '7px', padding: '7px 12px', cursor: 'pointer' }}>
                 Temizle
               </button>
             )}
-            <span style={{ marginLeft: 'auto', fontSize: '12px', color: '#6B6B6B', whiteSpace: 'nowrap' }}>
+            <span style={{ marginLeft: 'auto', fontSize: '12px', color: '#8F8F8F', whiteSpace: 'nowrap' }}>
               {totalCount === 0 ? '0 yayıncı' : `${rangeStart.toLocaleString('tr-TR')} - ${rangeEnd.toLocaleString('tr-TR')} / ${totalCount.toLocaleString('tr-TR')} yayıncı`}
             </span>
           </div>
@@ -623,16 +622,16 @@ export default function TwitchPage() {
               </thead>
               <tbody>
                 {loading ? (
-                  <tr><td colSpan={6} style={{ padding: '48px', textAlign: 'center', color: '#6B6B6B', fontSize: '14px' }}>Yükleniyor...</td></tr>
+                  <tr><td colSpan={6} style={{ padding: '48px', textAlign: 'center', color: '#8F8F8F', fontSize: '14px' }}>Yükleniyor...</td></tr>
                 ) : rows.length === 0 ? (
-                  <tr><td colSpan={6} style={{ padding: '48px', textAlign: 'center', color: '#6B6B6B', fontSize: '14px' }}>{hasFilters ? 'Eşleşen yayıncı bulunamadı' : 'Henüz yayıncı eklenmemiş'}</td></tr>
+                  <tr><td colSpan={6} style={{ padding: '48px', textAlign: 'center', color: '#8F8F8F', fontSize: '14px' }}>{hasFilters ? 'Eşleşen yayıncı bulunamadı' : 'Henüz yayıncı eklenmemiş'}</td></tr>
                 ) : rows.map((row, i) => {
                   const isActive = selected?.id === row.id
                   return (
                     <tr
                       key={String(row.id ?? i)}
                       onClick={() => setSelected(isActive ? null : row)}
-                      style={{ borderBottom: i < rows.length - 1 ? '1px solid #E5E5E5' : 'none', backgroundColor: isActive ? 'rgba(145,70,255,0.07)' : i % 2 === 1 ? '#F9F9F9' : 'transparent', cursor: 'pointer' }}
+                      style={{ borderBottom: i < rows.length - 1 ? '1px solid #1F1F1F' : 'none', backgroundColor: isActive ? 'rgba(145,70,255,0.07)' : i % 2 === 1 ? '#0E0E0E' : 'transparent', cursor: 'pointer' }}
                     >
                       <td style={{ ...TD, paddingRight: '8px' }}>
                         <Avatar username={row.username} src={profileMap[String(row.username ?? '').trim().toLowerCase()]} size={32} />
@@ -648,16 +647,16 @@ export default function TwitchPage() {
                           {String(row.display_name ?? row.username ?? '—')}
                         </a>
                         {!!row.username && String(row.display_name ?? '') !== String(row.username) && (
-                          <div style={{ fontSize: '11px', color: '#6B6B6B', marginTop: '2px' }}>@{String(row.username)}</div>
+                          <div style={{ fontSize: '11px', color: '#8F8F8F', marginTop: '2px' }}>@{String(row.username)}</div>
                         )}
                       </td>
                       <td style={TD}><span style={{ color: '#9146FF', fontWeight: 600, fontSize: '13px' }}>{fmt(row.avg_viewers)}</span></td>
-                      <td style={TD}><span style={{ color: '#16A34A', fontWeight: 600, fontSize: '13px' }}>{fmt(row.followers)}</span></td>
-                      <td style={TD}><span style={{ fontSize: '13px', color: '#444444' }}>{row.language ? String(row.language) : <span style={{ color: '#6B6B6B' }}>—</span>}</span></td>
+                      <td style={TD}><span style={{ color: '#3DD68C', fontWeight: 600, fontSize: '13px' }}>{fmt(row.followers)}</span></td>
+                      <td style={TD}><span style={{ fontSize: '13px', color: '#B4B4B4' }}>{row.language ? String(row.language) : <span style={{ color: '#8F8F8F' }}>—</span>}</span></td>
                       <td style={{ ...TD, maxWidth: '180px' }} onClick={e => e.stopPropagation()}>
                         {hasEmail(row.email)
-                          ? <a href={`mailto:${row.email}`} style={{ color: '#2563EB', fontSize: '12px', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{String(row.email)}</a>
-                          : <span style={{ color: '#6B6B6B' }}>—</span>}
+                          ? <a href={`mailto:${row.email}`} style={{ color: '#70B8FF', fontSize: '12px', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{String(row.email)}</a>
+                          : <span style={{ color: '#8F8F8F' }}>—</span>}
                       </td>
                     </tr>
                   )
@@ -667,33 +666,33 @@ export default function TwitchPage() {
           </div>
 
           {/* Pagination */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 20px', borderTop: '1px solid #E0E0E0', gap: '12px', flexWrap: 'wrap' }}>
-            <span style={{ fontSize: '12px', color: '#6B6B6B' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 20px', borderTop: '1px solid #262626', gap: '12px', flexWrap: 'wrap' }}>
+            <span style={{ fontSize: '12px', color: '#8F8F8F' }}>
               {totalCount === 0 ? '0 yayıncı' : `${rangeStart.toLocaleString('tr-TR')} - ${rangeEnd.toLocaleString('tr-TR')} / ${totalCount.toLocaleString('tr-TR')} yayıncı`}
             </span>
             <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
               <button
                 onClick={() => setPage(p => Math.max(1, p - 1))}
                 disabled={page <= 1}
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '30px', borderRadius: '7px', border: '1px solid #E0E0E0', backgroundColor: 'transparent', color: page <= 1 ? '#D0D0D0' : '#444444', cursor: page <= 1 ? 'not-allowed' : 'pointer' }}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '30px', borderRadius: '7px', border: '1px solid #262626', backgroundColor: 'transparent', color: page <= 1 ? '#333333' : '#B4B4B4', cursor: page <= 1 ? 'not-allowed' : 'pointer' }}
               >
                 <ChevronLeft size={14} />
               </button>
-              {pageNumbers[0] > 1 && <span style={{ color: '#6B6B6B', fontSize: '12px', padding: '0 4px' }}>…</span>}
+              {pageNumbers[0] > 1 && <span style={{ color: '#8F8F8F', fontSize: '12px', padding: '0 4px' }}>…</span>}
               {pageNumbers.map(n => (
                 <button
                   key={n}
                   onClick={() => setPage(n)}
-                  style={{ minWidth: '30px', height: '30px', borderRadius: '7px', border: `1px solid ${n === page ? '#9146ff' : '#E0E0E0'}`, backgroundColor: n === page ? 'rgba(145,70,255,0.15)' : 'transparent', color: n === page ? '#6D28D9' : '#444444', fontSize: '12px', fontWeight: 600, cursor: 'pointer', padding: '0 6px' }}
+                  style={{ minWidth: '30px', height: '30px', borderRadius: '7px', border: `1px solid ${n === page ? '#9146ff' : '#262626'}`, backgroundColor: n === page ? 'rgba(145,70,255,0.15)' : 'transparent', color: n === page ? '#BAA7FF' : '#B4B4B4', fontSize: '12px', fontWeight: 600, cursor: 'pointer', padding: '0 6px' }}
                 >
                   {n}
                 </button>
               ))}
-              {pageNumbers[pageNumbers.length - 1] < totalPages && <span style={{ color: '#6B6B6B', fontSize: '12px', padding: '0 4px' }}>…</span>}
+              {pageNumbers[pageNumbers.length - 1] < totalPages && <span style={{ color: '#8F8F8F', fontSize: '12px', padding: '0 4px' }}>…</span>}
               <button
                 onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                 disabled={page >= totalPages}
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '30px', borderRadius: '7px', border: '1px solid #E0E0E0', backgroundColor: 'transparent', color: page >= totalPages ? '#D0D0D0' : '#444444', cursor: page >= totalPages ? 'not-allowed' : 'pointer' }}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '30px', borderRadius: '7px', border: '1px solid #262626', backgroundColor: 'transparent', color: page >= totalPages ? '#333333' : '#B4B4B4', cursor: page >= totalPages ? 'not-allowed' : 'pointer' }}
               >
                 <ChevronRight size={14} />
               </button>
