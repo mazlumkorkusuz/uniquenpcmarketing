@@ -19,6 +19,7 @@ import {
   ChevronRight,
   ChevronDown,
   LogOut,
+  Mail,
 } from 'lucide-react'
 import { LucideIcon } from 'lucide-react'
 import { useAuth } from '@/components/AppShell'
@@ -95,6 +96,7 @@ const navItems: NavItem[] = [
   { href: '/steam-kuratorleri', label: 'Steam Küratörleri', icon: Star, imageSrc: '/icons/steamlogo.png' },
   { href: '/gamalytic', label: 'Gamalytic', icon: BarChart2, imageSrc: '/icons/gamalytic-logo.svg' },
   { href: '/news', label: 'News', icon: Newspaper },
+  { href: '/mail-servisi', label: 'Mail Servisi', icon: Mail },
 ]
 
 export default function Sidebar() {
