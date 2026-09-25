@@ -96,7 +96,18 @@ const navItems: NavItem[] = [
   { href: '/steam-kuratorleri', label: 'Steam Küratörleri', icon: Star, imageSrc: '/icons/steamlogo.png' },
   { href: '/gamalytic', label: 'Gamalytic', icon: BarChart2, imageSrc: '/icons/gamalytic-logo.svg' },
   { href: '/news', label: 'News', icon: Newspaper },
-  { href: '/mail-servisi', label: 'Mail Servisi', icon: Mail },
+  {
+    href: '/mail-servisi',
+    label: 'Mail Servisi',
+    icon: Mail,
+    children: [
+      { href: '/mail-servisi/kampanyalar',      label: 'Kampanyalar' },
+      { href: '/mail-servisi/kampanyalar/yeni', label: 'Yeni Kampanya' },
+      { href: '/mail-servisi/sablonlar',        label: 'Şablon Oluştur' },
+      { href: '/mail-servisi/tracking',         label: 'Tracking' },
+      { href: '/mail-servisi/ayarlar',          label: 'Ayarlar' },
+    ],
+  },
 ]
 
 export default function Sidebar() {

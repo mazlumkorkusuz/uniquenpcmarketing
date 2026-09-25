@@ -42,7 +42,7 @@ create table if not exists mail_templates (
   created_at    timestamptz not null default now()
 );
 
-create index if not exists idx_mail_templates_account on mail_templates(account_id);
+create index idx_mail_templates_account on mail_templates(account_id);
 
 
 -- ============================================================
@@ -66,7 +66,7 @@ create table if not exists mail_campaigns (
   completed_at      timestamptz
 );
 
-create index if not exists idx_mail_campaigns_status on mail_campaigns(status);
+create index idx_mail_campaigns_status on mail_campaigns(status);
 
 
 -- ============================================================
@@ -91,9 +91,9 @@ create table if not exists mail_recipients (
   created_at   timestamptz not null default now()
 );
 
-create index if not exists idx_mail_recipients_campaign on mail_recipients(campaign_id);
-create index if not exists idx_mail_recipients_status   on mail_recipients(campaign_id, status);
-create index if not exists idx_mail_recipients_email    on mail_recipients(email);
+create index idx_mail_recipients_campaign on mail_recipients(campaign_id);
+create index idx_mail_recipients_status   on mail_recipients(campaign_id, status);
+create index idx_mail_recipients_email    on mail_recipients(email);
 
 
 -- ============================================================
@@ -111,8 +111,8 @@ create table if not exists mail_tracking_logs (
   created_at    timestamptz not null default now()
 );
 
-create index if not exists idx_mail_tracking_campaign  on mail_tracking_logs(campaign_id);
-create index if not exists idx_mail_tracking_recipient on mail_tracking_logs(recipient_id);
+create index idx_mail_tracking_campaign  on mail_tracking_logs(campaign_id);
+create index idx_mail_tracking_recipient on mail_tracking_logs(recipient_id);
 
 
 -- ============================================================
