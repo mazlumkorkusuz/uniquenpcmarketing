@@ -6,6 +6,7 @@ import s from '@/app/dashboard.module.css'
 import { TOT_APPID } from '@/lib/steam'
 import { useWidgetData } from './useWidgetData'
 import CountUp from './CountUp'
+import { Beam } from '@/components/effects/Effects'
 
 interface GameData {
   name?: string
@@ -41,6 +42,7 @@ export default function GamalyticWishlist({ coverUrl }: { coverUrl?: string | nu
 
   return (
     <section className={`${s.card} ${s.featureCard}`} aria-labelledby="gama-title">
+      <Beam delay={4.5} />
       <div className={s.featureMedia}>
         {image && <img src={image} alt={`${name} kapak görseli`} />}
         <span className={s.featurePill}>

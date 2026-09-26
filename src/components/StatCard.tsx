@@ -2,6 +2,7 @@ import { LucideIcon } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { inkOf } from '@/lib/theme'
+import { HoverGlow } from '@/components/effects/Effects'
 
 interface StatCardProps {
   label: string
@@ -18,6 +19,7 @@ export default function StatCard({ label, value, icon: Icon, iconColor, iconBg, 
   const ink = inkOf(iconColor)
   return (
     <Card className="glass-card kpi-card gap-3 px-5 py-5">
+      <HoverGlow />
       <div className="flex items-center justify-between gap-3">
         <span className="text-[13px] font-medium text-muted-foreground">{label}</span>
         <span

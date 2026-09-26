@@ -30,6 +30,7 @@ import CountUp from '@/components/dashboard/CountUp'
 import DashboardFx from '@/components/dashboard/DashboardFx'
 import { getStoreItems, steamHeaderUrl, TOT_APPID } from '@/lib/steam'
 import s from './dashboard.module.css'
+import { Beam } from '@/components/effects/Effects'
 
 // Dashboard type (design-system/uniquenpc/MASTER.md): Space Grotesk display, DM Sans body
 const display = Space_Grotesk({ variable: '--font-dash-display', subsets: ['latin', 'latin-ext'] })
@@ -202,6 +203,7 @@ export default async function DashboardPage() {
           {/* ---------- Hero ---------- */}
           <div className={`${s.tile} ${s.hero}`} style={tile(0)}>
             <section className={`${s.card} ${s.heroCard}`} aria-labelledby="dash-title">
+              <Beam delay={0} />
               <div className={s.heroTop}>
                 <span className={s.eyebrow}>
                   <span className={s.eyebrowDot} aria-hidden />

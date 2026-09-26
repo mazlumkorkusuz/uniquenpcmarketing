@@ -10,6 +10,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import FrozenRouter from '@/components/motion/FrozenRouter'
 import PageMotion from '@/components/motion/PageMotion'
 import DashboardFx from '@/components/dashboard/DashboardFx'
+import { AmbientGrid } from '@/components/effects/Effects'
 import Sidebar from '@/components/Sidebar'
 
 interface AuthContextValue {
@@ -81,6 +82,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             overflowX: 'hidden',
           }}
         >
+          <AmbientGrid />
           <div className="app-topbar">
             <button
               type="button"

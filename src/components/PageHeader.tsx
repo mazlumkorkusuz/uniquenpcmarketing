@@ -1,4 +1,5 @@
 import { LucideIcon } from 'lucide-react'
+import { TitleReveal } from '@/components/effects/Effects'
 
 interface PageHeaderProps {
   title: string
@@ -63,7 +64,7 @@ export default function PageHeader({ title, subtitle, icon: Icon, imageSrc, grad
               margin: 0,
             }}
           >
-            {title}
+            <TitleReveal text={title} />
           </h1>
           {subtitle && (
             <p style={{ fontSize: '14px', color: 'var(--ink-3)', margin: '6px 0 0 0' }}>{subtitle}</p>

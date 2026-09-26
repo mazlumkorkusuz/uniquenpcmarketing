@@ -1132,3 +1132,36 @@ textarea:focus-visible {
 .app-sidebar .nav-item.active a svg {
   color: var(--sidebar-primary);
 }
+
+/* ================= Effects (Phase 3) ================= */
+/* Magic UI animated grid: fixed behind the content column, faded out below the first screen so
+   it never sits behind dense tables */
+.ambient-grid {
+  position: fixed;
+  inset: 0 0 0 256px;
+  z-index: -1;
+  pointer-events: none;
+  -webkit-mask-image: radial-gradient(120% 70% at 50% 0%, #000 0%, transparent 70%);
+  mask-image: radial-gradient(120% 70% at 50% 0%, #000 0%, transparent 70%);
+}
+
+@media (max-width: 900px) {
+  .ambient-grid {
+    left: 0;
+  }
+}
+
+/* Magic UI border beam slot: stays absolutely positioned inside any card */
+.beam-slot {
+  position: absolute !important;
+  inset: 0;
+  z-index: 2 !important;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .ambient-grid {
+    display: none;
+  }
+}
