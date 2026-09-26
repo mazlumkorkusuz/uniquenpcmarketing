@@ -1321,11 +1321,23 @@ a.rankRow:hover .capsule {
 
 /* Compact variant for the Steam lists: 10 rows fit a 1/3-width card without squeezing the name */
 .rankListDense {
+  flex: 1;
   container-type: inline-size;
   padding: 0 6px 10px;
 }
 
+/* Cards in a grid row share the tallest card's height (Twitch); the rows split that height
+   evenly so the list ends at the card's bottom instead of leaving a blank block */
+.rankListDense > li {
+  flex: 1 1 auto;
+}
+
+.rankListDense > li:not(.rankRow) {
+  display: flex;
+}
+
 .rankListDense .rankRow {
+  flex: 1;
   grid-template-columns: 20px 48px minmax(0, 1fr) auto;
   gap: 8px;
   min-height: 34px;
