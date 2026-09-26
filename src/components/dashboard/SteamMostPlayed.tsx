@@ -33,11 +33,11 @@ export default function SteamMostPlayed() {
       </div>
 
       {loading && !data ? (
-        <RowSkeletons count={10} />
+        <RowSkeletons count={10} dense />
       ) : error || !data?.length ? (
         <p className={s.errorNote}>Steam oyuncu verisi alınamadı. Birazdan yenilemeyi deneyin.</p>
       ) : (
-        <ol className={s.rankList}>
+        <ol className={`${s.rankList} ${s.rankListDense}`}>
           {data.map((g, i) => (
             <li key={g.appid}>
               <a className={s.rankRow} href={g.url} target="_blank" rel="noopener noreferrer">

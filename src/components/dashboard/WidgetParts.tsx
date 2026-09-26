@@ -17,9 +17,9 @@ export function RefreshButton({ onClick, loading, label }: { onClick: () => void
   )
 }
 
-export function RowSkeletons({ count, art = true }: { count: number; art?: boolean }) {
+export function RowSkeletons({ count, art = true, dense = false }: { count: number; art?: boolean; dense?: boolean }) {
   return (
-    <ul className={s.rankList} aria-hidden>
+    <ul className={`${s.rankList} ${dense ? s.rankListDense : ''}`} aria-hidden>
       {Array.from({ length: count }).map((_, i) => (
         <li key={i} className={`${s.rankRow} ${art ? '' : s.rankRowNoArt}`}>
           <span className={s.rank}>{i + 1}</span>

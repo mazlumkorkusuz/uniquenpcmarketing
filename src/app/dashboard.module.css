@@ -1319,6 +1319,66 @@ a.rankRow:hover .capsule {
   color: var(--ok);
 }
 
+/* Compact variant for the Steam lists: 10 rows fit a 1/3-width card without squeezing the name */
+.rankListDense {
+  container-type: inline-size;
+  padding: 0 6px 10px;
+}
+
+.rankListDense .rankRow {
+  grid-template-columns: 20px 48px minmax(0, 1fr) auto;
+  gap: 8px;
+  min-height: 34px;
+  padding: 4px 8px;
+}
+
+.rankListDense .rank {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  font-size: 11px;
+}
+
+.rankListDense .capsule {
+  width: 48px;
+  height: 18px;
+  border-radius: 4px;
+}
+
+.rankListDense .rowText {
+  gap: 2px;
+}
+
+.rankListDense .rowName {
+  font-size: 12.5px;
+}
+
+.rankListDense .rowSub {
+  font-size: 11px;
+}
+
+.rankListDense .rowValue {
+  gap: 4px;
+  font-size: 12px;
+}
+
+.rankListDense .strike {
+  font-size: 11px;
+}
+
+.rankListDense .discount {
+  padding: 1px 4px;
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+/* Narrow card: drop the struck-through price; the discount badge still signals the sale */
+@container (max-width: 340px) {
+  .rankListDense .strike {
+    display: none;
+  }
+}
+
 .liveDot {
   position: relative;
   width: 8px;
