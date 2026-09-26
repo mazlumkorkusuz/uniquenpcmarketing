@@ -1,13 +1,14 @@
 type BadgeVariant = 'green' | 'purple' | 'blue' | 'orange' | 'red' | 'gray' | 'teal'
 
-const styles: Record<BadgeVariant, { bg: string; color: string; border: string }> = {
-  green:  { bg: 'rgba(34,197,94,0.1)',  color: '#3DD68C', border: 'rgba(34,197,94,0.2)' },
-  purple: { bg: 'rgba(124,58,237,0.1)', color: '#BAA7FF', border: 'rgba(124,58,237,0.2)' },
-  blue:   { bg: 'rgba(59,130,246,0.1)', color: '#70B8FF', border: 'rgba(59,130,246,0.2)' },
-  orange: { bg: 'rgba(249,115,22,0.1)', color: '#FF8B3E', border: 'rgba(249,115,22,0.2)' },
-  red:    { bg: 'rgba(239,68,68,0.1)',  color: '#FF6369', border: 'rgba(239,68,68,0.2)' },
-  gray:   { bg: 'rgba(100,116,139,0.1)',color: '#B4B4B4', border: 'rgba(100,116,139,0.2)' },
-  teal:   { bg: 'rgba(20,184,166,0.1)', color: '#0BD8B6', border: 'rgba(20,184,166,0.2)' },
+// MASTER status tag: tinted background + matching ink (4.5:1+), 6px dot
+const styles: Record<BadgeVariant, { bg: string; color: string }> = {
+  green:  { bg: '#ECFDF5', color: '#047857' },
+  purple: { bg: '#F3EEFF', color: '#6D28D9' },
+  blue:   { bg: '#EFF6FF', color: '#1D4ED8' },
+  orange: { bg: '#FFF7ED', color: '#C2410C' },
+  red:    { bg: '#FEF2F2', color: '#B91C1C' },
+  gray:   { bg: '#F4F2F9', color: '#4A4462' },
+  teal:   { bg: '#F0FDFA', color: '#0F766E' },
 }
 
 interface BadgeProps {
@@ -22,16 +23,17 @@ export default function Badge({ variant = 'gray', children }: BadgeProps) {
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        padding: '2px 8px',
-        borderRadius: '6px',
+        gap: '6px',
+        padding: '3px 8px',
+        borderRadius: 'var(--r-sm)',
         fontSize: '12px',
-        fontWeight: 500,
+        fontWeight: 600,
         backgroundColor: s.bg,
         color: s.color,
-        border: `1px solid ${s.border}`,
         whiteSpace: 'nowrap',
       }}
     >
+      <span aria-hidden style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'currentColor', flexShrink: 0 }} />
       {children}
     </span>
   )

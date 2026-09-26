@@ -6,6 +6,8 @@ import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 import { ModalBase, inputStyle, labelStyle, fieldStyle, cancelBtnStyle, submitBtnStyle } from './ModalBase'
 import { Toast } from './Toast'
 import { revalidateDashboard } from '@/app/actions'
+import { inkOf } from '@/lib/theme'
+import { Layers } from 'lucide-react'
 
 interface ToastState { message: string; type: 'success' | 'error' }
 
@@ -85,16 +87,16 @@ export function BulkPostModal() {
           gap: '8px',
           padding: '9px 18px',
           borderRadius: '9px',
-          background: '#EDEDED',
+          background: 'var(--gradient)',
           border: 'none',
-          color: '#0A0A0A',
+          color: '#FFFFFF',
           fontWeight: 700,
           fontSize: '14px',
           cursor: 'pointer',
           whiteSpace: 'nowrap',
         }}
       >
-        🚀 Toplu Gönderi Ekle
+        <Layers size={16} aria-hidden /> Toplu Gönderi Ekle
       </button>
       <ModalBase isOpen={open} onClose={close} title="Toplu Gönderi Ekle">
         <form onSubmit={submit}>
@@ -114,9 +116,9 @@ export function BulkPostModal() {
                       gap: '6px',
                       padding: '6px 12px',
                       borderRadius: '7px',
-                      border: `1px solid ${isSelected ? p.color : '#262626'}`,
-                      backgroundColor: isSelected ? `${p.color}22` : '#0A0A0A',
-                      color: isSelected ? p.color : '#8F8F8F',
+                      border: `1px solid ${isSelected ? p.color : '#655F7D'}`,
+                      backgroundColor: isSelected ? `${p.color}22` : '#FFFFFF',
+                      color: isSelected ? inkOf(p.color) : '#655F7D',
                       fontWeight: 600,
                       fontSize: '12px',
                       cursor: 'pointer',
@@ -129,14 +131,14 @@ export function BulkPostModal() {
               })}
             </div>
             {selected.length > 0 && (
-              <div style={{ fontSize: '11px', color: '#8F8F8F', marginTop: '6px' }}>
+              <div style={{ fontSize: '11px', color: '#655F7D', marginTop: '6px' }}>
                 {selected.length} platform seçildi
               </div>
             )}
           </div>
 
           {selected.length > 0 && (
-            <div style={{ ...fieldStyle, backgroundColor: '#0A0A0A', borderRadius: '8px', padding: '12px', border: '1px solid #262626' }}>
+            <div style={{ ...fieldStyle, backgroundColor: '#FFFFFF', borderRadius: '8px', padding: '12px', border: '1px solid #E8E4F1' }}>
               <label style={{ ...labelStyle, marginBottom: '10px' }}>Platform Linkleri (opsiyonel)</label>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {selected.map(key => {
@@ -145,7 +147,7 @@ export function BulkPostModal() {
                     <div key={key} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '5px', minWidth: '96px', flexShrink: 0 }}>
                         <Image src={p.icon} alt={p.label} width={13} height={13} style={{ objectFit: 'contain', borderRadius: '2px' }} />
-                        <span style={{ fontSize: '12px', fontWeight: 600, color: p.color }}>{p.label}</span>
+                        <span style={{ fontSize: '12px', fontWeight: 600, color: inkOf(p.color) }}>{p.label}</span>
                       </div>
                       <input
                         type="url"
@@ -194,7 +196,7 @@ export function BulkPostModal() {
           </div>
           <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '8px' }}>
             <button type="button" onClick={close} style={cancelBtnStyle()}>İptal</button>
-            <button type="submit" disabled={isDisabled} style={submitBtnStyle('#9E8CFC', isDisabled)}>
+            <button type="submit" disabled={isDisabled} style={submitBtnStyle('#6D28D9', isDisabled)}>
               {loading ? 'Oluşturuluyor...' : `${selected.length > 0 ? selected.length + ' Platform İçin ' : ''}Gönderi Oluştur`}
             </button>
           </div>

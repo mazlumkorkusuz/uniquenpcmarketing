@@ -5,6 +5,7 @@ import { MessageCircle } from 'lucide-react'
 import { RedditAccountModal } from '@/components/RedditAccountModal'
 import { RedditAccountCard } from '@/components/RedditAccountCard'
 import { RedditPostsSection } from '@/components/RedditPostsSection'
+import { inkOf } from '@/lib/theme'
 
 async function getData() {
   const [{ data: accounts }, { data: posts }] = await Promise.all([
@@ -24,9 +25,9 @@ export default async function RedditPage() {
 
   const stats = [
     { label: 'Toplam Hesap', value: accounts.length, color: '#ff4500' },
-    { label: 'Toplam Karma', value: totalKarma.toLocaleString('tr-TR'), color: '#FFB224' },
-    { label: 'Toplam Yorum', value: totalComments.toLocaleString('tr-TR'), color: '#3DD68C' },
-    { label: 'Toplam Post', value: posts.length, color: '#70B8FF' },
+    { label: 'Toplam Karma', value: totalKarma.toLocaleString('tr-TR'), color: '#A24B08' },
+    { label: 'Toplam Yorum', value: totalComments.toLocaleString('tr-TR'), color: '#046C4E' },
+    { label: 'Toplam Post', value: posts.length, color: '#1D4ED8' },
   ]
 
   return (
@@ -46,8 +47,8 @@ export default async function RedditPage() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '32px' }}>
           {stats.map(s => (
             <div key={s.label} style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', padding: '20px', textAlign: 'center' }}>
-              <div style={{ fontSize: '30px', fontWeight: 800, color: s.color, lineHeight: 1 }}>{s.value}</div>
-              <div style={{ fontSize: '12px', color: '#8F8F8F', marginTop: '8px', }}>{s.label}</div>
+              <div style={{ fontSize: '30px', fontWeight: 800, color: inkOf(s.color), lineHeight: 1 }}>{s.value}</div>
+              <div style={{ fontSize: '12px', color: '#655F7D', marginTop: '8px', }}>{s.label}</div>
             </div>
           ))}
         </div>
@@ -56,14 +57,14 @@ export default async function RedditPage() {
         <div style={{ marginBottom: '28px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
             <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#ff4500', boxShadow: '0 0 6px rgba(255,69,0,0.6)' }} />
-            <span style={{ fontSize: '15px', fontWeight: 600, color: '#EDEDED' }}>Reddit Hesapları</span>
-            <span style={{ backgroundColor: 'rgba(255,69,0,0.12)', color: '#ff6534', border: '1px solid rgba(255,69,0,0.3)', borderRadius: '9999px', padding: '2px 10px', fontSize: '13px', fontWeight: 600 }}>
+            <span style={{ fontSize: '15px', fontWeight: 600, color: '#17122B' }}>Reddit Hesapları</span>
+            <span style={{ backgroundColor: 'rgba(255,69,0,0.12)', color: '#A74322', border: '1px solid rgba(255,69,0,0.3)', borderRadius: '9999px', padding: '2px 10px', fontSize: '13px', fontWeight: 600 }}>
               {accounts.length}
             </span>
           </div>
 
           {accounts.length === 0 ? (
-            <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', padding: '48px', textAlign: 'center', color: '#8F8F8F', fontSize: '14px' }}>
+            <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', padding: '48px', textAlign: 'center', color: '#655F7D', fontSize: '14px' }}>
               Henüz hesap eklenmemiş
             </div>
           ) : (

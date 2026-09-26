@@ -2,7 +2,7 @@ type BarDatum = { label: string; value: number }
 
 export default function BarChart({
   data,
-  color = '#9E8CFC',
+  color = '#6D28D9',
   height = 120,
   maxBars = 10,
 }: {
@@ -24,7 +24,7 @@ export default function BarChart({
   if (bars.length === 0) {
     return (
       <div style={{ height: `${height}px`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <span style={{ fontSize: '12px', color: '#8F8F8F' }}>Veri yok</span>
+        <span style={{ fontSize: '12px', color: '#655F7D' }}>Veri yok</span>
       </div>
     )
   }
@@ -44,7 +44,7 @@ export default function BarChart({
             justifyContent: 'flex-end',
           }}
         >
-          <span style={{ fontSize: '9px', color: '#B4B4B4', fontWeight: 600, lineHeight: 1 }}>{fmt(d.value)}</span>
+          <span style={{ fontSize: '9px', color: '#4A4462', fontWeight: 600, lineHeight: 1 }}>{fmt(d.value)}</span>
           <div
             style={{
               width: '100%',
@@ -56,7 +56,7 @@ export default function BarChart({
           <span
             style={{
               fontSize: '9px',
-              color: '#8F8F8F',
+              color: '#655F7D',
               textAlign: 'center',
               overflow: 'hidden',
               textOverflow: 'ellipsis',

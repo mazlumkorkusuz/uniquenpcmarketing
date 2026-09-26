@@ -3,8 +3,9 @@
 Rules here override `../MASTER.md` for the dashboard (`src/app/page.tsx`).
 Updated 2026-09-26: light bento redesign. The fixed row order from 2026-09-25 is lifted.
 
-1. **Scope.** The light tokens are scoped to the dashboard root (`dashboard.module.css` → `.root`).
-   The sidebar and other pages keep their current dark theme until they are migrated to MASTER.
+1. **Scope.** The dashboard keeps its own copy of the tokens (`dashboard.module.css` → `.root`).
+   Since 2026-09-26 every other page uses the same MASTER tokens from `src/app/globals.css`
+   (content area = `.app-main`). The sidebar and the login page stay dark.
 2. **Ambient background.** Two large blurred color light sources (primary violet top-left, rose
    top-right) at 10–18% opacity behind the glass cards. They are decorative (`aria-hidden`) and
    static, not animated.

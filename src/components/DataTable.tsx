@@ -18,20 +18,22 @@ export default function DataTable<T extends Record<string, unknown>>({
 }: DataTableProps<T>) {
   return (
     <div style={{ overflowX: 'auto' }}>
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      <table style={{ width: '100%', borderCollapse: 'collapse', fontVariantNumeric: 'tabular-nums' }}>
         <thead>
           <tr>
             {columns.map((col) => (
               <th
                 key={String(col.key)}
                 style={{
-                  backgroundColor: 'rgba(255,255,255,0.02)',
-                  color: '#A1A4A5',
-                  fontSize: '13px',
-                  fontWeight: 500,
+                  backgroundColor: 'var(--row-alt)',
+                  color: 'var(--ink-3)',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  letterSpacing: '0.04em',
+                  textTransform: 'uppercase',
                   padding: '10px 16px',
                   textAlign: 'left',
-                  borderBottom: '1px solid rgba(255,255,255,0.08)',
+                  borderBottom: '1px solid var(--line)',
                   whiteSpace: 'nowrap',
                   width: col.width,
                 }}
@@ -49,7 +51,7 @@ export default function DataTable<T extends Record<string, unknown>>({
                 style={{
                   padding: '48px 16px',
                   textAlign: 'center',
-                  color: '#8F8F8F',
+                  color: 'var(--ink-3)',
                   fontSize: '14px',
                 }}
               >
@@ -62,8 +64,8 @@ export default function DataTable<T extends Record<string, unknown>>({
                 key={i}
                 className="data-row"
                 style={{
-                  borderBottom: i < data.length - 1 ? '1px solid #1F1F1F' : 'none',
-                  backgroundColor: i % 2 === 1 ? '#0E0E0E' : '#0A0A0A',
+                  borderBottom: i < data.length - 1 ? '1px solid var(--line)' : 'none',
+                  backgroundColor: i % 2 === 1 ? 'var(--row-alt)' : 'transparent',
                 }}
               >
                 {columns.map((col) => (
@@ -71,8 +73,8 @@ export default function DataTable<T extends Record<string, unknown>>({
                     key={String(col.key)}
                     style={{
                       padding: '12px 16px',
-                      color: '#EDEDED',
-                      fontSize: '13.5px',
+                      color: 'var(--ink)',
+                      fontSize: '14px',
                     }}
                   >
                     {col.render

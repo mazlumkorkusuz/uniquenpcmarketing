@@ -1,39 +1,84 @@
 @import "tailwindcss";
 
 /*
- * Design tokens — Resend-inspired dark theme.
- * Black canvas, near-black surfaces, hairline translucent borders, Inter UI text,
- * Geist display headings with a soft white→grey gradient, 200ms ease-out motion.
+ * Design tokens: design-system/uniquenpc/MASTER.md (light bento + glass).
+ * The content area of every page uses these. The sidebar and the login page keep their own
+ * dark styles (hard-coded in their classes below / inline), so the legacy `--color-*` names are
+ * remapped to the light palette for the 85 inline card styles that still reference them.
  */
 @theme {
-  --color-bg-primary: #000000;
-  --color-bg-secondary: #0A0A0A;
-  --color-bg-card: #0A0A0A;
-  --color-bg-section: #111111;
-  --color-bg-hover: rgba(255, 255, 255, 0.05);
-  --color-border-subtle: rgba(255, 255, 255, 0.08);
-  --color-border-card: rgba(255, 255, 255, 0.08);
-  --color-border-strong: rgba(255, 255, 255, 0.16);
-  --color-text-primary: #F0F0F0;
-  --color-text-secondary: #A1A4A5;
-  --color-text-muted: #707070;
-  --color-accent-primary: #F0F0F0;
-  --color-accent-purple: #9E8CFC;
-  --color-accent-blue: #70B8FF;
-  --color-accent-teal: #0BD8B6;
+  --color-bg-primary: #F6F5FB;
+  --color-bg-secondary: #FFFFFF;
+  --color-bg-card: rgba(255, 255, 255, 0.72);
+  --color-bg-section: #FAF9FD;
+  --color-bg-hover: rgba(109, 40, 217, 0.04);
+  --color-border-subtle: #E8E4F1;
+  --color-border-card: #E8E4F1;
+  --color-border-strong: #D8D2E6;
+  --color-text-primary: #17122B;
+  --color-text-secondary: #4A4462;
+  --color-text-muted: #655F7D;
+  --color-accent-primary: #6D28D9;
+  --color-accent-purple: #6D28D9;
+  --color-accent-blue: #1D4ED8;
+  --color-accent-teal: #0F766E;
   --color-twitch: #9146FF;
   --color-youtube: #FF0000;
   --color-kick: #53FC18;
-  --color-steam: #66C0F4;
-  --shadow-card: inset 0 1px 0 rgba(255, 255, 255, 0.04);
-  --shadow-card-hover: inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  --ease-out-soft: cubic-bezier(0.36, 0.66, 0.6, 1);
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, sans-serif;
-  --font-jakarta: var(--font-inter);
+  --color-soop: #00A8FF;
+  --color-chzzk: #00FFA3;
+  --color-bilibili: #00A1D6;
+  --color-douyin: #FF0050;
+  --color-steam: #1B2838;
+  --shadow-card: 0 1px 2px rgba(23, 18, 43, 0.04), 0 1px 1px rgba(23, 18, 43, 0.03);
+  --shadow-card-hover: 0 12px 32px -12px rgba(76, 29, 149, 0.18), 0 2px 6px rgba(23, 18, 43, 0.05);
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --font-sans: var(--font-body), var(--font-inter), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-jakarta: var(--font-body);
 }
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
+
+  /* MASTER palette */
+  --bg: #F6F5FB;
+  --surface: #FFFFFF;
+  --glass: rgba(255, 255, 255, 0.72);
+  --ink: #17122B;
+  --ink-2: #4A4462;
+  --ink-3: #655F7D;
+  --line: #E8E4F1;
+  --line-2: #D8D2E6;
+  --row-alt: #FAF9FD;
+  --primary: #6D28D9;
+  --primary-2: #7C3AED;
+  --primary-tint: #F3EEFF;
+  --accent: #E11D48;
+  --accent-ink: #BE123C;
+  --accent-tint: #FFF1F3;
+  --ok: #047857;
+  --ok-tint: #ECFDF5;
+  --warn: #B45309;
+  --warn-tint: #FFFBEB;
+  --danger: #B91C1C;
+  --danger-tint: #FEF2F2;
+  --info: #1D4ED8;
+  --info-tint: #EFF6FF;
+  --gradient: linear-gradient(135deg, #7C3AED 0%, #C026D3 55%, #E11D48 100%);
+
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 20px;
+  --r-xl: 28px;
+  --shadow-1: 0 1px 2px rgba(23, 18, 43, 0.04), 0 1px 1px rgba(23, 18, 43, 0.03);
+  --shadow-2: 0 12px 32px -12px rgba(76, 29, 149, 0.18), 0 2px 6px rgba(23, 18, 43, 0.05);
+  --shadow-glow: 0 8px 24px -6px rgba(124, 58, 237, 0.45);
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --dur-1: 150ms;
+  --dur-2: 240ms;
+  --dur-3: 420ms;
 }
 
 * {
@@ -45,54 +90,32 @@ html {
 }
 
 body {
-  background-color: #000000;
-  color: #F0F0F0;
+  background-color: var(--bg);
+  color: var(--ink);
   font-family: var(--font-sans);
-  font-feature-settings: 'cv11', 'ss01';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
 }
 
 ::selection {
-  background: rgba(255, 255, 255, 0.2);
-  color: #FFFFFF;
+  background: rgba(109, 40, 217, 0.18);
+  color: var(--ink);
 }
 
 h1,
-h2 {
+h2,
+h3 {
   font-family: var(--font-display), var(--font-sans);
-  letter-spacing: -0.025em;
+  letter-spacing: -0.02em;
 }
 
-/* Resend's signature heading treatment */
+/* Legacy class kept for the login page's heading (dark) */
 .text-gradient {
   background: linear-gradient(to right bottom, #FFFFFF 30%, rgba(255, 255, 255, 0.5));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-}
-
-/* ---------- Scrollbars ---------- */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 8px;
-  border: 2px solid transparent;
-  background-clip: padding-box;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.16);
-  background-clip: padding-box;
 }
 
 /* ---------- Motion ---------- */
@@ -102,30 +125,16 @@ input,
 select,
 textarea {
   transition:
-    color 200ms var(--ease-out-soft),
-    background-color 200ms var(--ease-out-soft),
-    border-color 200ms var(--ease-out-soft),
-    box-shadow 200ms var(--ease-out-soft),
-    opacity 200ms var(--ease-out-soft);
+    color var(--dur-1) var(--ease-out),
+    background-color var(--dur-1) var(--ease-out),
+    border-color var(--dur-1) var(--ease-out),
+    box-shadow var(--dur-1) var(--ease-out),
+    opacity var(--dur-1) var(--ease-out),
+    transform var(--dur-1) var(--ease-out);
 }
 
 button:not(:disabled):active {
-  transform: scale(0.98);
-}
-
-@keyframes page-enter {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-.page-enter {
-  animation: page-enter 400ms var(--ease-out-soft) both;
+  transform: scale(0.97);
 }
 
 @keyframes fade-in {
@@ -144,25 +153,7 @@ button:not(:disabled):active {
   }
 }
 
-/* ---------- Surfaces ---------- */
-/* Cards across the app use the card tokens inline; brighten their hairline on hover like resend.com */
-[style*="var(--shadow-card)"] {
-  transition: border-color 200ms var(--ease-out-soft), background-color 200ms var(--ease-out-soft);
-}
-
-[style*="var(--shadow-card)"]:hover {
-  border-color: rgba(255, 255, 255, 0.14) !important;
-}
-
-tr.data-row td {
-  transition: background-color 150ms var(--ease-out-soft);
-}
-
-tr.data-row:hover td {
-  background-color: rgba(255, 255, 255, 0.03);
-}
-
-/* ---------- Form controls ---------- */
+/* Login page defaults (dark). The .app-main rules below override these on every other page. */
 input:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='color']),
 select,
 textarea {
@@ -182,20 +173,149 @@ textarea:focus-visible {
   box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.06);
 }
 
-select option {
-  background: #0A0A0A;
-  color: #F0F0F0;
-}
-
-input[type='checkbox'],
-input[type='radio'],
-input[type='range'] {
-  accent-color: #F0F0F0;
-}
-
 :focus-visible {
   outline: 2px solid rgba(255, 255, 255, 0.3);
   outline-offset: 2px;
+}
+
+/* ================= Content area (every page except login) ================= */
+.app-main {
+  color: var(--ink);
+  font-family: var(--font-body), var(--font-sans);
+}
+
+/* Faint primary/rose light sources behind the glass, as on the dashboard. z-index -1 paints it
+   over the body background without making <main> a stacking context, so modals (z 1000) still
+   cover the fixed sidebar (z 50). */
+.app-main::before {
+  content: '';
+  position: fixed;
+  inset: 0 0 0 248px;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(640px 420px at 12% -6%, rgba(124, 58, 237, 0.10), transparent 70%),
+    radial-gradient(560px 380px at 92% 2%, rgba(225, 29, 72, 0.07), transparent 70%);
+}
+
+.app-main a,
+.app-main button,
+.app-main [role='button'],
+.app-main summary,
+.app-main select,
+.app-main label[for] {
+  cursor: pointer;
+}
+
+.app-main button:disabled {
+  cursor: not-allowed;
+}
+
+/* ---------- Cards (inline `var(--shadow-card)` surfaces = MASTER bento card) ---------- */
+.app-main [style*='var(--shadow-card)'] {
+  border-radius: var(--r-lg) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  backdrop-filter: blur(18px) saturate(140%);
+  transition:
+    transform var(--dur-2) var(--ease-out),
+    box-shadow var(--dur-2) var(--ease-out),
+    border-color var(--dur-1) var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .app-main [style*='var(--shadow-card)']:hover {
+    border-color: var(--line-2) !important;
+    box-shadow: var(--shadow-2) !important;
+  }
+
+  /* Only clickable cards lift */
+  .app-main a[style*='var(--shadow-card)']:hover,
+  .app-main button[style*='var(--shadow-card)']:hover,
+  .app-main [role='button'][style*='var(--shadow-card)']:hover {
+    transform: translateY(-2px);
+  }
+}
+
+/* ---------- Tables ---------- */
+.app-main table {
+  font-variant-numeric: tabular-nums;
+}
+
+.app-main thead th {
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-3) !important;
+}
+
+.app-main tbody tr td {
+  transition: background-color var(--dur-1) var(--ease-out);
+}
+
+.app-main tr.data-row:hover td,
+.app-main tbody tr:hover td {
+  background-color: rgba(109, 40, 217, 0.04);
+}
+
+/* ---------- Form controls ---------- */
+.app-main input:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='color']),
+.app-main select,
+.app-main textarea {
+  color-scheme: light;
+  font-family: inherit;
+}
+
+.app-main input::placeholder,
+.app-main textarea::placeholder {
+  color: #8C86A3;
+}
+
+.app-main input:not([type='checkbox']):not([type='radio']):focus-visible,
+.app-main select:focus-visible,
+.app-main textarea:focus-visible {
+  outline: none;
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 4px rgba(109, 40, 217, 0.12);
+}
+
+.app-main select option {
+  background: #FFFFFF;
+  color: var(--ink);
+}
+
+.app-main input[type='checkbox'],
+.app-main input[type='radio'],
+.app-main input[type='range'] {
+  accent-color: var(--primary);
+}
+
+.app-main :focus-visible,
+.modal-surface :focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* ---------- Scrollbars (content area) ---------- */
+.app-main ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.app-main ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.app-main ::-webkit-scrollbar-thumb {
+  background: rgba(23, 18, 43, 0.14);
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.app-main ::-webkit-scrollbar-thumb:hover {
+  background: rgba(23, 18, 43, 0.24);
+  background-clip: padding-box;
 }
 
 /* ---------- App shell (sidebar + main) ---------- */
@@ -225,6 +345,10 @@ input[type='range'] {
     max-width: 100vw;
   }
 
+  .app-main::before {
+    left: 0;
+  }
+
   .app-topbar {
     display: flex;
     align-items: center;
@@ -234,10 +358,10 @@ input[type='range'] {
     z-index: 40;
     height: 56px;
     padding: 0 12px;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(246, 245, 251, 0.8);
     -webkit-backdrop-filter: blur(20px);
     backdrop-filter: blur(20px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid var(--line);
   }
 
   .app-scrim {
@@ -245,7 +369,7 @@ input[type='range'] {
     position: fixed;
     inset: 0;
     z-index: 45;
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(23, 18, 43, 0.4);
     -webkit-backdrop-filter: blur(2px);
     backdrop-filter: blur(2px);
     animation: fade-in 200ms var(--ease-out-soft);
@@ -255,6 +379,8 @@ input[type='range'] {
 /* ---------- Sidebar ---------- */
 .app-sidebar {
   width: 248px;
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  color-scheme: dark;
   background: #000000;
   border-right: 1px solid rgba(255, 255, 255, 0.06);
   display: flex;
@@ -443,30 +569,45 @@ input[type='range'] {
   background: rgba(255, 99, 105, 0.1);
 }
 
-/* ---------- Shared buttons ---------- */
-.btn-primary {
+/* ---------- Shared buttons (MASTER) ---------- */
+.btn-primary,
+.btn-secondary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  height: 36px;
-  padding: 0 14px;
-  border-radius: 12px;
-  border: 0;
-  background: #F0F0F0;
-  color: #000000;
+  height: 40px;
+  padding: 0 16px;
+  border-radius: var(--r-sm);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
 }
 
-.btn-primary:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.08);
+.btn-primary {
+  border: 0;
+  background: var(--gradient);
+  color: #FFFFFF;
 }
 
-.btn-primary:disabled {
-  opacity: 0.4;
+.btn-primary:hover:not(:disabled) {
+  box-shadow: var(--shadow-glow);
+}
+
+.btn-secondary {
+  border: 1px solid var(--line-2);
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.btn-primary:disabled,
+.btn-secondary:disabled {
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
@@ -479,4 +620,53 @@ input[type='range'] {
   }
 }
 
-/* X (Twitter) logo asset is white — correct as-is on the dark theme */
+/* X (Twitter) logo asset is white: invert it on the light content area */
+.app-main img[src$='/icons/x.png'],
+.app-main img[src*='icons%2Fx.png'] {
+  filter: invert(1);
+}
+
+/* ---------- Icon button (MASTER) ---------- */
+.icon-btn {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--ink-3);
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.icon-btn:hover:not(:disabled) {
+  background: var(--primary-tint);
+  color: var(--primary);
+}
+
+@media (pointer: coarse) {
+  .icon-btn {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+/* Primary buttons built from the gradient get the MASTER glow on hover */
+.app-main button[style*='var(--gradient)'],
+.modal-surface button[style*='var(--gradient)'] {
+  transition: box-shadow var(--dur-2) var(--ease-out), transform var(--dur-1) var(--ease-out), opacity var(--dur-1) var(--ease-out);
+}
+
+.app-main button[style*='var(--gradient)']:hover:not(:disabled),
+.modal-surface button[style*='var(--gradient)']:hover:not(:disabled) {
+  box-shadow: var(--shadow-glow);
+}
+
+/* Secondary buttons: border turns primary on hover */
+.app-main button[style*='var(--line-2)']:hover:not(:disabled),
+.modal-surface button[style*='var(--line-2)']:hover:not(:disabled) {
+  border-color: var(--primary) !important;
+}

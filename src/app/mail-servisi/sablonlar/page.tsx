@@ -148,8 +148,8 @@ export default function SablonlarPage() {
     fontSize: '13px',
     fontWeight: 600,
     cursor: 'pointer',
-    backgroundColor: active ? '#EDEDED' : 'transparent',
-    color: active ? '#0A0A0A' : '#B4B4B4',
+    backgroundColor: active ? '#F3EEFF' : 'transparent',
+    color: active ? '#6D28D9' : '#4A4462',
   })
 
   return (
@@ -162,8 +162,8 @@ export default function SablonlarPage() {
           <Card title="AI Ayarları">
             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               <div>
-                <span style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#B4B4B4', marginBottom: '6px' }}>Model</span>
-                <div style={{ display: 'flex', gap: '4px', padding: '4px', backgroundColor: '#0A0A0A', border: '1px solid #262626', borderRadius: '8px' }}>
+                <span style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#4A4462', marginBottom: '6px' }}>Model</span>
+                <div style={{ display: 'flex', gap: '4px', padding: '4px', backgroundColor: '#FFFFFF', border: '1px solid #E8E4F1', borderRadius: '8px' }}>
                   <button style={toggleStyle(provider === 'claude')} onClick={() => setProvider('claude')}>Claude</button>
                   <button style={toggleStyle(provider === 'gpt')} onClick={() => setProvider('gpt')}>GPT-4o</button>
                 </div>
@@ -200,7 +200,7 @@ export default function SablonlarPage() {
               <button style={buttonStyle('primary', generating)} disabled={generating} onClick={generate}>
                 <Sparkles size={14} /> {generating ? 'Oluşturuluyor…' : 'Şablon Oluştur'}
               </button>
-              <p style={{ fontSize: '12px', color: '#8F8F8F', margin: 0 }}>
+              <p style={{ fontSize: '12px', color: '#655F7D', margin: 0 }}>
                 Kullanılabilir alanlar: {'{{name}} {{platform}} {{followers}} {{sender_name}} {{sender_email}} {{logo_url}} {{banner_url}}'}
               </p>
             </div>
@@ -226,10 +226,10 @@ export default function SablonlarPage() {
                   title="Şablon önizleme"
                   sandbox=""
                   srcDoc={previewHtml}
-                  style={{ width: '100%', height: '480px', border: '1px solid #262626', borderRadius: '8px', backgroundColor: '#0A0A0A' }}
+                  style={{ width: '100%', height: '480px', border: '1px solid #E8E4F1', borderRadius: '8px', backgroundColor: '#FFFFFF' }}
                 />
                 <details>
-                  <summary style={{ fontSize: '12px', color: '#B4B4B4', cursor: 'pointer' }}>HTML düzenle</summary>
+                  <summary style={{ fontSize: '12px', color: '#4A4462', cursor: 'pointer' }}>HTML düzenle</summary>
                   <textarea
                     style={{ ...inputStyle, minHeight: '260px', marginTop: '8px', fontFamily: 'monospace', fontSize: '12px', resize: 'vertical' }}
                     value={html}
@@ -238,7 +238,7 @@ export default function SablonlarPage() {
                 </details>
               </div>
             ) : (
-              <p style={{ fontSize: '13px', color: '#8F8F8F', margin: 0 }}>
+              <p style={{ fontSize: '13px', color: '#655F7D', margin: 0 }}>
                 Soldan ayarları seçip “Şablon Oluştur”a basın ya da aşağıdan kayıtlı bir şablonu düzenleyin.
               </p>
             )}
@@ -247,23 +247,23 @@ export default function SablonlarPage() {
 
         <Card title={`Kayıtlı Şablonlar (${templates.length})`}>
           {templates.length === 0 ? (
-            <p style={{ fontSize: '13px', color: '#8F8F8F', margin: 0 }}>Henüz kayıtlı şablon yok.</p>
+            <p style={{ fontSize: '13px', color: '#655F7D', margin: 0 }}>Henüz kayıtlı şablon yok.</p>
           ) : (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '12px' }}>
               {templates.map((t) => (
-                <div key={t.id} style={{ border: `1px solid ${editingId === t.id ? '#EDEDED' : '#262626'}`, borderRadius: '10px', padding: '14px', backgroundColor: '#0A0A0A' }}>
+                <div key={t.id} style={{ border: `1px solid ${editingId === t.id ? '#6D28D9' : '#E8E4F1'}`, borderRadius: '10px', padding: '14px', backgroundColor: '#FFFFFF' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-                    <FileText size={14} color="#BAA7FF" />
-                    <span style={{ fontSize: '13px', fontWeight: 600, color: '#EDEDED', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.name}</span>
+                    <FileText size={14} color="#6D28D9" />
+                    <span style={{ fontSize: '13px', fontWeight: 600, color: '#17122B', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.name}</span>
                   </div>
-                  <p style={{ fontSize: '12px', color: '#B4B4B4', margin: '0 0 8px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.subject}</p>
+                  <p style={{ fontSize: '12px', color: '#4A4462', margin: '0 0 8px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.subject}</p>
                   <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', marginBottom: '10px' }}>
                     {t.platform && <Badge variant="purple">{t.platform}</Badge>}
                     {t.tier && <Badge variant="blue">{t.tier.split(' ')[0]}</Badge>}
                     {t.language && <Badge variant="teal">{t.language}</Badge>}
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <span style={{ fontSize: '11px', color: '#8F8F8F', flex: 1 }}>{formatDateTime(t.created_at)}</span>
+                    <span style={{ fontSize: '11px', color: '#655F7D', flex: 1 }}>{formatDateTime(t.created_at)}</span>
                     <button style={{ ...buttonStyle('secondary'), padding: '5px 10px', fontSize: '12px' }} onClick={() => edit(t)}>Düzenle</button>
                     <button style={{ ...buttonStyle('danger'), padding: '5px 8px' }} onClick={() => remove(t)} aria-label="Sil"><Trash2 size={13} /></button>
                   </div>

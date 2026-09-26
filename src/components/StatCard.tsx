@@ -1,4 +1,5 @@
 import { LucideIcon } from 'lucide-react'
+import { inkOf } from '@/lib/theme'
 
 interface StatCardProps {
   label: string
@@ -10,47 +11,50 @@ interface StatCardProps {
   trendUp?: boolean
 }
 
+// KPI tile in the dashboard's style: glass bento card, tinted icon chip, Space Grotesk number
 export default function StatCard({ label, value, icon: Icon, iconColor, iconBg, trend, trendUp }: StatCardProps) {
+  // Neon platform colors (Kick, Chzzk) are darkened so the icon keeps 3:1+ on the light chip
+  const ink = inkOf(iconColor)
   return (
     <div
       style={{
         position: 'relative',
         overflow: 'hidden',
         backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)',
-        border: '1px solid rgba(255,255,255,0.08)',
-        borderRadius: '16px',
+        border: '1px solid var(--color-border-card)',
+        borderRadius: '20px',
         padding: '20px',
         display: 'flex',
-        alignItems: 'flex-start',
+        flexDirection: 'column',
         gap: '14px',
+        minWidth: 0,
       }}
     >
-      {/* Faint accent glow in the corner, echoing resend.com's lit surfaces */}
-      <div aria-hidden style={{ position: 'absolute', top: '-40px', right: '-40px', width: '120px', height: '120px', borderRadius: '50%', background: iconColor, opacity: 0.07, filter: 'blur(30px)', pointerEvents: 'none' }} />
-      <div
-        style={{
-          width: '36px',
-          height: '36px',
-          borderRadius: '10px',
-          border: `1px solid ${iconColor}33`,
-          backgroundColor: iconBg,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          flexShrink: 0,
-        }}
-      >
-        <Icon size={17} color={iconColor} strokeWidth={1.75} />
-      </div>
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: '13px', color: '#A1A4A5', fontWeight: 500, marginBottom: '6px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
+        <div style={{ fontSize: '12px', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ink-3)' }}>
           {label}
         </div>
-        <div style={{ fontFamily: 'var(--font-display)', fontSize: '28px', fontWeight: 500, letterSpacing: '-0.03em', color: '#F0F0F0', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>
+        <div
+          style={{
+            width: '34px',
+            height: '34px',
+            borderRadius: '10px',
+            backgroundColor: iconBg,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexShrink: 0,
+          }}
+        >
+          <Icon size={17} color={ink} strokeWidth={2} aria-hidden />
+        </div>
+      </div>
+      <div>
+        <div style={{ fontFamily: 'var(--font-display)', fontSize: '32px', fontWeight: 600, letterSpacing: '-0.03em', color: 'var(--ink)', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>
           {value}
         </div>
         {trend && (
-          <div style={{ fontSize: '12px', color: trendUp ? '#0BD8B6' : '#FF6369', marginTop: '4px' }}>
+          <div style={{ fontSize: '12.5px', fontWeight: 500, color: trendUp ? 'var(--ok)' : 'var(--danger)', marginTop: '8px' }}>
             {trendUp ? '↑' : '↓'} {trend}
           </div>
         )}

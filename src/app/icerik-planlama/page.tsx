@@ -6,6 +6,7 @@ import type { CalPost } from '@/components/ContentCalendar'
 import { CalendarCheck } from 'lucide-react'
 import Image from 'next/image'
 import { BulkPostModal } from '@/components/BulkPostModal'
+import { inkOf } from '@/lib/theme'
 
 const PLATFORM_COLORS: Record<string, string> = {
   twitter:   '#1d9bf0',
@@ -55,7 +56,7 @@ export default async function IcerikPlanlamaPage() {
         title="İçerik Planlaması"
         subtitle="Tüm platformlardaki planlanmış gönderiler"
         icon={CalendarCheck}
-        gradient="linear-gradient(135deg, #9E8CFC, #9EB1FF)"
+        gradient="linear-gradient(135deg, #6D28D9, #4338CA)"
       >
         <BulkPostModal />
       </PageHeader>
@@ -65,7 +66,7 @@ export default async function IcerikPlanlamaPage() {
           {PLATFORMS.map(p => (
             <a key={p.key} href={`/icerik-planlama/${p.key}`} style={{ textDecoration: 'none' }}>
               <div style={{
-                backgroundColor: '#0A0A0A',
+                backgroundColor: '#FFFFFF',
                 border: `1px solid ${p.color}33`,
                 borderRadius: '10px',
                 padding: '14px 16px',
@@ -74,12 +75,12 @@ export default async function IcerikPlanlamaPage() {
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
                   <Image src={p.icon} alt={p.label} width={18} height={18} style={{ objectFit: 'contain', borderRadius: '3px', flexShrink: 0 }} />
-                  <span style={{ fontSize: '12px', fontWeight: 600, color: '#B4B4B4' }}>{p.label}</span>
+                  <span style={{ fontSize: '12px', fontWeight: 600, color: '#4A4462' }}>{p.label}</span>
                 </div>
-                <div style={{ fontSize: '20px', fontWeight: 700, color: p.color }}>
+                <div style={{ fontSize: '20px', fontWeight: 700, color: inkOf(p.color) }}>
                   {totalByPlatform[p.key] ?? 0}
                 </div>
-                <div style={{ fontSize: '11px', color: '#8F8F8F', marginTop: '2px' }}>gönderi</div>
+                <div style={{ fontSize: '11px', color: '#655F7D', marginTop: '2px' }}>gönderi</div>
               </div>
             </a>
           ))}
@@ -88,31 +89,31 @@ export default async function IcerikPlanlamaPage() {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 200px', gap: '24px', alignItems: 'start', marginBottom: '28px' }}>
           <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', padding: '24px' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
-              <span style={{ fontSize: '15px', fontWeight: 600, color: '#EDEDED' }}>Takvim</span>
-              <span style={{ fontSize: '12px', color: '#8F8F8F' }}>Tüm platformlar</span>
+              <span style={{ fontSize: '15px', fontWeight: 600, color: '#17122B' }}>Takvim</span>
+              <span style={{ fontSize: '12px', color: '#655F7D' }}>Tüm platformlar</span>
             </div>
             <ContentCalendar posts={posts} platformColors={PLATFORM_COLORS} />
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', padding: '16px' }}>
-              <div style={{ fontSize: '11px', fontWeight: 600, color: '#8F8F8F', marginBottom: '8px' }}>Toplam</div>
-              <div style={{ fontSize: '26px', fontWeight: 700, color: '#EDEDED' }}>{posts.length}</div>
-              <div style={{ fontSize: '12px', color: '#8F8F8F', marginTop: '2px' }}>planlı gönderi</div>
+              <div style={{ fontSize: '11px', fontWeight: 600, color: '#655F7D', marginBottom: '8px' }}>Toplam</div>
+              <div style={{ fontSize: '26px', fontWeight: 700, color: '#17122B' }}>{posts.length}</div>
+              <div style={{ fontSize: '12px', color: '#655F7D', marginTop: '2px' }}>planlı gönderi</div>
             </div>
             <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', padding: '16px' }}>
-              <div style={{ fontSize: '11px', fontWeight: 600, color: '#8F8F8F', marginBottom: '8px' }}>Yaklaşan</div>
-              <div style={{ fontSize: '26px', fontWeight: 700, color: '#3DD68C' }}>{upcoming}</div>
-              <div style={{ fontSize: '12px', color: '#8F8F8F', marginTop: '2px' }}>bu tarihten sonra</div>
+              <div style={{ fontSize: '11px', fontWeight: 600, color: '#655F7D', marginBottom: '8px' }}>Yaklaşan</div>
+              <div style={{ fontSize: '26px', fontWeight: 700, color: '#046C4E' }}>{upcoming}</div>
+              <div style={{ fontSize: '12px', color: '#655F7D', marginTop: '2px' }}>bu tarihten sonra</div>
             </div>
 
             <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', padding: '16px' }}>
-              <div style={{ fontSize: '11px', fontWeight: 600, color: '#8F8F8F', marginBottom: '12px' }}>Renk Kodu</div>
+              <div style={{ fontSize: '11px', fontWeight: 600, color: '#655F7D', marginBottom: '12px' }}>Renk Kodu</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '7px' }}>
                 {PLATFORMS.map(p => (
                   <div key={p.key} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <Image src={p.icon} alt={p.label} width={14} height={14} style={{ objectFit: 'contain', borderRadius: '2px', flexShrink: 0 }} />
-                    <span style={{ fontSize: '12px', color: '#B4B4B4' }}>{p.label}</span>
+                    <span style={{ fontSize: '12px', color: '#4A4462' }}>{p.label}</span>
                   </div>
                 ))}
               </div>

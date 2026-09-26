@@ -9,13 +9,13 @@ interface PageHeaderProps {
   children?: React.ReactNode
 }
 
+// Page title block in the dashboard's style: glass icon tile tinted with the page's brand
+// gradient, Space Grotesk display title, muted subtitle, actions on the right.
 export default function PageHeader({ title, subtitle, icon: Icon, imageSrc, gradient, children }: PageHeaderProps) {
   return (
     <div
       style={{
-        position: 'relative',
-        padding: '32px 32px 24px',
-        borderBottom: '1px solid rgba(255,255,255,0.06)',
+        padding: '28px 32px 20px',
         display: 'flex',
         alignItems: 'flex-end',
         justifyContent: 'space-between',
@@ -27,12 +27,12 @@ export default function PageHeader({ title, subtitle, icon: Icon, imageSrc, grad
         <div
           style={{
             position: 'relative',
-            width: '40px',
-            height: '40px',
-            borderRadius: '12px',
-            backgroundColor: '#0A0A0A',
-            border: '1px solid rgba(255,255,255,0.1)',
-            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06)',
+            width: '48px',
+            height: '48px',
+            borderRadius: 'var(--r-md)',
+            backgroundColor: 'var(--surface)',
+            border: '1px solid var(--line)',
+            boxShadow: 'var(--shadow-1)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -40,27 +40,33 @@ export default function PageHeader({ title, subtitle, icon: Icon, imageSrc, grad
             overflow: 'hidden',
           }}
         >
-          {/* The page's brand gradient, reduced to a faint glow behind the icon */}
-          <div aria-hidden style={{ position: 'absolute', inset: 0, background: gradient, opacity: 0.18 }} />
+          <div aria-hidden style={{ position: 'absolute', inset: 0, background: gradient, opacity: 0.14 }} />
           {imageSrc ? (
             <img
               src={imageSrc}
               alt=""
-              style={{ position: 'relative', width: '22px', height: '22px', objectFit: 'contain', display: 'block' }}
+              style={{ position: 'relative', width: '24px', height: '24px', objectFit: 'contain', display: 'block' }}
             />
           ) : Icon ? (
-            <Icon size={18} color="#F0F0F0" strokeWidth={1.75} style={{ position: 'relative' }} />
+            <Icon size={20} color="#6D28D9" strokeWidth={1.9} style={{ position: 'relative' }} />
           ) : null}
         </div>
         <div style={{ minWidth: 0 }}>
           <h1
-            className="text-gradient"
-            style={{ fontSize: '28px', fontWeight: 500, letterSpacing: '-0.035em', lineHeight: 1.15, margin: 0 }}
+            style={{
+              fontFamily: 'var(--font-display)',
+              fontSize: 'clamp(24px, 2.6vw, 32px)',
+              fontWeight: 600,
+              letterSpacing: '-0.03em',
+              lineHeight: 1.1,
+              color: 'var(--ink)',
+              margin: 0,
+            }}
           >
             {title}
           </h1>
           {subtitle && (
-            <p style={{ fontSize: '14px', color: '#A1A4A5', margin: '4px 0 0 0' }}>{subtitle}</p>
+            <p style={{ fontSize: '14px', color: 'var(--ink-3)', margin: '6px 0 0 0' }}>{subtitle}</p>
           )}
         </div>
       </div>

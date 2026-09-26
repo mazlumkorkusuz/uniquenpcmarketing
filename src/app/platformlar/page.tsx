@@ -6,6 +6,7 @@ import { Globe, ExternalLink, ArrowRight, User } from 'lucide-react'
 import Link from 'next/link'
 import { PlatformModal, EditPlatformButton } from '@/components/PlatformModal'
 import { DeleteButton } from '@/components/DeleteButton'
+import { inkOf } from '@/lib/theme'
 
 async function getData() {
   const { data: platforms } = await supabase
@@ -19,23 +20,23 @@ type Row = Record<string, unknown>
 
 const TH: React.CSSProperties = {
   backgroundColor: 'var(--color-bg-section)',
-  color: '#8F8F8F',
+  color: '#655F7D',
   fontSize: '11px',
   fontWeight: 600,
   letterSpacing: '0.06em',
   padding: '12px 20px',
   textAlign: 'left',
-  borderBottom: '1px solid #262626',
+  borderBottom: '1px solid #E8E4F1',
   whiteSpace: 'nowrap',
 }
 
 function WorkTopicBadges({ value }: { value: unknown }) {
-  if (!value) return <span style={{ color: '#8F8F8F' }}>—</span>
+  if (!value) return <span style={{ color: '#655F7D' }}>—</span>
   const topics = String(value).split(',').map(t => t.trim()).filter(Boolean)
   return (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
       {topics.map((t, i) => (
-        <span key={i} style={{ fontSize: '12px', fontWeight: 600, color: '#70B8FF', backgroundColor: 'rgba(59,130,246,0.12)', border: '1px solid rgba(59,130,246,0.28)', borderRadius: '5px', padding: '2px 9px', whiteSpace: 'nowrap', cursor: 'default' }}>
+        <span key={i} style={{ fontSize: '12px', fontWeight: 600, color: '#1D4ED8', backgroundColor: 'rgba(59,130,246,0.12)', border: '1px solid rgba(59,130,246,0.28)', borderRadius: '5px', padding: '2px 9px', whiteSpace: 'nowrap', cursor: 'default' }}>
           {t}
         </span>
       ))}
@@ -53,8 +54,8 @@ export default async function PlatformlarPage() {
       desc: 'Oyun pazarlama ve influencer kampanya yönetim platformu',
       href: '/platformlar/lurkit',
       externalHref: 'https://lurkit.com',
-      gradient: 'linear-gradient(135deg, #f97316, #FF6369)',
-      color: '#f97316',
+      gradient: 'linear-gradient(135deg, #f97316, #B91C1C)',
+      color: '#AF3A0B',
       dot: '#f97316',
     },
     {
@@ -64,7 +65,7 @@ export default async function PlatformlarPage() {
       href: '/platformlar/terminals',
       externalHref: 'https://terminals.io',
       gradient: 'linear-gradient(135deg, #06b6d4, #3b82f6)',
-      color: '#06b6d4',
+      color: '#0D6882',
       dot: '#06b6d4',
     },
     {
@@ -74,7 +75,7 @@ export default async function PlatformlarPage() {
       href: '/platformlar/mythic-talent',
       externalHref: 'https://mythictalent.com',
       gradient: 'linear-gradient(135deg, #8b5cf6, #ec4899)',
-      color: '#8b5cf6',
+      color: '#6D28D9',
       dot: '#8b5cf6',
     },
   ]
@@ -85,13 +86,13 @@ export default async function PlatformlarPage() {
         title="Platformlar & Partnerler"
         subtitle="CRM platformları ve iş ortakları"
         icon={Globe}
-        gradient="linear-gradient(135deg, #9E8CFC, #3b82f6)"
+        gradient="linear-gradient(135deg, #6D28D9, #3b82f6)"
       />
       <div style={{ padding: '24px 32px' }}>
 
         {/* Featured partner platforms */}
         <div style={{ marginBottom: '28px' }}>
-          <div style={{ fontSize: '13px', fontWeight: 600, color: '#8F8F8F', marginBottom: '14px' }}>
+          <div style={{ fontSize: '13px', fontWeight: 600, color: '#655F7D', marginBottom: '14px' }}>
             Entegre Platformlar
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '16px' }}>
@@ -100,7 +101,7 @@ export default async function PlatformlarPage() {
                 key={p.key}
                 style={{
                   backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)',
-                  border: '1px solid #262626',
+                  border: '1px solid #E8E4F1',
                   borderRadius: '14px',
                   overflow: 'hidden',
                   display: 'flex',
@@ -112,7 +113,7 @@ export default async function PlatformlarPage() {
                 <div style={{ padding: '20px 22px' }}>
                   <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px', marginBottom: '12px' }}>
                     <div>
-                      <div style={{ fontSize: '17px', fontWeight: 700, color: '#EDEDED', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <div style={{ fontSize: '17px', fontWeight: 700, color: '#17122B', display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <span
                           style={{
                             width: '10px',
@@ -126,7 +127,7 @@ export default async function PlatformlarPage() {
                         />
                         {p.name}
                       </div>
-                      <p style={{ fontSize: '13px', color: '#8F8F8F', margin: '6px 0 0 0', lineHeight: 1.5 }}>{p.desc}</p>
+                      <p style={{ fontSize: '13px', color: '#655F7D', margin: '6px 0 0 0', lineHeight: 1.5 }}>{p.desc}</p>
                     </div>
                   </div>
                   <div style={{ display: 'flex', gap: '8px', marginTop: '16px' }}>
@@ -142,7 +143,7 @@ export default async function PlatformlarPage() {
                         borderRadius: '8px',
                         backgroundColor: p.color + '18',
                         border: `1px solid ${p.color}35`,
-                        color: p.color,
+                        color: inkOf(p.color),
                         fontWeight: 600,
                         fontSize: '13px',
                         textDecoration: 'none',
@@ -161,8 +162,8 @@ export default async function PlatformlarPage() {
                         padding: '9px 14px',
                         borderRadius: '8px',
                         backgroundColor: 'transparent',
-                        border: '1px solid #262626',
-                        color: '#8F8F8F',
+                        border: '1px solid #E8E4F1',
+                        color: '#655F7D',
                         fontWeight: 500,
                         fontSize: '13px',
                         textDecoration: 'none',
@@ -179,7 +180,7 @@ export default async function PlatformlarPage() {
         <div
           style={{
             backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)',
-            border: '1px solid #262626',
+            border: '1px solid #E8E4F1',
             borderRadius: '12px',
             overflow: 'hidden',
             marginBottom: '24px',
@@ -188,7 +189,7 @@ export default async function PlatformlarPage() {
           <div
             style={{
               padding: '16px 20px',
-              borderBottom: '1px solid #262626',
+              borderBottom: '1px solid #E8E4F1',
               display: 'flex',
               alignItems: 'center',
               gap: '12px',
@@ -208,14 +209,14 @@ export default async function PlatformlarPage() {
               <Globe size={16} color="#3b82f6" />
             </div>
             <div>
-              <div style={{ fontSize: '15px', fontWeight: 600, color: '#EDEDED' }}>CRM Platformları</div>
-              <div style={{ fontSize: '12px', color: '#8F8F8F' }}>İş ortağı platformlar</div>
+              <div style={{ fontSize: '15px', fontWeight: 600, color: '#17122B' }}>CRM Platformları</div>
+              <div style={{ fontSize: '12px', color: '#655F7D' }}>İş ortağı platformlar</div>
             </div>
             <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '10px' }}>
               <div
                 style={{
                   backgroundColor: '#3b82f620',
-                  color: '#3b82f6',
+                  color: '#1D4ED8',
                   border: '1px solid #3b82f640',
                   borderRadius: '9999px',
                   padding: '2px 12px',
@@ -243,7 +244,7 @@ export default async function PlatformlarPage() {
               <tbody>
                 {platforms.length === 0 ? (
                   <tr>
-                    <td colSpan={6} style={{ padding: '48px 20px', textAlign: 'center', color: '#8F8F8F', fontSize: '14px' }}>
+                    <td colSpan={6} style={{ padding: '48px 20px', textAlign: 'center', color: '#655F7D', fontSize: '14px' }}>
                       Henüz platform eklenmemiş
                     </td>
                   </tr>
@@ -251,13 +252,13 @@ export default async function PlatformlarPage() {
                   <tr
                     key={String(p.id ?? i)}
                     style={{
-                      backgroundColor: i % 2 === 1 ? '#0E0E0E' : 'transparent',
-                      borderBottom: i < platforms.length - 1 ? '1px solid #1F1F1F' : 'none',
+                      backgroundColor: i % 2 === 1 ? '#FAF9FD' : 'transparent',
+                      borderBottom: i < platforms.length - 1 ? '1px solid #E8E4F1' : 'none',
                     }}
                   >
                     <td style={{ padding: '16px 20px', minWidth: '160px' }}>
-                      <div style={{ fontWeight: 700, fontSize: '14px', color: '#EDEDED' }}>{p.name ? String(p.name) : '—'}</div>
-                      {!!p.type && <div style={{ fontSize: '11px', color: '#8F8F8F', marginTop: '2px' }}>{String(p.type)}</div>}
+                      <div style={{ fontWeight: 700, fontSize: '14px', color: '#17122B' }}>{p.name ? String(p.name) : '—'}</div>
+                      {!!p.type && <div style={{ fontSize: '11px', color: '#655F7D', marginTop: '2px' }}>{String(p.type)}</div>}
                     </td>
                     <td style={{ padding: '16px 20px', minWidth: '200px' }}>
                       <WorkTopicBadges value={p.work_topic} />
@@ -266,7 +267,7 @@ export default async function PlatformlarPage() {
                       {p.details ? (
                         <span style={{
                           fontSize: '13px',
-                          color: '#B4B4B4',
+                          color: '#4A4462',
                           display: '-webkit-box',
                           WebkitLineClamp: 3,
                           WebkitBoxOrient: 'vertical',
@@ -275,18 +276,18 @@ export default async function PlatformlarPage() {
                         } as React.CSSProperties}>
                           {String(p.details)}
                         </span>
-                      ) : <span style={{ color: '#8F8F8F' }}>—</span>}
+                      ) : <span style={{ color: '#655F7D' }}>—</span>}
                     </td>
                     <td style={{ padding: '16px 20px', whiteSpace: 'nowrap' }}>
                       {p.last_edited_by ? (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#B4B4B4', fontSize: '13px' }}>
-                          <User size={13} color="#8F8F8F" />
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#4A4462', fontSize: '13px' }}>
+                          <User size={13} color="#655F7D" />
                           {String(p.last_edited_by)}
                         </div>
-                      ) : <span style={{ color: '#8F8F8F' }}>—</span>}
+                      ) : <span style={{ color: '#655F7D' }}>—</span>}
                     </td>
                     <td style={{ padding: '16px 20px' }}>
-                      {statusBadge(String(p.status ?? '')) ?? <span style={{ color: '#8F8F8F' }}>—</span>}
+                      {statusBadge(String(p.status ?? '')) ?? <span style={{ color: '#655F7D' }}>—</span>}
                     </td>
                     <td style={{ padding: '16px 20px' }}>
                       <div style={{ display: 'flex', gap: '4px' }}>

@@ -8,6 +8,7 @@ import { PostModal, EditPostButton } from '@/components/PostModal'
 import { DeleteButton } from '@/components/DeleteButton'
 import { Calendar, CheckCircle, Clock, FileText, ExternalLink } from 'lucide-react'
 import { LucideIcon } from 'lucide-react'
+import { inkOf } from '@/lib/theme'
 
 type Row = Record<string, unknown>
 
@@ -21,18 +22,18 @@ interface PlatformPageProps {
 }
 
 function dateCell(v: unknown) {
-  if (!v) return <span style={{ color: '#8F8F8F' }}>—</span>
-  return <span style={{ fontSize: '12px', color: '#8F8F8F' }}>{new Date(v as string).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+  if (!v) return <span style={{ color: '#655F7D' }}>—</span>
+  return <span style={{ fontSize: '12px', color: '#655F7D' }}>{new Date(v as string).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
 }
 
 function statusBadge(status: string | null) {
-  if (!status) return <span style={{ color: '#8F8F8F' }}>—</span>
+  if (!status) return <span style={{ color: '#655F7D' }}>—</span>
   const map: Record<string, [string, string]> = {
-    'Taslak':     ['rgba(100,116,139,0.15)', '#B4B4B4'],
-    'Planlandı':  ['rgba(59,130,246,0.15)',  '#70B8FF'],
-    'Yayınlandı': ['rgba(34,197,94,0.15)',   '#3DD68C'],
+    'Taslak':     ['rgba(100,116,139,0.15)', '#4A4462'],
+    'Planlandı':  ['rgba(59,130,246,0.15)',  '#1D4ED8'],
+    'Yayınlandı': ['rgba(34,197,94,0.15)',   '#047857'],
   }
-  const [bg, text] = map[status] ?? ['rgba(100,116,139,0.15)', '#B4B4B4']
+  const [bg, text] = map[status] ?? ['rgba(100,116,139,0.15)', '#4A4462']
   return <span style={{ fontSize: '12px', fontWeight: 600, color: text, backgroundColor: bg, borderRadius: '5px', padding: '2px 8px' }}>{status}</span>
 }
 
@@ -62,31 +63,31 @@ export async function PlatformPage({ platform, label, color, gradient, icon, ima
       key: 'title',
       label: 'Başlık',
       render: (v: unknown) => v
-        ? <span style={{ fontWeight: 600, color: '#EDEDED' }}>{String(v)}</span>
-        : <span style={{ color: '#8F8F8F', fontStyle: 'italic' }}>Başlıksız</span>,
+        ? <span style={{ fontWeight: 600, color: '#17122B' }}>{String(v)}</span>
+        : <span style={{ color: '#655F7D', fontStyle: 'italic' }}>Başlıksız</span>,
     },
     {
       key: 'content',
       label: 'İçerik',
       render: (v: unknown) => v
-        ? <span style={{ fontSize: '13px', color: '#B4B4B4', maxWidth: '300px', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{String(v)}</span>
-        : <span style={{ color: '#8F8F8F' }}>—</span>,
+        ? <span style={{ fontSize: '13px', color: '#4A4462', maxWidth: '300px', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{String(v)}</span>
+        : <span style={{ color: '#655F7D' }}>—</span>,
     },
     { key: 'scheduled_date', label: 'Tarih', render: dateCell },
     {
       key: 'scheduled_time',
       label: 'Saat',
       render: (v: unknown) => v
-        ? <span style={{ fontSize: '12px', color: '#8F8F8F', fontFamily: 'monospace' }}>{String(v).slice(0, 5)}</span>
-        : <span style={{ color: '#8F8F8F' }}>—</span>,
+        ? <span style={{ fontSize: '12px', color: '#655F7D', fontFamily: 'monospace' }}>{String(v).slice(0, 5)}</span>
+        : <span style={{ color: '#655F7D' }}>—</span>,
     },
     { key: 'status', label: 'Durum', render: (v: unknown) => statusBadge(v as string | null) },
     { key: 'url', label: 'Link', render: (v: unknown) => v ? (
-      <a href={String(v)} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '12px', fontWeight: 600, color: '#70B8FF', backgroundColor: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.25)', borderRadius: '5px', padding: '2px 8px', textDecoration: 'none', whiteSpace: 'nowrap' }}>
+      <a href={String(v)} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '12px', fontWeight: 600, color: '#1D4ED8', backgroundColor: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.25)', borderRadius: '5px', padding: '2px 8px', textDecoration: 'none', whiteSpace: 'nowrap' }}>
         <ExternalLink size={11} />
         Link
       </a>
-    ) : <span style={{ color: '#8F8F8F' }}>—</span> },
+    ) : <span style={{ color: '#655F7D' }}>—</span> },
     { key: 'id', label: '', width: '80px', render: (_: unknown, row: Row) => (
       <div style={{ display: 'flex', gap: '4px' }}>
         <EditPostButton row={row} platform={platform} platformColor={color} />
@@ -104,23 +105,23 @@ export async function PlatformPage({ platform, label, color, gradient, icon, ima
       <div style={{ padding: '24px 32px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '16px', marginBottom: '28px' }}>
           <StatCard label="Toplam Gönderi" value={total}     icon={FileText}    iconColor={color}    iconBg={color + '20'} />
-          <StatCard label="Planlandı"      value={planned}   icon={Calendar}    iconColor="#70B8FF"  iconBg="rgba(59,130,246,0.12)" />
-          <StatCard label="Yayınlandı"     value={published} icon={CheckCircle} iconColor="#3DD68C"  iconBg="rgba(34,197,94,0.12)" />
-          <StatCard label="Taslak"         value={drafts}    icon={Clock}       iconColor="#B4B4B4"  iconBg="rgba(100,116,139,0.12)" />
+          <StatCard label="Planlandı"      value={planned}   icon={Calendar}    iconColor="#1D4ED8"  iconBg="rgba(59,130,246,0.12)" />
+          <StatCard label="Yayınlandı"     value={published} icon={CheckCircle} iconColor="#047857"  iconBg="rgba(34,197,94,0.12)" />
+          <StatCard label="Taslak"         value={drafts}    icon={Clock}       iconColor="#4A4462"  iconBg="rgba(100,116,139,0.12)" />
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: '24px', marginBottom: '28px', alignItems: 'start' }}>
           <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', overflow: 'hidden' }}>
-            <div style={{ padding: '14px 20px', borderBottom: '1px solid #262626', display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div style={{ padding: '14px 20px', borderBottom: '1px solid #E8E4F1', display: 'flex', alignItems: 'center', gap: '10px' }}>
               <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: color }} />
-              <span style={{ fontSize: '15px', fontWeight: 600, color: '#EDEDED' }}>Gönderiler</span>
-              <span style={{ marginLeft: 'auto', backgroundColor: color + '20', color, border: `1px solid ${color}44`, borderRadius: '9999px', padding: '2px 10px', fontSize: '13px', fontWeight: 600 }}>{total}</span>
+              <span style={{ fontSize: '15px', fontWeight: 600, color: '#17122B' }}>Gönderiler</span>
+              <span style={{ marginLeft: 'auto', backgroundColor: color + '20', color: inkOf(color), border: `1px solid ${color}44`, borderRadius: '9999px', padding: '2px 10px', fontSize: '13px', fontWeight: 600 }}>{total}</span>
             </div>
             <DataTable columns={cols} data={rows} emptyMessage="Henüz gönderi eklenmedi" />
           </div>
 
           <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', padding: '20px' }}>
-            <div style={{ fontSize: '13px', fontWeight: 600, color: '#B4B4B4', marginBottom: '14px', }}>
+            <div style={{ fontSize: '13px', fontWeight: 600, color: '#4A4462', marginBottom: '14px', }}>
               Takvim
             </div>
             <ContentCalendar posts={calPosts} singleColor={color} compact={true} />

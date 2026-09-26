@@ -1,16 +1,21 @@
 import type { Metadata } from 'next'
-import { Inter, Geist } from 'next/font/google'
+import { Inter, Space_Grotesk, DM_Sans } from 'next/font/google'
 import './globals.css'
 import AppShell from '@/components/AppShell'
 
-// Resend-style type: Inter for UI text, Geist (closest free match to ABC Favorit) for display headings
+// MASTER type: Space Grotesk for display/headings, DM Sans for body. Inter stays for the sidebar.
 const inter = Inter({
   variable: '--font-inter',
   subsets: ['latin', 'latin-ext'],
 })
 
-const geist = Geist({
+const display = Space_Grotesk({
   variable: '--font-display',
+  subsets: ['latin', 'latin-ext'],
+})
+
+const body = DM_Sans({
+  variable: '--font-body',
   subsets: ['latin', 'latin-ext'],
 })
 
@@ -29,8 +34,8 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="tr" className={`${inter.variable} ${geist.variable}`}>
-      <body style={{ margin: 0, minHeight: '100vh', backgroundColor: '#000000' }}>
+    <html lang="tr" className={`${inter.variable} ${display.variable} ${body.variable}`}>
+      <body style={{ margin: 0, minHeight: '100vh' }}>
         <AppShell>{children}</AppShell>
       </body>
     </html>

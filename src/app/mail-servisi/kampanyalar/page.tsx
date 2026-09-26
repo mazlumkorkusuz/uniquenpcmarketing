@@ -29,7 +29,7 @@ export default async function KampanyalarPage() {
       <div style={{ padding: '24px 32px' }}>
         <Card padded={false}>
           {campaigns.length === 0 ? (
-            <p style={{ padding: '20px', margin: 0, fontSize: '13px', color: '#8F8F8F' }}>Henüz kampanya yok.</p>
+            <p style={{ padding: '20px', margin: 0, fontSize: '13px', color: '#655F7D' }}>Henüz kampanya yok.</p>
           ) : (
             <div style={{ overflowX: 'auto' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -52,17 +52,17 @@ export default async function KampanyalarPage() {
                     const canResume = c.status !== 'completed' && done < c.total_recipients
                     return (
                       <tr key={c.id}>
-                        <td style={{ ...tdStyle, fontWeight: 600, color: '#EDEDED' }}>{c.name}</td>
+                        <td style={{ ...tdStyle, fontWeight: 600, color: '#17122B' }}>{c.name}</td>
                         <td style={tdStyle}><CampaignStatusBadge status={c.status} /></td>
                         <td style={tdStyle}>
                           <div style={{ fontSize: '12px' }}>{c.mail_accounts?.email ?? '—'}</div>
-                          <div style={{ fontSize: '12px', color: '#8F8F8F' }}>{c.mail_templates?.name ?? '—'}</div>
+                          <div style={{ fontSize: '12px', color: '#655F7D' }}>{c.mail_templates?.name ?? '—'}</div>
                         </td>
                         <td style={tdStyle}><ProgressBar value={done} total={c.total_recipients} /></td>
-                        <td style={tdStyle}>{c.open_count} <span style={{ color: '#8F8F8F' }}>({percent(c.open_count, c.sent_count)})</span></td>
-                        <td style={tdStyle}>{c.reply_count} <span style={{ color: '#8F8F8F' }}>({percent(c.reply_count, c.sent_count)})</span></td>
+                        <td style={tdStyle}>{c.open_count} <span style={{ color: '#655F7D' }}>({percent(c.open_count, c.sent_count)})</span></td>
+                        <td style={tdStyle}>{c.reply_count} <span style={{ color: '#655F7D' }}>({percent(c.reply_count, c.sent_count)})</span></td>
                         <td style={tdStyle}>{c.bounce_count}</td>
-                        <td style={{ ...tdStyle, fontSize: '12px', color: '#8F8F8F' }}>{formatDateTime(c.started_at)}</td>
+                        <td style={{ ...tdStyle, fontSize: '12px', color: '#655F7D' }}>{formatDateTime(c.started_at)}</td>
                         <td style={{ ...tdStyle, textAlign: 'right' }}>
                           <div style={{ display: 'inline-flex', gap: '6px' }}>
                             {canResume && (

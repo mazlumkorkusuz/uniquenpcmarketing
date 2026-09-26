@@ -32,7 +32,7 @@ export function DeleteButton({ table, id }: Props) {
   if (confirming) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', padding: '2px 0' }}>
-        <span style={{ fontSize: '11px', color: '#B4B4B4', whiteSpace: 'nowrap', lineHeight: 1.4 }}>
+        <span style={{ fontSize: '11px', color: '#4A4462', whiteSpace: 'nowrap', lineHeight: 1.4 }}>
           Bu kaydı silmek istediğinizden emin misiniz?
         </span>
         <div style={{ display: 'flex', gap: '5px' }}>
@@ -44,7 +44,7 @@ export function DeleteButton({ table, id }: Props) {
               borderRadius: '5px',
               backgroundColor: 'rgba(239,68,68,0.18)',
               border: '1px solid rgba(239,68,68,0.45)',
-              color: '#FF6369',
+              color: '#B91C1C',
               fontSize: '11px',
               fontWeight: 600,
               cursor: loading ? 'not-allowed' : 'pointer',
@@ -61,8 +61,8 @@ export function DeleteButton({ table, id }: Props) {
               padding: '3px 8px',
               borderRadius: '5px',
               backgroundColor: 'transparent',
-              border: '1px solid #262626',
-              color: '#8F8F8F',
+              border: '1px solid #E8E4F1',
+              color: '#655F7D',
               fontSize: '11px',
               fontWeight: 500,
               cursor: 'pointer',
@@ -88,19 +88,19 @@ export function DeleteButton({ table, id }: Props) {
         borderRadius: '6px',
         backgroundColor: 'transparent',
         border: '1px solid transparent',
-        color: '#8F8F8F',
+        color: '#655F7D',
         cursor: 'pointer',
         transition: 'all 0.15s ease',
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.backgroundColor = 'rgba(239,68,68,0.1)'
         e.currentTarget.style.borderColor = 'rgba(239,68,68,0.3)'
-        e.currentTarget.style.color = '#FF6369'
+        e.currentTarget.style.color = '#B91C1C'
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.backgroundColor = 'transparent'
         e.currentTarget.style.borderColor = 'transparent'
-        e.currentTarget.style.color = '#8F8F8F'
+        e.currentTarget.style.color = '#655F7D'
       }}
     >
       <Trash2 size={13} />

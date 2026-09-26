@@ -21,10 +21,10 @@ export function ModalBase({
         position: 'fixed',
         inset: 0,
         zIndex: 1000,
-        backgroundColor: 'rgba(0,0,0,0.7)',
+        backgroundColor: 'rgba(23,18,43,0.4)',
         backdropFilter: 'blur(4px)',
         WebkitBackdropFilter: 'blur(4px)',
-        animation: 'fade-in 200ms var(--ease-out-soft)',
+        animation: 'fade-in 200ms var(--ease-out)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -33,17 +33,22 @@ export function ModalBase({
       onClick={onClose}
     >
       <div
+        className="modal-surface"
+        role="dialog"
+        aria-modal="true"
+        aria-label={title}
         style={{
-          backgroundColor: '#0A0A0A',
-          border: '1px solid rgba(255,255,255,0.1)',
-          borderRadius: '16px',
+          backgroundColor: 'var(--surface)',
+          color: 'var(--ink)',
+          border: '1px solid var(--line)',
+          borderRadius: 'var(--r-lg)',
           padding: '24px',
           width: '100%',
           maxWidth: '500px',
           maxHeight: '92vh',
           overflowY: 'auto',
-          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05), 0 24px 80px rgba(0,0,0,0.8)',
-          animation: 'pop-in 250ms var(--ease-out-soft)',
+          boxShadow: '0 24px 64px -16px rgba(23,18,43,0.28), 0 2px 6px rgba(23,18,43,0.06)',
+          animation: 'pop-in 250ms var(--ease-out)',
         }}
         onClick={e => e.stopPropagation()}
       >
@@ -52,24 +57,14 @@ export function ModalBase({
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            marginBottom: '24px',
+            marginBottom: '20px',
           }}
         >
-          <h2 style={{ fontSize: '18px', fontWeight: 500, color: '#F0F0F0', margin: 0 }}>{title}</h2>
+          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 600, letterSpacing: '-0.01em', color: 'var(--ink)', margin: 0 }}>{title}</h2>
           <button
             onClick={onClose}
             aria-label="Kapat"
-            style={{
-              background: 'rgba(255,255,255,0.04)',
-              border: '1px solid rgba(255,255,255,0.08)',
-              borderRadius: '8px',
-              color: '#A1A4A5',
-              cursor: 'pointer',
-              fontSize: '13px',
-              width: '28px',
-              height: '28px',
-              lineHeight: 1,
-            }}
+            className="icon-btn"
           >
             ✕
           </button>
@@ -81,11 +76,11 @@ export function ModalBase({
 }
 
 export const inputStyle: React.CSSProperties = {
-  backgroundColor: 'rgba(255,255,255,0.03)',
-  border: '1px solid rgba(255,255,255,0.1)',
-  borderRadius: '10px',
-  padding: '9px 12px',
-  color: '#F0F0F0',
+  backgroundColor: 'var(--surface)',
+  border: '1px solid var(--line-2)',
+  borderRadius: 'var(--r-sm)',
+  padding: '10px 12px',
+  color: 'var(--ink)',
   fontSize: '14px',
   width: '100%',
   outline: 'none',
@@ -95,47 +90,53 @@ export const inputStyle: React.CSSProperties = {
 export const labelStyle: React.CSSProperties = {
   display: 'block',
   fontSize: '13px',
-  fontWeight: 500,
-  color: '#A1A4A5',
+  fontWeight: 600,
+  color: 'var(--ink-2)',
   marginBottom: '6px',
 }
 
 export const fieldStyle: React.CSSProperties = { marginBottom: '16px' }
 
+// MASTER secondary button: white, strong border, ink text
 export function cancelBtnStyle(): React.CSSProperties {
   return {
-    padding: '9px 18px',
-    borderRadius: '12px',
-    border: '1px solid rgba(255,255,255,0.1)',
-    background: 'transparent',
-    color: '#F0F0F0',
+    height: '40px',
+    padding: '0 18px',
+    borderRadius: 'var(--r-sm)',
+    border: '1px solid var(--line-2)',
+    background: 'var(--surface)',
+    color: 'var(--ink)',
     cursor: 'pointer',
     fontSize: '14px',
+    fontWeight: 600,
   }
 }
 
+// MASTER primary button: signature gradient, white text. `color` is kept for API compatibility.
 export function submitBtnStyle(color: string, loading: boolean): React.CSSProperties {
   return {
-    padding: '9px 20px',
-    borderRadius: '12px',
+    height: '40px',
+    padding: '0 20px',
+    borderRadius: 'var(--r-sm)',
     border: 'none',
-    backgroundColor: buttonColor(color).background,
+    background: buttonColor(color).background,
     color: buttonColor(color).text,
     cursor: loading ? 'not-allowed' : 'pointer',
     fontSize: '14px',
     fontWeight: 600,
-    opacity: loading ? 0.7 : 1,
+    opacity: loading ? 0.6 : 1,
   }
 }
 
 export function addBtnStyle(color: string): React.CSSProperties {
   return {
-    backgroundColor: buttonColor(color).background,
+    background: buttonColor(color).background,
     border: 'none',
-    borderRadius: '12px',
-    padding: '8px 14px',
+    borderRadius: 'var(--r-sm)',
+    height: '40px',
+    padding: '0 16px',
     color: buttonColor(color).text,
-    fontSize: '13px',
+    fontSize: '14px',
     fontWeight: 600,
     cursor: 'pointer',
     display: 'flex',

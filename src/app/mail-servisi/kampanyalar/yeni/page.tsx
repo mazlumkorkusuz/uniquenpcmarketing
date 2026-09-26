@@ -316,8 +316,8 @@ function YeniKampanya() {
                   ))}
                 </select>
                 {accounts.length === 0 && (
-                  <p style={{ fontSize: '12px', color: '#8F8F8F', margin: '6px 0 0' }}>
-                    Aktif hesap yok. <Link href="/mail-servisi/ayarlar" style={{ color: '#EDEDED', fontWeight: 600 }}>Hesap ekle</Link>
+                  <p style={{ fontSize: '12px', color: '#655F7D', margin: '6px 0 0' }}>
+                    Aktif hesap yok. <Link href="/mail-servisi/ayarlar" style={{ color: '#17122B', fontWeight: 600 }}>Hesap ekle</Link>
                   </p>
                 )}
               </Field>
@@ -331,8 +331,8 @@ function YeniKampanya() {
                   ))}
                 </select>
                 {templates.length === 0 && (
-                  <p style={{ fontSize: '12px', color: '#8F8F8F', margin: '6px 0 0' }}>
-                    Şablon yok. <Link href="/mail-servisi/sablonlar" style={{ color: '#EDEDED', fontWeight: 600 }}>Şablon oluştur</Link>
+                  <p style={{ fontSize: '12px', color: '#655F7D', margin: '6px 0 0' }}>
+                    Şablon yok. <Link href="/mail-servisi/sablonlar" style={{ color: '#17122B', fontWeight: 600 }}>Şablon oluştur</Link>
                   </p>
                 )}
               </Field>
@@ -354,8 +354,8 @@ function YeniKampanya() {
               <label
                 style={{
                   display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px',
-                  padding: '24px', border: '1px dashed #333333', borderRadius: '10px',
-                  cursor: sending ? 'not-allowed' : 'pointer', color: '#B4B4B4', fontSize: '13px',
+                  padding: '24px', border: '1px dashed #D8D2E6', borderRadius: '10px',
+                  cursor: sending ? 'not-allowed' : 'pointer', color: '#4A4462', fontSize: '13px',
                 }}
               >
                 <Upload size={20} />
@@ -368,18 +368,18 @@ function YeniKampanya() {
                   onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f) }}
                 />
               </label>
-              <p style={{ fontSize: '12px', color: '#8F8F8F', margin: '10px 0 0' }}>
+              <p style={{ fontSize: '12px', color: '#655F7D', margin: '10px 0 0' }}>
                 Sütunlar: <code>email</code> (zorunlu), <code>name</code>, <code>platform</code>, <code>followers</code>, <code>language</code>
               </p>
               {csvStats && (
-                <p style={{ fontSize: '13px', color: '#B4B4B4', margin: '12px 0 0' }}>
-                  <strong style={{ color: '#3DD68C' }}>{recipients.length}</strong> geçerli alıcı
-                  {csvStats.invalid > 0 && <> · <span style={{ color: '#FF6369' }}>{csvStats.invalid} geçersiz</span></>}
-                  {csvStats.duplicates > 0 && <> · <span style={{ color: '#FF8B3E' }}>{csvStats.duplicates} tekrar</span></>}
+                <p style={{ fontSize: '13px', color: '#4A4462', margin: '12px 0 0' }}>
+                  <strong style={{ color: '#046C4E' }}>{recipients.length}</strong> geçerli alıcı
+                  {csvStats.invalid > 0 && <> · <span style={{ color: '#B91C1C' }}>{csvStats.invalid} geçersiz</span></>}
+                  {csvStats.duplicates > 0 && <> · <span style={{ color: '#AF3A0B' }}>{csvStats.duplicates} tekrar</span></>}
                 </p>
               )}
               {recipients.length > 0 && (
-                <div style={{ overflowX: 'auto', marginTop: '12px', border: '1px solid #262626', borderRadius: '8px' }}>
+                <div style={{ overflowX: 'auto', marginTop: '12px', border: '1px solid #E8E4F1', borderRadius: '8px' }}>
                   <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                     <thead>
                       <tr>
@@ -401,7 +401,7 @@ function YeniKampanya() {
                     </tbody>
                   </table>
                   {recipients.length > 8 && (
-                    <p style={{ fontSize: '12px', color: '#8F8F8F', margin: 0, padding: '8px 16px' }}>+{recipients.length - 8} kişi daha</p>
+                    <p style={{ fontSize: '12px', color: '#655F7D', margin: 0, padding: '8px 16px' }}>+{recipients.length - 8} kişi daha</p>
                   )}
                 </div>
               )}
@@ -412,7 +412,7 @@ function YeniKampanya() {
             {(sending || progress.total > 0) && (
               <div style={{ marginBottom: '14px' }}>
                 <ProgressBar value={progress.done} total={progress.total} />
-                {countdown > 0 && <p style={{ fontSize: '12px', color: '#8F8F8F', margin: '8px 0 0' }}>Sonraki mail {countdown} sn içinde…</p>}
+                {countdown > 0 && <p style={{ fontSize: '12px', color: '#655F7D', margin: '8px 0 0' }}>Sonraki mail {countdown} sn içinde…</p>}
               </div>
             )}
             <div style={{ display: 'flex', gap: '8px' }}>
@@ -435,14 +435,14 @@ function YeniKampanya() {
               )}
             </div>
             {sending && (
-              <p style={{ fontSize: '12px', color: '#FF8B3E', margin: '10px 0 0' }}>
+              <p style={{ fontSize: '12px', color: '#AF3A0B', margin: '10px 0 0' }}>
                 Gönderim bu sekmede çalışıyor — sekmeyi kapatmayın. Kapatırsanız Kampanyalar sayfasından devam edebilirsiniz.
               </p>
             )}
             {log.length > 0 && (
               <div style={{ marginTop: '14px', maxHeight: '220px', overflowY: 'auto', fontSize: '12px', fontFamily: 'monospace' }}>
                 {log.map((l, i) => (
-                  <div key={i} style={{ color: l.ok ? '#3DD68C' : '#FF6369', padding: '2px 0' }}>
+                  <div key={i} style={{ color: l.ok ? '#046C4E' : '#B91C1C', padding: '2px 0' }}>
                     {l.ok ? '✓' : '✗'} {l.email} — {l.message}
                   </div>
                 ))}
@@ -454,9 +454,9 @@ function YeniKampanya() {
         <Card title="Önizleme">
           {selectedTemplate ? (
             <>
-              <div style={{ fontSize: '13px', color: '#B4B4B4', marginBottom: '10px' }}>
-                <span style={{ color: '#8F8F8F' }}>Konu:</span>{' '}
-                <span style={{ color: '#EDEDED', fontWeight: 600 }}>
+              <div style={{ fontSize: '13px', color: '#4A4462', marginBottom: '10px' }}>
+                <span style={{ color: '#655F7D' }}>Konu:</span>{' '}
+                <span style={{ color: '#17122B', fontWeight: 600 }}>
                   {renderTemplate(selectedTemplate.subject, { name: recipients[0]?.name ?? 'Yayıncı Adı' }, true)}
                 </span>
               </div>
@@ -464,11 +464,11 @@ function YeniKampanya() {
                 title="Mail önizleme"
                 sandbox=""
                 srcDoc={previewHtml}
-                style={{ width: '100%', height: '560px', border: '1px solid #262626', borderRadius: '8px', backgroundColor: '#0A0A0A' }}
+                style={{ width: '100%', height: '560px', border: '1px solid #E8E4F1', borderRadius: '8px', backgroundColor: '#FFFFFF' }}
               />
             </>
           ) : (
-            <p style={{ fontSize: '13px', color: '#8F8F8F', margin: 0 }}>Önizleme için bir şablon seçin.</p>
+            <p style={{ fontSize: '13px', color: '#655F7D', margin: 0 }}>Önizleme için bir şablon seçin.</p>
           )}
         </Card>
       </div>
