@@ -1,214 +1,165 @@
 # Design System Master File
 
-> **LOGIC:** When building a specific page, first check `design-system/pages/[page-name].md`.
+> **LOGIC:** When building a specific page, first check `design-system/uniquenpc/pages/[page-name].md`.
 > If that file exists, its rules **override** this Master file.
 > If not, strictly follow the rules below.
 
 ---
 
-**Project:** UniqueNPC
-**Generated:** 2026-09-25 16:42:55
-**Category:** SaaS (General)
+**Project:** UniqueNPC — B2B game marketing platform
+**Regenerated:** 2026-09-26 (replaces the 2026-09-25 "SaaS General" version; old copy in git history)
+**Category:** B2B SaaS × Gaming
+**Mode:** Light first (dark is not the default)
+
+**Sources (ui-ux-pro-max v2.13.0):**
+- Style — `--domain style "bento grid dashboard"` → **Bento Box Grid**; key effects from the
+  `--design-system` match **Glassmorphism** (backdrop blur 10–20px, light sources, Z-depth).
+- Color — `--domain color "gaming esports vibrant"` → **Gaming** (neon purple `#7C3AED` + rose
+  `#F43F5E`), which is a dark palette. Here it is adapted to light mode and every text pair is
+  checked for 4.5:1 or better (ratios below).
+- Typography — `--domain typography "modern dashboard geometric tech"` → **Tech Startup**
+  (Space Grotesk + DM Sans).
+- Motion — `--design-system --motion 6` → **Stagger List (Standard)**, 300–450ms, done in CSS
+  (no GSAP dependency).
 
 ---
 
-## Global Rules
+## Color Palette
 
-### Color Palette
+| Role | Hex | CSS Variable | Contrast |
+|------|-----|--------------|----------|
+| Background | `#F6F5FB` | `--bg` | — |
+| Surface / Card | `#FFFFFF` | `--surface` | — |
+| Glass card | `rgba(255,255,255,0.72)` + blur 18px | `--glass` | — |
+| Foreground (ink) | `#17122B` | `--ink` | 18.1:1 on white |
+| Secondary text | `#4A4462` | `--ink-2` | 9.2:1 on white |
+| Muted text | `#655F7D` | `--ink-3` | 6.0:1 on white, 5.6:1 on bg |
+| Border | `#E8E4F1` | `--line` | decorative |
+| Border strong | `#D8D2E6` | `--line-2` | decorative |
+| Primary | `#6D28D9` | `--primary` | white on it 7.1:1 |
+| Primary glow (gradients only) | `#7C3AED` | `--primary-2` | white on it 5.7:1 |
+| Primary tint | `#F3EEFF` | `--primary-tint` | primary text on it 6.3:1 |
+| Accent / CTA (rose) | `#E11D48` | `--accent` | white on it 4.7:1 |
+| Accent text on tint | `#BE123C` on `#FFF1F3` | `--accent-ink` | 5.7:1 |
+| Success | `#047857` on `#ECFDF5` | `--ok` | 5.2:1 |
+| Warning | `#B45309` on `#FFFBEB` | `--warn` | 4.8:1 |
+| Danger | `#B91C1C` on `#FEF2F2` | `--danger` | 5.9:1 |
+| Info | `#1D4ED8` on `#EFF6FF` | `--info` | 6.2:1 |
+| Focus ring | `#6D28D9` 2px + 2px offset | `--ring` | — |
 
-| Role | Hex | CSS Variable |
-|------|-----|--------------|
-| Primary | `#2563EB` | `--color-primary` |
-| On Primary | `#FFFFFF` | `--color-on-primary` |
-| Secondary | `#3B82F6` | `--color-secondary` |
-| On Secondary | `#000000` | `--color-on-secondary` |
-| Accent/CTA | `#EA580C` | `--color-accent` |
-| On Accent/CTA | `#000000` | `--color-on-accent` |
-| Background | `#F8FAFC` | `--color-background` |
-| Foreground | `#1E293B` | `--color-foreground` |
-| Card | `#FFFFFF` | `--color-card` |
-| Card Foreground | `#1E293B` | `--color-card-foreground` |
-| Muted | `#E9EFF8` | `--color-muted` |
-| Muted Foreground | `#475569` | `--color-muted-foreground` |
-| Border | `#E2E8F0` | `--color-border` |
-| Destructive | `#DC2626` | `--color-destructive` |
-| On Destructive | `#FFFFFF` | `--color-on-destructive` |
-| Ring | `#2563EB` | `--color-ring` |
+**Signature gradient:** `linear-gradient(135deg, #7C3AED 0%, #C026D3 55%, #E11D48 100%)`.
+Use it for **one** hero moment per view (the display headline highlight, primary CTA, rank-1
+badges). Never put body text on it.
 
-**Color Notes:** Trust blue + orange CTA contrast [Accent adjusted from #F97316]
+**Platform brand colors** (`src/lib/theme.ts` → `PLATFORM_COLORS`) are used only for platform
+content: logos, segment bars, dots. Never use them for UI text on light backgrounds (Kick
+`#53FC18` and Chzzk `#00FFA3` fail contrast as text).
 
-### Typography
+## Typography
 
-- **Heading Font:** Calistoga
-- **Body Font:** Inter
-- **Mood:** saas, boutique, electric, warm, editorial, bold, premium, fintech, business, dual font, human warmth
-- **Google Fonts:** [Calistoga + Inter](https://fonts.googleapis.com/css2?family=Calistoga:ital@0;1&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap)
+| Role | Font | Weight | Size / line-height | Tracking |
+|------|------|--------|--------------------|----------|
+| Display (page hero) | Space Grotesk | 600 | clamp(28px, 3.2vw, 40px) / 1.1 | -0.03em |
+| H2 (card title) | Space Grotesk | 600 | 15px / 1.3 | -0.01em |
+| Section eyebrow | DM Sans | 600 | 12px / 1.4, uppercase | 0.08em |
+| KPI number | Space Grotesk | 600 | 32px / 1, `tabular-nums` | -0.03em |
+| Body | DM Sans | 400/500 | 14px / 1.5 (16px in inputs) | 0 |
+| Meta | DM Sans | 500 | 12.5px / 1.4 | 0 |
 
-**CSS Import:**
-```css
-@import url('https://fonts.googleapis.com/css2?family=Calistoga:ital@0;1&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
-```
+Load with `next/font/google` (`Space_Grotesk`, `DM_Sans`, subsets `latin` + `latin-ext` for
+Turkish), exposed as `--font-display` / `--font-body`. Numbers always use
+`font-variant-numeric: tabular-nums`.
 
-### Spacing Variables
+## Spacing (density 7 → standard-dense)
 
 | Token | Value | Usage |
 |-------|-------|-------|
-| `--space-xs` | `4px` / `0.25rem` | Tight gaps |
-| `--space-sm` | `8px` / `0.5rem` | Icon gaps, inline spacing |
-| `--space-md` | `16px` / `1rem` | Standard padding |
-| `--space-lg` | `24px` / `1.5rem` | Section padding |
-| `--space-xl` | `32px` / `2rem` | Large gaps |
-| `--space-2xl` | `48px` / `3rem` | Section margins |
-| `--space-3xl` | `64px` / `4rem` | Hero padding |
+| `--space-1` | 4px | icon-text gaps |
+| `--space-2` | 8px | inline gaps, row padding |
+| `--space-3` | 12px | list rows |
+| `--space-4` | 16px | card padding (mobile), grid gap |
+| `--space-5` | 20px | card padding (desktop), bento gap |
+| `--space-6` | 24px | section gaps |
+| `--space-8` | 32px | page padding (desktop) |
+| `--space-12` | 48px | between page sections |
 
-### Shadow Depths
+## Radius & Elevation
 
-| Level | Value | Usage |
+| Token | Value | Usage |
 |-------|-------|-------|
-| `--shadow-sm` | `0 1px 2px rgba(0,0,0,0.05)` | Subtle lift |
-| `--shadow-md` | `0 4px 6px rgba(0,0,0,0.1)` | Cards, buttons |
-| `--shadow-lg` | `0 10px 15px rgba(0,0,0,0.1)` | Modals, dropdowns |
-| `--shadow-xl` | `0 20px 25px rgba(0,0,0,0.15)` | Hero images, featured cards |
+| `--r-sm` | 8px | chips, buttons, inputs inside cards |
+| `--r-md` | 12px | list rows, thumbnails |
+| `--r-lg` | 20px | bento cards |
+| `--r-xl` | 28px | hero card |
+| `--shadow-1` | `0 1px 2px rgba(23,18,43,.04), 0 1px 1px rgba(23,18,43,.03)` | resting card |
+| `--shadow-2` | `0 12px 32px -12px rgba(76,29,149,.18), 0 2px 6px rgba(23,18,43,.05)` | hover card |
+| `--shadow-glow` | `0 8px 24px -6px rgba(124,58,237,.45)` | primary CTA |
 
----
+## Motion
 
-## Component Specs
+| Token | Value | Usage |
+|-------|-------|-------|
+| `--ease-out` | `cubic-bezier(0.22, 1, 0.36, 1)` | entrances, hovers |
+| `--ease-spring` | `cubic-bezier(0.34, 1.56, 0.64, 1)` | small pops (badges, icon nudge) |
+| `--dur-1` | 150ms | color/border changes |
+| `--dur-2` | 240ms | hover lift, press |
+| `--dur-3` | 420ms | entrance per item |
+| `--stagger` | 60ms | per bento tile (`--i` index) |
 
-### Buttons
+Rules:
+1. One choreographed entrance per view (bento tiles rise 12px + fade, staggered). Nothing loops
+   except "live" indicators and loading shimmer.
+2. Hover lifts use `transform: translateY(-2px)` + shadow. No scale on cards (no layout shift).
+3. Press feedback: `scale(0.97)` on buttons.
+4. Animate only `transform` and `opacity` (the bar/ring fills use `transform: scaleX` and
+   `stroke-dashoffset`).
+5. `prefers-reduced-motion: reduce` → no entrance, no count-up, no pulse; render the final state.
+6. `prefers-reduced-transparency: reduce` → solid white cards, no backdrop blur.
 
-```css
-/* Primary Button */
-.btn-primary {
-  background: #EA580C;
-  color: white;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-weight: 600;
-  transition: all 200ms ease;
-  cursor: pointer;
-}
+## Components
 
-.btn-primary:hover {
-  opacity: 0.9;
-  transform: translateY(-1px);
-}
+**Bento card.** Glass surface, `--r-lg`, 1px `--line` border, `--shadow-1`. When interactive:
+lift on hover plus a cursor-tracking radial "spotlight" (`--mx`/`--my`, primary at 8% alpha),
+`cursor: pointer`.
 
-/* Secondary Button */
-.btn-secondary {
-  background: transparent;
-  color: #2563EB;
-  border: 2px solid #2563EB;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-weight: 600;
-  transition: all 200ms ease;
-  cursor: pointer;
-}
-```
+**Primary button.** Signature gradient, white 600 text, `--r-sm`, 40px tall (44px touch target
+including padding on mobile), `--shadow-glow` on hover, a visible focus ring.
 
-### Cards
+**Secondary button.** White, `--line-2` border, ink text; the border turns `--primary` on hover.
 
-```css
-.card {
-  background: #F8FAFC;
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: var(--shadow-md);
-  transition: all 200ms ease;
-  cursor: pointer;
-}
+**Icon button.** 36×36 (44×44 on touch), transparent, `--ink-3` icon; hover is `--primary-tint`
+bg + primary icon. Always has an `aria-label`.
 
-.card:hover {
-  box-shadow: var(--shadow-lg);
-  transform: translateY(-2px);
-}
-```
+**Status tag.** Tinted background plus the matching ink from the palette table, 12px/600,
+`--r-sm`, with a 6px dot.
 
-### Inputs
+**Rank row.** Rank number (the top 3 get a gradient badge), thumbnail, name, value, and a relative
+magnitude bar under the value that grows from 0 on entrance.
 
-```css
-.input {
-  padding: 12px 16px;
-  border: 1px solid #E2E8F0;
-  border-radius: 8px;
-  font-size: 16px;
-  transition: border-color 200ms ease;
-}
+**Input (AI query).** White, 52px tall, 16px text, `--r-md`; on focus the border becomes a
+gradient ring and a soft glow appears.
 
-.input:focus {
-  border-color: #2563EB;
-  outline: none;
-  box-shadow: 0 0 0 3px #2563EB20;
-}
-```
-
-### Modals
-
-```css
-.modal-overlay {
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
-}
-
-.modal {
-  background: white;
-  border-radius: 16px;
-  padding: 32px;
-  box-shadow: var(--shadow-xl);
-  max-width: 500px;
-  width: 90%;
-}
-```
-
----
-
-## Style Guidelines
-
-**Style:** Glassmorphism
-
-**Keywords:** Frosted glass, transparent, blurred background, layered, vibrant background, light source, depth, multi-layer
-
-**Best For:** Modern SaaS, financial dashboards, high-end corporate, lifestyle apps, modal overlays, navigation
-
-**Key Effects:** Backdrop blur (10-20px), subtle border (1px solid rgba white 0.2), light reflection, Z-depth
-
-### Page Pattern
-
-**Pattern Name:** Hero + Features + CTA
-
-- **Conversion Strategy:** Deep CTA placement. For CTA label text, verify at least 4.5:1 against the button fill; use 7:1 only when the product explicitly targets AAA normal-text contrast. Keep focus and component boundaries independently visible. Disable hero parallax under reduced motion and render its static final state.
-- **CTA Placement:** Hero (sticky) + Bottom
-- **Section Order:** Hero with headline/image > Value prop > Key features (3-5) > CTA section > Footer
-
----
+**Skeleton.** `--line` → `#F1EEF8` shimmer, same geometry as the loaded content (no CLS).
 
 ## Anti-Patterns (Do NOT Use)
 
-- ❌ Excessive animation
 - ❌ Dark mode by default
-
-### Additional Forbidden Patterns
-
-- ❌ **Emojis as icons** — Use SVG icons (Heroicons, Lucide, Simple Icons)
-- ❌ **Missing cursor:pointer** — All clickable elements must have cursor:pointer
-- ❌ **Layout-shifting hovers** — Avoid scale transforms that shift layout
-- ❌ **Low contrast text** — Maintain 4.5:1 minimum contrast ratio
-- ❌ **Instant state changes** — Always use transitions (150-300ms)
-- ❌ **Invisible focus states** — Focus states must be visible for a11y
-
----
+- ❌ Emojis as icons (use Lucide + platform logo files)
+- ❌ Gradient text or backgrounds behind body copy
+- ❌ Platform neon colors (Kick, Chzzk) as text on light surfaces
+- ❌ Scale transforms on cards / layout-shifting hovers
+- ❌ More than one looping animation per card
+- ❌ Instant state changes (always 150–300ms)
+- ❌ Invisible focus states
+- ❌ Missing `cursor: pointer` on clickable elements
 
 ## Pre-Delivery Checklist
 
-Before delivering any UI code, verify:
-
-- [ ] No emojis used as icons (use SVG instead)
-- [ ] All icons from consistent icon set (Heroicons/Lucide)
-- [ ] `cursor-pointer` on all clickable elements
-- [ ] Hover states with smooth transitions (150-300ms)
-- [ ] Light mode: text contrast 4.5:1 minimum
-- [ ] Focus states visible for keyboard navigation
-- [ ] `prefers-reduced-motion` respected
-- [ ] Responsive: 375px, 768px, 1024px, 1440px
-- [ ] No content hidden behind fixed navbars
+- [ ] No emojis used as icons
+- [ ] `cursor: pointer` on all clickable elements
+- [ ] Hover transitions of 150–300ms
+- [ ] Text contrast of at least 4.5:1 (see the table)
+- [ ] Focus rings visible for keyboard navigation
+- [ ] `prefers-reduced-motion` and `prefers-reduced-transparency` respected
+- [ ] Responsive at 375, 768, 1024 and 1440px
 - [ ] No horizontal scroll on mobile

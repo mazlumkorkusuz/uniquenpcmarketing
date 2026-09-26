@@ -1,22 +1,23 @@
 # Dashboard overrides
 
 Rules here override `../MASTER.md` for the dashboard (`src/app/page.tsx`).
-Decided by the product owner on 2026-09-25.
+Updated 2026-09-26: light bento redesign. The fixed row order from 2026-09-25 is lifted.
 
-1. **Colors** — use MASTER colors as-is. Platform brand colors stay for platform
-   content: Twitch `#9146FF`, YouTube `#FF0000`, Kick `#53FC18`, Steam `#1B2838`
-   (full list in `src/lib/theme.ts`).
-2. **Typography** — Calistoga for headings, Inter for body. JetBrains Mono is not used.
-3. **Spacing, shadows, components** — from MASTER (`--space-*`, `--shadow-*`, button,
-   card and input specs).
-4. **Style** — Glassmorphism on dashboard cards, with text contrast of at least 4.5:1:
-   - Primary (accent) buttons use MASTER's On Accent `#000000` text on `#EA580C`
-     (white on `#EA580C` is ~3.6:1 and fails).
-   - Cards are white glass (`#FFFFFF` at 72% + backdrop blur) over a `#F8FAFC`
-     background with faint primary/accent light sources, not the `#F8FAFC` card fill
-     in the card snippet (it would match the page background).
-   - Solid white cards when the user prefers reduced transparency.
-5. **Layout** — keep the existing dashboard structure: AI bar; row 1 stats; row 2
-   meetings / notes / quick access; row 3 Steam top sellers / Steam most played /
-   Twitch / news; row 4 Gamalytic. MASTER's "Hero + Features + CTA" page pattern
-   does not apply.
+1. **Scope.** The light tokens are scoped to the dashboard root (`dashboard.module.css` → `.root`).
+   The sidebar and other pages keep their current dark theme until they are migrated to MASTER.
+2. **Ambient background.** Two large blurred color light sources (primary violet top-left, rose
+   top-right) at 10–18% opacity behind the glass cards. They are decorative (`aria-hidden`) and
+   static, not animated.
+3. **Layout (12-column bento, 20px gap):**
+   - Hero (8 cols): time-of-day greeting eyebrow, display headline with one gradient word, date,
+     AI query bar with ⌘K and suggestion chips.
+   - Featured game (4 cols): Tales of the Trade cover, Gamalytic wishlist count-up, facts.
+   - KPIs (4 × 3 cols): streamers (platform segment bar), active platforms (platform dots),
+     meetings (upcoming split), budget (SVG ring gauge).
+   - "Ekibin gündemi" section: meetings (5), notes (4), quick access (3).
+   - "Pazar nabzı" section: Twitch live (4), Steam top sellers (4), Steam most played (4).
+   - "Sektörden haberler" section: 4 image cards (12).
+   - Breakpoints: 1280px and up is full bento; 1024–1279px is hero and featured stacked, 2-col KPIs,
+     2-col widgets; under 768px everything is 1 column.
+4. **Motion budget.** Tile entrance stagger (once), KPI count-up (once, 900ms), bar/ring fills
+   (once), live dot pulse (Twitch only). Hovers: lift plus spotlight.

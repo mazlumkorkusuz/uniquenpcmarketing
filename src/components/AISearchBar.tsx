@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { Sparkles, CornerDownLeft } from 'lucide-react'
+import { Sparkles, ArrowUp, Info } from 'lucide-react'
 import s from '@/app/dashboard.module.css'
 
 const SUGGESTIONS = [
@@ -44,7 +44,7 @@ export default function AISearchBar() {
           submit(query)
         }}
       >
-        <Sparkles size={18} aria-hidden style={{ flexShrink: 0, color: 'var(--ink-2)' }} />
+        <Sparkles size={18} aria-hidden className={s.askIcon} />
         <label htmlFor="ai-query" className="sr-only">
           Verilerinize soru sorun
         </label>
@@ -60,18 +60,20 @@ export default function AISearchBar() {
         <kbd className={s.kbd}>⌘K</kbd>
         <button type="submit" className={s.btnPrimary} disabled={!query.trim()}>
           Sor
-          <CornerDownLeft size={14} aria-hidden />
+          <ArrowUp size={15} aria-hidden />
         </button>
       </form>
 
       {asked ? (
         <p className={s.askNotice} role="status">
+          <Info size={16} aria-hidden style={{ flexShrink: 0, marginTop: 1 }} />
           AI sorguları henüz açılmadı. Sorunuz kaydedilmedi: “{asked}”
         </p>
       ) : (
         <div className={s.suggestions}>
           {SUGGESTIONS.map((q) => (
             <button key={q} type="button" className={s.suggestion} onClick={() => submit(q)}>
+              <Sparkles size={13} aria-hidden />
               {q}
             </button>
           ))}

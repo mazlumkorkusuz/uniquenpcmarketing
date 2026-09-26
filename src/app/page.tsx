@@ -1,5 +1,7 @@
 export const dynamic = 'force-dynamic'
+import type { CSSProperties } from 'react'
 import Link from 'next/link'
+import { Space_Grotesk, DM_Sans } from 'next/font/google'
 import {
   Tv2,
   Globe,
@@ -10,47 +12,67 @@ import {
   CalendarCheck,
   Layers,
   CalendarDays,
+  ArrowUpRight,
+  ArrowRight,
+  NotebookPen,
+  CalendarPlus,
 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { PLATFORM_COLORS } from '@/lib/theme'
 import AISearchBar from '@/components/AISearchBar'
-import QuickLinkCard from '@/components/QuickLinkCard'
+import QuickLinkCard, { type Tone } from '@/components/QuickLinkCard'
 import SteamTopSellers from '@/components/dashboard/SteamTopSellers'
 import SteamMostPlayed from '@/components/dashboard/SteamMostPlayed'
 import TwitchLivePanel from '@/components/dashboard/TwitchLivePanel'
 import LatestNews from '@/components/dashboard/LatestNews'
 import GamalyticWishlist from '@/components/dashboard/GamalyticWishlist'
+import CountUp from '@/components/dashboard/CountUp'
+import DashboardFx from '@/components/dashboard/DashboardFx'
 import { getStoreItems, steamHeaderUrl, TOT_APPID } from '@/lib/steam'
 import s from './dashboard.module.css'
+
+// Dashboard type (design-system/uniquenpc/MASTER.md): Space Grotesk display, DM Sans body
+const display = Space_Grotesk({ variable: '--font-dash-display', subsets: ['latin', 'latin-ext'] })
+const body = DM_Sans({ variable: '--font-dash-body', subsets: ['latin', 'latin-ext'] })
 
 const TZ = 'Europe/Istanbul'
 
 const ROSTER = [
-  { key: 'twitch', label: 'Twitch', table: 'twitch_streamers' },
-  { key: 'youtube', label: 'YouTube', table: 'youtube_streamers' },
-  { key: 'kick', label: 'Kick', table: 'kick_streamers' },
-  { key: 'soop', label: 'SOOP', table: 'soop_streamers' },
-  { key: 'chzzk', label: 'Chzzk', table: 'chzzk_streamers' },
-  { key: 'bilibili', label: 'BiliBili', table: 'bilibili_streamers' },
-  { key: 'douyin', label: 'Douyin', table: 'douyin_streamers' },
+  { key: 'twitch', label: 'Twitch', table: 'twitch_streamers', icon: '/icons/twitch.png' },
+  { key: 'youtube', label: 'YouTube', table: 'youtube_streamers', icon: '/icons/youtube.png' },
+  { key: 'kick', label: 'Kick', table: 'kick_streamers', icon: '/icons/kick.png' },
+  { key: 'soop', label: 'SOOP', table: 'soop_streamers', icon: '/icons/soop.jpeg' },
+  { key: 'chzzk', label: 'Chzzk', table: 'chzzk_streamers', icon: '/icons/chzzk.png' },
+  { key: 'bilibili', label: 'BiliBili', table: 'bilibili_streamers', icon: '/icons/bilibili.png' },
+  { key: 'douyin', label: 'Douyin', table: 'douyin_streamers', icon: '/icons/douyin.png' },
 ] as const
 
-const MEETING_STATUS: Record<string, { fg: string; bg: string; line: string }> = {
-  'Planlandı': { fg: '#70B8FF', bg: '#0D1826', line: '#1B3350' },
-  'Devam Ediyor': { fg: '#FFB224', bg: '#1F1A0B', line: '#3D3113' },
-  'Tamamlandı': { fg: '#3DD68C', bg: '#0F1F16', line: '#1B3D2A' },
-  'İptal': { fg: '#B4B4B4', bg: '#0A0A0A', line: '#262626' },
+const TONE_CLASS: Record<Tone, string> = {
+  violet: s.toneViolet,
+  rose: s.toneRose,
+  blue: s.toneBlue,
+  green: s.toneGreen,
+  amber: s.toneAmber,
+  red: s.toneRed,
+  neutral: s.toneNeutral,
 }
 
-const QUICK_LINKS = [
-  { href: '/platformlar', label: 'Platformlar & Partnerler', color: '#70B8FF', icon: Globe },
-  { href: '/yayincilar', label: 'Yayıncılar', color: '#9146FF', icon: Tv2 },
-  { href: '/toplantilar', label: 'Toplantılar', color: '#70B8FF', icon: Calendar },
-  { href: '/notlar', label: 'Notlar', color: '#70B8FF', icon: FileText },
-  { href: '/sosyal-medya', label: 'Sosyal Medya', color: '#1D9BF0', icon: Share2 },
-  { href: '/reddit', label: 'Reddit', color: '#FF4500', imageSrc: '/icons/reddit.svg' },
-  { href: '/butce', label: 'Bütçe', color: '#70B8FF', icon: Wallet },
-  { href: '/icerik-planlama', label: 'İçerik Planlaması', color: '#70B8FF', icon: CalendarCheck },
+const MEETING_STATUS: Record<string, Tone> = {
+  'Planlandı': 'blue',
+  'Devam Ediyor': 'amber',
+  'Tamamlandı': 'green',
+  'İptal': 'neutral',
+}
+
+const QUICK_LINKS: { href: string; label: string; tone: Tone; icon?: typeof Globe; imageSrc?: string }[] = [
+  { href: '/platformlar', label: 'Platformlar & Partnerler', tone: 'blue', icon: Globe },
+  { href: '/yayincilar', label: 'Yayıncılar', tone: 'violet', icon: Tv2 },
+  { href: '/toplantilar', label: 'Toplantılar', tone: 'amber', icon: Calendar },
+  { href: '/notlar', label: 'Notlar', tone: 'green', icon: FileText },
+  { href: '/sosyal-medya', label: 'Sosyal Medya', tone: 'blue', icon: Share2 },
+  { href: '/reddit', label: 'Reddit', tone: 'rose', imageSrc: '/icons/reddit.svg' },
+  { href: '/butce', label: 'Bütçe', tone: 'green', icon: Wallet },
+  { href: '/icerik-planlama', label: 'İçerik Planlaması', tone: 'violet', icon: CalendarCheck },
 ]
 
 type Row = Record<string, unknown>
@@ -110,6 +132,17 @@ async function getDashboardData() {
 const num = (n: number) => n.toLocaleString('tr-TR')
 const usd = (n: number) => '$' + n.toLocaleString('en-US', { maximumFractionDigits: 0 })
 
+function greeting(): string {
+  const hour = Number(new Intl.DateTimeFormat('en-GB', { hour: 'numeric', hourCycle: 'h23', timeZone: TZ }).format(new Date()))
+  if (hour >= 5 && hour < 12) return 'Günaydın'
+  if (hour >= 12 && hour < 18) return 'İyi günler'
+  if (hour >= 18 && hour < 23) return 'İyi akşamlar'
+  return 'İyi geceler'
+}
+
+// Staggered entrance index for a bento tile
+const tile = (i: number) => ({ '--i': i }) as CSSProperties
+
 function DateChip({ value }: { value: unknown }) {
   const d = value ? new Date(String(value)) : null
   if (!d || Number.isNaN(d.getTime())) {
@@ -123,184 +156,320 @@ function DateChip({ value }: { value: unknown }) {
   )
 }
 
+function BudgetRing({ percent, tone }: { percent: number; tone: string }) {
+  const r = 26
+  const c = 2 * Math.PI * r
+  const offset = c * (1 - Math.min(percent, 100) / 100)
+  return (
+    <div className={s.ringWrap}>
+      <svg className={s.ring} viewBox="0 0 64 64" aria-hidden>
+        <circle className={s.ringTrack} cx="32" cy="32" r={r} />
+        <circle
+          className={s.ringFill}
+          cx="32"
+          cy="32"
+          r={r}
+          stroke={tone}
+          strokeDasharray={c}
+          strokeDashoffset={offset}
+          style={{ '--c': c } as CSSProperties}
+        />
+      </svg>
+      <span className={s.ringLabel} aria-hidden>%{percent}</span>
+    </div>
+  )
+}
+
 export default async function DashboardPage() {
   const [d, totCover] = await Promise.all([getDashboardData(), getTotCover()])
 
   const todayLabel = new Date().toLocaleDateString('tr-TR', {
     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: TZ,
   })
-  const budgetColor = d.budgetPercent >= 100 ? 'var(--danger)' : d.budgetPercent >= 80 ? 'var(--warn)' : 'var(--ok)'
+  const budgetTone = d.budgetPercent >= 100 ? '#B91C1C' : d.budgetPercent >= 80 ? '#B45309' : '#7C3AED'
   const activeRoster = d.roster.filter((p) => p.count > 0)
+  const pastMeetings = Math.max(d.meetingCount - d.upcomingCount, 0)
 
   return (
-    <div className={s.root}>
-      <header className={s.header}>
-        <div>
-          <h1 className={s.title}>Pazarlama paneli</h1>
-          <p className={s.subtitle}>Yayıncılar, partnerler, Steam ve Twitch tek bakışta</p>
-        </div>
-        <div className={s.today}>{todayLabel}</div>
-      </header>
-
-      <AISearchBar />
-
-      {/* Row 1: stats */}
-      <div className={s.stats}>
-        <Link href="/yayincilar" className={`${s.card} ${s.stat}`}>
-          <div className={s.statLabel}>
-            <span className={s.statIcon} style={{ color: 'var(--twitch)' }}><Tv2 size={16} aria-hidden /></span>
-            Toplam yayıncı
-          </div>
-          <div className={s.statValue}>{num(d.totalStreamers)}</div>
-          {d.totalStreamers > 0 ? (
-            <div className={s.bar} role="img" aria-label={activeRoster.map((p) => `${p.label} ${p.count}`).join(', ')}>
-              {activeRoster.map((p) => (
-                <span key={p.key} style={{ flexGrow: p.count, backgroundColor: p.color }} title={`${p.label}: ${num(p.count)}`} />
-              ))}
-            </div>
-          ) : (
-            <div className={s.statNote}>Henüz yayıncı eklenmedi</div>
-          )}
-        </Link>
-
-        <Link href="/yayincilar" className={`${s.card} ${s.stat}`}>
-          <div className={s.statLabel}>
-            <span className={s.statIcon}><Layers size={16} aria-hidden /></span>
-            Aktif platform
-          </div>
-          <div className={s.statValue}>
-            {d.activePlatforms}
-            <span className={s.statValueSmall}> / {ROSTER.length}</span>
-          </div>
-          <div className={s.dots} role="img" aria-label={`Yayıncısı olan platformlar: ${activeRoster.map((p) => p.label).join(', ') || 'yok'}`}>
-            {d.roster.map((p) => (
-              <span key={p.key} className={s.dot} style={p.count > 0 ? { backgroundColor: p.color } : undefined} title={`${p.label}: ${num(p.count)}`} />
-            ))}
-          </div>
-        </Link>
-
-        <Link href="/toplantilar" className={`${s.card} ${s.stat}`}>
-          <div className={s.statLabel}>
-            <span className={s.statIcon}><CalendarDays size={16} aria-hidden /></span>
-            Toplantılar
-          </div>
-          <div className={s.statValue}>{num(d.meetingCount)}</div>
-          <div className={s.statNote}>
-            {d.upcomingCount > 0 ? `${num(d.upcomingCount)} tanesi bugün veya sonrasında` : 'Yaklaşan toplantı yok'}
-          </div>
-        </Link>
-
-        <Link href="/butce" className={`${s.card} ${s.stat}`}>
-          <div className={s.statLabel}>
-            <span className={s.statIcon}><Wallet size={16} aria-hidden /></span>
-            Bütçe kullanımı
-          </div>
-          <div className={s.statValue}>
-            {usd(d.totalExpenses)}
-            {d.monthlyBudget > 0 && <span className={s.statValueSmall}> / {usd(d.monthlyBudget)}</span>}
-          </div>
-          {d.monthlyBudget > 0 ? (
-            <>
-              <div
-                className={s.bar}
-                role="meter"
-                aria-valuemin={0}
-                aria-valuemax={100}
-                aria-valuenow={Math.min(d.budgetPercent, 100)}
-                aria-label="Bütçe kullanımı"
-              >
-                <span className={s.barFill} style={{ width: `${Math.min(d.budgetPercent, 100)}%`, backgroundColor: budgetColor }} />
-              </div>
-              <div className={s.statNote} style={{ color: d.budgetPercent >= 80 ? budgetColor : undefined }}>
-                %{d.budgetPercent} kullanıldı
-                {d.budgetPercent < 100 && `, ${usd(d.monthlyBudget - d.totalExpenses)} kaldı`}
-              </div>
-            </>
-          ) : (
-            <div className={s.statNote}>Aylık bütçe tanımlanmadı</div>
-          )}
-        </Link>
+    <div className={`${s.root} ${display.variable} ${body.variable}`}>
+      <DashboardFx selector={`.${s.card}`} />
+      <div className={s.ambient} aria-hidden>
+        <div className={s.grain} />
       </div>
 
-      {/* Row 2: meetings, notes, quick access */}
-      <div className={s.row2}>
-        <section className={s.card} aria-labelledby="meetings-title">
-          <div className={s.cardHead}>
-            <h2 id="meetings-title" className={s.cardTitle}>Son toplantılar</h2>
-            <Link href="/toplantilar" className={s.cardLink}>Tümü</Link>
+      <div className={s.container}>
+        <div className={s.bento}>
+          {/* ---------- Hero ---------- */}
+          <div className={`${s.tile} ${s.hero}`} style={tile(0)}>
+            <section className={`${s.card} ${s.heroCard}`} aria-labelledby="dash-title">
+              <div className={s.heroTop}>
+                <span className={s.eyebrow}>
+                  <span className={s.eyebrowDot} aria-hidden />
+                  {greeting()}, Unique NPC
+                </span>
+                <span className={s.today}>{todayLabel}</span>
+              </div>
+              <h1 id="dash-title" className={s.display}>
+                Oyunlarınızın <span className={s.gradientText}>pazar nabzı</span>, tek ekranda
+              </h1>
+              <p className={s.lede}>
+                Yayıncılar, partnerler, Steam listeleri ve Twitch yayınları. Ne arıyorsanız sorun.
+              </p>
+              <AISearchBar />
+            </section>
           </div>
-          {d.recentMeetings.length === 0 ? (
-            <p className={s.empty}>Henüz toplantı yok. <Link href="/toplantilar">İlk toplantıyı planlayın</Link></p>
-          ) : (
-            <ul className={s.list}>
-              {d.recentMeetings.map((m) => {
-                const status = m.status ? String(m.status) : ''
-                const tone = MEETING_STATUS[status] ?? MEETING_STATUS['İptal']
-                const meta = [m.time ? String(m.time).slice(0, 5) : '', m.attendees ? String(m.attendees) : '']
-                  .filter(Boolean)
-                  .join(', ')
-                return (
-                  <li key={String(m.id)} className={s.listItem}>
-                    <DateChip value={m.date} />
-                    <div style={{ minWidth: 0 }}>
-                      <div className={s.itemTitle}>{String(m.title ?? 'Başlıksız toplantı')}</div>
-                      {meta && <div className={s.itemMeta}>{meta}</div>}
-                    </div>
-                    {status && (
-                      <span className={s.tag} style={{ color: tone.fg, backgroundColor: tone.bg, borderColor: tone.line }}>{status}</span>
-                    )}
-                  </li>
-                )
-              })}
-            </ul>
-          )}
-        </section>
 
-        <section className={s.card} aria-labelledby="notes-title">
-          <div className={s.cardHead}>
-            <h2 id="notes-title" className={s.cardTitle}>Son notlar</h2>
-            <Link href="/notlar" className={s.cardLink}>Tümü</Link>
+          {/* ---------- Featured game ---------- */}
+          <div className={`${s.tile} ${s.feature}`} style={tile(1)}>
+            <GamalyticWishlist coverUrl={totCover} />
           </div>
-          {d.recentNotes.length === 0 ? (
-            <p className={s.empty}>Henüz not yok. <Link href="/notlar">İlk notu ekleyin</Link></p>
-          ) : (
-            <ul className={s.list}>
-              {d.recentNotes.map((n) => (
-                <li key={String(n.id)} className={s.listItem}>
-                  <DateChip value={n.created_at} />
-                  <div style={{ minWidth: 0 }}>
-                    <div className={s.itemTitle}>{String(n.title ?? 'Başlıksız not')}</div>
-                    {n.content ? <div className={s.itemMeta}>{String(n.content)}</div> : null}
+
+          {/* ---------- KPIs ---------- */}
+          <div className={`${s.tile} ${s.kpi}`} style={tile(2)}>
+            <Link href="/yayincilar" className={`${s.card} ${s.interactive} ${s.kpiCard}`}>
+              <div className={s.kpiHead}>
+                <span className={s.kpiLabel}>
+                  <span className={`${s.kpiIcon} ${s.toneViolet}`}><Tv2 size={16} aria-hidden /></span>
+                  Toplam yayıncı
+                </span>
+                <ArrowUpRight size={18} className={s.kpiArrow} aria-hidden />
+              </div>
+              <div className={s.kpiValue}><CountUp value={d.totalStreamers} /></div>
+              {d.totalStreamers > 0 ? (
+                <>
+                  <div className={s.segBar} role="img" aria-label={activeRoster.map((p) => `${p.label} ${p.count}`).join(', ')}>
+                    {activeRoster.map((p) => (
+                      <span key={p.key} style={{ flexGrow: p.count, backgroundColor: p.color }} />
+                    ))}
                   </div>
-                  {n.category ? <span className={s.tag}>{String(n.category)}</span> : null}
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
-
-        <section className={s.card} aria-labelledby="quick-title">
-          <div className={s.cardHead}>
-            <h2 id="quick-title" className={s.cardTitle}>Hızlı erişim</h2>
+                  <ul className={s.legend} aria-hidden>
+                    {activeRoster.slice(0, 4).map((p) => (
+                      <li key={p.key}>
+                        <span className={s.legendSwatch} style={{ backgroundColor: p.color }} />
+                        {p.label} {num(p.count)}
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              ) : (
+                <div className={s.kpiNote}>Henüz yayıncı eklenmedi</div>
+              )}
+            </Link>
           </div>
-          <nav className={s.quick} aria-labelledby="quick-title">
-            {QUICK_LINKS.map((q) => (
-              <QuickLinkCard key={q.href} {...q} />
-            ))}
-          </nav>
-        </section>
-      </div>
 
-      {/* Row 3: Steam, Twitch, news */}
-      <div className={s.row3}>
-        <SteamTopSellers />
-        <SteamMostPlayed />
-        <TwitchLivePanel />
-        <LatestNews />
-      </div>
+          <div className={`${s.tile} ${s.kpi}`} style={tile(3)}>
+            <Link href="/yayincilar" className={`${s.card} ${s.interactive} ${s.kpiCard}`}>
+              <div className={s.kpiHead}>
+                <span className={s.kpiLabel}>
+                  <span className={`${s.kpiIcon} ${s.toneBlue}`}><Layers size={16} aria-hidden /></span>
+                  Aktif platform
+                </span>
+                <ArrowUpRight size={18} className={s.kpiArrow} aria-hidden />
+              </div>
+              <div className={s.kpiValue}>
+                <CountUp value={d.activePlatforms} />
+                <span className={s.kpiValueSmall}> / {ROSTER.length}</span>
+              </div>
+              <div
+                className={s.platforms}
+                role="img"
+                aria-label={`Yayıncısı olan platformlar: ${activeRoster.map((p) => p.label).join(', ') || 'yok'}`}
+              >
+                {d.roster.map((p) => (
+                  <span
+                    key={p.key}
+                    className={`${s.platform} ${p.count > 0 ? '' : s.platformOff}`}
+                    title={`${p.label}: ${num(p.count)}`}
+                  >
+                    <img src={p.icon} alt="" />
+                  </span>
+                ))}
+              </div>
+            </Link>
+          </div>
 
-      {/* Row 4: Gamalytic */}
-      <GamalyticWishlist coverUrl={totCover} />
+          <div className={`${s.tile} ${s.kpi}`} style={tile(4)}>
+            <Link href="/toplantilar" className={`${s.card} ${s.interactive} ${s.kpiCard}`}>
+              <div className={s.kpiHead}>
+                <span className={s.kpiLabel}>
+                  <span className={`${s.kpiIcon} ${s.toneAmber}`}><CalendarDays size={16} aria-hidden /></span>
+                  Toplantılar
+                </span>
+                <ArrowUpRight size={18} className={s.kpiArrow} aria-hidden />
+              </div>
+              <div className={s.kpiValue}><CountUp value={d.meetingCount} /></div>
+              <div className={s.split}>
+                <div className={s.splitItem}>
+                  <div className={s.splitValue}>{num(d.upcomingCount)}</div>
+                  <div className={s.splitLabel}>Yaklaşan</div>
+                </div>
+                <div className={s.splitItem}>
+                  <div className={s.splitValue}>{num(pastMeetings)}</div>
+                  <div className={s.splitLabel}>Geçmiş</div>
+                </div>
+              </div>
+            </Link>
+          </div>
+
+          <div className={`${s.tile} ${s.kpi}`} style={tile(5)}>
+            <Link href="/butce" className={`${s.card} ${s.interactive} ${s.kpiCard}`}>
+              <div className={s.kpiHead}>
+                <span className={s.kpiLabel}>
+                  <span className={`${s.kpiIcon} ${s.toneGreen}`}><Wallet size={16} aria-hidden /></span>
+                  Bütçe kullanımı
+                </span>
+                <ArrowUpRight size={18} className={s.kpiArrow} aria-hidden />
+              </div>
+              {d.monthlyBudget > 0 ? (
+                <>
+                  <div className={s.kpiBody}>
+                    <div className={s.kpiValue}>
+                      <CountUp value={d.totalExpenses} format="usd" />
+                      <div className={s.kpiValueSmall} style={{ marginTop: 6 }}>/ {usd(d.monthlyBudget)}</div>
+                    </div>
+                    <div role="meter" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.min(d.budgetPercent, 100)} aria-label="Bütçe kullanımı">
+                      <BudgetRing percent={d.budgetPercent} tone={budgetTone} />
+                    </div>
+                  </div>
+                  <div className={s.kpiNote} style={{ color: d.budgetPercent >= 80 ? budgetTone : undefined }}>
+                    {d.budgetPercent < 100
+                      ? `${usd(d.monthlyBudget - d.totalExpenses)} kaldı`
+                      : `Bütçe ${usd(d.totalExpenses - d.monthlyBudget)} aşıldı`}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className={s.kpiValue}><CountUp value={d.totalExpenses} format="usd" /></div>
+                  <div className={s.kpiNote}>Aylık bütçe tanımlanmadı</div>
+                </>
+              )}
+            </Link>
+          </div>
+
+          {/* ---------- Team agenda ---------- */}
+          <div className={s.section}>
+            <h2 className={s.sectionTitle}><span className={s.sectionIndex}>01</span>Ekibin gündemi</h2>
+            <span className={s.sectionNote}>Son toplantılar ve notlar</span>
+          </div>
+
+          <div className={`${s.tile} ${s.wMeet}`} style={tile(6)}>
+            <section className={s.card} aria-labelledby="meetings-title">
+              <div className={s.cardHead}>
+                <span className={`${s.logoBadge} ${s.toneAmber}`} aria-hidden><Calendar size={17} /></span>
+                <div className={s.cardHeadText}>
+                  <h3 id="meetings-title" className={s.cardTitle}>Son toplantılar</h3>
+                  <div className={s.cardSub}>{num(d.upcomingCount)} yaklaşan toplantı</div>
+                </div>
+                <Link href="/toplantilar" className={s.cardLink}>Tümü<ArrowRight size={14} aria-hidden /></Link>
+              </div>
+              {d.recentMeetings.length === 0 ? (
+                <p className={s.empty}>
+                  <span className={s.emptyIcon}><CalendarPlus size={20} aria-hidden /></span>
+                  Henüz toplantı yok.
+                  <Link href="/toplantilar">İlk toplantıyı planlayın</Link>
+                </p>
+              ) : (
+                <ul className={s.list}>
+                  {d.recentMeetings.map((m) => {
+                    const status = m.status ? String(m.status) : ''
+                    const tone = TONE_CLASS[MEETING_STATUS[status] ?? 'neutral']
+                    const meta = [m.time ? String(m.time).slice(0, 5) : '', m.attendees ? String(m.attendees) : '']
+                      .filter(Boolean)
+                      .join(' · ')
+                    return (
+                      <li key={String(m.id)} className={s.listItem}>
+                        <DateChip value={m.date} />
+                        <div style={{ minWidth: 0 }}>
+                          <div className={s.itemTitle}>{String(m.title ?? 'Başlıksız toplantı')}</div>
+                          {meta && <div className={s.itemMeta}>{meta}</div>}
+                        </div>
+                        {status && (
+                          <span className={`${s.tag} ${tone}`}><span className={s.tagDot} aria-hidden />{status}</span>
+                        )}
+                      </li>
+                    )
+                  })}
+                </ul>
+              )}
+            </section>
+          </div>
+
+          <div className={`${s.tile} ${s.wNotes}`} style={tile(7)}>
+            <section className={s.card} aria-labelledby="notes-title">
+              <div className={s.cardHead}>
+                <span className={`${s.logoBadge} ${s.toneGreen}`} aria-hidden><FileText size={17} /></span>
+                <div className={s.cardHeadText}>
+                  <h3 id="notes-title" className={s.cardTitle}>Son notlar</h3>
+                  <div className={s.cardSub}>Ekibin en son eklediği</div>
+                </div>
+                <Link href="/notlar" className={s.cardLink}>Tümü<ArrowRight size={14} aria-hidden /></Link>
+              </div>
+              {d.recentNotes.length === 0 ? (
+                <p className={s.empty}>
+                  <span className={s.emptyIcon}><NotebookPen size={20} aria-hidden /></span>
+                  Henüz not yok.
+                  <Link href="/notlar">İlk notu ekleyin</Link>
+                </p>
+              ) : (
+                <ul className={s.list}>
+                  {d.recentNotes.map((n) => (
+                    <li key={String(n.id)} className={s.listItem}>
+                      <DateChip value={n.created_at} />
+                      <div style={{ minWidth: 0 }}>
+                        <div className={s.itemTitle}>{String(n.title ?? 'Başlıksız not')}</div>
+                        {n.content ? <div className={s.itemMeta}>{String(n.content)}</div> : null}
+                      </div>
+                      {n.category ? <span className={`${s.tag} ${s.toneViolet}`}>{String(n.category)}</span> : null}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </section>
+          </div>
+
+          <div className={`${s.tile} ${s.wQuick}`} style={tile(8)}>
+            <section className={s.card} aria-labelledby="quick-title">
+              <div className={s.cardHead}>
+                <div className={s.cardHeadText}>
+                  <h3 id="quick-title" className={s.cardTitle}>Hızlı erişim</h3>
+                  <div className={s.cardSub}>Sık kullanılan modüller</div>
+                </div>
+              </div>
+              <nav className={s.quick} aria-labelledby="quick-title">
+                {QUICK_LINKS.map((q) => (
+                  <QuickLinkCard key={q.href} {...q} toneClass={TONE_CLASS[q.tone]} />
+                ))}
+              </nav>
+            </section>
+          </div>
+
+          {/* ---------- Market pulse ---------- */}
+          <div className={s.section}>
+            <h2 className={s.sectionTitle}><span className={s.sectionIndex}>02</span>Pazar nabzı</h2>
+            <span className={s.sectionNote}>Steam ve Twitch, canlı veri</span>
+          </div>
+
+          <div className={`${s.tile} ${s.wMarket}`} style={tile(9)}>
+            <TwitchLivePanel />
+          </div>
+          <div className={`${s.tile} ${s.wMarket}`} style={tile(10)}>
+            <SteamTopSellers />
+          </div>
+          <div className={`${s.tile} ${s.wMarket} ${s.wMarketWide}`} style={tile(11)}>
+            <SteamMostPlayed />
+          </div>
+
+          {/* ---------- News ---------- */}
+          <div className={s.section}>
+            <h2 className={s.sectionTitle}><span className={s.sectionIndex}>03</span>Sektörden haberler</h2>
+            <span className={s.sectionNote}>PC Gamer</span>
+          </div>
+
+          <div className={`${s.tile} ${s.wNews}`} style={tile(12)}>
+            <LatestNews />
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

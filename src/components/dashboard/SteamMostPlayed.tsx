@@ -2,7 +2,7 @@
 
 import s from '@/app/dashboard.module.css'
 import { useWidgetData } from './useWidgetData'
-import { RefreshButton, RowSkeletons, formatCompact } from './WidgetParts'
+import { Meter, Rank, RefreshButton, RowSkeletons, formatCompact } from './WidgetParts'
 
 interface Game {
   appid: number
@@ -17,15 +17,16 @@ const pick = (json: unknown) => ((json as { games?: Game[] }).games ?? [])
 
 export default function SteamMostPlayed() {
   const { data, loading, error, reload } = useWidgetData('/api/steam-most-played', pick)
+  const max = Math.max(0, ...(data ?? []).map((g) => g.players ?? 0))
 
   return (
-    <section className={`${s.card} ${s.accent}`} style={{ borderTopColor: 'var(--steam)' }} aria-labelledby="steam-played-title">
+    <section className={s.card} aria-labelledby="steam-played-title">
       <div className={s.cardHead}>
-        <div style={{ minWidth: 0 }}>
-          <h2 id="steam-played-title" className={s.cardTitle}>
-            <img src="/icons/steamlogo.png" alt="" width={18} height={18} style={{ background: 'var(--steam)', padding: 2 }} />
-            Steam&apos;de şu an popüler
-          </h2>
+        <span className={s.logoBadge} style={{ background: 'var(--steam)' }} aria-hidden>
+          <img src="/icons/steamlogo.png" alt="" />
+        </span>
+        <div className={s.cardHeadText}>
+          <h3 id="steam-played-title" className={s.cardTitle}>Steam&apos;de şu an popüler</h3>
           <div className={s.cardSub}>Anlık oyuncu sayısına göre</div>
         </div>
         <RefreshButton onClick={reload} loading={loading} label="Popüler oyunları yenile" />
@@ -40,11 +41,12 @@ export default function SteamMostPlayed() {
           {data.map((g, i) => (
             <li key={g.appid}>
               <a className={s.rankRow} href={g.url} target="_blank" rel="noopener noreferrer">
-                <span className={s.rank}>{i + 1}</span>
+                <Rank n={i + 1} />
                 <img className={s.capsule} src={g.image} alt="" loading="lazy" />
-                <span style={{ minWidth: 0 }}>
-                  <span className={s.rowName} style={{ display: 'block' }} title={g.name}>{g.name}</span>
-                  <span className={s.rowSub} style={{ display: 'block' }}>Bugünkü zirve {formatCompact(g.peakToday)}</span>
+                <span className={s.rowText}>
+                  <span className={s.rowName} title={g.name}>{g.name}</span>
+                  {g.players != null && <Meter value={g.players} max={max} row={i} />}
+                  <span className={s.rowSub}>Bugünkü zirve {formatCompact(g.peakToday)}</span>
                 </span>
                 <span className={s.rowValue} title={g.players != null ? `${g.players.toLocaleString('tr-TR')} oyuncu` : undefined}>
                   {g.players != null ? formatCompact(g.players) : '—'}

@@ -2,7 +2,7 @@
 
 import s from '@/app/dashboard.module.css'
 import { useWidgetData } from './useWidgetData'
-import { RefreshButton, RowSkeletons } from './WidgetParts'
+import { Rank, RefreshButton, RowSkeletons } from './WidgetParts'
 
 interface Game {
   rank: number
@@ -22,13 +22,13 @@ export default function SteamTopSellers() {
   const { data, loading, error, reload } = useWidgetData('/api/steam-top-sellers', pick)
 
   return (
-    <section className={`${s.card} ${s.accent}`} style={{ borderTopColor: 'var(--steam)' }} aria-labelledby="steam-top-title">
+    <section className={s.card} aria-labelledby="steam-top-title">
       <div className={s.cardHead}>
-        <div style={{ minWidth: 0 }}>
-          <h2 id="steam-top-title" className={s.cardTitle}>
-            <img src="/icons/steamlogo.png" alt="" width={18} height={18} style={{ background: 'var(--steam)', padding: 2 }} />
-            Steam çok satanlar
-          </h2>
+        <span className={s.logoBadge} style={{ background: 'var(--steam)' }} aria-hidden>
+          <img src="/icons/steamlogo.png" alt="" />
+        </span>
+        <div className={s.cardHeadText}>
+          <h3 id="steam-top-title" className={s.cardTitle}>Steam çok satanlar</h3>
           <div className={s.cardSub}>Bu hafta, küresel gelir sıralaması</div>
         </div>
         <RefreshButton onClick={reload} loading={loading} label="Çok satanları yenile" />
@@ -43,7 +43,7 @@ export default function SteamTopSellers() {
           {data.map((g) => (
             <li key={g.appid}>
               <a className={s.rankRow} href={g.url} target="_blank" rel="noopener noreferrer">
-                <span className={s.rank}>{g.rank}</span>
+                <Rank n={g.rank} />
                 <img className={s.capsule} src={g.image} alt="" loading="lazy" />
                 <span className={s.rowName} title={g.name}>{g.name}</span>
                 <span className={s.rowValue}>
