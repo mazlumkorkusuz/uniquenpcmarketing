@@ -116,6 +116,20 @@ Rules:
 5. `prefers-reduced-motion: reduce` → no entrance, no count-up, no pulse; render the final state.
 6. `prefers-reduced-transparency: reduce` → solid white cards, no backdrop blur.
 
+### Motion system (implemented 2026-09-26)
+
+- **Route change:** React `<ViewTransition>` (`experimental.viewTransition`) in `AppShell`. The outgoing
+  page leaves in 160ms (fade + 3px blur + 6px rise); the sidebar never animates.
+- **Page entrance:** `PageMotion` (GSAP) staggers the first-viewport blocks in (14px rise, 420ms,
+  total stagger capped at 300ms). Pages with their own CSS entrance set `data-css-entrance`;
+  `data-reveal-root` picks the container whose children are the blocks.
+- **Below the fold:** blocks reveal once via `ScrollTrigger.batch` (28px rise, 600ms). Tables and
+  lists inside a block are never hidden or delayed on their own.
+- **Glass:** cards carry a lit inset rim (`--shadow-card`); dashboard cards add a masked 1px edge ring
+  that brightens on hover. Every card gets the cursor spotlight (`DashboardFx`).
+- **Modals:** framer-motion `AnimatePresence`: rise out of a 4px blur in 320ms, exit in 140ms.
+- Nothing is hidden unless its script runs; reduced motion keeps only short opacity fades.
+
 ## Components
 
 **Bento card.** Glass surface, `--r-lg`, 1px `--line` border, `--shadow-1`. When interactive:

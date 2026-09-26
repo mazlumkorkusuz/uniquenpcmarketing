@@ -6,7 +6,9 @@ import type { User } from '@supabase/supabase-js'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 import Image from 'next/image'
 import { Menu } from 'lucide-react'
-import { motion, MotionConfig } from 'framer-motion'
+import { ViewTransition } from 'react'
+import PageMotion from '@/components/motion/PageMotion'
+import DashboardFx from '@/components/dashboard/DashboardFx'
 import Sidebar from '@/components/Sidebar'
 
 interface AuthContextValue {
@@ -91,19 +93,13 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             <Image src="/uniqlogo.png" alt="" width={28} height={28} style={{ borderRadius: 6 }} />
             <span style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: 'var(--ink)', letterSpacing: '-0.01em' }}>Unique NPC Marketing</span>
           </div>
-          {/* Keyed on the path so each page fades in on load; reducedMotion="user" skips it when
-              the OS asks for less motion */}
-          <MotionConfig reducedMotion="user">
-            <motion.div
-              key={pathname}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
-              style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}
-            >
-              {children}
-            </motion.div>
-          </MotionConfig>
+          {/* Route change = view transition: the outgoing page fades out (globals.css → .page-exit)
+              while the sidebar stays put; PageMotion then staggers the new page's blocks in. */}
+          <ViewTransition key={pathname} exit="page-exit" enter="page-enter" default="none">
+            <PageMotion>{children}</PageMotion>
+          </ViewTransition>
+          {/* Cursor spotlight for every card surface (the dashboard mounts its own for bento cards) */}
+          <DashboardFx selector="[style*='var(--shadow-card)']" />
         </main>
       </div>
     </AuthContext.Provider>

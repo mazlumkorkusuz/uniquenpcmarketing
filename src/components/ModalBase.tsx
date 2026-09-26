@@ -1,6 +1,11 @@
 'use client'
 
+import { useEffect } from 'react'
+import { AnimatePresence, motion, MotionConfig } from 'framer-motion'
+import { X } from 'lucide-react'
 import { buttonColor } from '@/lib/theme'
+
+const EASE_OUT = [0.16, 1, 0.3, 1] as const
 
 export function ModalBase({
   isOpen,
@@ -13,65 +18,83 @@ export function ModalBase({
   title: string
   children: React.ReactNode
 }) {
-  if (!isOpen) return null
+  useEffect(() => {
+    if (!isOpen) return
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [isOpen, onClose])
 
+  // Enter: scrim fades, the sheet rises out of a slight blur. Exit is quicker than entry.
+  // reducedMotion="user" drops the movement and keeps the fade.
   return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 1000,
-        backgroundColor: 'rgba(23,18,43,0.4)',
-        backdropFilter: 'blur(4px)',
-        WebkitBackdropFilter: 'blur(4px)',
-        animation: 'fade-in 200ms var(--ease-out)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '20px',
-      }}
-      onClick={onClose}
-    >
-      <div
-        className="modal-surface"
-        role="dialog"
-        aria-modal="true"
-        aria-label={title}
-        style={{
-          backgroundColor: 'var(--surface)',
-          color: 'var(--ink)',
-          border: '1px solid var(--line)',
-          borderRadius: 'var(--r-lg)',
-          padding: '24px',
-          width: '100%',
-          maxWidth: '500px',
-          maxHeight: '92vh',
-          overflowY: 'auto',
-          boxShadow: '0 24px 64px -16px rgba(23,18,43,0.28), 0 2px 6px rgba(23,18,43,0.06)',
-          animation: 'pop-in 250ms var(--ease-out)',
-        }}
-        onClick={e => e.stopPropagation()}
-      >
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: '20px',
-          }}
-        >
-          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 600, letterSpacing: '-0.01em', color: 'var(--ink)', margin: 0 }}>{title}</h2>
-          <button
+    <MotionConfig reducedMotion="user">
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            key="scrim"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1, transition: { duration: 0.2, ease: EASE_OUT } }}
+            exit={{ opacity: 0, transition: { duration: 0.14, ease: 'easeIn' } }}
+            style={{
+              position: 'fixed',
+              inset: 0,
+              zIndex: 1000,
+              backgroundColor: 'rgba(23,18,43,0.4)',
+              backdropFilter: 'blur(4px)',
+              WebkitBackdropFilter: 'blur(4px)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '20px',
+            }}
             onClick={onClose}
-            aria-label="Kapat"
-            className="icon-btn"
           >
-            ✕
-          </button>
-        </div>
-        {children}
-      </div>
-    </div>
+            <motion.div
+              className="modal-surface"
+              role="dialog"
+              aria-modal="true"
+              aria-label={title}
+              initial={{ opacity: 0, y: 16, scale: 0.98, filter: 'blur(4px)' }}
+              animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)', transition: { duration: 0.32, ease: EASE_OUT } }}
+              exit={{ opacity: 0, y: 8, scale: 0.98, transition: { duration: 0.14, ease: 'easeIn' } }}
+              style={{
+                backgroundColor: 'var(--surface)',
+                color: 'var(--ink)',
+                border: '1px solid var(--line)',
+                borderRadius: 'var(--r-lg)',
+                padding: '24px',
+                width: '100%',
+                maxWidth: '500px',
+                maxHeight: '92vh',
+                overflowY: 'auto',
+                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.9), 0 24px 64px -16px rgba(23,18,43,0.28), 0 2px 6px rgba(23,18,43,0.06)',
+              }}
+              onClick={e => e.stopPropagation()}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: '20px',
+                }}
+              >
+                <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 600, letterSpacing: '-0.01em', color: 'var(--ink)', margin: 0 }}>{title}</h2>
+                <button
+                  onClick={onClose}
+                  aria-label="Kapat"
+                  className="icon-btn"
+                >
+                  <X size={18} aria-hidden />
+                </button>
+              </div>
+              {children}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </MotionConfig>
   )
 }
 

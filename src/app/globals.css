@@ -30,8 +30,9 @@
   --color-bilibili: #00A1D6;
   --color-douyin: #FF0050;
   --color-steam: #1B2838;
-  --shadow-card: 0 1px 2px rgba(23, 18, 43, 0.04), 0 1px 1px rgba(23, 18, 43, 0.03);
-  --shadow-card-hover: 0 12px 32px -12px rgba(76, 29, 149, 0.18), 0 2px 6px rgba(23, 18, 43, 0.05);
+  /* Glass depth: lit top rim + soft shade at the base, floated by the MASTER resting shadow */
+  --shadow-card: inset 0 1px 0 rgba(255, 255, 255, 0.9), inset 0 -1px 0 rgba(23, 18, 43, 0.03), 0 1px 2px rgba(23, 18, 43, 0.04), 0 1px 1px rgba(23, 18, 43, 0.03);
+  --shadow-card-hover: inset 0 1px 0 rgba(255, 255, 255, 0.95), 0 12px 32px -12px rgba(76, 29, 149, 0.18), 0 2px 6px rgba(23, 18, 43, 0.05);
   --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
   --font-sans: var(--font-body), var(--font-inter), ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-jakarta: var(--font-body);
@@ -79,6 +80,12 @@
   --dur-1: 150ms;
   --dur-2: 240ms;
   --dur-3: 420ms;
+}
+
+@property --spot {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 0;
 }
 
 * {
@@ -216,16 +223,21 @@ textarea:focus-visible {
   border-radius: var(--r-lg) !important;
   -webkit-backdrop-filter: blur(18px) saturate(140%);
   backdrop-filter: blur(18px) saturate(140%);
+  /* Cursor spotlight (position from DashboardFx, strength eased through --spot) layered over the
+     inline glass fill */
+  background-image: radial-gradient(360px circle at var(--mx, 50%) var(--my, -200px), rgba(124, 58, 237, calc(var(--spot) * 0.07)), transparent 60%);
   transition:
     transform var(--dur-2) var(--ease-out),
     box-shadow var(--dur-2) var(--ease-out),
-    border-color var(--dur-1) var(--ease-out);
+    border-color var(--dur-1) var(--ease-out),
+    --spot var(--dur-2) var(--ease-out);
 }
 
 @media (hover: hover) and (pointer: fine) {
   .app-main [style*='var(--shadow-card)']:hover {
+    --spot: 1;
     border-color: var(--line-2) !important;
-    box-shadow: var(--shadow-2) !important;
+    box-shadow: var(--shadow-card-hover) !important;
   }
 
   /* Only clickable cards lift */
@@ -669,4 +681,136 @@ textarea:focus-visible {
 .app-main button[style*='var(--line-2)']:hover:not(:disabled),
 .modal-surface button[style*='var(--line-2)']:hover:not(:disabled) {
   border-color: var(--primary) !important;
+}
+
+
+/* ================= Route transitions (React <ViewTransition> in AppShell) ================= */
+/* The sidebar and shell stay still: only the page content cross-fades. The outgoing page leaves
+   fast with a slight blur; the new page arrives unanimated here because PageMotion staggers its
+   blocks in, so there is one entrance, not two. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+}
+
+::view-transition-old(.page-exit) {
+  animation: vt-leave 160ms cubic-bezier(0.4, 0, 1, 1) both;
+}
+
+::view-transition-new(.page-enter) {
+  animation: none;
+}
+
+@keyframes vt-leave {
+  to {
+    opacity: 0;
+    filter: blur(3px);
+    transform: translateY(-6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(.page-exit) {
+    animation: vt-fade 120ms linear both;
+  }
+
+  @keyframes vt-fade {
+    to { opacity: 0; }
+  }
+}
+
+/* ================= Micro-interactions ================= */
+/* Directional icons lean toward where the control goes */
+.app-main a svg.lucide-arrow-right,
+.app-main a svg.lucide-chevron-right,
+.app-main a svg.lucide-external-link,
+.app-main a svg.lucide-arrow-up-right,
+.app-main button svg.lucide-arrow-right,
+.app-main button svg.lucide-chevron-right {
+  transition: transform var(--dur-2) var(--ease-out);
+}
+
+.app-main a:hover svg.lucide-arrow-right,
+.app-main a:hover svg.lucide-chevron-right,
+.app-main button:hover svg.lucide-arrow-right,
+.app-main button:hover svg.lucide-chevron-right {
+  transform: translateX(3px);
+}
+
+.app-main a:hover svg.lucide-external-link,
+.app-main a:hover svg.lucide-arrow-up-right {
+  transform: translate(2px, -2px);
+}
+
+/* Add / refresh icons acknowledge the hover */
+.app-main button svg.lucide-plus,
+.app-main button svg.lucide-refresh-cw,
+.app-main button svg.lucide-rotate-cw {
+  transition: transform var(--dur-2) var(--ease-out);
+}
+
+.app-main button:hover:not(:disabled) svg.lucide-plus {
+  transform: rotate(90deg);
+}
+
+.app-main button:hover:not(:disabled) svg.lucide-refresh-cw,
+.app-main button:hover:not(:disabled) svg.lucide-rotate-cw {
+  transform: rotate(60deg);
+}
+
+/* Primary buttons lift a hair with their glow; everything presses in */
+@media (hover: hover) and (pointer: fine) {
+  .app-main button[style*='var(--gradient)']:hover:not(:disabled),
+  .modal-surface button[style*='var(--gradient)']:hover:not(:disabled) {
+    transform: translateY(-1px);
+  }
+}
+
+.app-main button:not(:disabled):active,
+.modal-surface button:not(:disabled):active,
+.app-main a[style*='var(--shadow-card)']:active {
+  transform: scale(0.97) !important;
+  transition-duration: 80ms;
+}
+
+/* Table rows: hover tint, a deeper tint while pressed, keyboard focus inside a row lights it */
+.app-main tbody tr {
+  transition: background-color var(--dur-1) var(--ease-out);
+}
+
+.app-main tbody tr:active td {
+  background-color: rgba(109, 40, 217, 0.08);
+}
+
+.app-main tbody tr:focus-within td {
+  background-color: rgba(109, 40, 217, 0.05);
+}
+
+/* Inline links underline cleanly instead of the browser default */
+.app-main p a,
+.app-main td a {
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+
+/* Tabular numerals wherever numbers line up */
+.app-main td,
+.app-main [style*='tabular-nums'] {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-main a svg,
+  .app-main button svg {
+    transform: none !important;
+  }
+}
+
+/* Glass is defeatable: solid cards when the OS asks for less transparency */
+@media (prefers-reduced-transparency: reduce) {
+  .app-main [style*='var(--shadow-card)'] {
+    background-color: var(--surface) !important;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
 }

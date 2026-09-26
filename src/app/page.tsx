@@ -198,7 +198,7 @@ export default async function DashboardPage() {
       </div>
 
       <div className={s.container}>
-        <div className={s.bento}>
+        <div className={s.bento} data-reveal-root data-css-entrance>
           {/* ---------- Hero ---------- */}
           <div className={`${s.tile} ${s.hero}`} style={tile(0)}>
             <section className={`${s.card} ${s.heroCard}`} aria-labelledby="dash-title">
