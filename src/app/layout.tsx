@@ -1,7 +1,11 @@
 import type { Metadata } from 'next'
-import { Inter, Space_Grotesk, DM_Sans } from 'next/font/google'
+import { Inter, Space_Grotesk, DM_Sans, Geist } from 'next/font/google'
 import './globals.css'
 import AppShell from '@/components/AppShell'
+import { cn } from "@/lib/utils";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+
 
 // MASTER type: Space Grotesk for display/headings, DM Sans for body. Inter stays for the sidebar.
 const inter = Inter({
@@ -34,7 +38,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="tr" className={`${inter.variable} ${display.variable} ${body.variable}`}>
+    <html lang="tr" className={cn(inter.variable, display.variable, body.variable, "font-sans", geist.variable)}>
       <body style={{ margin: 0, minHeight: '100vh' }}>
         <AppShell>{children}</AppShell>
       </body>
