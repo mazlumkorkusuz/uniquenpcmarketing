@@ -38,7 +38,7 @@ export default function StatCard({ label, value, icon: Icon, iconColor, iconBg, 
           style={{
             width: '34px',
             height: '34px',
-            borderRadius: '10px',
+            borderRadius: '12px',
             backgroundColor: iconBg,
             display: 'flex',
             alignItems: 'center',

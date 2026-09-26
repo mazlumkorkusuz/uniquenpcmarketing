@@ -6,7 +6,6 @@ import Badge, { statusBadge } from '@/components/Badge'
 import { Calendar } from 'lucide-react'
 import { MeetingModal, EditMeetingButton } from '@/components/MeetingModal'
 import { DeleteButton } from '@/components/DeleteButton'
-import { inkOf } from '@/lib/theme'
 
 async function getData() {
   const [{ data: meetings }, { data: notes }] = await Promise.all([
@@ -21,7 +20,7 @@ type Row = Record<string, unknown>
 function formatDate(v: unknown) {
   if (!v) return <span style={{ color: '#655F7D' }}>—</span>
   return (
-    <span style={{ fontSize: '13px', color: '#4A4462', whiteSpace: 'nowrap' }}>
+    <span style={{ fontSize: '12.5px', color: '#4A4462', whiteSpace: 'nowrap' }}>
       {new Date(v as string).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}
     </span>
   )
@@ -67,7 +66,7 @@ export default async function ToplantilarPage() {
       return <span style={{ fontWeight: 600, color: '#17122B' }}>{meeting ? String(meeting.title ?? '—') : <span style={{ color: '#655F7D' }}>—</span>}</span>
     }},
     { key: 'content', label: 'Not İçeriği', render: (v: unknown) => (
-      <span style={{ fontSize: '13px', color: '#4A4462', display: 'block', whiteSpace: 'pre-wrap' }}>
+      <span style={{ fontSize: '12.5px', color: '#4A4462', display: 'block', whiteSpace: 'pre-wrap' }}>
         {String(v ?? '—')}
       </span>
     )},
@@ -89,8 +88,8 @@ export default async function ToplantilarPage() {
   const summaryCards = [
     { label: 'Toplam', value: meetings.length, color: '#6D28D9' },
     { label: 'Yaklaşan', value: upcoming.length, color: '#1D4ED8' },
-    { label: 'Tamamlanan', value: past.length, color: '#046C4E' },
-    { label: 'Notlar', value: notes.length, color: '#A24B08' },
+    { label: 'Tamamlanan', value: past.length, color: '#047857' },
+    { label: 'Notlar', value: notes.length, color: '#C2410C' },
   ]
 
   return (
@@ -99,7 +98,7 @@ export default async function ToplantilarPage() {
         title="Toplantılar"
         subtitle="Toplantı takvimi ve notlar"
         icon={Calendar}
-        gradient="linear-gradient(135deg, #14b8a6, #3b82f6)"
+        gradient="linear-gradient(135deg, #7C3AED, #6D28D9)"
       >
         <MeetingModal />
       </PageHeader>
@@ -118,8 +117,8 @@ export default async function ToplantilarPage() {
                 textAlign: 'center',
               }}
             >
-              <div style={{ fontSize: '32px', fontWeight: 800, color: inkOf(c.color), lineHeight: 1 }}>{c.value}</div>
-              <div style={{ fontSize: '13px', color: '#655F7D', marginTop: '6px' }}>{c.label}</div>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: '32px', fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.03em', fontWeight: 600, color: '#17122B', lineHeight: 1 }}>{c.value}</div>
+              <div style={{ fontSize: '12.5px', color: '#655F7D', marginTop: '6px' }}>{c.label}</div>
             </div>
           ))}
         </div>
@@ -127,9 +126,9 @@ export default async function ToplantilarPage() {
         {/* Upcoming */}
         <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', overflow: 'hidden', marginBottom: '24px' }}>
           <div style={{ padding: '14px 20px', borderBottom: '1px solid #E8E4F1', display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#22c55e', boxShadow: '0 0 6px rgba(34,197,94,0.6)' }} />
-            <span style={{ fontSize: '15px', fontWeight: 600, color: '#17122B' }}>Yaklaşan Toplantılar</span>
-            <span style={{ marginLeft: 'auto', backgroundColor: 'rgba(34,197,94,0.12)', color: '#046C4E', border: '1px solid rgba(34,197,94,0.3)', borderRadius: '9999px', padding: '2px 10px', fontSize: '13px', fontWeight: 600 }}>
+            <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#047857', boxShadow: 'none' }} />
+            <span style={{ fontFamily: 'var(--font-display)', fontSize: '15px', letterSpacing: '-0.01em', fontWeight: 600, color: '#17122B' }}>Yaklaşan Toplantılar</span>
+            <span style={{ marginLeft: 'auto', backgroundColor: '#ECFDF5', color: '#047857', border: '1px solid #D8D2E6', borderRadius: '9999px', padding: '2px 10px', fontSize: '14px', fontWeight: 600 }}>
               {upcoming.length}
             </span>
           </div>
@@ -140,8 +139,8 @@ export default async function ToplantilarPage() {
         <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', overflow: 'hidden', marginBottom: '24px' }}>
           <div style={{ padding: '14px 20px', borderBottom: '1px solid #E8E4F1', display: 'flex', alignItems: 'center', gap: '10px' }}>
             <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#655F7D' }} />
-            <span style={{ fontSize: '15px', fontWeight: 600, color: '#17122B' }}>Geçmiş Toplantılar</span>
-            <span style={{ marginLeft: 'auto', backgroundColor: 'rgba(100,116,139,0.12)', color: '#4A4462', border: '1px solid rgba(100,116,139,0.3)', borderRadius: '9999px', padding: '2px 10px', fontSize: '13px', fontWeight: 600 }}>
+            <span style={{ fontFamily: 'var(--font-display)', fontSize: '15px', letterSpacing: '-0.01em', fontWeight: 600, color: '#17122B' }}>Geçmiş Toplantılar</span>
+            <span style={{ marginLeft: 'auto', backgroundColor: '#F4F2F9', color: '#4A4462', border: '1px solid #D8D2E6', borderRadius: '9999px', padding: '2px 10px', fontSize: '14px', fontWeight: 600 }}>
               {past.length}
             </span>
           </div>
@@ -151,9 +150,9 @@ export default async function ToplantilarPage() {
         {/* Meeting notes */}
         <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', overflow: 'hidden' }}>
           <div style={{ padding: '14px 20px', borderBottom: '1px solid #E8E4F1', display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#f59e0b' }} />
-            <span style={{ fontSize: '15px', fontWeight: 600, color: '#17122B' }}>Toplantı Notları</span>
-            <span style={{ marginLeft: 'auto', backgroundColor: 'rgba(245,158,11,0.12)', color: '#A24B08', border: '1px solid rgba(245,158,11,0.3)', borderRadius: '9999px', padding: '2px 10px', fontSize: '13px', fontWeight: 600 }}>
+            <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#B45309' }} />
+            <span style={{ fontFamily: 'var(--font-display)', fontSize: '15px', letterSpacing: '-0.01em', fontWeight: 600, color: '#17122B' }}>Toplantı Notları</span>
+            <span style={{ marginLeft: 'auto', backgroundColor: '#FFFBEB', color: '#C2410C', border: '1px solid #D8D2E6', borderRadius: '9999px', padding: '2px 10px', fontSize: '14px', fontWeight: 600 }}>
               {notes.length}
             </span>
           </div>

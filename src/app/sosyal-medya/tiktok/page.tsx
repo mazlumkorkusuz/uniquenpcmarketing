@@ -23,7 +23,7 @@ async function getData() {
 }
 
 function numCell(v: unknown) {
-  return v ? <span style={{ color: '#046C4E', fontWeight: 600 }}>{Number(v).toLocaleString('en-US')}</span> : <span style={{ color: '#655F7D' }}>—</span>
+  return v ? <span style={{ color: '#047857', fontWeight: 600 }}>{Number(v).toLocaleString('en-US')}</span> : <span style={{ color: '#655F7D' }}>—</span>
 }
 function dateCell(v: unknown) {
   return v ? <span style={{ fontSize: '12px', color: '#655F7D' }}>{new Date(v as string).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', year: 'numeric' })}</span> : <span style={{ color: '#655F7D' }}>—</span>
@@ -42,7 +42,7 @@ export default async function TikTokPage() {
   const chartData = Object.entries(campaignCounts).sort((a, b) => b[1] - a[1]).slice(0, 10).map(([label, value]) => ({ label, value }))
 
   const postCols = [
-    { key: 'content',   label: 'İçerik',    render: (v: unknown) => <span style={{ fontSize: '13px', color: '#4A4462', maxWidth: '320px', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{String(v ?? '—')}</span> },
+    { key: 'content',   label: 'İçerik',    render: (v: unknown) => <span style={{ fontSize: '12.5px', color: '#4A4462', maxWidth: '320px', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{String(v ?? '—')}</span> },
     { key: 'status',    label: 'Durum',     render: (v: unknown) => statusBadge(v as string) ?? <span style={{ color: '#655F7D' }}>—</span> },
     { key: 'posted_at', label: 'Yayın',     render: dateCell },
     { key: 'likes',     label: 'Beğeni',    render: numCell },
@@ -67,9 +67,9 @@ export default async function TikTokPage() {
       <div style={{ padding: '24px 32px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px', marginBottom: '28px' }}>
           <StatCard label="Toplam Video"   value={posts.length}                         icon={Share2}        iconColor="#fe2c55" iconBg="rgba(254,44,85,0.12)" />
-          <StatCard label="Toplam Beğeni"  value={totalLikes.toLocaleString('en-US')}   icon={Heart}         iconColor="#BE185D" iconBg="rgba(244,114,182,0.12)" />
-          <StatCard label="Toplam Paylaşım" value={totalShares.toLocaleString('en-US')} icon={TrendingUp}    iconColor="#047857" iconBg="rgba(34,197,94,0.12)" />
-          <StatCard label="Metrik Kaydı"   value={metrics.length}                       icon={MessageCircle} iconColor="#6D28D9" iconBg="rgba(124,58,237,0.12)" />
+          <StatCard label="Toplam Beğeni"  value={totalLikes.toLocaleString('en-US')}   icon={Heart}         iconColor="#BE123C" iconBg="#FFF1F3" />
+          <StatCard label="Toplam Paylaşım" value={totalShares.toLocaleString('en-US')} icon={TrendingUp}    iconColor="#047857" iconBg="#ECFDF5" />
+          <StatCard label="Metrik Kaydı"   value={metrics.length}                       icon={MessageCircle} iconColor="#6D28D9" iconBg="#F3EEFF" />
         </div>
 
         {chartData.length > 0 && (
@@ -82,8 +82,8 @@ export default async function TikTokPage() {
         <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', overflow: 'hidden', marginBottom: '24px' }}>
           <div style={{ padding: '14px 20px', borderBottom: '1px solid #E8E4F1', display: 'flex', alignItems: 'center', gap: '10px' }}>
             <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#fe2c55' }} />
-            <span style={{ fontSize: '15px', fontWeight: 600, color: '#17122B' }}>Videolar</span>
-            <span style={{ marginLeft: 'auto', backgroundColor: 'rgba(254,44,85,0.12)', color: '#B9203D', border: '1px solid rgba(254,44,85,0.3)', borderRadius: '9999px', padding: '2px 10px', fontSize: '13px', fontWeight: 600 }}>{posts.length}</span>
+            <span style={{ fontFamily: 'var(--font-display)', fontSize: '15px', letterSpacing: '-0.01em', fontWeight: 600, color: '#17122B' }}>Videolar</span>
+            <span style={{ marginLeft: 'auto', backgroundColor: 'rgba(254,44,85,0.12)', color: '#B91C1C', border: '1px solid rgba(254,44,85,0.3)', borderRadius: '9999px', padding: '2px 10px', fontSize: '14px', fontWeight: 600 }}>{posts.length}</span>
           </div>
           <DataTable columns={postCols} data={posts} emptyMessage="TikTok videosu bulunamadı" />
         </div>
@@ -91,9 +91,9 @@ export default async function TikTokPage() {
         {metrics.length > 0 && (
           <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', overflow: 'hidden' }}>
             <div style={{ padding: '14px 20px', borderBottom: '1px solid #E8E4F1', display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#f59e0b' }} />
-              <span style={{ fontSize: '15px', fontWeight: 600, color: '#17122B' }}>Pazarlama Metrikleri</span>
-              <span style={{ marginLeft: 'auto', backgroundColor: 'rgba(245,158,11,0.12)', color: '#A24B08', border: '1px solid rgba(245,158,11,0.3)', borderRadius: '9999px', padding: '2px 10px', fontSize: '13px', fontWeight: 600 }}>{metrics.length}</span>
+              <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#B45309' }} />
+              <span style={{ fontFamily: 'var(--font-display)', fontSize: '15px', letterSpacing: '-0.01em', fontWeight: 600, color: '#17122B' }}>Pazarlama Metrikleri</span>
+              <span style={{ marginLeft: 'auto', backgroundColor: '#FFFBEB', color: '#C2410C', border: '1px solid #D8D2E6', borderRadius: '9999px', padding: '2px 10px', fontSize: '14px', fontWeight: 600 }}>{metrics.length}</span>
             </div>
             <DataTable columns={metricCols} data={metrics} emptyMessage="Metrik bulunamadı" />
           </div>

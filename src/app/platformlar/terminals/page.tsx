@@ -32,7 +32,7 @@ export default async function TerminalsPage() {
     { key: 'title', label: 'Başlık', render: (v: unknown) => <span style={{ fontWeight: 600, color: '#17122B' }}>{String(v ?? '—')}</span> },
     { key: 'content', label: 'İçerik', render: (v: unknown) => {
       const s = String(v ?? '')
-      return <span style={{ fontSize: '13px', color: '#4A4462' }}>{s.length > 80 ? s.slice(0, 80) + '…' : s || <span style={{ color: '#655F7D' }}>—</span>}</span>
+      return <span style={{ fontSize: '12.5px', color: '#4A4462' }}>{s.length > 80 ? s.slice(0, 80) + '…' : s || <span style={{ color: '#655F7D' }}>—</span>}</span>
     }},
     { key: 'tags', label: 'Etiketler', render: (v: unknown) => {
       if (!v) return <span style={{ color: '#655F7D' }}>—</span>
@@ -46,9 +46,9 @@ export default async function TerminalsPage() {
   ]
 
   const stats = [
-    { label: 'Platform', value: 'Terminals.io', color: '#0D6882', icon: Globe },
+    { label: 'Platform', value: 'Terminals.io', color: '#1D4ED8', icon: Globe },
     { label: 'Odak', value: 'Yayıncı', color: '#1D4ED8', icon: Users },
-    { label: 'Kapsam', value: 'Global', color: '#046C4E', icon: Target },
+    { label: 'Kapsam', value: 'Global', color: '#047857', icon: Target },
     { label: 'Notlar', value: notes.length, color: '#6D28D9', icon: FileText },
   ]
 
@@ -58,7 +58,7 @@ export default async function TerminalsPage() {
         title="Terminals.io"
         subtitle="Oyun yayıncıları ve içerik üreticileri için büyüme platformu"
         icon={Zap}
-        gradient="linear-gradient(135deg, #06b6d4, #3b82f6)"
+        gradient="linear-gradient(135deg, #7C3AED, #6D28D9)"
       >
         <a
           href="https://terminals.io"
@@ -70,11 +70,11 @@ export default async function TerminalsPage() {
             gap: '6px',
             padding: '8px 16px',
             borderRadius: '8px',
-            backgroundColor: 'rgba(6,182,212,0.15)',
-            border: '1px solid rgba(6,182,212,0.35)',
-            color: '#0D6882',
+            backgroundColor: '#F0FDFA',
+            border: '1px solid #D8D2E6',
+            color: '#1D4ED8',
             fontWeight: 600,
-            fontSize: '13px',
+            fontSize: '14px',
             textDecoration: 'none',
           }}
         >
@@ -106,7 +106,7 @@ export default async function TerminalsPage() {
                   style={{
                     width: '40px',
                     height: '40px',
-                    borderRadius: '10px',
+                    borderRadius: '12px',
                     backgroundColor: s.color + '20',
                     display: 'flex',
                     alignItems: 'center',
@@ -118,7 +118,7 @@ export default async function TerminalsPage() {
                 </div>
                 <div>
                   <div style={{ fontSize: '12px', color: '#655F7D', fontWeight: 500, marginBottom: '4px' }}>{s.label}</div>
-                  <div style={{ fontSize: '18px', fontWeight: 700, color: inkOf(s.color) }}>{s.value}</div>
+                  <div style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.01em', fontWeight: 600, color: inkOf(s.color) }}>{s.value}</div>
                 </div>
               </div>
             )
@@ -137,8 +137,8 @@ export default async function TerminalsPage() {
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
             <div style={{ flex: 1, minWidth: '280px' }}>
-              <div style={{ fontSize: '15px', fontWeight: 700, color: '#17122B', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#06b6d4', boxShadow: '0 0 8px #06b6d480', display: 'inline-block' }} />
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: '15px', letterSpacing: '-0.01em', fontWeight: 600, color: '#17122B', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#0F766E', boxShadow: 'none', display: 'inline-block' }} />
                 Terminals.io Hakkında
               </div>
               <p style={{ fontSize: '14px', color: '#4A4462', lineHeight: 1.7, margin: 0 }}>
@@ -166,11 +166,11 @@ export default async function TerminalsPage() {
                     alignItems: 'center',
                     gap: '6px',
                     padding: '7px 12px',
-                    borderRadius: '7px',
-                    backgroundColor: 'rgba(6,182,212,0.08)',
-                    border: '1px solid rgba(6,182,212,0.2)',
-                    color: '#0D6882',
-                    fontSize: '13px',
+                    borderRadius: '8px',
+                    backgroundColor: '#F0FDFA',
+                    border: '1px solid #E8E4F1',
+                    color: '#1D4ED8',
+                    fontSize: '14px',
                     textDecoration: 'none',
                     fontWeight: 500,
                   }}
@@ -186,17 +186,17 @@ export default async function TerminalsPage() {
         {/* Notes */}
         <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', overflow: 'hidden' }}>
           <div style={{ padding: '14px 20px', borderBottom: '1px solid #E8E4F1', display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#06b6d4' }} />
-            <span style={{ fontSize: '15px', fontWeight: 600, color: '#17122B' }}>Notlar</span>
+            <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#0F766E' }} />
+            <span style={{ fontFamily: 'var(--font-display)', fontSize: '15px', letterSpacing: '-0.01em', fontWeight: 600, color: '#17122B' }}>Notlar</span>
             <span
               style={{
                 marginLeft: 'auto',
-                backgroundColor: 'rgba(6,182,212,0.12)',
-                color: '#0D6882',
-                border: '1px solid rgba(6,182,212,0.3)',
+                backgroundColor: '#F0FDFA',
+                color: '#1D4ED8',
+                border: '1px solid #D8D2E6',
                 borderRadius: '9999px',
                 padding: '2px 10px',
-                fontSize: '13px',
+                fontSize: '14px',
                 fontWeight: 600,
               }}
             >
@@ -208,7 +208,7 @@ export default async function TerminalsPage() {
               <FileText size={28} color="#655F7D" style={{ margin: '0 auto 12px' }} />
               <div style={{ fontSize: '14px', color: '#655F7D' }}>
                 Henüz Terminals.io notu yok.{' '}
-                <Link href="/notlar" style={{ color: '#0D6882', textDecoration: 'none' }}>
+                <Link href="/notlar" style={{ color: '#1D4ED8', textDecoration: 'none' }}>
                   Notlar sayfasından
                 </Link>
                 {' '}kategori "Terminals.io" ile not ekleyin.

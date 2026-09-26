@@ -32,7 +32,7 @@ export function DeleteButton({ table, id }: Props) {
   if (confirming) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', padding: '2px 0' }}>
-        <span style={{ fontSize: '11px', color: '#4A4462', whiteSpace: 'nowrap', lineHeight: 1.4 }}>
+        <span style={{ fontSize: '12px', color: '#4A4462', whiteSpace: 'nowrap', lineHeight: 1.4 }}>
           Bu kaydı silmek istediğinizden emin misiniz?
         </span>
         <div style={{ display: 'flex', gap: '5px' }}>
@@ -41,11 +41,11 @@ export function DeleteButton({ table, id }: Props) {
             disabled={loading}
             style={{
               padding: '3px 10px',
-              borderRadius: '5px',
-              backgroundColor: 'rgba(239,68,68,0.18)',
-              border: '1px solid rgba(239,68,68,0.45)',
+              borderRadius: '8px',
+              backgroundColor: '#FEF2F2',
+              border: '1px solid #D8D2E6',
               color: '#B91C1C',
-              fontSize: '11px',
+              fontSize: '12px',
               fontWeight: 600,
               cursor: loading ? 'not-allowed' : 'pointer',
               opacity: loading ? 0.6 : 1,
@@ -59,11 +59,11 @@ export function DeleteButton({ table, id }: Props) {
             disabled={loading}
             style={{
               padding: '3px 8px',
-              borderRadius: '5px',
+              borderRadius: '8px',
               backgroundColor: 'transparent',
               border: '1px solid #E8E4F1',
               color: '#655F7D',
-              fontSize: '11px',
+              fontSize: '12px',
               fontWeight: 500,
               cursor: 'pointer',
               whiteSpace: 'nowrap',
@@ -85,7 +85,7 @@ export function DeleteButton({ table, id }: Props) {
         justifyContent: 'center',
         width: '28px',
         height: '28px',
-        borderRadius: '6px',
+        borderRadius: '8px',
         backgroundColor: 'transparent',
         border: '1px solid transparent',
         color: '#655F7D',
@@ -93,8 +93,8 @@ export function DeleteButton({ table, id }: Props) {
         transition: 'all 0.15s ease',
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.backgroundColor = 'rgba(239,68,68,0.1)'
-        e.currentTarget.style.borderColor = 'rgba(239,68,68,0.3)'
+        e.currentTarget.style.backgroundColor = '#FEF2F2'
+        e.currentTarget.style.borderColor = '#D8D2E6'
         e.currentTarget.style.color = '#B91C1C'
       }}
       onMouseLeave={(e) => {

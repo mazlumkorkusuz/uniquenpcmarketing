@@ -144,8 +144,8 @@ export default function SablonlarPage() {
     flex: 1,
     padding: '8px 12px',
     border: 'none',
-    borderRadius: '6px',
-    fontSize: '13px',
+    borderRadius: '8px',
+    fontSize: '14px',
     fontWeight: 600,
     cursor: 'pointer',
     backgroundColor: active ? '#F3EEFF' : 'transparent',
@@ -209,7 +209,7 @@ export default function SablonlarPage() {
           <Card
             title={editingId ? 'Şablonu Düzenle' : 'Şablon'}
             action={
-              <button style={buttonStyle('primary', saving || !html)} disabled={saving || !html} onClick={save}>
+              <button style={buttonStyle('secondary', saving || !html)} disabled={saving || !html} onClick={save}>
                 <Save size={14} /> {saving ? 'Kaydediliyor…' : 'Kaydet'}
               </button>
             }
@@ -238,7 +238,7 @@ export default function SablonlarPage() {
                 </details>
               </div>
             ) : (
-              <p style={{ fontSize: '13px', color: '#655F7D', margin: 0 }}>
+              <p style={{ fontSize: '12.5px', color: '#655F7D', margin: 0 }}>
                 Soldan ayarları seçip “Şablon Oluştur”a basın ya da aşağıdan kayıtlı bir şablonu düzenleyin.
               </p>
             )}
@@ -247,14 +247,14 @@ export default function SablonlarPage() {
 
         <Card title={`Kayıtlı Şablonlar (${templates.length})`}>
           {templates.length === 0 ? (
-            <p style={{ fontSize: '13px', color: '#655F7D', margin: 0 }}>Henüz kayıtlı şablon yok.</p>
+            <p style={{ fontSize: '12.5px', color: '#655F7D', margin: 0 }}>Henüz kayıtlı şablon yok.</p>
           ) : (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '12px' }}>
               {templates.map((t) => (
-                <div key={t.id} style={{ border: `1px solid ${editingId === t.id ? '#6D28D9' : '#E8E4F1'}`, borderRadius: '10px', padding: '14px', backgroundColor: '#FFFFFF' }}>
+                <div key={t.id} style={{ border: `1px solid ${editingId === t.id ? '#6D28D9' : '#E8E4F1'}`, borderRadius: '12px', padding: '14px', backgroundColor: '#FFFFFF' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
                     <FileText size={14} color="#6D28D9" />
-                    <span style={{ fontSize: '13px', fontWeight: 600, color: '#17122B', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.name}</span>
+                    <span style={{ fontSize: '14px', fontWeight: 600, color: '#17122B', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.name}</span>
                   </div>
                   <p style={{ fontSize: '12px', color: '#4A4462', margin: '0 0 8px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.subject}</p>
                   <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', marginBottom: '10px' }}>
@@ -263,7 +263,7 @@ export default function SablonlarPage() {
                     {t.language && <Badge variant="teal">{t.language}</Badge>}
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <span style={{ fontSize: '11px', color: '#655F7D', flex: 1 }}>{formatDateTime(t.created_at)}</span>
+                    <span style={{ fontSize: '12px', color: '#655F7D', flex: 1 }}>{formatDateTime(t.created_at)}</span>
                     <button style={{ ...buttonStyle('secondary'), padding: '5px 10px', fontSize: '12px' }} onClick={() => edit(t)}>Düzenle</button>
                     <button style={{ ...buttonStyle('danger'), padding: '5px 8px' }} onClick={() => remove(t)} aria-label="Sil"><Trash2 size={13} /></button>
                   </div>

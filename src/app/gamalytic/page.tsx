@@ -78,15 +78,15 @@ const COUNTRY_NAMES: Record<string, string> = {
 }
 
 const TAG_COLORS: [string, string][] = [
-  ['rgba(124,58,237,0.15)', '#6D28D9'], ['rgba(59,130,246,0.15)', '#1D4ED8'],
-  ['rgba(20,184,166,0.15)', '#0F766E'], ['rgba(249,115,22,0.15)', '#C2410C'],
-  ['rgba(239,68,68,0.15)', '#B91C1C'],  ['rgba(34,197,94,0.15)', '#047857'],
-  ['rgba(245,158,11,0.15)', '#B45309'],
+  ['#F3EEFF', '#6D28D9'], ['#EFF6FF', '#1D4ED8'],
+  ['#F0FDFA', '#0F766E'], ['#FFF7ED', '#C2410C'],
+  ['#FEF2F2', '#B91C1C'],  ['#ECFDF5', '#047857'],
+  ['#FFFBEB', '#B45309'],
 ]
 
 const CARD_STYLE = { backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '20px', padding: '20px' }
 const SECTION_TITLE: React.CSSProperties = {
-  fontSize: '13px', fontWeight: 600, color: '#4A4462',
+  fontSize: '14px', fontWeight: 600, color: '#4A4462',
   marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '7px',
 }
 
@@ -122,8 +122,8 @@ function StatCard({ icon: Icon, iconColor, iconBg, label, value }: {
         <Icon size={15} color={iconColor} />
       </div>
       <div>
-        <div style={{ fontSize: '10px', color: '#655F7D', fontWeight: 600, marginBottom: '2px' }}>{label}</div>
-        <div style={{ fontSize: '17px', fontWeight: 700, color: '#17122B', lineHeight: 1.1 }}>{value}</div>
+        <div style={{ fontSize: '12px', color: '#655F7D', fontWeight: 600, marginBottom: '2px' }}>{label}</div>
+        <div style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.01em', fontWeight: 600, color: '#17122B', lineHeight: 1.1 }}>{value}</div>
       </div>
     </div>
   )
@@ -141,10 +141,10 @@ function CountryDistribution({ data }: { data: Record<string, number> }) {
         return (
           <div key={code} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <div style={{ width: '96px', fontSize: '12px', color: '#4A4462', flexShrink: 0 }}>{countryName(code)}</div>
-            <div style={{ flex: 1, height: '7px', backgroundColor: '#ECE9F3', borderRadius: '4px', overflow: 'hidden' }}>
-              <div style={{ width: `${Math.min(barW, 100)}%`, height: '100%', background: 'linear-gradient(90deg, #6D28D9, #4338CA)', borderRadius: '4px' }} />
+            <div style={{ flex: 1, height: '7px', backgroundColor: '#E8E4F1', borderRadius: '8px', overflow: 'hidden' }}>
+              <div style={{ width: `${Math.min(barW, 100)}%`, height: '100%', background: 'var(--gradient)', borderRadius: '8px' }} />
             </div>
-            <div style={{ width: '38px', fontSize: '11px', color: '#655F7D', textAlign: 'right', flexShrink: 0 }}>{pct.toFixed(1)}%</div>
+            <div style={{ width: '38px', fontSize: '12px', color: '#655F7D', textAlign: 'right', flexShrink: 0 }}>{pct.toFixed(1)}%</div>
           </div>
         )
       })}
@@ -176,7 +176,7 @@ function SalesHistoryChart({ history }: { history: HistoryPoint[] }) {
     sales: p.sales,
   }))
   if (!mounted || !data.length) return (
-    <div style={{ height: 160, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#655F7D', fontSize: '13px' }}>
+    <div style={{ height: 160, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#655F7D', fontSize: '12.5px' }}>
       {mounted ? 'Veri yok' : ''}
     </div>
   )
@@ -185,8 +185,8 @@ function SalesHistoryChart({ history }: { history: HistoryPoint[] }) {
     <ResponsiveContainer width="100%" height={180}>
       <LineChart data={data} margin={{ top: 4, right: 8, bottom: 0, left: 0 }}>
         <CartesianGrid strokeDasharray="3 3" stroke="#E8E4F1" vertical={false} />
-        <XAxis dataKey="date" tick={{ fontSize: 10, fill: '#655F7D' }} tickLine={false} axisLine={false} interval={step - 1} />
-        <YAxis tick={{ fontSize: 10, fill: '#655F7D' }} tickLine={false} axisLine={false} tickFormatter={fmtTick} width={40} />
+        <XAxis dataKey="date" tick={{ fontSize: '12px', fill: '#655F7D' }} tickLine={false} axisLine={false} interval={step - 1} />
+        <YAxis tick={{ fontSize: '12px', fill: '#655F7D' }} tickLine={false} axisLine={false} tickFormatter={fmtTick} width={40} />
         <Tooltip content={<ChartTooltip />} />
         <Line type="monotone" dataKey="sales" stroke="#6D28D9" strokeWidth={2} dot={false} activeDot={{ r: 4, fill: '#6D28D9' }} />
       </LineChart>
@@ -307,14 +307,14 @@ export default function GamalyticPage() {
           <button onClick={handleBack} style={{ display: 'flex', alignItems: 'center', gap: '5px', background: 'none', border: '1px solid #E8E4F1', borderRadius: '8px', color: '#4A4462', fontSize: '12px', padding: '5px 11px', cursor: 'pointer' }}>
             <ChevronLeft size={14} /> Geri
           </button>
-          <span style={{ fontSize: '15px', fontWeight: 700, color: '#17122B' }}>{selected.name}</span>
-          <span style={{ marginLeft: 'auto', fontSize: '11px', color: '#655F7D' }}>Steam ID: {selected.id}</span>
+          <span style={{ fontFamily: 'var(--font-display)', fontSize: '15px', letterSpacing: '-0.01em', fontWeight: 600, color: '#17122B' }}>{selected.name}</span>
+          <span style={{ marginLeft: 'auto', fontSize: '12px', color: '#655F7D' }}>Steam ID: {selected.id}</span>
         </div>
 
         {loading ? (
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '400px', flexDirection: 'column', gap: '12px' }}>
             <div style={{ width: '34px', height: '34px', border: '3px solid #E8E4F1', borderTopColor: '#6D28D9', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
-            <div style={{ color: '#655F7D', fontSize: '13px' }}>Yükleniyor…</div>
+            <div style={{ color: '#655F7D', fontSize: '12.5px' }}>Yükleniyor…</div>
             <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
           </div>
         ) : error ? (
@@ -328,45 +328,45 @@ export default function GamalyticPage() {
                 <img src={headerImg} alt={selected.name} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
               </div>
               <div>
-                <h1 style={{ fontSize: '22px', fontWeight: 800, color: '#17122B', margin: '0 0 8px' }}>{d?.name ?? selected.name}</h1>
+                <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '24px', fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.03em', fontWeight: 600, color: '#17122B', margin: '0 0 8px' }}>{d?.name ?? selected.name}</h1>
                 {(s?.shortDescription || d?.description) && (
-                  <p style={{ fontSize: '13px', color: '#4A4462', lineHeight: 1.65, margin: 0 }}>
+                  <p style={{ fontSize: '12.5px', color: '#4A4462', lineHeight: 1.65, margin: 0 }}>
                     {s?.shortDescription ?? (d!.description!.length > 300 ? d!.description!.slice(0, 300) + '…' : d!.description)}
                   </p>
                 )}
               </div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', alignItems: 'center' }}>
                 {s?.isFree ? (
-                  <span style={{ backgroundColor: 'rgba(34,197,94,0.15)', color: '#046C4E', border: '1px solid rgba(34,197,94,0.3)', borderRadius: '8px', padding: '6px 14px', fontSize: '14px', fontWeight: 700 }}>Ücretsiz</span>
+                  <span style={{ backgroundColor: '#ECFDF5', color: '#047857', border: '1px solid #D8D2E6', borderRadius: '8px', padding: '6px 14px', fontSize: '14px', fontWeight: 700 }}>Ücretsiz</span>
                 ) : s?.priceOverview ? (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    {s.priceOverview.discountPercent > 0 && <span style={{ backgroundColor: '#22c55e', color: '#17122B', borderRadius: '6px', padding: '4px 8px', fontSize: '12px', fontWeight: 700 }}>-{s.priceOverview.discountPercent}%</span>}
-                    <span style={{ fontSize: '20px', fontWeight: 800, color: '#046C4E' }}>{s.priceOverview.finalFormatted}</span>
-                    {s.priceOverview.discountPercent > 0 && <span style={{ fontSize: '13px', color: '#655F7D', textDecoration: 'line-through' }}>{s.priceOverview.initialFormatted}</span>}
+                    {s.priceOverview.discountPercent > 0 && <span style={{ backgroundColor: '#047857', color: '#FFFFFF', borderRadius: '8px', padding: '4px 8px', fontSize: '12px', fontWeight: 700 }}>-{s.priceOverview.discountPercent}%</span>}
+                    <span style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.01em', fontWeight: 600, color: '#047857' }}>{s.priceOverview.finalFormatted}</span>
+                    {s.priceOverview.discountPercent > 0 && <span style={{ fontSize: '12.5px', color: '#655F7D', textDecoration: 'line-through' }}>{s.priceOverview.initialFormatted}</span>}
                   </div>
-                ) : d?.releaseDate ? <span style={{ fontSize: '13px', color: '#655F7D' }}>{d.releaseDate}</span> : null}
+                ) : d?.releaseDate ? <span style={{ fontSize: '12.5px', color: '#655F7D' }}>{d.releaseDate}</span> : null}
                 {s?.metacritic && (
                   <a href={s.metacritic.url} target="_blank" rel="noopener noreferrer"
-                    style={{ display: 'flex', alignItems: 'center', gap: '7px', textDecoration: 'none', backgroundColor: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.25)', borderRadius: '8px', padding: '6px 12px' }}>
-                    <div style={{ width: '28px', height: '28px', borderRadius: '6px', backgroundColor: '#66cc33', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <span style={{ fontSize: '13px', fontWeight: 800, color: '#17122B', lineHeight: 1 }}>{s.metacritic.score}</span>
+                    style={{ display: 'flex', alignItems: 'center', gap: '7px', textDecoration: 'none', backgroundColor: '#FFFBEB', border: '1px solid #E8E4F1', borderRadius: '8px', padding: '6px 12px' }}>
+                    <div style={{ width: '28px', height: '28px', borderRadius: '8px', backgroundColor: '#047857', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <span style={{ fontSize: '14px', fontWeight: 700, color: '#17122B', lineHeight: 1 }}>{s.metacritic.score}</span>
                     </div>
                     <div>
-                      <div style={{ fontSize: '10px', color: '#A24B08', fontWeight: 600, letterSpacing: '0.04em' }}>METACRİTİC</div>
-                      <div style={{ fontSize: '11px', color: '#4A4462' }}>İncele</div>
+                      <div style={{ fontSize: '12px', color: '#C2410C', fontWeight: 600, letterSpacing: '0.04em' }}>METACRİTİC</div>
+                      <div style={{ fontSize: '12px', color: '#4A4462' }}>İncele</div>
                     </div>
                     <ExternalLink size={12} color="#655F7D" />
                   </a>
                 )}
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(148px, 1fr))', gap: '10px' }}>
-                <StatCard icon={DollarSign} iconColor="#047857"  iconBg="rgba(34,197,94,0.12)"   label="Tahmini Gelir"  value={fmtUSD(d?.revenue)} />
-                <StatCard icon={Globe}      iconColor="#1D4ED8"  iconBg="rgba(59,130,246,0.12)"  label="Satılan Kopya"  value={fmt(d?.copiesSold)} />
-                <StatCard icon={Star}       iconColor="#B45309"  iconBg="rgba(245,158,11,0.12)"  label="İnceleme Skoru" value={d?.reviewScore != null ? `${d.reviewScore}/100` : '—'} />
-                <StatCard icon={Heart}      iconColor="#B91C1C"  iconBg="rgba(239,68,68,0.12)"   label="Takipçi"        value={fmt(d?.followers)} />
-                <StatCard icon={Users}      iconColor="#C2410C"  iconBg="rgba(249,115,22,0.12)"  label="Toplam Oyuncu"  value={fmt(d?.players)} />
-                <StatCard icon={TrendingUp} iconColor="#6D28D9"  iconBg="rgba(124,58,237,0.12)"  label="İstek Listesi"  value={fmt(d?.wishlists)} />
-                <StatCard icon={Clock}      iconColor="#0F766E"  iconBg="rgba(20,184,166,0.12)"  label="Ort. Oynama"    value={d?.avgPlaytime != null ? `${Number(d.avgPlaytime).toFixed(1)} saat` : '—'} />
+                <StatCard icon={DollarSign} iconColor="#047857"  iconBg="#ECFDF5"   label="Tahmini Gelir"  value={fmtUSD(d?.revenue)} />
+                <StatCard icon={Globe}      iconColor="#1D4ED8"  iconBg="#EFF6FF"  label="Satılan Kopya"  value={fmt(d?.copiesSold)} />
+                <StatCard icon={Star}       iconColor="#B45309"  iconBg="#FFFBEB"  label="İnceleme Skoru" value={d?.reviewScore != null ? `${d.reviewScore}/100` : '—'} />
+                <StatCard icon={Heart}      iconColor="#B91C1C"  iconBg="#FEF2F2"   label="Takipçi"        value={fmt(d?.followers)} />
+                <StatCard icon={Users}      iconColor="#C2410C"  iconBg="#FFF7ED"  label="Toplam Oyuncu"  value={fmt(d?.players)} />
+                <StatCard icon={TrendingUp} iconColor="#6D28D9"  iconBg="#F3EEFF"  label="İstek Listesi"  value={fmt(d?.wishlists)} />
+                <StatCard icon={Clock}      iconColor="#0F766E"  iconBg="#F0FDFA"  label="Ort. Oynama"    value={d?.avgPlaytime != null ? `${Number(d.avgPlaytime).toFixed(1)} saat` : '—'} />
               </div>
               {d?.history && d.history.length > 1 && (
                 <div style={CARD_STYLE}>
@@ -384,11 +384,11 @@ export default function GamalyticPage() {
                 <Collapsible title="Sistem Gereksinimleri" icon={Cpu}>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                     {s.pcRequirements.minimum && <div>
-                      <div style={{ fontSize: '11px', fontWeight: 700, color: '#B91C1C', marginBottom: '6px', }}>Minimum</div>
+                      <div style={{ fontSize: '12px', fontWeight: 700, color: '#B91C1C', marginBottom: '6px', }}>Minimum</div>
                       <pre style={{ fontSize: '12px', color: '#4A4462', lineHeight: 1.7, margin: 0, whiteSpace: 'pre-wrap', fontFamily: 'inherit' }}>{s.pcRequirements.minimum}</pre>
                     </div>}
                     {s.pcRequirements.recommended && <div>
-                      <div style={{ fontSize: '11px', fontWeight: 700, color: '#046C4E', marginBottom: '6px', }}>Önerilen</div>
+                      <div style={{ fontSize: '12px', fontWeight: 700, color: '#047857', marginBottom: '6px', }}>Önerilen</div>
                       <pre style={{ fontSize: '12px', color: '#4A4462', lineHeight: 1.7, margin: 0, whiteSpace: 'pre-wrap', fontFamily: 'inherit' }}>{s.pcRequirements.recommended}</pre>
                     </div>}
                   </div>
@@ -400,11 +400,11 @@ export default function GamalyticPage() {
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                     {s.dlc.slice(0, 20).map(id => (
                       <a key={id} href={`https://store.steampowered.com/app/${id}`} target="_blank" rel="noopener noreferrer"
-                        style={{ fontSize: '11px', color: '#1D4ED8', backgroundColor: 'rgba(59,130,246,0.08)', border: '1px solid rgba(59,130,246,0.2)', borderRadius: '5px', padding: '3px 8px', textDecoration: 'none' }}>
+                        style={{ fontSize: '12px', color: '#1D4ED8', backgroundColor: '#EFF6FF', border: '1px solid #E8E4F1', borderRadius: '8px', padding: '3px 8px', textDecoration: 'none' }}>
                         #{id}
                       </a>
                     ))}
-                    {s.dlc.length > 20 && <span style={{ fontSize: '11px', color: '#655F7D' }}>+{s.dlc.length - 20} daha</span>}
+                    {s.dlc.length > 20 && <span style={{ fontSize: '12px', color: '#655F7D' }}>+{s.dlc.length - 20} daha</span>}
                   </div>
                 </div>
               )}
@@ -418,7 +418,7 @@ export default function GamalyticPage() {
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', maxHeight: '300px', overflowY: 'auto' }}>
                     {d.tags.map((tag, i) => {
                       const [bg, color] = TAG_COLORS[i % TAG_COLORS.length]
-                      return <span key={tag} style={{ backgroundColor: bg, color: inkOf(color), border: `1px solid ${color}44`, borderRadius: '5px', padding: '3px 8px', fontSize: '11px', fontWeight: 500 }}>{tag}</span>
+                      return <span key={tag} style={{ backgroundColor: bg, color: inkOf(color), border: `1px solid ${color}44`, borderRadius: '8px', padding: '3px 8px', fontSize: '12px', fontWeight: 500 }}>{tag}</span>
                     })}
                   </div>
                 </div>
@@ -428,14 +428,14 @@ export default function GamalyticPage() {
                   <div style={SECTION_TITLE}><TrendingUp size={13} color="#4A4462" /> Satış Tahminleri</div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     {d?.prediction1Month != null && <div style={{ backgroundColor: '#FFFFFF', borderRadius: '8px', padding: '12px' }}>
-                      <div style={{ fontSize: '10px', color: '#655F7D', fontWeight: 600, marginBottom: '4px' }}>1 Aylık Tahmin</div>
-                      <div style={{ fontSize: '22px', fontWeight: 800, color: '#046C4E', lineHeight: 1 }}>{fmt(d.prediction1Month)}</div>
-                      <div style={{ fontSize: '11px', color: '#655F7D', marginTop: '2px' }}>kopya</div>
+                      <div style={{ fontSize: '12px', color: '#655F7D', fontWeight: 600, marginBottom: '4px' }}>1 Aylık Tahmin</div>
+                      <div style={{ fontFamily: 'var(--font-display)', fontSize: '24px', fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.03em', fontWeight: 600, color: '#047857', lineHeight: 1 }}>{fmt(d.prediction1Month)}</div>
+                      <div style={{ fontSize: '12px', color: '#655F7D', marginTop: '2px' }}>kopya</div>
                     </div>}
                     {d?.prediction1Year != null && <div style={{ backgroundColor: '#FFFFFF', borderRadius: '8px', padding: '12px' }}>
-                      <div style={{ fontSize: '10px', color: '#655F7D', fontWeight: 600, marginBottom: '4px' }}>1 Yıllık Tahmin</div>
-                      <div style={{ fontSize: '22px', fontWeight: 800, color: '#6D28D9', lineHeight: 1 }}>{fmt(d.prediction1Year)}</div>
-                      <div style={{ fontSize: '11px', color: '#655F7D', marginTop: '2px' }}>kopya</div>
+                      <div style={{ fontSize: '12px', color: '#655F7D', fontWeight: 600, marginBottom: '4px' }}>1 Yıllık Tahmin</div>
+                      <div style={{ fontFamily: 'var(--font-display)', fontSize: '24px', fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.03em', fontWeight: 600, color: '#6D28D9', lineHeight: 1 }}>{fmt(d.prediction1Year)}</div>
+                      <div style={{ fontSize: '12px', color: '#655F7D', marginTop: '2px' }}>kopya</div>
                     </div>}
                   </div>
                 </div>
@@ -443,12 +443,12 @@ export default function GamalyticPage() {
               {d?.reviewScore != null && (
                 <div style={{ ...CARD_STYLE, display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <div style={{ width: '52px', height: '52px', borderRadius: '12px', backgroundColor: `${scoreColor(d.reviewScore)}22`, border: `2px solid ${scoreColor(d.reviewScore)}55`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <span style={{ fontSize: '18px', fontWeight: 800, color: scoreColor(d.reviewScore) }}>{d.reviewScore}</span>
+                    <span style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.01em', fontWeight: 600, color: scoreColor(d.reviewScore) }}>{d.reviewScore}</span>
                   </div>
                   <div>
-                    <div style={{ fontSize: '11px', color: '#655F7D', fontWeight: 600, }}>İnceleme Skoru</div>
-                    <div style={{ fontSize: '13px', color: '#4A4462', marginTop: '2px' }}>{d.reviewScore >= 80 ? 'Çok Olumlu' : d.reviewScore >= 60 ? 'Olumlu' : 'Karışık'}</div>
-                    {d.reviewCount != null && <div style={{ fontSize: '11px', color: '#655F7D', marginTop: '1px' }}>{fmt(d.reviewCount)} değerlendirme</div>}
+                    <div style={{ fontSize: '12px', color: '#655F7D', fontWeight: 600, }}>İnceleme Skoru</div>
+                    <div style={{ fontSize: '12.5px', color: '#4A4462', marginTop: '2px' }}>{d.reviewScore >= 80 ? 'Çok Olumlu' : d.reviewScore >= 60 ? 'Olumlu' : 'Karışık'}</div>
+                    {d.reviewCount != null && <div style={{ fontSize: '12px', color: '#655F7D', marginTop: '1px' }}>{fmt(d.reviewCount)} değerlendirme</div>}
                   </div>
                 </div>
               )}
@@ -457,7 +457,7 @@ export default function GamalyticPage() {
                   {genres.length > 0 && <>
                     <div style={SECTION_TITLE}><BarChart2 size={13} color="#4A4462" /> Türler</div>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: features.length ? '12px' : 0 }}>
-                      {genres.map(g => <span key={g} style={{ fontSize: '11px', color: '#6D28D9', backgroundColor: 'rgba(124,58,237,0.1)', border: '1px solid rgba(124,58,237,0.2)', borderRadius: '5px', padding: '3px 8px' }}>{g}</span>)}
+                      {genres.map(g => <span key={g} style={{ fontSize: '12px', color: '#6D28D9', backgroundColor: '#F3EEFF', border: '1px solid #E8E4F1', borderRadius: '8px', padding: '3px 8px' }}>{g}</span>)}
                     </div>
                   </>}
                   {features.length > 0 && <>
@@ -465,7 +465,7 @@ export default function GamalyticPage() {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
                       {features.slice(0, 12).map(f => (
                         <div key={f} style={{ fontSize: '12px', color: '#4A4462', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <div style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: '#4338CA', flexShrink: 0 }} />
+                          <div style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: '#1D4ED8', flexShrink: 0 }} />
                           {f}
                         </div>
                       ))}
@@ -515,7 +515,7 @@ export default function GamalyticPage() {
         title="Gamalytic"
         subtitle="Steam oyunu arayın, detaylı satış ve analitik verilerini görün"
         imageSrc="/icons/gamalytic-logo.svg"
-        gradient="linear-gradient(135deg, #7C3AED, #E11D48)"
+        gradient="linear-gradient(135deg, #7C3AED, #6D28D9)"
       />
 
       <div style={{ padding: '28px 32px' }}>
@@ -555,8 +555,8 @@ export default function GamalyticPage() {
             style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', padding: '10px 16px', cursor: 'pointer', transition: 'border-color 0.15s' }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/uniqlogo.png" alt="Unique NPC" style={{ width: '24px', height: '24px', objectFit: 'contain', borderRadius: '4px' }} />
-            <span style={{ fontSize: '13px', fontWeight: 600, color: '#4A4462', whiteSpace: 'nowrap' }}>Tales of the Trade</span>
+            <img src="/uniqlogo.png" alt="Unique NPC" style={{ width: '24px', height: '24px', objectFit: 'contain', borderRadius: '8px' }} />
+            <span style={{ fontSize: '14px', fontWeight: 600, color: '#4A4462', whiteSpace: 'nowrap' }}>Tales of the Trade</span>
           </button>
         </div>
 
@@ -572,18 +572,18 @@ export default function GamalyticPage() {
                   <button
                     className="history-card"
                     onClick={() => handleSelectGame({ id: item.appid, name: item.name, tiny_image: item.imageUrl })}
-                    style={{ display: 'flex', flexDirection: 'column', gap: '6px', backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '10px', padding: '6px 6px 8px', cursor: 'pointer', width: '140px', transition: 'border-color 0.15s', textAlign: 'left' }}
+                    style={{ display: 'flex', flexDirection: 'column', gap: '6px', backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', padding: '6px 6px 8px', cursor: 'pointer', width: '140px', transition: 'border-color 0.15s', textAlign: 'left' }}
                   >
-                    <div style={{ position: 'relative', width: '100%', height: '50px', borderRadius: '6px', overflow: 'hidden', backgroundColor: '#FFFFFF' }}>
+                    <div style={{ position: 'relative', width: '100%', height: '50px', borderRadius: '8px', overflow: 'hidden', backgroundColor: '#FFFFFF' }}>
                       <Image src={item.imageUrl} alt={item.name} fill style={{ objectFit: 'cover' }} sizes="140px" />
                     </div>
-                    <div style={{ fontSize: '11px', fontWeight: 500, color: '#4A4462', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', paddingLeft: '2px' }}>
+                    <div style={{ fontSize: '12px', fontWeight: 500, color: '#4A4462', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', paddingLeft: '2px' }}>
                       {item.name}
                     </div>
                   </button>
                   <button
                     onClick={e => { e.stopPropagation(); removeFromHistory(item.appid) }}
-                    style={{ position: 'absolute', top: '2px', right: '2px', width: '18px', height: '18px', borderRadius: '50%', backgroundColor: '#ECE9F3', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#655F7D', padding: 0 }}
+                    style={{ position: 'absolute', top: '2px', right: '2px', width: '18px', height: '18px', borderRadius: '50%', backgroundColor: '#E8E4F1', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#655F7D', padding: 0 }}
                   >
                     <X size={10} />
                   </button>
@@ -598,7 +598,7 @@ export default function GamalyticPage() {
           <div style={{ textAlign: 'center', color: '#655F7D', fontSize: '14px', padding: '40px 0' }}>Aranıyor…</div>
         ) : results.length > 0 ? (
           <div>
-            <div style={{ fontSize: '13px', color: '#655F7D', marginBottom: '14px' }}>{results.length} sonuç bulundu</div>
+            <div style={{ fontSize: '12.5px', color: '#655F7D', marginBottom: '14px' }}>{results.length} sonuç bulundu</div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '16px' }}>
               {results.map(item => {
                 const disc = item.price?.discount_percent && item.price.discount_percent > 0
@@ -612,21 +612,21 @@ export default function GamalyticPage() {
                       <img src={item.tiny_image} alt={item.name} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
                     </div>
                     <div style={{ padding: '12px 14px 14px' }}>
-                      <div style={{ fontSize: '13px', fontWeight: 600, color: '#17122B', marginBottom: '8px', lineHeight: 1.35 }}>{item.name}</div>
+                      <div style={{ fontSize: '14px', fontWeight: 600, color: '#17122B', marginBottom: '8px', lineHeight: 1.35 }}>{item.name}</div>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '6px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          {disc && <span style={{ backgroundColor: '#22c55e', color: '#17122B', fontSize: '10px', fontWeight: 700, padding: '2px 5px', borderRadius: '4px' }}>-{item.price!.discount_percent}%</span>}
-                          {fin != null && <span style={{ fontSize: '13px', fontWeight: 700, color: '#046C4E' }}>${fin}</span>}
-                          {disc && orig && <span style={{ fontSize: '11px', color: '#655F7D', textDecoration: 'line-through' }}>${orig}</span>}
+                          {disc && <span style={{ backgroundColor: '#047857', color: '#FFFFFF', fontSize: '12px', fontWeight: 700, padding: '2px 5px', borderRadius: '8px' }}>-{item.price!.discount_percent}%</span>}
+                          {fin != null && <span style={{ fontSize: '14px', fontWeight: 700, color: '#047857' }}>${fin}</span>}
+                          {disc && orig && <span style={{ fontSize: '12px', color: '#655F7D', textDecoration: 'line-through' }}>${orig}</span>}
                           {!fin && <span style={{ fontSize: '12px', color: '#655F7D' }}>Ücretsiz</span>}
                         </div>
-                        {item.metascore && <span style={{ fontSize: '11px', fontWeight: 700, color: '#A24B08', backgroundColor: 'rgba(245,158,11,0.12)', border: '1px solid rgba(245,158,11,0.25)', borderRadius: '5px', padding: '2px 6px' }}>MC {item.metascore}</span>}
+                        {item.metascore && <span style={{ fontSize: '12px', fontWeight: 700, color: '#C2410C', backgroundColor: '#FFFBEB', border: '1px solid #E8E4F1', borderRadius: '8px', padding: '2px 6px' }}>MC {item.metascore}</span>}
                       </div>
                       {item.platforms && (
                         <div style={{ display: 'flex', gap: '6px', marginTop: '8px' }}>
-                          {item.platforms.windows && <span style={{ fontSize: '10px', color: '#1D4ED8', backgroundColor: 'rgba(59,130,246,0.1)', borderRadius: '4px', padding: '1px 6px' }}>Win</span>}
-                          {item.platforms.mac     && <span style={{ fontSize: '10px', color: '#4A4462', backgroundColor: 'rgba(148,163,184,0.1)', borderRadius: '4px', padding: '1px 6px' }}>Mac</span>}
-                          {item.platforms.linux   && <span style={{ fontSize: '10px', color: '#A24B08', backgroundColor: 'rgba(245,158,11,0.1)', borderRadius: '4px', padding: '1px 6px' }}>Linux</span>}
+                          {item.platforms.windows && <span style={{ fontSize: '12px', color: '#1D4ED8', backgroundColor: '#EFF6FF', borderRadius: '8px', padding: '1px 6px' }}>Win</span>}
+                          {item.platforms.mac     && <span style={{ fontSize: '12px', color: '#4A4462', backgroundColor: '#F4F2F9', borderRadius: '8px', padding: '1px 6px' }}>Mac</span>}
+                          {item.platforms.linux   && <span style={{ fontSize: '12px', color: '#C2410C', backgroundColor: '#FFFBEB', borderRadius: '8px', padding: '1px 6px' }}>Linux</span>}
                         </div>
                       )}
                     </div>
@@ -639,11 +639,11 @@ export default function GamalyticPage() {
           <div style={{ textAlign: 'center', color: '#655F7D', fontSize: '14px', padding: '40px 0' }}>&ldquo;{query}&rdquo; için sonuç bulunamadı</div>
         ) : !searchHistory.length ? (
           <div style={{ textAlign: 'center', padding: '48px 20px' }}>
-            <div style={{ width: '64px', height: '64px', borderRadius: '16px', background: 'linear-gradient(135deg, #7c3aed22, #4f46e522)', border: '1px solid #E8E4F1', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+            <div style={{ width: '64px', height: '64px', borderRadius: '20px', background: '#F3EEFF', border: '1px solid #E8E4F1', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
               <BarChart2 size={28} color="#6D28D9" />
             </div>
-            <div style={{ fontSize: '16px', fontWeight: 600, color: '#17122B', marginBottom: '6px' }}>Oyun Analitikleri</div>
-            <div style={{ fontSize: '13px', color: '#655F7D' }}>Aramak istediğiniz Steam oyununun adını yazın</div>
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: '15px', letterSpacing: '-0.01em', fontWeight: 600, color: '#17122B', marginBottom: '6px' }}>Oyun Analitikleri</div>
+            <div style={{ fontSize: '12.5px', color: '#655F7D' }}>Aramak istediğiniz Steam oyununun adını yazın</div>
           </div>
         ) : null}
       </div>

@@ -13,7 +13,7 @@ const PLATFORMS = [
   { key: 'instagram', label: 'Instagram', color: '#e1306c', href: '/sosyal-medya-planlama/instagram' },
   { key: 'twitter',   label: 'Twitter',   color: '#1d9bf0', href: '/sosyal-medya-planlama/twitter' },
   { key: 'linkedin',  label: 'LinkedIn',  color: '#0a66c2', href: '/sosyal-medya-planlama/linkedin' },
-  { key: 'youtube',   label: 'YouTube',   color: '#ff4444', href: '/sosyal-medya-planlama/youtube' },
+  { key: 'youtube',   label: 'YouTube',   color: '#FF0000', href: '/sosyal-medya-planlama/youtube' },
   { key: 'reddit',    label: 'Reddit',    color: '#ff4500', href: '/sosyal-medya-planlama/reddit' },
   { key: 'ig',        label: 'IG',        color: '#c13584', href: '/sosyal-medya-planlama/ig' },
 ]
@@ -52,7 +52,7 @@ export default async function SosyalMedyaPlanlama() {
         title="Sosyal Medya Planlaması"
         subtitle={`${total} gönderi · 7 platform`}
         icon={CalendarCheck}
-        gradient="linear-gradient(135deg, #6D28D9, #ec4899)"
+        gradient="linear-gradient(135deg, #7C3AED, #6D28D9)"
       />
       <div style={{ padding: '24px 32px' }}>
 
@@ -76,10 +76,10 @@ export default async function SosyalMedyaPlanlama() {
                 <div style={{ padding: '16px 20px', borderBottom: '1px solid #E8E4F1' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: platform.color, boxShadow: `0 0 8px ${platform.color}60` }} />
-                      <span style={{ fontSize: '15px', fontWeight: 700, color: '#17122B' }}>{platform.label}</span>
+                      <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: platform.color, boxShadow: 'none' }} />
+                      <span style={{ fontFamily: 'var(--font-display)', fontSize: '15px', letterSpacing: '-0.01em', fontWeight: 600, color: '#17122B' }}>{platform.label}</span>
                     </div>
-                    <span style={{ fontSize: '26px', fontWeight: 800, color: count > 0 ? inkOf(platform.color) : '#655F7D' }}>{count}</span>
+                    <span style={{ fontFamily: 'var(--font-display)', fontSize: '24px', fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.03em', fontWeight: 600, color: count > 0 ? inkOf(platform.color) : '#655F7D' }}>{count}</span>
                   </div>
                   <div style={{ fontSize: '12px', color: '#655F7D', marginTop: '4px' }}>
                     {count > 0 ? 'toplam gönderi' : 'henüz gönderi yok'}
@@ -89,16 +89,16 @@ export default async function SosyalMedyaPlanlama() {
                 <div style={{ padding: '14px 20px', flex: 1 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div style={{ textAlign: 'center' }}>
-                      <div style={{ fontSize: '20px', fontWeight: 700, color: '#1D4ED8' }}>{sched}</div>
-                      <div style={{ fontSize: '11px', color: '#655F7D', marginTop: '2px' }}>Planlandı</div>
+                      <div style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.01em', fontWeight: 600, color: '#1D4ED8' }}>{sched}</div>
+                      <div style={{ fontSize: '12px', color: '#655F7D', marginTop: '2px' }}>Planlandı</div>
                     </div>
                     <div style={{ textAlign: 'center' }}>
-                      <div style={{ fontSize: '20px', fontWeight: 700, color: '#046C4E' }}>{count - sched}</div>
-                      <div style={{ fontSize: '11px', color: '#655F7D', marginTop: '2px' }}>Diğer</div>
+                      <div style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.01em', fontWeight: 600, color: '#047857' }}>{count - sched}</div>
+                      <div style={{ fontSize: '12px', color: '#655F7D', marginTop: '2px' }}>Diğer</div>
                     </div>
                     <div style={{ textAlign: 'center' }}>
-                      <div style={{ fontSize: '20px', fontWeight: 700, color: inkOf(platform.color) }}>{count}</div>
-                      <div style={{ fontSize: '11px', color: '#655F7D', marginTop: '2px' }}>Toplam</div>
+                      <div style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.01em', fontWeight: 600, color: inkOf(platform.color) }}>{count}</div>
+                      <div style={{ fontSize: '12px', color: '#655F7D', marginTop: '2px' }}>Toplam</div>
                     </div>
                   </div>
                 </div>
@@ -106,7 +106,7 @@ export default async function SosyalMedyaPlanlama() {
                 <div style={{ padding: '12px 20px', borderTop: '1px solid #E8E4F1' }}>
                   <Link
                     href={platform.href}
-                    style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: 500, color: inkOf(platform.color), textDecoration: 'none' }}
+                    style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '14px', fontWeight: 500, color: inkOf(platform.color), textDecoration: 'none' }}
                   >
                     Detayları Görüntüle
                     <ArrowRight size={14} />

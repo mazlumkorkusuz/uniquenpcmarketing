@@ -13,24 +13,24 @@ type SortDir = 'asc' | 'desc'
 
 const TD: React.CSSProperties = { padding: '14px 16px', verticalAlign: 'top' }
 const selectStyle: React.CSSProperties = {
-  backgroundColor: '#FFFFFF', border: '1px solid #E8E4F1', borderRadius: '7px',
-  padding: '7px 12px', fontSize: '13px', color: '#17122B', cursor: 'pointer', outline: 'none',
+  backgroundColor: '#FFFFFF', border: '1px solid #E8E4F1', borderRadius: '8px',
+  padding: '7px 12px', fontSize: '14px', color: '#17122B', cursor: 'pointer', outline: 'none',
 }
 
 function ScoreBadge({ score }: { score: unknown }) {
   const n = Number(score)
   if (!score && score !== 0) return <span style={{ color: '#655F7D' }}>—</span>
-  const [bg, fg] = n >= 90 ? ['rgba(34,197,94,0.15)', '#047857']
-    : n >= 80 ? ['rgba(234,179,8,0.15)', '#B45309']
-    : n >= 70 ? ['rgba(249,115,22,0.15)', '#C2410C']
-    : ['rgba(100,116,139,0.15)', '#4A4462']
-  return <span style={{ fontSize: '13px', fontWeight: 700, color: fg, backgroundColor: bg, borderRadius: '6px', padding: '3px 9px', whiteSpace: 'nowrap' }}>{n}</span>
+  const [bg, fg] = n >= 90 ? ['#ECFDF5', '#047857']
+    : n >= 80 ? ['#FFFBEB', '#B45309']
+    : n >= 70 ? ['#FFF7ED', '#C2410C']
+    : ['#F4F2F9', '#4A4462']
+  return <span style={{ fontSize: '14px', fontWeight: 700, color: fg, backgroundColor: bg, borderRadius: '8px', padding: '3px 9px', whiteSpace: 'nowrap' }}>{n}</span>
 }
 
 function LangBadge({ lang }: { lang: unknown }) {
   if (!lang) return <span style={{ color: '#655F7D' }}>—</span>
   return (
-    <span style={{ fontSize: '11px', fontWeight: 700, color: '#6D28D9', backgroundColor: 'rgba(124,58,237,0.12)', border: '1px solid rgba(124,58,237,0.25)', borderRadius: '4px', padding: '2px 7px', letterSpacing: '0.05em' }}>
+    <span style={{ fontSize: '12px', fontWeight: 700, color: '#6D28D9', backgroundColor: '#F3EEFF', border: '1px solid #E8E4F1', borderRadius: '8px', padding: '2px 7px', letterSpacing: '0.05em' }}>
       {String(lang).toUpperCase()}
     </span>
   )
@@ -41,11 +41,11 @@ function SortableTH({ label, sortKey, active, dir, onSort }: { label: string; so
     <th
       onClick={() => onSort(sortKey)}
       style={{
-        backgroundColor: 'rgba(23,18,43,0.02)', fontSize: '12.5px', fontWeight: 500,
+        backgroundColor: '#F3EEFF', fontSize: '12.5px', fontWeight: 500,
         padding: '11px 16px',
         textAlign: 'left', borderBottom: '1px solid #E8E4F1', whiteSpace: 'nowrap',
         cursor: 'pointer', userSelect: 'none',
-        color: active ? '#13669E' : '#655F7D',
+        color: active ? '#1D4ED8' : '#655F7D',
       }}
     >
       {label} <span style={{ opacity: active ? 1 : 0.35 }}>{active ? (dir === 'desc' ? '↓' : '↑') : '↕'}</span>
@@ -54,7 +54,7 @@ function SortableTH({ label, sortKey, active, dir, onSort }: { label: string; so
 }
 
 const STATIC_TH: React.CSSProperties = {
-  backgroundColor: 'rgba(23,18,43,0.02)', color: '#655F7D', fontSize: '12.5px', fontWeight: 500,
+  backgroundColor: '#F3EEFF', color: '#655F7D', fontSize: '12.5px', fontWeight: 500,
   padding: '11px 16px',
   textAlign: 'left', borderBottom: '1px solid #E8E4F1', whiteSpace: 'nowrap',
 }
@@ -112,7 +112,7 @@ export default function TwitterPage() {
           href="https://docs.google.com/spreadsheets/d/1cawscn0JAZwLBlkMPwNM9-cSfcUVebaPFLLt7pMtCPc/edit?gid=1920292925#gid=1920292925"
           target="_blank"
           rel="noopener noreferrer"
-          style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '9px 16px', borderRadius: '8px', backgroundColor: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.35)', color: '#046C4E', fontWeight: 600, fontSize: '13px', textDecoration: 'none', whiteSpace: 'nowrap' }}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '9px 16px', borderRadius: '8px', backgroundColor: '#ECFDF5', border: '1px solid #D8D2E6', color: '#047857', fontWeight: 600, fontSize: '14px', textDecoration: 'none', whiteSpace: 'nowrap' }}
         >
           <BarChart3 size={15} aria-hidden /> Tam Liste
         </a>
@@ -124,9 +124,9 @@ export default function TwitterPage() {
         {/* Stats */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px', marginBottom: '28px' }}>
           <StatCard label="Toplam Hesap"   value={accounts.length}                        icon={Users}      iconColor="#1d9bf0" iconBg="rgba(29,155,240,0.12)" />
-          <StatCard label="Toplam Takipçi" value={totalFollowers.toLocaleString('en-US')} icon={TrendingUp} iconColor="#047857" iconBg="rgba(34,197,94,0.12)" />
-          <StatCard label="Yüksek Öncelik" value={highPriority}                           icon={Zap}        iconColor="#B91C1C" iconBg="rgba(239,68,68,0.12)" />
-          <StatCard label="Ort. Puan"      value={avgScore}                               icon={Star}       iconColor="#B45309" iconBg="rgba(234,179,8,0.12)" />
+          <StatCard label="Toplam Takipçi" value={totalFollowers.toLocaleString('en-US')} icon={TrendingUp} iconColor="#047857" iconBg="#ECFDF5" />
+          <StatCard label="Yüksek Öncelik" value={highPriority}                           icon={Zap}        iconColor="#B91C1C" iconBg="#FEF2F2" />
+          <StatCard label="Ort. Puan"      value={avgScore}                               icon={Star}       iconColor="#B45309" iconBg="#FFFBEB" />
         </div>
 
         {/* Table card */}
@@ -134,9 +134,9 @@ export default function TwitterPage() {
 
           {/* Header */}
           <div style={{ padding: '14px 20px', borderBottom: '1px solid #E8E4F1', display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#1d9bf0', boxShadow: '0 0 6px rgba(29,155,240,0.5)' }} />
-            <span style={{ fontSize: '15px', fontWeight: 600, color: '#17122B' }}>Twitter Hesapları</span>
-            <span style={{ marginLeft: 'auto', backgroundColor: 'rgba(29,155,240,0.12)', color: '#13669E', border: '1px solid rgba(29,155,240,0.3)', borderRadius: '9999px', padding: '2px 10px', fontSize: '13px', fontWeight: 600 }}>
+            <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#1d9bf0', boxShadow: 'none' }} />
+            <span style={{ fontFamily: 'var(--font-display)', fontSize: '15px', letterSpacing: '-0.01em', fontWeight: 600, color: '#17122B' }}>Twitter Hesapları</span>
+            <span style={{ marginLeft: 'auto', backgroundColor: 'rgba(29,155,240,0.12)', color: '#1D4ED8', border: '1px solid rgba(29,155,240,0.3)', borderRadius: '9999px', padding: '2px 10px', fontSize: '14px', fontWeight: 600 }}>
               {sorted.length}{hasFilters ? ` / ${accounts.length}` : ''}
             </span>
           </div>
@@ -168,7 +168,7 @@ export default function TwitterPage() {
             {hasFilters && (
               <button
                 onClick={() => { setSearch(''); setRegionFilter(''); setLangFilter(''); setPriorityFilter('') }}
-                style={{ fontSize: '12px', color: '#655F7D', background: 'none', border: '1px solid #E8E4F1', borderRadius: '7px', padding: '7px 12px', cursor: 'pointer' }}
+                style={{ fontSize: '12px', color: '#655F7D', background: 'none', border: '1px solid #E8E4F1', borderRadius: '8px', padding: '7px 12px', cursor: 'pointer' }}
               >
                 Temizle
               </button>
@@ -206,26 +206,26 @@ export default function TwitterPage() {
                     <td style={TD}>
                       {row.profile_url ? (
                         <a href={String(row.profile_url)} target="_blank" rel="noopener noreferrer"
-                          style={{ fontWeight: 700, color: '#13669E', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '14px' }}>
+                          style={{ fontWeight: 700, color: '#1D4ED8', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '14px' }}>
                           @{String(row.username ?? '')} <ExternalLink size={11} />
                         </a>
                       ) : (
-                        <span style={{ fontWeight: 700, color: '#13669E', fontSize: '14px' }}>@{String(row.username ?? '')}</span>
+                        <span style={{ fontWeight: 700, color: '#1D4ED8', fontSize: '14px' }}>@{String(row.username ?? '')}</span>
                       )}
                       {!!row.display_name && <div style={{ fontSize: '12px', color: '#655F7D', marginTop: '2px' }}>{String(row.display_name)}</div>}
                     </td>
                     <td style={TD}>
                       {row.followers
-                        ? <span style={{ color: '#046C4E', fontWeight: 600, fontSize: '13px' }}>{Number(row.followers).toLocaleString('en-US')}</span>
+                        ? <span style={{ color: '#047857', fontWeight: 600, fontSize: '14px' }}>{Number(row.followers).toLocaleString('en-US')}</span>
                         : <span style={{ color: '#655F7D' }}>—</span>}
                     </td>
                     <td style={TD}>
                       {row.avg_likes
-                        ? <span style={{ color: '#AF3A0B', fontWeight: 600, fontSize: '13px' }}>{Number(row.avg_likes).toLocaleString('en-US')}</span>
+                        ? <span style={{ color: '#C2410C', fontWeight: 600, fontSize: '14px' }}>{Number(row.avg_likes).toLocaleString('en-US')}</span>
                         : <span style={{ color: '#655F7D' }}>—</span>}
                     </td>
                     <td style={TD}>
-                      {row.region ? <span style={{ fontSize: '13px', color: '#4A4462' }}>{String(row.region)}</span> : <span style={{ color: '#655F7D' }}>—</span>}
+                      {row.region ? <span style={{ fontSize: '12.5px', color: '#4A4462' }}>{String(row.region)}</span> : <span style={{ color: '#655F7D' }}>—</span>}
                     </td>
                     <td style={TD}><LangBadge lang={row.language} /></td>
                     <td style={{ ...TD, maxWidth: '300px' }}>

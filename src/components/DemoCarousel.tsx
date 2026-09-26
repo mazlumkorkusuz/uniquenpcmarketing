@@ -74,7 +74,7 @@ export default function DemoCarousel({ onSelect }: Props) {
                 if (parent) parent.style.display = 'none'
               }}
             />
-            <p style={{ fontSize: '11px', marginTop: '4px', color: '#3A3A3A', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+            <p style={{ fontSize: '12px', marginTop: '4px', color: '#655F7D', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
               {demo.name}
             </p>
           </div>

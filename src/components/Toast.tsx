@@ -23,10 +23,10 @@ export function Toast({
         right: '20px',
         zIndex: 9999,
         padding: '12px 20px',
-        borderRadius: '10px',
-        backgroundColor: type === 'success' ? '#0F1F16' : '#200F10',
+        borderRadius: '12px',
+        backgroundColor: type === 'success' ? '#047857' : '#B91C1C',
         border: `1px solid ${type === 'success' ? '#047857' : '#B91C1C'}`,
-        color: type === 'success' ? '#046C4E' : '#B91C1C',
+        color: type === 'success' ? '#047857' : '#B91C1C',
         fontSize: '14px',
         fontWeight: 500,
         boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
@@ -37,7 +37,7 @@ export function Toast({
         maxWidth: '420px',
       }}
     >
-      <span style={{ fontSize: '16px', fontWeight: 700 }}>{type === 'success' ? '✓' : '✕'}</span>
+      <span style={{ fontFamily: 'var(--font-display)', fontSize: '15px', letterSpacing: '-0.01em', fontWeight: 600 }}>{type === 'success' ? '✓' : '✕'}</span>
       {message}
     </div>
   )

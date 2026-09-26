@@ -41,7 +41,7 @@ function buildForm(data?: ExpenseData) {
 }
 
 export function BudgetExpenseModal({
-  accentColor = '#22c55e',
+  accentColor = '#047857',
   buttonLabel = '+ Harcama Ekle',
   mode = 'add',
   initialData,
@@ -147,7 +147,7 @@ export function BudgetExpenseModal({
   )
 }
 
-export function EditBudgetExpenseButton({ row, accentColor = '#22c55e' }: { row: Record<string, unknown>; accentColor?: string }) {
+export function EditBudgetExpenseButton({ row, accentColor = '#047857' }: { row: Record<string, unknown>; accentColor?: string }) {
   const [open, setOpen] = useState(false)
   return (
     <>

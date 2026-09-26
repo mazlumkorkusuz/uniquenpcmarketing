@@ -43,7 +43,7 @@ function languageFlag(lang: string): string {
   return LANGUAGE_FLAGS[lang] ?? '🌐'
 }
 
-const AVATAR_PALETTE = ['#9146ff', '#1D4ED8', '#047857', '#B45309', '#BE185D', '#B91C1C', '#4CCCE6', '#4338CA']
+const AVATAR_PALETTE = ['#9146ff', '#1D4ED8', '#047857', '#B45309', '#BE123C', '#B91C1C', '#0F766E', '#1D4ED8']
 function colorForName(name: unknown): string {
   const s = String(name ?? '')
   let hash = 0
@@ -86,7 +86,7 @@ function Avatar({ username, src, size }: { username: unknown; src?: string; size
   const color = colorForName(uname)
   if (!uname || !src || broken) {
     return (
-      <div style={{ width: size, height: size, borderRadius: size / 3.5, backgroundColor: color + '22', border: `1px solid ${color}66`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: size * 0.32, color: inkOf(color), flexShrink: 0 }}>
+      <div style={{ width: size, height: size, borderRadius: size / 3.5, backgroundColor: color + '22', border: `1px solid ${color}66`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: size * 0.32, color: inkOf(color), flexShrink: 0 }}>
         {initials(uname)}
       </div>
     )
@@ -104,15 +104,15 @@ function Avatar({ username, src, size }: { username: unknown; src?: string; size
 // ── sortable column header ──────────────────────────────────────────────
 function SortableTH({ label, sk, active, dir, onSort, style }: { label: string; sk: SortKey; active: boolean; dir: SortDir; onSort: (k: SortKey) => void; style?: React.CSSProperties }) {
   return (
-    <th onClick={() => onSort(sk)} style={{ ...STH, cursor: 'pointer', userSelect: 'none', color: active ? '#7539CF' : '#655F7D', ...style }}>
+    <th onClick={() => onSort(sk)} style={{ ...STH, cursor: 'pointer', userSelect: 'none', color: active ? '#6D28D9' : '#655F7D', ...style }}>
       {label} <span style={{ opacity: active ? 1 : 0.3 }}>{active ? (dir === 'desc' ? '↓' : '↑') : '↕'}</span>
     </th>
   )
 }
 
-const STH: React.CSSProperties = { backgroundColor: 'rgba(23,18,43,0.02)', color: '#655F7D', fontSize: '12.5px', fontWeight: 500, padding: '11px 14px', textAlign: 'left', borderBottom: '1px solid #E8E4F1', whiteSpace: 'nowrap' }
+const STH: React.CSSProperties = { backgroundColor: '#F3EEFF', color: '#655F7D', fontSize: '12.5px', fontWeight: 500, padding: '11px 14px', textAlign: 'left', borderBottom: '1px solid #E8E4F1', whiteSpace: 'nowrap' }
 const TD: React.CSSProperties = { padding: '12px 14px', verticalAlign: 'middle' }
-const SEL: React.CSSProperties = { backgroundColor: '#FFFFFF', border: '1px solid #E8E4F1', borderRadius: '7px', padding: '7px 11px', fontSize: '13px', color: '#17122B', cursor: 'pointer', outline: 'none' }
+const SEL: React.CSSProperties = { backgroundColor: '#FFFFFF', border: '1px solid #E8E4F1', borderRadius: '8px', padding: '7px 11px', fontSize: '14px', color: '#17122B', cursor: 'pointer', outline: 'none' }
 
 // ── stats bar card styling ───────────────────────────────────────────────
 function statCardStyle(color: string): React.CSSProperties {
@@ -120,7 +120,7 @@ function statCardStyle(color: string): React.CSSProperties {
     backgroundColor: 'var(--color-bg-card)',
     boxShadow: 'var(--shadow-card)',
     border: '1px solid var(--color-border-card)',
-    borderRadius: '14px',
+    borderRadius: '12px',
     padding: '22px 24px',
     display: 'flex',
     flexDirection: 'column',
@@ -128,13 +128,13 @@ function statCardStyle(color: string): React.CSSProperties {
     minHeight: '132px',
   }
 }
-const statValueStyle: React.CSSProperties = { fontSize: '26px', fontWeight: 800, color: '#17122B', lineHeight: 1.15 }
+const statValueStyle: React.CSSProperties = { fontFamily: 'var(--font-display)', fontSize: '24px', fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.03em', fontWeight: 600, color: '#17122B', lineHeight: 1.15 }
 const statSubStyle: React.CSSProperties = { fontSize: '12px', color: '#655F7D' }
 
 function StatCardHeader({ icon, color, label }: { icon: React.ReactNode; color: string; label: string }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-      <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: color + '22', border: `1px solid ${color}55`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: inkOf(color), flexShrink: 0 }}>
+      <div style={{ width: '36px', height: '36px', borderRadius: '12px', backgroundColor: color + '22', border: `1px solid ${color}55`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: inkOf(color), flexShrink: 0 }}>
         {icon}
       </div>
       <span style={{ fontSize: '12px', fontWeight: 600, color: '#4A4462', }}>{label}</span>
@@ -144,7 +144,7 @@ function StatCardHeader({ icon, color, label }: { icon: React.ReactNode; color: 
 
 function ContactRow({ href, icon, label }: { href: string; icon: React.ReactNode; label: string }) {
   return (
-    <a href={href} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#1D4ED8', textDecoration: 'none', padding: '5px 0', overflow: 'hidden' }}>
+    <a href={href} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', color: '#1D4ED8', textDecoration: 'none', padding: '5px 0', overflow: 'hidden' }}>
       <span style={{ flexShrink: 0, display: 'flex' }}>{icon}</span>
       <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{label}</span>
     </a>
@@ -173,13 +173,13 @@ function DetailPanel({ row, profileSrc, onClose }: { row: Row; profileSrc?: stri
       <div style={{ padding: '18px', borderBottom: '1px solid #E8E4F1', display: 'flex', alignItems: 'center', gap: '14px' }}>
         <Avatar key={String(row.username)} username={row.username} src={profileSrc} size={64} />
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontWeight: 700, fontSize: '16px', color: '#17122B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name}</div>
+          <div style={{ fontWeight: 600, fontFamily: 'var(--font-display)', fontSize: '15px', letterSpacing: '-0.01em', color: '#17122B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name}</div>
           <div style={{ fontSize: '12px', color: '#655F7D', marginTop: '3px', display: 'flex', gap: '6px', alignItems: 'center' }}>
             @{String(row.username ?? '—')}
-            {!!row.language && <span style={{ backgroundColor: 'rgba(145,70,255,0.12)', color: '#7539CF', borderRadius: '4px', padding: '1px 6px' }}>{String(row.language)}</span>}
+            {!!row.language && <span style={{ backgroundColor: 'rgba(145,70,255,0.12)', color: '#6D28D9', borderRadius: '8px', padding: '1px 6px' }}>{String(row.language)}</span>}
           </div>
         </div>
-        <button onClick={onClose} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '30px', borderRadius: '7px', backgroundColor: 'transparent', border: '1px solid #E8E4F1', color: '#655F7D', cursor: 'pointer', flexShrink: 0 }}>
+        <button onClick={onClose} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '30px', borderRadius: '8px', backgroundColor: 'transparent', border: '1px solid #E8E4F1', color: '#655F7D', cursor: 'pointer', flexShrink: 0 }}>
           <X size={14} />
         </button>
       </div>
@@ -189,18 +189,18 @@ function DetailPanel({ row, profileSrc, onClose }: { row: Row; profileSrc?: stri
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
           {[
             { label: 'Ort. İzleyici', value: fmt(row.avg_viewers), color: '#9146FF' },
-            { label: 'Takipçi', value: fmt(row.followers), color: '#046C4E' },
+            { label: 'Takipçi', value: fmt(row.followers), color: '#047857' },
           ].map(s => (
             <div key={s.label} style={{ backgroundColor: '#FFFFFF', border: '1px solid #E8E4F1', borderRadius: '8px', padding: '12px 14px' }}>
-              <div style={{ fontSize: '10px', color: '#655F7D', fontWeight: 600, marginBottom: '5px' }}>{s.label}</div>
-              <div style={{ fontSize: '18px', fontWeight: 800, color: inkOf(s.color) }}>{s.value}</div>
+              <div style={{ fontSize: '12px', color: '#655F7D', fontWeight: 600, marginBottom: '5px' }}>{s.label}</div>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.01em', fontWeight: 600, color: inkOf(s.color) }}>{s.value}</div>
             </div>
           ))}
         </div>
 
         {/* Channel link */}
         {!!row.channel_url && (
-          <a href={String(row.channel_url)} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '10px', borderRadius: '8px', backgroundColor: 'rgba(145,70,255,0.08)', border: '1px solid rgba(145,70,255,0.3)', color: '#7539CF', fontWeight: 600, fontSize: '13px', textDecoration: 'none' }}>
+          <a href={String(row.channel_url)} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '10px', borderRadius: '8px', backgroundColor: 'rgba(145,70,255,0.08)', border: '1px solid rgba(145,70,255,0.3)', color: '#6D28D9', fontWeight: 600, fontSize: '14px', textDecoration: 'none' }}>
             <ExternalLink size={14} /> Kanala Git
           </a>
         )}
@@ -208,20 +208,20 @@ function DetailPanel({ row, profileSrc, onClose }: { row: Row; profileSrc?: stri
         {/* Bio */}
         {!!row.bio && (
           <div>
-            <div style={{ fontSize: '11px', fontWeight: 600, color: '#655F7D', marginBottom: '8px' }}>Bio</div>
-            <div style={{ fontSize: '13px', color: '#4A4462', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{String(row.bio)}</div>
+            <div style={{ fontSize: '12px', fontWeight: 600, color: '#655F7D', marginBottom: '8px' }}>Bio</div>
+            <div style={{ fontSize: '12.5px', color: '#4A4462', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{String(row.bio)}</div>
           </div>
         )}
 
         {/* Games / categories */}
         {gameList.length > 0 && (
           <div>
-            <div style={{ fontSize: '11px', fontWeight: 600, color: '#655F7D', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <div style={{ fontSize: '12px', fontWeight: 600, color: '#655F7D', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
               <Gamepad2 size={12} /> Oyunlar / Kategoriler
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
               {gameList.map((g, i) => (
-                <div key={i} style={{ fontSize: '13px', color: '#4A4462', padding: '5px 10px', backgroundColor: 'rgba(145,70,255,0.06)', border: '1px solid rgba(145,70,255,0.12)', borderRadius: '6px' }}>{g}</div>
+                <div key={i} style={{ fontSize: '12.5px', color: '#4A4462', padding: '5px 10px', backgroundColor: 'rgba(145,70,255,0.06)', border: '1px solid rgba(145,70,255,0.12)', borderRadius: '8px' }}>{g}</div>
               ))}
             </div>
           </div>
@@ -230,7 +230,7 @@ function DetailPanel({ row, profileSrc, onClose }: { row: Row; profileSrc?: stri
         {/* Contacts */}
         {contacts.length > 0 && (
           <div>
-            <div style={{ fontSize: '11px', fontWeight: 600, color: '#655F7D', marginBottom: '8px' }}>İletişim &amp; Sosyal</div>
+            <div style={{ fontSize: '12px', fontWeight: 600, color: '#655F7D', marginBottom: '8px' }}>İletişim &amp; Sosyal</div>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               {contacts.map((c, i) => <ContactRow key={i} {...c} />)}
             </div>
@@ -273,12 +273,12 @@ function TwitchLiveCard() {
   return (
     <>
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-        <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: 'rgba(239,68,68,0.18)', border: '1px solid rgba(239,68,68,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#B91C1C', flexShrink: 0 }}>
+        <div style={{ width: '36px', height: '36px', borderRadius: '12px', backgroundColor: '#FEF2F2', border: '1px solid #D8D2E6', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#B91C1C', flexShrink: 0 }}>
           <Radio size={17} />
         </div>
         <span style={{ fontSize: '12px', fontWeight: 600, color: '#4A4462', }}>Twitch Canlı</span>
-        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', marginLeft: 'auto', fontSize: '10px', fontWeight: 700, color: '#046C4E' }}>
-          <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#047857', boxShadow: '0 0 6px #047857', animation: 'twitchLivePulse 1.6s ease-in-out infinite' }} />
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', marginLeft: 'auto', fontSize: '12px', fontWeight: 700, color: '#047857' }}>
+          <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#047857', boxShadow: 'none', animation: 'twitchLivePulse 1.6s ease-in-out infinite' }} />
           CANLI
         </span>
       </div>
@@ -290,7 +290,7 @@ function TwitchLiveCard() {
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
           <div>
-            <div style={{ fontSize: '10px', fontWeight: 600, color: '#655F7D', marginBottom: '6px' }}>En Çok İzlenen</div>
+            <div style={{ fontSize: '12px', fontWeight: 600, color: '#655F7D', marginBottom: '6px' }}>En Çok İzlenen</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
               {streams.map((s, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px' }}>
@@ -302,7 +302,7 @@ function TwitchLiveCard() {
             </div>
           </div>
           <div>
-            <div style={{ fontSize: '10px', fontWeight: 600, color: '#655F7D', marginBottom: '6px' }}>Popüler Kategoriler</div>
+            <div style={{ fontSize: '12px', fontWeight: 600, color: '#655F7D', marginBottom: '6px' }}>Popüler Kategoriler</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
               {categories.map((c, i) => (
                 <div key={c.id ?? i} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px' }}>
@@ -514,7 +514,7 @@ export default function TwitchPage() {
             <button
               key={t.key}
               onClick={() => switchTab(t.key)}
-              style={{ padding: '8px 18px', borderRadius: '8px', border: 'none', fontWeight: 600, fontSize: '13px', cursor: 'pointer', backgroundColor: activeTab === t.key ? '#F3EEFF' : 'transparent', color: activeTab === t.key ? '#6D28D9' : '#655F7D', transition: 'background-color 150ms var(--ease-out), color 150ms var(--ease-out)' }}
+              style={{ padding: '8px 18px', borderRadius: '8px', border: 'none', fontWeight: 600, fontSize: '14px', cursor: 'pointer', backgroundColor: activeTab === t.key ? '#F3EEFF' : 'transparent', color: activeTab === t.key ? '#6D28D9' : '#655F7D', transition: 'background-color 150ms var(--ease-out), color 150ms var(--ease-out)' }}
             >
               {t.label}
             </button>
@@ -555,19 +555,19 @@ export default function TwitchPage() {
           <div
             onMouseEnter={() => setCategoriesHovered(true)}
             onMouseLeave={() => setCategoriesHovered(false)}
-            style={{ ...statCardStyle('#BE185D'), gridColumn: 'span 2', position: 'relative' }}
+            style={{ ...statCardStyle('#BE123C'), gridColumn: 'span 2', position: 'relative' }}
           >
-            <StatCardHeader icon={<Gamepad2 size={17} />} color="#BE185D" label="Popüler Kategoriler" />
+            <StatCardHeader icon={<Gamepad2 size={17} />} color="#BE123C" label="Popüler Kategoriler" />
             <div style={statValueStyle}>{auxLoading ? '…' : topCategory ? topCategory.name : '—'}</div>
             <div style={statSubStyle}>{auxLoading || !topCategory ? '—' : `${topCategory.count.toLocaleString('tr-TR')} yayıncının ana kategorisi · üzerine gelip ilk 3'ü gör`}</div>
 
             {categoriesHovered && top3Categories.length > 0 && (
-              <div style={{ position: 'absolute', top: 'calc(100% + 8px)', left: '20px', right: '20px', zIndex: 10, backgroundColor: '#FFFFFF', border: '1px solid rgba(244,114,182,0.35)', borderRadius: '12px', padding: '14px', boxShadow: '0 12px 28px rgba(0,0,0,0.12)', display: 'flex', gap: '10px' }}>
+              <div style={{ position: 'absolute', top: 'calc(100% + 8px)', left: '20px', right: '20px', zIndex: 10, backgroundColor: '#FFFFFF', border: '1px solid #D8D2E6', borderRadius: '12px', padding: '14px', boxShadow: '0 12px 28px rgba(0,0,0,0.12)', display: 'flex', gap: '10px' }}>
                 {top3Categories.map((c, i) => (
-                  <div key={c.name} style={{ flex: 1, backgroundColor: 'rgba(244,114,182,0.08)', border: '1px solid rgba(244,114,182,0.2)', borderRadius: '8px', padding: '10px 12px' }}>
-                    <div style={{ fontSize: '10px', fontWeight: 700, color: '#BE185D', marginBottom: '4px' }}>#{i + 1}</div>
+                  <div key={c.name} style={{ flex: 1, backgroundColor: '#FFF1F3', border: '1px solid #E8E4F1', borderRadius: '8px', padding: '10px 12px' }}>
+                    <div style={{ fontSize: '12px', fontWeight: 700, color: '#BE123C', marginBottom: '4px' }}>#{i + 1}</div>
                     <div style={{ fontSize: '12px', fontWeight: 600, color: '#17122B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.name}</div>
-                    <div style={{ fontSize: '11px', color: '#4A4462', marginTop: '2px' }}>{c.count.toLocaleString('tr-TR')} yayıncı</div>
+                    <div style={{ fontSize: '12px', color: '#4A4462', marginTop: '2px' }}>{c.count.toLocaleString('tr-TR')} yayıncı</div>
                   </div>
                 ))}
               </div>
@@ -594,12 +594,12 @@ export default function TwitchPage() {
             </select>
             <button
               onClick={() => setEmailOnly(v => !v)}
-              style={{ padding: '7px 14px', borderRadius: '7px', border: `1px solid ${emailOnly ? 'rgba(251,191,36,0.5)' : '#E8E4F1'}`, backgroundColor: emailOnly ? 'rgba(251,191,36,0.1)' : 'transparent', color: emailOnly ? '#A24B08' : '#655F7D', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}
+              style={{ padding: '7px 14px', borderRadius: '8px', border: `1px solid ${emailOnly ? '#D8D2E6' : '#E8E4F1'}`, backgroundColor: emailOnly ? '#F3EEFF' : 'transparent', color: emailOnly ? '#6D28D9' : '#655F7D', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}
             >
               <Mail size={14} aria-hidden /> Email Var
             </button>
             {hasFilters && (
-              <button onClick={() => { setSearchInput(''); setSearch(''); setLanguageFilter(''); setEmailOnly(false) }} style={{ fontSize: '12px', color: '#655F7D', background: 'none', border: '1px solid #E8E4F1', borderRadius: '7px', padding: '7px 12px', cursor: 'pointer' }}>
+              <button onClick={() => { setSearchInput(''); setSearch(''); setLanguageFilter(''); setEmailOnly(false) }} style={{ fontSize: '12px', color: '#655F7D', background: 'none', border: '1px solid #E8E4F1', borderRadius: '8px', padding: '7px 12px', cursor: 'pointer' }}>
                 Temizle
               </button>
             )}
@@ -643,17 +643,17 @@ export default function TwitchPage() {
                           target="_blank"
                           rel="noopener noreferrer"
                           onClick={e => e.stopPropagation()}
-                          style={{ fontWeight: 700, fontSize: '13px', color: '#7539CF', textDecoration: 'none' }}
+                          style={{ fontWeight: 700, fontSize: '14px', color: '#6D28D9', textDecoration: 'none' }}
                         >
                           {String(row.display_name ?? row.username ?? '—')}
                         </a>
                         {!!row.username && String(row.display_name ?? '') !== String(row.username) && (
-                          <div style={{ fontSize: '11px', color: '#655F7D', marginTop: '2px' }}>@{String(row.username)}</div>
+                          <div style={{ fontSize: '12px', color: '#655F7D', marginTop: '2px' }}>@{String(row.username)}</div>
                         )}
                       </td>
-                      <td style={TD}><span style={{ color: '#7539CF', fontWeight: 600, fontSize: '13px' }}>{fmt(row.avg_viewers)}</span></td>
-                      <td style={TD}><span style={{ color: '#046C4E', fontWeight: 600, fontSize: '13px' }}>{fmt(row.followers)}</span></td>
-                      <td style={TD}><span style={{ fontSize: '13px', color: '#4A4462' }}>{row.language ? String(row.language) : <span style={{ color: '#655F7D' }}>—</span>}</span></td>
+                      <td style={TD}><span style={{ color: '#6D28D9', fontWeight: 600, fontSize: '14px' }}>{fmt(row.avg_viewers)}</span></td>
+                      <td style={TD}><span style={{ color: '#047857', fontWeight: 600, fontSize: '14px' }}>{fmt(row.followers)}</span></td>
+                      <td style={TD}><span style={{ fontSize: '12.5px', color: '#4A4462' }}>{row.language ? String(row.language) : <span style={{ color: '#655F7D' }}>—</span>}</span></td>
                       <td style={{ ...TD, maxWidth: '180px' }} onClick={e => e.stopPropagation()}>
                         {hasEmail(row.email)
                           ? <a href={`mailto:${row.email}`} style={{ color: '#1D4ED8', fontSize: '12px', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{String(row.email)}</a>
@@ -675,7 +675,7 @@ export default function TwitchPage() {
               <button
                 onClick={() => setPage(p => Math.max(1, p - 1))}
                 disabled={page <= 1}
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '30px', borderRadius: '7px', border: '1px solid #E8E4F1', backgroundColor: 'transparent', color: page <= 1 ? '#655F7D' : '#4A4462', cursor: page <= 1 ? 'not-allowed' : 'pointer' }}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '30px', borderRadius: '8px', border: '1px solid #E8E4F1', backgroundColor: 'transparent', color: page <= 1 ? '#655F7D' : '#4A4462', cursor: page <= 1 ? 'not-allowed' : 'pointer' }}
               >
                 <ChevronLeft size={14} />
               </button>
@@ -684,7 +684,7 @@ export default function TwitchPage() {
                 <button
                   key={n}
                   onClick={() => setPage(n)}
-                  style={{ minWidth: '30px', height: '30px', borderRadius: '7px', border: `1px solid ${n === page ? '#9146ff' : '#E8E4F1'}`, backgroundColor: n === page ? 'rgba(145,70,255,0.15)' : 'transparent', color: n === page ? '#6D28D9' : '#4A4462', fontSize: '12px', fontWeight: 600, cursor: 'pointer', padding: '0 6px' }}
+                  style={{ minWidth: '30px', height: '30px', borderRadius: '8px', border: `1px solid ${n === page ? '#9146ff' : '#E8E4F1'}`, backgroundColor: n === page ? 'rgba(145,70,255,0.15)' : 'transparent', color: n === page ? '#6D28D9' : '#4A4462', fontSize: '12px', fontWeight: 600, cursor: 'pointer', padding: '0 6px' }}
                 >
                   {n}
                 </button>
@@ -693,7 +693,7 @@ export default function TwitchPage() {
               <button
                 onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                 disabled={page >= totalPages}
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '30px', borderRadius: '7px', border: '1px solid #E8E4F1', backgroundColor: 'transparent', color: page >= totalPages ? '#655F7D' : '#4A4462', cursor: page >= totalPages ? 'not-allowed' : 'pointer' }}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '30px', borderRadius: '8px', border: '1px solid #E8E4F1', backgroundColor: 'transparent', color: page >= totalPages ? '#655F7D' : '#4A4462', cursor: page >= totalPages ? 'not-allowed' : 'pointer' }}
               >
                 <ChevronRight size={14} />
               </button>
@@ -704,7 +704,7 @@ export default function TwitchPage() {
         {/* Overlay + drawer */}
         {selected && (
           <>
-            <div onClick={() => setSelected(null)} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(23,18,43,0.35)', zIndex: 999 }} />
+            <div onClick={() => setSelected(null)} style={{ position: 'fixed', inset: 0, backgroundColor: '#6D28D9', zIndex: 999 }} />
             <DetailPanel row={selected} profileSrc={profileMap[String(selected.username ?? '').trim().toLowerCase()]} onClose={() => setSelected(null)} />
           </>
         )}

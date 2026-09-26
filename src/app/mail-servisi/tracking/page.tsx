@@ -92,7 +92,7 @@ function Tracking() {
   const stat = (label: string, value: number, rate: string, color: string) => (
     <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', padding: '16px 20px' }}>
       <div style={{ fontSize: '12px', color: '#655F7D', marginBottom: '6px' }}>{label}</div>
-      <div style={{ fontSize: '22px', fontWeight: 700, color }}>{value.toLocaleString('tr-TR')}</div>
+      <div style={{ fontFamily: 'var(--font-display)', fontSize: '24px', fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.03em', fontWeight: 600, color }}>{value.toLocaleString('tr-TR')}</div>
       <div style={{ fontSize: '12px', color: '#4A4462' }}>{rate}</div>
     </div>
   )
@@ -131,9 +131,9 @@ function Tracking() {
 
         <Card padded={false}>
           {loading ? (
-            <p style={{ padding: '20px', margin: 0, fontSize: '13px', color: '#655F7D' }}>Yükleniyor…</p>
+            <p style={{ padding: '20px', margin: 0, fontSize: '12.5px', color: '#655F7D' }}>Yükleniyor…</p>
           ) : rows.length === 0 ? (
-            <p style={{ padding: '20px', margin: 0, fontSize: '13px', color: '#655F7D' }}>Kayıt yok.</p>
+            <p style={{ padding: '20px', margin: 0, fontSize: '12.5px', color: '#655F7D' }}>Kayıt yok.</p>
           ) : (
             <div style={{ overflowX: 'auto' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse' }}>

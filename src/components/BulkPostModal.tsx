@@ -16,7 +16,7 @@ const PLATFORMS = [
   { key: 'instagram', label: 'Instagram', color: '#e1306c', icon: '/icons/instagram.png' },
   { key: 'tiktok',    label: 'TikTok',    color: '#fe2c55', icon: '/icons/tiktok.png' },
   { key: 'linkedin',  label: 'LinkedIn',  color: '#0a66c2', icon: '/icons/linkedin.png' },
-  { key: 'youtube',   label: 'YouTube',   color: '#ff4444', icon: '/icons/youtube.png' },
+  { key: 'youtube',   label: 'YouTube',   color: '#FF0000', icon: '/icons/youtube.png' },
   { key: 'reddit',    label: 'Reddit',    color: '#ff4500', icon: '/icons/reddit.svg' },
   { key: 'ig',        label: 'IG',        color: '#c13584', icon: '/icons/instagram.png' },
 ]
@@ -86,7 +86,7 @@ export function BulkPostModal() {
           alignItems: 'center',
           gap: '8px',
           padding: '9px 18px',
-          borderRadius: '9px',
+          borderRadius: '8px',
           background: 'var(--gradient)',
           border: 'none',
           color: '#FFFFFF',
@@ -115,7 +115,7 @@ export function BulkPostModal() {
                       alignItems: 'center',
                       gap: '6px',
                       padding: '6px 12px',
-                      borderRadius: '7px',
+                      borderRadius: '8px',
                       border: `1px solid ${isSelected ? p.color : '#655F7D'}`,
                       backgroundColor: isSelected ? `${p.color}22` : '#FFFFFF',
                       color: isSelected ? inkOf(p.color) : '#655F7D',
@@ -124,14 +124,14 @@ export function BulkPostModal() {
                       cursor: 'pointer',
                     }}
                   >
-                    <Image src={p.icon} alt={p.label} width={14} height={14} style={{ objectFit: 'contain', borderRadius: '2px', flexShrink: 0 }} />
+                    <Image src={p.icon} alt={p.label} width={14} height={14} style={{ objectFit: 'contain', borderRadius: '8px', flexShrink: 0 }} />
                     {p.label}
                   </button>
                 )
               })}
             </div>
             {selected.length > 0 && (
-              <div style={{ fontSize: '11px', color: '#655F7D', marginTop: '6px' }}>
+              <div style={{ fontSize: '12px', color: '#655F7D', marginTop: '6px' }}>
                 {selected.length} platform seçildi
               </div>
             )}
@@ -146,7 +146,7 @@ export function BulkPostModal() {
                   return (
                     <div key={key} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '5px', minWidth: '96px', flexShrink: 0 }}>
-                        <Image src={p.icon} alt={p.label} width={13} height={13} style={{ objectFit: 'contain', borderRadius: '2px' }} />
+                        <Image src={p.icon} alt={p.label} width={13} height={13} style={{ objectFit: 'contain', borderRadius: '8px' }} />
                         <span style={{ fontSize: '12px', fontWeight: 600, color: inkOf(p.color) }}>{p.label}</span>
                       </div>
                       <input
@@ -154,7 +154,7 @@ export function BulkPostModal() {
                         value={platformLinks[key] ?? ''}
                         onChange={e => setLink(key, e.target.value)}
                         placeholder="https://..."
-                        style={{ ...inputStyle, flex: 1, fontSize: '13px', padding: '7px 10px' }}
+                        style={{ ...inputStyle, flex: 1, fontSize: '14px', padding: '7px 10px' }}
                       />
                     </div>
                   )

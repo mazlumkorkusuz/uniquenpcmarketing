@@ -12,9 +12,9 @@ import {
 } from 'recharts'
 
 const COLORS = [
-  '#6D28D9', '#3b82f6', '#14b8a6', '#22c55e',
-  '#f59e0b', '#ef4444', '#ec4899', '#8b5cf6',
-  '#06b6d4', '#A3E635',
+  '#6D28D9', '#1D4ED8', '#0F766E', '#047857',
+  '#B45309', '#B91C1C', '#BE123C', '#6D28D9',
+  '#0F766E', '#047857',
 ]
 
 export type BudgetDatum = { name: string; value: number }
@@ -35,9 +35,9 @@ function CustomTooltip({ active, payload }: {
   const item = payload[0]
   return (
     <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #E8E4F1', borderRadius: '8px', padding: '10px 14px', boxShadow: '0 4px 16px rgba(0,0,0,0.12)' }}>
-      <div style={{ fontSize: '13px', fontWeight: 600, color: '#17122B', marginBottom: '4px' }}>{item.name}</div>
-      <div style={{ fontSize: '13px', color: '#046C4E', fontWeight: 600 }}>{fmt(item.value)}</div>
-      <div style={{ fontSize: '11px', color: '#655F7D', marginTop: '2px' }}>{(item.payload.percent * 100).toFixed(1)}%</div>
+      <div style={{ fontSize: '14px', fontWeight: 600, color: '#17122B', marginBottom: '4px' }}>{item.name}</div>
+      <div style={{ fontSize: '14px', color: '#047857', fontWeight: 600 }}>{fmt(item.value)}</div>
+      <div style={{ fontSize: '12px', color: '#655F7D', marginTop: '2px' }}>{(item.payload.percent * 100).toFixed(1)}%</div>
     </div>
   )
 }
@@ -64,7 +64,7 @@ export default function BudgetDonutChart({ data }: { data: BudgetDatum[] }) {
 
   if (data.length === 0) {
     return (
-      <div style={{ height: '160px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#655F7D', fontSize: '13px' }}>
+      <div style={{ height: '160px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#655F7D', fontSize: '12.5px' }}>
         Harcama verisi bulunamadı
       </div>
     )

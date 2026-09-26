@@ -67,8 +67,8 @@ export default async function LinkedinPlanlama() {
       <div style={{ padding: '24px 32px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px', marginBottom: '28px' }}>
           <StatCard label="Toplam Gönderi"  value={total}          icon={Briefcase}   iconColor={COLOR}    iconBg={`${COLOR}20`} />
-          <StatCard label="Planlandı"        value={scheduledCount} icon={Clock}       iconColor="#1D4ED8" iconBg="rgba(59,130,246,0.12)" />
-          <StatCard label="Yayınlandı"       value={publishedCount} icon={CheckCircle} iconColor="#047857" iconBg="rgba(34,197,94,0.12)" />
+          <StatCard label="Planlandı"        value={scheduledCount} icon={Clock}       iconColor="#1D4ED8" iconBg="#EFF6FF" />
+          <StatCard label="Yayınlandı"       value={publishedCount} icon={CheckCircle} iconColor="#047857" iconBg="#ECFDF5" />
         </div>
 
         <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', padding: '20px', marginBottom: '28px' }}>
@@ -77,15 +77,15 @@ export default async function LinkedinPlanlama() {
             <span style={{ fontSize: '14px', fontWeight: 600, color: '#17122B' }}>Takvim Görünümü</span>
           </div>
           <div style={{ height: '100px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FFFFFF', borderRadius: '8px', border: '1px dashed #E8E4F1' }}>
-            <span style={{ fontSize: '13px', color: '#655F7D' }}>Takvim görünümü yakında</span>
+            <span style={{ fontSize: '12.5px', color: '#655F7D' }}>Takvim görünümü yakında</span>
           </div>
         </div>
 
         <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', overflow: 'hidden' }}>
           <div style={{ padding: '14px 20px', borderBottom: '1px solid #E8E4F1', display: 'flex', alignItems: 'center', gap: '10px' }}>
             <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: COLOR }} />
-            <span style={{ fontSize: '15px', fontWeight: 600, color: '#17122B' }}>Planlanan Gönderiler</span>
-            <span style={{ marginLeft: 'auto', backgroundColor: `${COLOR}20`, color: inkOf(COLOR), border: `1px solid ${COLOR}40`, borderRadius: '9999px', padding: '2px 10px', fontSize: '13px', fontWeight: 600 }}>{total}</span>
+            <span style={{ fontFamily: 'var(--font-display)', fontSize: '15px', letterSpacing: '-0.01em', fontWeight: 600, color: '#17122B' }}>Planlanan Gönderiler</span>
+            <span style={{ marginLeft: 'auto', backgroundColor: `${COLOR}20`, color: inkOf(COLOR), border: `1px solid ${COLOR}40`, borderRadius: '9999px', padding: '2px 10px', fontSize: '14px', fontWeight: 600 }}>{total}</span>
           </div>
           <DataTable columns={cols} data={rows} emptyMessage="Henüz LinkedIn gönderisi planlanmamış" />
         </div>

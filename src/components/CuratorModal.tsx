@@ -103,7 +103,7 @@ export function CuratorModal({ mode = 'add', initialData, open: externalOpen, on
     <>
       {toast && <Toast message={toast.message} type={toast.type} onDismiss={dismiss} />}
       {!isControlled && (
-        <button onClick={() => setInternalOpen(true)} style={addBtnStyle('#14b8a6')}>+ Küratör Ekle</button>
+        <button onClick={() => setInternalOpen(true)} style={addBtnStyle('#0F766E')}>+ Küratör Ekle</button>
       )}
       <ModalBase isOpen={open} onClose={closeModal} title={mode === 'edit' ? 'Küratörü Düzenle' : 'Küratör Ekle'}>
         <form onSubmit={submit}>
@@ -137,7 +137,7 @@ export function CuratorModal({ mode = 'add', initialData, open: externalOpen, on
           </div>
           <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '8px' }}>
             <button type="button" onClick={closeModal} style={cancelBtnStyle()}>İptal</button>
-            <button type="submit" disabled={loading} style={submitBtnStyle('#14b8a6', loading)}>
+            <button type="submit" disabled={loading} style={submitBtnStyle('#0F766E', loading)}>
               {loading ? 'Kaydediliyor...' : mode === 'edit' ? 'Düzenle' : 'Kaydet'}
             </button>
           </div>

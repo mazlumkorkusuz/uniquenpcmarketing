@@ -11,7 +11,7 @@ export function EditButton({ onClick }: { onClick: () => void }) {
         justifyContent: 'center',
         width: '28px',
         height: '28px',
-        borderRadius: '6px',
+        borderRadius: '8px',
         backgroundColor: 'transparent',
         border: '1px solid transparent',
         color: '#655F7D',
@@ -19,8 +19,8 @@ export function EditButton({ onClick }: { onClick: () => void }) {
         transition: 'all 0.15s ease',
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.backgroundColor = 'rgba(59,130,246,0.1)'
-        e.currentTarget.style.borderColor = 'rgba(59,130,246,0.3)'
+        e.currentTarget.style.backgroundColor = '#EFF6FF'
+        e.currentTarget.style.borderColor = '#D8D2E6'
         e.currentTarget.style.color = '#1D4ED8'
       }}
       onMouseLeave={(e) => {
