@@ -38,11 +38,11 @@ export default async function MailServisiPage() {
 
       <div style={{ padding: '24px 32px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px' }}>
-          <StatCard label="Kampanya" value={campaigns.length} icon={Users} iconColor="#6D28D9" iconBg="#F3EEFF" />
-          <StatCard label="Gönderilen" value={sent.toLocaleString('tr-TR')} icon={Send} iconColor="#1D4ED8" iconBg="#EFF6FF" />
-          <StatCard label="Açılma Oranı" value={percent(opens, sent)} icon={MailOpen} iconColor="#0F766E" iconBg="#F0FDFA" />
-          <StatCard label="Yanıt Oranı" value={percent(replies, sent)} icon={Reply} iconColor="#047857" iconBg="#ECFDF5" />
-          <StatCard label="Bounce Oranı" value={percent(bounces, sent + bounces)} icon={AlertTriangle} iconColor="#B91C1C" iconBg="#FEF2F2" />
+          <StatCard label="Kampanya" value={campaigns.length} icon={Users} iconColor="#6D28D9" iconBg="rgba(124,58,237,0.15)" />
+          <StatCard label="Gönderilen" value={sent.toLocaleString('tr-TR')} icon={Send} iconColor="#1D4ED8" iconBg="rgba(59,130,246,0.15)" />
+          <StatCard label="Açılma Oranı" value={percent(opens, sent)} icon={MailOpen} iconColor="#0F766E" iconBg="rgba(20,184,166,0.15)" />
+          <StatCard label="Yanıt Oranı" value={percent(replies, sent)} icon={Reply} iconColor="#047857" iconBg="rgba(34,197,94,0.15)" />
+          <StatCard label="Bounce Oranı" value={percent(bounces, sent + bounces)} icon={AlertTriangle} iconColor="#B91C1C" iconBg="rgba(239,68,68,0.15)" />
         </div>
 
         <Card
@@ -51,7 +51,7 @@ export default async function MailServisiPage() {
           action={<Link href="/mail-servisi/ayarlar" style={{ fontSize: '12px', color: '#17122B', fontWeight: 600, textDecoration: 'none' }}>Yönet →</Link>}
         >
           {accounts.length === 0 ? (
-            <p style={{ padding: '20px', margin: 0, fontSize: '12.5px', color: '#655F7D' }}>
+            <p style={{ padding: '20px', margin: 0, fontSize: '13px', color: '#655F7D' }}>
               Henüz hesap yok. <Link href="/mail-servisi/ayarlar" style={{ color: '#17122B', fontWeight: 600 }}>Ayarlar</Link> sayfasından SMTP hesabı ekleyin.
             </p>
           ) : (
@@ -91,7 +91,7 @@ export default async function MailServisiPage() {
           action={<Link href="/mail-servisi/kampanyalar" style={{ fontSize: '12px', color: '#17122B', fontWeight: 600, textDecoration: 'none' }}>Tümü →</Link>}
         >
           {recent.length === 0 ? (
-            <p style={{ padding: '20px', margin: 0, fontSize: '12.5px', color: '#655F7D' }}>Henüz kampanya yok.</p>
+            <p style={{ padding: '20px', margin: 0, fontSize: '13px', color: '#655F7D' }}>Henüz kampanya yok.</p>
           ) : (
             <div style={{ overflowX: 'auto' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse' }}>

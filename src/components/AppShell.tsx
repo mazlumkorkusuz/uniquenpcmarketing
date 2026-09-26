@@ -90,8 +90,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             >
               <Menu size={22} />
             </button>
-            <Image src="/uniqlogo.png" alt="" width={28} height={28} style={{ borderRadius: '8px' }} />
-            <span style={{ fontFamily: 'var(--font-display)', fontSize: '14px', fontWeight: 600, color: 'var(--ink)', letterSpacing: '-0.01em' }}>Unique NPC Marketing</span>
+            <Image src="/uniqlogo.png" alt="" width={28} height={28} style={{ borderRadius: 6 }} />
+            <span style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: 'var(--ink)', letterSpacing: '-0.01em' }}>Unique NPC Marketing</span>
           </div>
           {/* Route change = view transition: the outgoing page fades out (globals.css → .page-exit)
               while the sidebar stays put; PageMotion then staggers the new page's blocks in. */}

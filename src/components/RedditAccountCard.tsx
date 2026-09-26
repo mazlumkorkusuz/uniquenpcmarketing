@@ -33,7 +33,7 @@ export function RedditAccountCard({ account }: { account: Account }) {
     <div style={{
       backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)',
       border: '1px solid #E8E4F1',
-      borderRadius: '12px',
+      borderRadius: '14px',
       padding: '20px',
       position: 'relative',
       display: 'flex',
@@ -51,13 +51,13 @@ export function RedditAccountCard({ account }: { account: Account }) {
         <div style={{
           width: '44px', height: '44px', borderRadius: '50%',
           backgroundColor: '#ff4500', display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontFamily: 'var(--font-display)', fontSize: '18px', fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.01em', fontWeight: 600, color: '#17122B', flexShrink: 0,
-          boxShadow: 'none',
+          fontSize: '18px', fontWeight: 800, color: '#17122B', flexShrink: 0,
+          boxShadow: '0 0 12px rgba(255,69,0,0.35)',
         }}>
           {initial}
         </div>
         <div style={{ minWidth: 0 }}>
-          <div style={{ fontWeight: 600, color: '#C2410C', fontFamily: 'var(--font-display)', fontSize: '15px', letterSpacing: '-0.01em' }}>u/{username}</div>
+          <div style={{ fontWeight: 700, color: '#BA3200', fontSize: '15px' }}>u/{username}</div>
           {createdDate && (
             <div style={{ fontSize: '12px', color: '#655F7D', marginTop: '2px' }}>Katılım: {createdDate}</div>
           )}
@@ -65,12 +65,12 @@ export function RedditAccountCard({ account }: { account: Account }) {
             <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', marginTop: '6px' }}>
               {subreddits.slice(0, 4).map((s, i) => (
                 <span key={i} style={{
-                  fontSize: '12px', backgroundColor: 'rgba(255,69,0,0.1)', color: '#C2410C',
-                  border: '1px solid rgba(255,69,0,0.22)', borderRadius: '8px', padding: '1px 6px',
+                  fontSize: '11px', backgroundColor: 'rgba(255,69,0,0.1)', color: '#A74322',
+                  border: '1px solid rgba(255,69,0,0.22)', borderRadius: '4px', padding: '1px 6px',
                 }}>r/{s}</span>
               ))}
               {subreddits.length > 4 && (
-                <span style={{ fontSize: '12px', color: '#655F7D', alignSelf: 'center' }}>+{subreddits.length - 4}</span>
+                <span style={{ fontSize: '11px', color: '#655F7D', alignSelf: 'center' }}>+{subreddits.length - 4}</span>
               )}
             </div>
           )}
@@ -80,16 +80,16 @@ export function RedditAccountCard({ account }: { account: Account }) {
       {/* Stat boxes */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
         <div style={{ backgroundColor: '#FFFFFF', borderRadius: '8px', padding: '10px', textAlign: 'center' }}>
-          <div style={{ fontFamily: 'var(--font-display)', fontSize: '15px', letterSpacing: '-0.01em', fontWeight: 600, color: '#C2410C' }}>{fmt(karma)}</div>
-          <div style={{ fontSize: '12px', color: '#655F7D', marginTop: '3px', }}>Karma</div>
+          <div style={{ fontSize: '15px', fontWeight: 700, color: '#A24B08' }}>{fmt(karma)}</div>
+          <div style={{ fontSize: '10px', color: '#655F7D', marginTop: '3px', }}>Karma</div>
         </div>
         <div style={{ backgroundColor: '#FFFFFF', borderRadius: '8px', padding: '10px', textAlign: 'center' }}>
-          <div style={{ fontFamily: 'var(--font-display)', fontSize: '15px', letterSpacing: '-0.01em', fontWeight: 600, color: '#047857' }}>{fmt(commentKarma)}</div>
-          <div style={{ fontSize: '12px', color: '#655F7D', marginTop: '3px', }}>Yorum K.</div>
+          <div style={{ fontSize: '15px', fontWeight: 700, color: '#046C4E' }}>{fmt(commentKarma)}</div>
+          <div style={{ fontSize: '10px', color: '#655F7D', marginTop: '3px', }}>Yorum K.</div>
         </div>
         <div style={{ backgroundColor: '#FFFFFF', borderRadius: '8px', padding: '10px', textAlign: 'center' }}>
-          <div style={{ fontFamily: 'var(--font-display)', fontSize: '15px', letterSpacing: '-0.01em', fontWeight: 600, color: '#1D4ED8' }}>{fmt(postCount)}</div>
-          <div style={{ fontSize: '12px', color: '#655F7D', marginTop: '3px', }}>Post</div>
+          <div style={{ fontSize: '15px', fontWeight: 700, color: '#1D4ED8' }}>{fmt(postCount)}</div>
+          <div style={{ fontSize: '10px', color: '#655F7D', marginTop: '3px', }}>Post</div>
         </div>
       </div>
 
@@ -100,9 +100,9 @@ export function RedditAccountCard({ account }: { account: Account }) {
           backgroundColor: '#FFFFFF', borderRadius: '8px', padding: '8px 12px',
           border: '1px solid #E8E4F1',
         }}>
-          <span style={{ fontSize: '12px', color: '#655F7D', flexShrink: 0, }}>Şifre</span>
+          <span style={{ fontSize: '11px', color: '#655F7D', flexShrink: 0, }}>Şifre</span>
           <span style={{
-            fontSize: '14px', color: '#17122B', fontFamily: 'monospace', flex: 1,
+            fontSize: '13px', color: '#17122B', fontFamily: 'monospace', flex: 1,
             letterSpacing: showPassword ? 'normal' : '3px',
           }}>
             {showPassword ? password : '••••••••'}
@@ -117,7 +117,7 @@ export function RedditAccountCard({ account }: { account: Account }) {
       )}
 
       {/* Footer */}
-      <div style={{ fontSize: '12px', color: '#655F7D', borderTop: '1px solid #E8E4F1', paddingTop: '10px' }}>
+      <div style={{ fontSize: '11px', color: '#655F7D', borderTop: '1px solid #E8E4F1', paddingTop: '10px' }}>
         Son aktif: {createdDate ?? '—'}
       </div>
     </div>

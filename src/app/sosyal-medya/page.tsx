@@ -12,7 +12,7 @@ const PLATFORMS = [
   { key: 'twitter',   label: 'Twitter',   color: '#1d9bf0', href: '/sosyal-medya/twitter',   followersLabel: 'Takipçi' },
   { key: 'instagram', label: 'Instagram', color: '#e1306c', href: '/sosyal-medya/instagram', followersLabel: 'Takipçi' },
   { key: 'tiktok',    label: 'TikTok',    color: '#fe2c55', href: '/sosyal-medya/tiktok',    followersLabel: 'Takipçi' },
-  { key: 'youtube',   label: 'YouTube',   color: '#FF0000', href: '/sosyal-medya/youtube',   followersLabel: 'Abone' },
+  { key: 'youtube',   label: 'YouTube',   color: '#ff4444', href: '/sosyal-medya/youtube',   followersLabel: 'Abone' },
 ]
 
 async function getData() {
@@ -61,7 +61,7 @@ export default async function SosyalMedyaPage() {
         title="Sosyal Medya"
         subtitle={`${totalPosts} gönderi · 4 platform`}
         icon={Share2}
-        gradient="linear-gradient(135deg, #7C3AED, #6D28D9)"
+        gradient="linear-gradient(135deg, #f59e0b, #ec4899)"
       />
       <div style={{ padding: '24px 32px' }}>
 
@@ -69,7 +69,7 @@ export default async function SosyalMedyaPage() {
         <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', padding: '20px', marginBottom: '28px' }}>
           <div style={{ fontSize: '14px', fontWeight: 600, color: '#17122B', marginBottom: '4px' }}>Platform Karşılaştırması</div>
           <div style={{ fontSize: '12px', color: '#655F7D', marginBottom: '16px' }}>Platforma göre toplam gönderi sayısı</div>
-          <BarChart data={platformBar} color="#BE123C" height={100} />
+          <BarChart data={platformBar} color="#ec4899" height={100} />
         </div>
 
         {/* Platform cards */}
@@ -84,24 +84,24 @@ export default async function SosyalMedyaPage() {
               >
                 <div style={{ padding: '20px', flex: 1 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '18px' }}>
-                    <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: platform.color, boxShadow: 'none' }} />
-                    <span style={{ fontFamily: 'var(--font-display)', fontSize: '15px', letterSpacing: '-0.01em', fontWeight: 600, color: '#17122B' }}>{platform.label}</span>
+                    <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: platform.color, boxShadow: `0 0 8px ${platform.color}60` }} />
+                    <span style={{ fontSize: '16px', fontWeight: 700, color: '#17122B' }}>{platform.label}</span>
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                     <div style={{ backgroundColor: '#FFFFFF', borderRadius: '8px', padding: '12px' }}>
-                      <div style={{ fontSize: '12px', color: '#655F7D', marginBottom: '6px' }}>Gönderi</div>
-                      <div style={{ fontFamily: 'var(--font-display)', fontSize: '24px', fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.03em', fontWeight: 600, color: pCount > 0 ? inkOf(platform.color) : '#655F7D' }}>{pCount}</div>
+                      <div style={{ fontSize: '11px', color: '#655F7D', marginBottom: '6px' }}>Gönderi</div>
+                      <div style={{ fontSize: '24px', fontWeight: 800, color: pCount > 0 ? inkOf(platform.color) : '#655F7D' }}>{pCount}</div>
                     </div>
                     <div style={{ backgroundColor: '#FFFFFF', borderRadius: '8px', padding: '12px' }}>
-                      <div style={{ fontSize: '12px', color: '#655F7D', marginBottom: '6px' }}>{platform.followersLabel}</div>
-                      <div style={{ fontFamily: 'var(--font-display)', fontSize: '24px', fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.03em', fontWeight: 600, color: fCount > 0 ? '#047857' : '#655F7D' }}>{fmtNum(fCount)}</div>
+                      <div style={{ fontSize: '11px', color: '#655F7D', marginBottom: '6px' }}>{platform.followersLabel}</div>
+                      <div style={{ fontSize: '24px', fontWeight: 800, color: fCount > 0 ? '#046C4E' : '#655F7D' }}>{fmtNum(fCount)}</div>
                     </div>
                   </div>
                 </div>
                 <div style={{ padding: '12px 20px', borderTop: '1px solid #E8E4F1' }}>
                   <Link
                     href={platform.href}
-                    style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '14px', fontWeight: 500, color: inkOf(platform.color), textDecoration: 'none' }}
+                    style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: 500, color: inkOf(platform.color), textDecoration: 'none' }}
                   >
                     Detayları Görüntüle
                     <ArrowRight size={14} />

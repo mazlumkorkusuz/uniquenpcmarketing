@@ -3,7 +3,7 @@ import { CAMPAIGN_STATUS_LABELS, RECIPIENT_STATUS_LABELS } from '@/lib/mail'
 
 // Small shared UI bits for the Mail Servisi pages
 
-export const MAIL_GRADIENT = 'linear-gradient(135deg, #7C3AED, #6D28D9)'
+export const MAIL_GRADIENT = 'linear-gradient(135deg, #f59e0b, #ef4444)'
 
 export const inputStyle: React.CSSProperties = {
   width: '100%',
@@ -12,7 +12,7 @@ export const inputStyle: React.CSSProperties = {
   border: '1px solid #E8E4F1',
   backgroundColor: '#FFFFFF',
   color: '#17122B',
-  fontSize: '14px',
+  fontSize: '13px',
   outline: 'none',
   boxSizing: 'border-box',
 }
@@ -37,7 +37,7 @@ export function buttonStyle(variant: 'primary' | 'secondary' | 'danger' = 'prima
     border: `1px solid ${colors.border}`,
     background: colors.bg,
     color: colors.color,
-    fontSize: '14px',
+    fontSize: '13px',
     fontWeight: 600,
     cursor: disabled ? 'not-allowed' : 'pointer',
     opacity: disabled ? 0.5 : 1,
@@ -96,8 +96,8 @@ export function ProgressBar({ value, total }: { value: number; total: number }) 
   const pct = total ? Math.min(100, (value / total) * 100) : 0
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: '120px' }}>
-      <div style={{ flex: 1, height: '6px', borderRadius: '8px', backgroundColor: '#E8E4F1', overflow: 'hidden' }}>
-        <div style={{ width: '100%', height: '100%', background: 'var(--gradient)', transform: `scaleX(${pct / 100})`, transformOrigin: 'left', transition: 'transform 300ms var(--ease-out)' }} />
+      <div style={{ flex: 1, height: '6px', borderRadius: '3px', backgroundColor: '#ECE9F3', overflow: 'hidden' }}>
+        <div style={{ width: `${pct}%`, height: '100%', background: 'var(--gradient)', transition: 'width 0.3s' }} />
       </div>
       <span style={{ fontSize: '12px', color: '#4A4462', whiteSpace: 'nowrap' }}>{value}/{total}</span>
     </div>
@@ -112,7 +112,7 @@ export function formatDateTime(v: string | null | undefined): string {
 export const thStyle: React.CSSProperties = {
   backgroundColor: 'var(--color-bg-section)',
   color: '#655F7D',
-  fontSize: '12px',
+  fontSize: '11px',
   fontWeight: 600,
   letterSpacing: '0.06em',
   padding: '11px 16px',
@@ -124,7 +124,7 @@ export const thStyle: React.CSSProperties = {
 export const tdStyle: React.CSSProperties = {
   padding: '11px 16px',
   borderBottom: '1px solid #E8E4F1',
-  fontSize: '14px',
+  fontSize: '13px',
   color: '#4A4462',
   verticalAlign: 'middle',
 }

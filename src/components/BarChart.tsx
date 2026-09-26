@@ -44,18 +44,18 @@ export default function BarChart({
             justifyContent: 'flex-end',
           }}
         >
-          <span style={{ fontSize: '12px', color: '#4A4462', fontWeight: 600, lineHeight: 1 }}>{fmt(d.value)}</span>
+          <span style={{ fontSize: '9px', color: '#4A4462', fontWeight: 600, lineHeight: 1 }}>{fmt(d.value)}</span>
           <div
             style={{
               width: '100%',
               background: `linear-gradient(180deg, ${color} 0%, ${color}88 100%)`,
-              borderRadius: '8px 8px 0 0',
+              borderRadius: '3px 3px 0 0',
               height: `${Math.max((d.value / max) * 100, 2)}%`,
             }}
           />
           <span
             style={{
-              fontSize: '12px',
+              fontSize: '9px',
               color: '#655F7D',
               textAlign: 'center',
               overflow: 'hidden',

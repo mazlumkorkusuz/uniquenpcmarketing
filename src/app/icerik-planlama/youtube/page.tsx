@@ -6,8 +6,8 @@ export default function YouTubeIcerikPage() {
     <PlatformPage
       platform="youtube"
       label="YouTube"
-      color="#FF0000"
-      gradient="linear-gradient(135deg, #FF0000, #cc0000)"
+      color="#ff4444"
+      gradient="linear-gradient(135deg, #ff4444, #cc0000)"
       imageSrc="/icons/youtube.png"
     />
   )

@@ -48,7 +48,7 @@ export function ContentCalendar({ posts, platformColors = {}, singleColor, compa
   const navBtn: React.CSSProperties = {
     background: 'none',
     border: '1px solid #E8E4F1',
-    borderRadius: '8px',
+    borderRadius: '6px',
     cursor: 'pointer',
     padding: '4px 6px',
     color: '#655F7D',
@@ -73,7 +73,7 @@ export function ContentCalendar({ posts, platformColors = {}, singleColor, compa
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '2px', marginBottom: '4px' }}>
         {DAYS.map(d => (
-          <div key={d} style={{ textAlign: 'center', fontSize: '12px', fontWeight: 600, color: '#655F7D', padding: compact ? '3px 0' : '5px 0', }}>
+          <div key={d} style={{ textAlign: 'center', fontSize: '10px', fontWeight: 600, color: '#655F7D', padding: compact ? '3px 0' : '5px 0', }}>
             {d}
           </div>
         ))}
@@ -90,10 +90,10 @@ export function ContentCalendar({ posts, platformColors = {}, singleColor, compa
               key={i}
               style={{
                 minHeight: `${cellH}px`,
-                borderRadius: '8px',
+                borderRadius: '6px',
                 padding: compact ? '4px' : '5px 6px',
-                backgroundColor: today ? '#F3EEFF' : ps.length > 0 ? '#FAF9FD' : 'transparent',
-                border: today ? '1px solid #D8D2E6' : ps.length > 0 ? '1px solid #E8E4F1' : '1px solid transparent',
+                backgroundColor: today ? 'rgba(124,58,237,0.15)' : ps.length > 0 ? '#FAF9FD' : 'transparent',
+                border: today ? '1px solid rgba(124,58,237,0.4)' : ps.length > 0 ? '1px solid #E8E4F1' : '1px solid transparent',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '2px',
@@ -134,12 +134,12 @@ export function ContentCalendar({ posts, platformColors = {}, singleColor, compa
                             key={pi}
                             title={`${p.platform}: ${p.title ?? ''}`}
                             style={{
-                              fontSize: '12px',
+                              fontSize: '8px',
                               fontWeight: 700,
                               color: inkOf(c),
                               backgroundColor: c + '28',
                               border: `1px solid ${c}44`,
-                              borderRadius: '8px',
+                              borderRadius: '3px',
                               padding: '0 3px',
                               lineHeight: '13px',
                               whiteSpace: 'nowrap',
@@ -153,7 +153,7 @@ export function ContentCalendar({ posts, platformColors = {}, singleColor, compa
                         )
                       })}
                       {ps.length > 3 && (
-                        <span style={{ fontSize: '12px', color: '#655F7D', lineHeight: '13px' }}>+{ps.length - 3}</span>
+                        <span style={{ fontSize: '8px', color: '#655F7D', lineHeight: '13px' }}>+{ps.length - 3}</span>
                       )}
                     </>
                   )}

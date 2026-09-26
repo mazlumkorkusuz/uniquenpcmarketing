@@ -11,7 +11,7 @@ type SortDir = 'asc' | 'desc'
 type AuxRow = { followers: number | null; country: string | null }
 
 const PAGE_SIZE = 350
-const YT_COLOR = '#FF0000'
+const YT_COLOR = '#ff4444'
 const TABLE = 'youtube_streamers'
 // fields that count toward "En Az 1 Sosyal Medya Olan" / "Sosyal Medya Var"
 const SOCIAL_STAT_FIELDS = ['instagram', 'tiktok', 'twitter', 'discord', 'facebook', 'telegram', 'website'] as const
@@ -66,7 +66,7 @@ function countryName(code: string): string {
   try { return regionNames?.of(code.toUpperCase()) ?? code } catch { return code }
 }
 
-const AVATAR_PALETTE = [YT_COLOR, '#1D4ED8', '#047857', '#B45309', '#BE123C', '#6D28D9', '#0F766E', '#C2410C']
+const AVATAR_PALETTE = [YT_COLOR, '#1D4ED8', '#047857', '#B45309', '#BE185D', '#6D28D9', '#4CCCE6', '#C2410C']
 function colorForName(name: unknown): string {
   const s = String(name ?? '')
   let hash = 0
@@ -85,7 +85,7 @@ function Avatar({ channelName, src, size }: { channelName: unknown; src?: string
   const color = colorForName(channelName)
   if (!src || broken) {
     return (
-      <div style={{ width: size, height: size, borderRadius: '50%', backgroundColor: color + '22', border: `1px solid ${color}66`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: size * 0.32, color: inkOf(color), flexShrink: 0 }}>
+      <div style={{ width: size, height: size, borderRadius: '50%', backgroundColor: color + '22', border: `1px solid ${color}66`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: size * 0.32, color: inkOf(color), flexShrink: 0 }}>
         {initials(channelName)}
       </div>
     )
@@ -111,9 +111,9 @@ function SortableTH({ label, sk, active, dir, onSort }: { label: string; sk: Sor
   )
 }
 
-const STH: React.CSSProperties = { backgroundColor: '#F3EEFF', color: '#655F7D', fontSize: '12.5px', fontWeight: 500, padding: '11px 14px', textAlign: 'left', borderBottom: '1px solid #E8E4F1', whiteSpace: 'nowrap' }
+const STH: React.CSSProperties = { backgroundColor: 'rgba(23,18,43,0.02)', color: '#655F7D', fontSize: '12.5px', fontWeight: 500, padding: '11px 14px', textAlign: 'left', borderBottom: '1px solid #E8E4F1', whiteSpace: 'nowrap' }
 const TD: React.CSSProperties = { padding: '12px 14px', verticalAlign: 'middle' }
-const SEL: React.CSSProperties = { backgroundColor: '#FFFFFF', border: '1px solid #E8E4F1', borderRadius: '8px', padding: '7px 11px', fontSize: '14px', color: '#17122B', cursor: 'pointer', outline: 'none' }
+const SEL: React.CSSProperties = { backgroundColor: '#FFFFFF', border: '1px solid #E8E4F1', borderRadius: '7px', padding: '7px 11px', fontSize: '13px', color: '#17122B', cursor: 'pointer', outline: 'none' }
 
 // ── stats bar card styling ───────────────────────────────────────────────
 function statCardStyle(color: string): React.CSSProperties {
@@ -121,7 +121,7 @@ function statCardStyle(color: string): React.CSSProperties {
     backgroundColor: 'var(--color-bg-card)',
     boxShadow: 'var(--shadow-card)',
     border: '1px solid var(--color-border-card)',
-    borderRadius: '12px',
+    borderRadius: '14px',
     padding: '22px 24px',
     display: 'flex',
     flexDirection: 'column',
@@ -129,13 +129,13 @@ function statCardStyle(color: string): React.CSSProperties {
     minHeight: '132px',
   }
 }
-const statValueStyle: React.CSSProperties = { fontFamily: 'var(--font-display)', fontSize: '24px', fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.03em', fontWeight: 600, color: '#17122B', lineHeight: 1.15 }
+const statValueStyle: React.CSSProperties = { fontSize: '26px', fontWeight: 800, color: '#17122B', lineHeight: 1.15 }
 const statSubStyle: React.CSSProperties = { fontSize: '12px', color: '#655F7D' }
 
 function StatCardHeader({ icon, color, label }: { icon: React.ReactNode; color: string; label: string }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-      <div style={{ width: '36px', height: '36px', borderRadius: '12px', backgroundColor: color + '22', border: `1px solid ${color}55`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: inkOf(color), flexShrink: 0 }}>
+      <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: color + '22', border: `1px solid ${color}55`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: inkOf(color), flexShrink: 0 }}>
         {icon}
       </div>
       <span style={{ fontSize: '12px', fontWeight: 600, color: '#4A4462', }}>{label}</span>
@@ -144,7 +144,7 @@ function StatCardHeader({ icon, color, label }: { icon: React.ReactNode; color: 
 }
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
-  return <div style={{ fontSize: '12px', fontWeight: 600, color: '#655F7D', marginBottom: '8px' }}>{children}</div>
+  return <div style={{ fontSize: '11px', fontWeight: 600, color: '#655F7D', marginBottom: '8px' }}>{children}</div>
 }
 
 // ── detail drawer ────────────────────────────────────────────────────────
@@ -158,7 +158,7 @@ function DetailPanel({ row, onClose }: { row: Row; onClose: () => void }) {
     { label: 'Uzun Video', value: row.long_video_count != null ? Number(row.long_video_count).toLocaleString('tr-TR') : '—', color: '#17122B' },
     { label: 'Uzun Video Ort.', value: fmt(row.long_video_avg_views), color: YT_COLOR },
     { label: 'Shorts', value: row.shorts_count != null ? Number(row.shorts_count).toLocaleString('tr-TR') : '—', color: '#17122B' },
-    { label: 'Shorts Ort.', value: fmt(row.shorts_avg_views), color: '#BE123C' },
+    { label: 'Shorts Ort.', value: fmt(row.shorts_avg_views), color: '#BE185D' },
     { label: 'Canlı Yayın', value: row.live_count != null ? Number(row.live_count).toLocaleString('tr-TR') : '—', color: '#17122B' },
     { label: 'Canlı Ort.', value: fmt(row.live_avg_views), color: '#6D28D9' },
   ]
@@ -169,10 +169,10 @@ function DetailPanel({ row, onClose }: { row: Row; onClose: () => void }) {
       <div style={{ padding: '18px', borderBottom: '1px solid #E8E4F1', display: 'flex', alignItems: 'center', gap: '14px' }}>
         <Avatar key={String(row.id)} channelName={row.channel_name} src={avatarSrc} size={72} />
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontWeight: 600, fontFamily: 'var(--font-display)', fontSize: '15px', letterSpacing: '-0.01em', color: '#17122B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name}</div>
-          {country && <div style={{ fontSize: '12.5px', color: '#4A4462', marginTop: '4px' }}>{flag(country)} {countryName(country)}</div>}
+          <div style={{ fontWeight: 700, fontSize: '16px', color: '#17122B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name}</div>
+          {country && <div style={{ fontSize: '13px', color: '#4A4462', marginTop: '4px' }}>{flag(country)} {countryName(country)}</div>}
         </div>
-        <button onClick={onClose} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '30px', borderRadius: '8px', backgroundColor: 'transparent', border: '1px solid #E8E4F1', color: '#655F7D', cursor: 'pointer', flexShrink: 0 }}>
+        <button onClick={onClose} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '30px', borderRadius: '7px', backgroundColor: 'transparent', border: '1px solid #E8E4F1', color: '#655F7D', cursor: 'pointer', flexShrink: 0 }}>
           <X size={14} />
         </button>
       </div>
@@ -181,20 +181,20 @@ function DetailPanel({ row, onClose }: { row: Row; onClose: () => void }) {
         {/* Top stats */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
           {[
-            { label: 'Abone', value: fmt(row.followers), color: '#047857' },
+            { label: 'Abone', value: fmt(row.followers), color: '#046C4E' },
             { label: 'Toplam İzlenme', value: fmt(row.total_views), color: '#1D4ED8' },
-            { label: 'Toplam Video', value: row.total_videos != null ? Number(row.total_videos).toLocaleString('tr-TR') : '—', color: '#C2410C' },
+            { label: 'Toplam Video', value: row.total_videos != null ? Number(row.total_videos).toLocaleString('tr-TR') : '—', color: '#A24B08' },
           ].map(s => (
             <div key={s.label} style={{ backgroundColor: '#FFFFFF', border: '1px solid #E8E4F1', borderRadius: '8px', padding: '12px' }}>
-              <div style={{ fontSize: '12px', color: '#655F7D', fontWeight: 600, marginBottom: '5px' }}>{s.label}</div>
-              <div style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.01em', fontWeight: 600, color: inkOf(s.color) }}>{s.value}</div>
+              <div style={{ fontSize: '10px', color: '#655F7D', fontWeight: 600, marginBottom: '5px' }}>{s.label}</div>
+              <div style={{ fontSize: '17px', fontWeight: 800, color: inkOf(s.color) }}>{s.value}</div>
             </div>
           ))}
         </div>
 
         {/* Channel link */}
         {!!row.channel_url && (
-          <a href={String(row.channel_url)} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '10px', borderRadius: '8px', backgroundColor: 'rgba(255,0,0,0.08)', border: '1px solid rgba(255,0,0,0.3)', color: inkOf(YT_COLOR), fontWeight: 600, fontSize: '14px', textDecoration: 'none' }}>
+          <a href={String(row.channel_url)} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '10px', borderRadius: '8px', backgroundColor: 'rgba(255,68,68,0.08)', border: '1px solid rgba(255,68,68,0.3)', color: inkOf(YT_COLOR), fontWeight: 600, fontSize: '13px', textDecoration: 'none' }}>
             <ExternalLink size={14} /> Kanala Git
           </a>
         )}
@@ -205,8 +205,8 @@ function DetailPanel({ row, onClose }: { row: Row; onClose: () => void }) {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
             {videoStats.map(s => (
               <div key={s.label} style={{ backgroundColor: '#FFFFFF', border: '1px solid #E8E4F1', borderRadius: '8px', padding: '10px 12px' }}>
-                <div style={{ fontSize: '12px', color: '#655F7D', fontWeight: 600, marginBottom: '4px' }}>{s.label}</div>
-                <div style={{ fontFamily: 'var(--font-display)', fontSize: '15px', letterSpacing: '-0.01em', fontWeight: 600, color: inkOf(s.color) }}>{s.value}</div>
+                <div style={{ fontSize: '10px', color: '#655F7D', fontWeight: 600, marginBottom: '4px' }}>{s.label}</div>
+                <div style={{ fontSize: '15px', fontWeight: 700, color: inkOf(s.color) }}>{s.value}</div>
               </div>
             ))}
           </div>
@@ -216,7 +216,7 @@ function DetailPanel({ row, onClose }: { row: Row; onClose: () => void }) {
         {hasValue(row.bio) && (
           <div>
             <SectionLabel>Bio</SectionLabel>
-            <div style={{ fontSize: '12.5px', color: '#4A4462', lineHeight: 1.6, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{String(row.bio)}</div>
+            <div style={{ fontSize: '13px', color: '#4A4462', lineHeight: 1.6, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{String(row.bio)}</div>
           </div>
         )}
 
@@ -224,11 +224,11 @@ function DetailPanel({ row, onClose }: { row: Row; onClose: () => void }) {
         <div>
           <SectionLabel>Email</SectionLabel>
           {hasValue(row.email) ? (
-            <a href={`mailto:${row.email}`} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', color: '#1D4ED8', textDecoration: 'none', wordBreak: 'break-all' }}>
+            <a href={`mailto:${row.email}`} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#1D4ED8', textDecoration: 'none', wordBreak: 'break-all' }}>
               <Mail size={13} style={{ flexShrink: 0 }} /> {String(row.email)}
             </a>
           ) : (
-            <div style={{ fontSize: '12.5px', color: '#655F7D' }}>Email yok</div>
+            <div style={{ fontSize: '13px', color: '#655F7D' }}>Email yok</div>
           )}
         </div>
 
@@ -238,7 +238,7 @@ function DetailPanel({ row, onClose }: { row: Row; onClose: () => void }) {
           {links.length > 0 ? (
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               {links.map(l => (
-                <a key={l.field} href={toHref(l.value)} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', color: '#1D4ED8', textDecoration: 'none', padding: '5px 0', overflow: 'hidden' }}>
+                <a key={l.field} href={toHref(l.value)} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#1D4ED8', textDecoration: 'none', padding: '5px 0', overflow: 'hidden' }}>
                   <Globe size={13} style={{ flexShrink: 0 }} />
                   <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     <span style={{ color: '#655F7D' }}>{l.label}: </span>{l.value}
@@ -247,7 +247,7 @@ function DetailPanel({ row, onClose }: { row: Row; onClose: () => void }) {
               ))}
             </div>
           ) : (
-            <div style={{ fontSize: '12.5px', color: '#655F7D' }}>Sosyal medya bilgisi yok</div>
+            <div style={{ fontSize: '13px', color: '#655F7D' }}>Sosyal medya bilgisi yok</div>
           )}
         </div>
       </div>
@@ -388,11 +388,11 @@ export default function YouTubePage() {
 
   return (
     <div>
-      <PageHeader title="YouTube Kanalları" subtitle={auxLoading ? '…' : `${stats.totalChannels.toLocaleString('tr-TR')} kanal takip ediliyor`} imageSrc="/icons/youtube.png" gradient="linear-gradient(135deg, #FF0000, #cc0000)" />
+      <PageHeader title="YouTube Kanalları" subtitle={auxLoading ? '…' : `${stats.totalChannels.toLocaleString('tr-TR')} kanal takip ediliyor`} imageSrc="/icons/youtube.png" gradient="linear-gradient(135deg, #ff4444, #cc0000)" />
 
       <div style={{ padding: '24px 32px' }}>
         {auxError && (
-          <div style={{ marginBottom: '16px', padding: '10px 14px', borderRadius: '8px', border: '1px solid #D8D2E6', backgroundColor: '#FEF2F2', color: '#B91C1C', fontSize: '14px' }}>
+          <div style={{ marginBottom: '16px', padding: '10px 14px', borderRadius: '8px', border: '1px solid rgba(248,113,113,0.4)', backgroundColor: 'rgba(248,113,113,0.08)', color: '#B91C1C', fontSize: '13px' }}>
             İstatistikler yüklenemedi: {auxError}
           </div>
         )}
@@ -410,8 +410,8 @@ export default function YouTubePage() {
             <div style={statSubStyle}>{pct(emailCount)}</div>
           </div>
 
-          <div style={statCardStyle('#BE123C')}>
-            <StatCardHeader icon={<Contact size={17} />} color="#BE123C" label="En Az 1 İletişim Olan" />
+          <div style={statCardStyle('#BE185D')}>
+            <StatCardHeader icon={<Contact size={17} />} color="#BE185D" label="En Az 1 İletişim Olan" />
             <div style={statValueStyle}>{auxLoading ? '…' : contactCount.toLocaleString('tr-TR')}</div>
             <div style={statSubStyle}>{pct(contactCount)}</div>
           </div>
@@ -445,18 +445,18 @@ export default function YouTubePage() {
             </select>
             <button
               onClick={() => setSocialOnly(v => !v)}
-              style={{ padding: '7px 14px', borderRadius: '8px', border: `1px solid ${socialOnly ? '#D8D2E6' : '#E8E4F1'}`, backgroundColor: socialOnly ? '#F3EEFF' : 'transparent', color: socialOnly ? '#6D28D9' : '#655F7D', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}
+              style={{ padding: '7px 14px', borderRadius: '7px', border: `1px solid ${socialOnly ? 'rgba(244,114,182,0.5)' : '#E8E4F1'}`, backgroundColor: socialOnly ? 'rgba(244,114,182,0.1)' : 'transparent', color: socialOnly ? '#BE185D' : '#655F7D', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}
             >
               <Link2 size={14} aria-hidden /> Sosyal Medya Var
             </button>
             <button
               onClick={() => setEmailOnly(v => !v)}
-              style={{ padding: '7px 14px', borderRadius: '8px', border: `1px solid ${emailOnly ? '#D8D2E6' : '#E8E4F1'}`, backgroundColor: emailOnly ? '#F3EEFF' : 'transparent', color: emailOnly ? '#6D28D9' : '#655F7D', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}
+              style={{ padding: '7px 14px', borderRadius: '7px', border: `1px solid ${emailOnly ? 'rgba(251,191,36,0.5)' : '#E8E4F1'}`, backgroundColor: emailOnly ? 'rgba(251,191,36,0.1)' : 'transparent', color: emailOnly ? '#A24B08' : '#655F7D', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}
             >
               <Mail size={14} aria-hidden /> Email Var
             </button>
             {hasFilters && (
-              <button onClick={() => { setSearchInput(''); setSearch(''); setCountry(''); setSocialOnly(false); setEmailOnly(false) }} style={{ fontSize: '12px', color: '#655F7D', background: 'none', border: '1px solid #E8E4F1', borderRadius: '8px', padding: '7px 12px', cursor: 'pointer' }}>
+              <button onClick={() => { setSearchInput(''); setSearch(''); setCountry(''); setSocialOnly(false); setEmailOnly(false) }} style={{ fontSize: '12px', color: '#655F7D', background: 'none', border: '1px solid #E8E4F1', borderRadius: '7px', padding: '7px 12px', cursor: 'pointer' }}>
                 Temizle
               </button>
             )}
@@ -493,7 +493,7 @@ export default function YouTubePage() {
                     <tr
                       key={String(row.id ?? i)}
                       onClick={() => setSelected(isActive ? null : row)}
-                      style={{ borderBottom: i < rows.length - 1 ? '1px solid #E8E4F1' : 'none', backgroundColor: isActive ? 'rgba(255,0,0,0.06)' : i % 2 === 1 ? '#FAF9FD' : 'transparent', cursor: 'pointer' }}
+                      style={{ borderBottom: i < rows.length - 1 ? '1px solid #E8E4F1' : 'none', backgroundColor: isActive ? 'rgba(255,68,68,0.06)' : i % 2 === 1 ? '#FAF9FD' : 'transparent', cursor: 'pointer' }}
                     >
                       <td style={{ ...TD, paddingRight: '8px' }}>
                         <Avatar channelName={row.channel_name} src={row.profile_image_url ? String(row.profile_image_url) : undefined} size={32} />
@@ -504,21 +504,21 @@ export default function YouTubePage() {
                           target="_blank"
                           rel="noopener noreferrer"
                           onClick={e => e.stopPropagation()}
-                          style={{ fontWeight: 700, fontSize: '14px', color: inkOf(YT_COLOR), textDecoration: 'none', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+                          style={{ fontWeight: 700, fontSize: '13px', color: inkOf(YT_COLOR), textDecoration: 'none', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
                         >
                           {String(row.channel_name ?? '—')}
                         </a>
                       </td>
-                      <td style={TD}><span style={{ color: '#047857', fontWeight: 600, fontSize: '14px' }}>{fmt(row.followers)}</span></td>
+                      <td style={TD}><span style={{ color: '#046C4E', fontWeight: 600, fontSize: '13px' }}>{fmt(row.followers)}</span></td>
                       <td style={TD}>
                         {c
-                          ? <span style={{ fontSize: '12.5px', color: '#4A4462', whiteSpace: 'nowrap' }} title={countryName(c)}>{flag(c)} {c}</span>
+                          ? <span style={{ fontSize: '13px', color: '#4A4462', whiteSpace: 'nowrap' }} title={countryName(c)}>{flag(c)} {c}</span>
                           : <span style={{ color: '#655F7D' }}>—</span>}
                       </td>
-                      <td style={TD}><span style={{ color: '#1D4ED8', fontWeight: 600, fontSize: '14px' }}>{fmt(row.total_views)}</span></td>
-                      <td style={TD}><span style={{ color: inkOf(YT_COLOR), fontWeight: 600, fontSize: '14px' }}>{fmt(row.long_video_avg_views)}</span></td>
-                      <td style={TD}><span style={{ color: '#BE123C', fontWeight: 600, fontSize: '14px' }}>{fmt(row.shorts_avg_views)}</span></td>
-                      <td style={TD}><span style={{ color: '#6D28D9', fontWeight: 600, fontSize: '14px' }}>{fmt(row.live_avg_views)}</span></td>
+                      <td style={TD}><span style={{ color: '#1D4ED8', fontWeight: 600, fontSize: '13px' }}>{fmt(row.total_views)}</span></td>
+                      <td style={TD}><span style={{ color: inkOf(YT_COLOR), fontWeight: 600, fontSize: '13px' }}>{fmt(row.long_video_avg_views)}</span></td>
+                      <td style={TD}><span style={{ color: '#BE185D', fontWeight: 600, fontSize: '13px' }}>{fmt(row.shorts_avg_views)}</span></td>
+                      <td style={TD}><span style={{ color: '#6D28D9', fontWeight: 600, fontSize: '13px' }}>{fmt(row.live_avg_views)}</span></td>
                       <td style={{ ...TD, maxWidth: '200px' }} onClick={e => e.stopPropagation()}>
                         {hasValue(row.email)
                           ? <a href={`mailto:${row.email}`} style={{ color: '#1D4ED8', fontSize: '12px', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{String(row.email)}</a>
@@ -538,7 +538,7 @@ export default function YouTubePage() {
               <button
                 onClick={() => setPage(p => Math.max(1, p - 1))}
                 disabled={page <= 1}
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '30px', borderRadius: '8px', border: '1px solid #E8E4F1', backgroundColor: 'transparent', color: page <= 1 ? '#655F7D' : '#4A4462', cursor: page <= 1 ? 'not-allowed' : 'pointer' }}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '30px', borderRadius: '7px', border: '1px solid #E8E4F1', backgroundColor: 'transparent', color: page <= 1 ? '#655F7D' : '#4A4462', cursor: page <= 1 ? 'not-allowed' : 'pointer' }}
               >
                 <ChevronLeft size={14} />
               </button>
@@ -547,7 +547,7 @@ export default function YouTubePage() {
                 <button
                   key={n}
                   onClick={() => setPage(n)}
-                  style={{ minWidth: '30px', height: '30px', borderRadius: '8px', border: `1px solid ${n === page ? YT_COLOR : '#E8E4F1'}`, backgroundColor: n === page ? 'rgba(255,0,0,0.15)' : 'transparent', color: n === page ? inkOf(YT_COLOR) : '#4A4462', fontSize: '12px', fontWeight: 600, cursor: 'pointer', padding: '0 6px' }}
+                  style={{ minWidth: '30px', height: '30px', borderRadius: '7px', border: `1px solid ${n === page ? YT_COLOR : '#E8E4F1'}`, backgroundColor: n === page ? 'rgba(255,68,68,0.15)' : 'transparent', color: n === page ? inkOf(YT_COLOR) : '#4A4462', fontSize: '12px', fontWeight: 600, cursor: 'pointer', padding: '0 6px' }}
                 >
                   {n}
                 </button>
@@ -556,7 +556,7 @@ export default function YouTubePage() {
               <button
                 onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                 disabled={page >= totalPages}
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '30px', borderRadius: '8px', border: '1px solid #E8E4F1', backgroundColor: 'transparent', color: page >= totalPages ? '#655F7D' : '#4A4462', cursor: page >= totalPages ? 'not-allowed' : 'pointer' }}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '30px', borderRadius: '7px', border: '1px solid #E8E4F1', backgroundColor: 'transparent', color: page >= totalPages ? '#655F7D' : '#4A4462', cursor: page >= totalPages ? 'not-allowed' : 'pointer' }}
               >
                 <ChevronRight size={14} />
               </button>
@@ -567,7 +567,7 @@ export default function YouTubePage() {
         {/* Overlay + drawer */}
         {selected && (
           <>
-            <div onClick={() => setSelected(null)} style={{ position: 'fixed', inset: 0, backgroundColor: '#6D28D9', zIndex: 999 }} />
+            <div onClick={() => setSelected(null)} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(23,18,43,0.35)', zIndex: 999 }} />
             <DetailPanel row={selected} onClose={() => setSelected(null)} />
           </>
         )}

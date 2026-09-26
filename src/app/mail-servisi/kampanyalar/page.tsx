@@ -29,7 +29,7 @@ export default async function KampanyalarPage() {
       <div style={{ padding: '24px 32px' }}>
         <Card padded={false}>
           {campaigns.length === 0 ? (
-            <p style={{ padding: '20px', margin: 0, fontSize: '12.5px', color: '#655F7D' }}>Henüz kampanya yok.</p>
+            <p style={{ padding: '20px', margin: 0, fontSize: '13px', color: '#655F7D' }}>Henüz kampanya yok.</p>
           ) : (
             <div style={{ overflowX: 'auto' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -66,7 +66,7 @@ export default async function KampanyalarPage() {
                         <td style={{ ...tdStyle, textAlign: 'right' }}>
                           <div style={{ display: 'inline-flex', gap: '6px' }}>
                             {canResume && (
-                              <Link href={`/mail-servisi/kampanyalar/yeni?resume=${c.id}`} style={{ ...buttonStyle('secondary'), padding: '6px 10px', fontSize: '12px' }}>
+                              <Link href={`/mail-servisi/kampanyalar/yeni?resume=${c.id}`} style={{ ...buttonStyle('primary'), padding: '6px 10px', fontSize: '12px' }}>
                                 Devam Et
                               </Link>
                             )}

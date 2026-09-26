@@ -106,7 +106,7 @@ export function PlatformModal({ mode = 'add', initialData, open: externalOpen, o
     <>
       {toast && <Toast message={toast.message} type={toast.type} onDismiss={dismiss} />}
       {!isControlled && (
-        <button onClick={() => setInternalOpen(true)} style={addBtnStyle('#1D4ED8')}>+ Platform Ekle</button>
+        <button onClick={() => setInternalOpen(true)} style={addBtnStyle('#3b82f6')}>+ Platform Ekle</button>
       )}
       <ModalBase isOpen={open} onClose={closeModal} title={mode === 'edit' ? 'Platformu Düzenle' : 'Platform Ekle'}>
         <form onSubmit={submit}>
@@ -157,7 +157,7 @@ export function PlatformModal({ mode = 'add', initialData, open: externalOpen, o
           </div>
           <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '8px' }}>
             <button type="button" onClick={closeModal} style={cancelBtnStyle()}>İptal</button>
-            <button type="submit" disabled={loading} style={submitBtnStyle('#1D4ED8', loading)}>
+            <button type="submit" disabled={loading} style={submitBtnStyle('#3b82f6', loading)}>
               {loading ? 'Kaydediliyor...' : mode === 'edit' ? 'Düzenle' : 'Kaydet'}
             </button>
           </div>

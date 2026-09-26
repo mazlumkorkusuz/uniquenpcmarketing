@@ -51,7 +51,7 @@ function toHref(val: string, prefix: string): string {
   return val.startsWith('http') ? val : `${prefix}${val}`
 }
 
-const AVATAR_PALETTE = [CHZZK_COLOR, '#1D4ED8', '#047857', '#B45309', '#BE123C', '#B91C1C', '#0F766E', '#1D4ED8']
+const AVATAR_PALETTE = [CHZZK_COLOR, '#1D4ED8', '#047857', '#B45309', '#BE185D', '#B91C1C', '#4CCCE6', '#4338CA']
 function colorForName(name: unknown): string {
   const s = String(name ?? '')
   let hash = 0
@@ -70,7 +70,7 @@ function Avatar({ channelName, src, size }: { channelName: unknown; src?: string
   const color = colorForName(channelName)
   if (!src || broken) {
     return (
-      <div style={{ width: size, height: size, borderRadius: '50%', backgroundColor: color + '22', border: `1px solid ${color}66`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: size * 0.32, color: inkOf(color), flexShrink: 0 }}>
+      <div style={{ width: size, height: size, borderRadius: '50%', backgroundColor: color + '22', border: `1px solid ${color}66`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: size * 0.32, color: inkOf(color), flexShrink: 0 }}>
         {initials(channelName)}
       </div>
     )
@@ -94,9 +94,9 @@ function SortableTH({ label, sk, active, dir, onSort }: { label: string; sk: Sor
   )
 }
 
-const STH: React.CSSProperties = { backgroundColor: '#F3EEFF', color: '#655F7D', fontSize: '12.5px', fontWeight: 500, padding: '11px 14px', textAlign: 'left', borderBottom: '1px solid #E8E4F1', whiteSpace: 'nowrap' }
+const STH: React.CSSProperties = { backgroundColor: 'rgba(23,18,43,0.02)', color: '#655F7D', fontSize: '12.5px', fontWeight: 500, padding: '11px 14px', textAlign: 'left', borderBottom: '1px solid #E8E4F1', whiteSpace: 'nowrap' }
 const TD: React.CSSProperties = { padding: '12px 14px', verticalAlign: 'middle' }
-const SEL: React.CSSProperties = { backgroundColor: '#FFFFFF', border: '1px solid #E8E4F1', borderRadius: '8px', padding: '7px 11px', fontSize: '14px', color: '#17122B', cursor: 'pointer', outline: 'none' }
+const SEL: React.CSSProperties = { backgroundColor: '#FFFFFF', border: '1px solid #E8E4F1', borderRadius: '7px', padding: '7px 11px', fontSize: '13px', color: '#17122B', cursor: 'pointer', outline: 'none' }
 
 // ── stats bar card styling ───────────────────────────────────────────────
 function statCardStyle(color: string): React.CSSProperties {
@@ -104,7 +104,7 @@ function statCardStyle(color: string): React.CSSProperties {
     backgroundColor: 'var(--color-bg-card)',
     boxShadow: 'var(--shadow-card)',
     border: '1px solid var(--color-border-card)',
-    borderRadius: '12px',
+    borderRadius: '14px',
     padding: '22px 24px',
     display: 'flex',
     flexDirection: 'column',
@@ -112,13 +112,13 @@ function statCardStyle(color: string): React.CSSProperties {
     minHeight: '132px',
   }
 }
-const statValueStyle: React.CSSProperties = { fontFamily: 'var(--font-display)', fontSize: '24px', fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.03em', fontWeight: 600, color: '#17122B', lineHeight: 1.15 }
+const statValueStyle: React.CSSProperties = { fontSize: '26px', fontWeight: 800, color: '#17122B', lineHeight: 1.15 }
 const statSubStyle: React.CSSProperties = { fontSize: '12px', color: '#655F7D' }
 
 function StatCardHeader({ icon, color, label }: { icon: React.ReactNode; color: string; label: string }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-      <div style={{ width: '36px', height: '36px', borderRadius: '12px', backgroundColor: color + '22', border: `1px solid ${color}55`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: inkOf(color), flexShrink: 0 }}>
+      <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: color + '22', border: `1px solid ${color}55`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: inkOf(color), flexShrink: 0 }}>
         {icon}
       </div>
       <span style={{ fontSize: '12px', fontWeight: 600, color: '#4A4462', }}>{label}</span>
@@ -134,10 +134,10 @@ function ContactRow({ href, icon, label }: { href?: string; icon: React.ReactNod
     </>
   )
   if (!href) {
-    return <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12.5px', color: '#4A4462', padding: '5px 0', overflow: 'hidden' }}>{content}</div>
+    return <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#4A4462', padding: '5px 0', overflow: 'hidden' }}>{content}</div>
   }
   return (
-    <a href={href} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', color: '#1D4ED8', textDecoration: 'none', padding: '5px 0', overflow: 'hidden' }}>
+    <a href={href} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#1D4ED8', textDecoration: 'none', padding: '5px 0', overflow: 'hidden' }}>
       {content}
     </a>
   )
@@ -180,9 +180,9 @@ function DetailPanel({ row, onClose }: { row: Row; onClose: () => void }) {
       <div style={{ padding: '18px', borderBottom: '1px solid #E8E4F1', display: 'flex', alignItems: 'center', gap: '14px' }}>
         <Avatar key={String(row.id)} channelName={row.channel_name} src={avatarSrc} size={64} />
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontWeight: 600, fontFamily: 'var(--font-display)', fontSize: '15px', letterSpacing: '-0.01em', color: '#17122B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name}</div>
+          <div style={{ fontWeight: 700, fontSize: '16px', color: '#17122B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name}</div>
         </div>
-        <button onClick={onClose} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '30px', borderRadius: '8px', backgroundColor: 'transparent', border: '1px solid #E8E4F1', color: '#655F7D', cursor: 'pointer', flexShrink: 0 }}>
+        <button onClick={onClose} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '30px', borderRadius: '7px', backgroundColor: 'transparent', border: '1px solid #E8E4F1', color: '#655F7D', cursor: 'pointer', flexShrink: 0 }}>
           <X size={14} />
         </button>
       </div>
@@ -191,21 +191,21 @@ function DetailPanel({ row, onClose }: { row: Row; onClose: () => void }) {
         {/* Stats */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
           {[
-            { label: 'Takipçi', value: fmt(row.followers), color: '#047857' },
+            { label: 'Takipçi', value: fmt(row.followers), color: '#046C4E' },
             { label: 'Ort. İzleyici', value: fmt(row.avg_viewers), color: CHZZK_COLOR },
             { label: 'Canlı Ort. İzleyici', value: fmt(row.live_avg_viewers), color: '#6D28D9' },
-            { label: '30g Yayın Sayısı', value: row.stream_count_30d != null ? String(row.stream_count_30d) : '—', color: '#C2410C' },
+            { label: '30g Yayın Sayısı', value: row.stream_count_30d != null ? String(row.stream_count_30d) : '—', color: '#A24B08' },
           ].map(s => (
             <div key={s.label} style={{ backgroundColor: '#FFFFFF', border: '1px solid #E8E4F1', borderRadius: '8px', padding: '12px 14px' }}>
-              <div style={{ fontSize: '12px', color: '#655F7D', fontWeight: 600, marginBottom: '5px' }}>{s.label}</div>
-              <div style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.01em', fontWeight: 600, color: inkOf(s.color) }}>{s.value}</div>
+              <div style={{ fontSize: '10px', color: '#655F7D', fontWeight: 600, marginBottom: '5px' }}>{s.label}</div>
+              <div style={{ fontSize: '18px', fontWeight: 800, color: inkOf(s.color) }}>{s.value}</div>
             </div>
           ))}
         </div>
 
         {/* Channel link */}
         {!!row.channel_url && (
-          <a href={String(row.channel_url)} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '10px', borderRadius: '8px', backgroundColor: 'rgba(0,212,170,0.08)', border: '1px solid rgba(0,212,170,0.3)', color: inkOf(CHZZK_COLOR), fontWeight: 600, fontSize: '14px', textDecoration: 'none' }}>
+          <a href={String(row.channel_url)} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '10px', borderRadius: '8px', backgroundColor: 'rgba(0,212,170,0.08)', border: '1px solid rgba(0,212,170,0.3)', color: inkOf(CHZZK_COLOR), fontWeight: 600, fontSize: '13px', textDecoration: 'none' }}>
             <ExternalLink size={14} /> Kanala Git
           </a>
         )}
@@ -213,15 +213,15 @@ function DetailPanel({ row, onClose }: { row: Row; onClose: () => void }) {
         {/* Bio */}
         {!!row.bio && (
           <div>
-            <div style={{ fontSize: '12px', fontWeight: 600, color: '#655F7D', marginBottom: '8px' }}>Bio</div>
-            <div style={{ fontSize: '12.5px', color: '#4A4462', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{String(row.bio)}</div>
+            <div style={{ fontSize: '11px', fontWeight: 600, color: '#655F7D', marginBottom: '8px' }}>Bio</div>
+            <div style={{ fontSize: '13px', color: '#4A4462', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{String(row.bio)}</div>
           </div>
         )}
 
         {/* Contacts */}
         {contacts.length > 0 && (
           <div>
-            <div style={{ fontSize: '12px', fontWeight: 600, color: '#655F7D', marginBottom: '8px' }}>İletişim &amp; Sosyal</div>
+            <div style={{ fontSize: '11px', fontWeight: 600, color: '#655F7D', marginBottom: '8px' }}>İletişim &amp; Sosyal</div>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               {contacts.map((c, i) => <ContactRow key={i} {...c} />)}
             </div>
@@ -366,14 +366,14 @@ export default function ChzzkPage() {
             <div style={statSubStyle}>{auxLoading || stats.totalStreamers === 0 ? '—' : `%${Math.round((stats.emailCount / stats.totalStreamers) * 100)} kapsam`}</div>
           </div>
 
-          <div style={statCardStyle('#BE123C')}>
-            <StatCardHeader icon={<Share2 size={17} />} color="#BE123C" label="En Az 1 Sosyal Medya Olan" />
+          <div style={statCardStyle('#BE185D')}>
+            <StatCardHeader icon={<Share2 size={17} />} color="#BE185D" label="En Az 1 Sosyal Medya Olan" />
             <div style={statValueStyle}>{auxLoading ? '…' : stats.anySocialCount.toLocaleString('tr-TR')}</div>
             <div style={statSubStyle}>{auxLoading || stats.totalStreamers === 0 ? '—' : `%${Math.round((stats.anySocialCount / stats.totalStreamers) * 100)} en az 1 kanal`}</div>
           </div>
 
-          <div style={statCardStyle('#1D4ED8')}>
-            <StatCardHeader icon={<Radio size={17} />} color="#1D4ED8" label="Ortalama Takipçi" />
+          <div style={statCardStyle('#4338CA')}>
+            <StatCardHeader icon={<Radio size={17} />} color="#4338CA" label="Ortalama Takipçi" />
             <div style={statValueStyle}>{auxLoading ? '…' : fmt(stats.avgFollowers)}</div>
             <div style={statSubStyle}>Kanal başına ortalama</div>
           </div>
@@ -389,12 +389,12 @@ export default function ChzzkPage() {
             </div>
             <button
               onClick={() => setEmailOnly(v => !v)}
-              style={{ padding: '7px 14px', borderRadius: '8px', border: `1px solid ${emailOnly ? '#D8D2E6' : '#E8E4F1'}`, backgroundColor: emailOnly ? '#F3EEFF' : 'transparent', color: emailOnly ? '#6D28D9' : '#655F7D', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}
+              style={{ padding: '7px 14px', borderRadius: '7px', border: `1px solid ${emailOnly ? 'rgba(251,191,36,0.5)' : '#E8E4F1'}`, backgroundColor: emailOnly ? 'rgba(251,191,36,0.1)' : 'transparent', color: emailOnly ? '#A24B08' : '#655F7D', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}
             >
               <Mail size={14} aria-hidden /> Email Var
             </button>
             {hasFilters && (
-              <button onClick={() => { setSearchInput(''); setSearch(''); setEmailOnly(false) }} style={{ fontSize: '12px', color: '#655F7D', background: 'none', border: '1px solid #E8E4F1', borderRadius: '8px', padding: '7px 12px', cursor: 'pointer' }}>
+              <button onClick={() => { setSearchInput(''); setSearch(''); setEmailOnly(false) }} style={{ fontSize: '12px', color: '#655F7D', background: 'none', border: '1px solid #E8E4F1', borderRadius: '7px', padding: '7px 12px', cursor: 'pointer' }}>
                 Temizle
               </button>
             )}
@@ -439,15 +439,15 @@ export default function ChzzkPage() {
                           target="_blank"
                           rel="noopener noreferrer"
                           onClick={e => e.stopPropagation()}
-                          style={{ fontWeight: 700, fontSize: '14px', color: inkOf(CHZZK_COLOR), textDecoration: 'none' }}
+                          style={{ fontWeight: 700, fontSize: '13px', color: inkOf(CHZZK_COLOR), textDecoration: 'none' }}
                         >
                           {String(row.channel_name ?? '—')}
                         </a>
                       </td>
-                      <td style={TD}><span style={{ color: '#047857', fontWeight: 600, fontSize: '14px' }}>{fmt(row.followers)}</span></td>
-                      <td style={TD}><span style={{ color: inkOf(CHZZK_COLOR), fontWeight: 600, fontSize: '14px' }}>{fmt(row.avg_viewers)}</span></td>
-                      <td style={TD}><span style={{ color: '#6D28D9', fontWeight: 600, fontSize: '14px' }}>{fmt(row.live_avg_viewers)}</span></td>
-                      <td style={TD}><span style={{ fontSize: '12.5px', color: '#4A4462' }}>{row.stream_count_30d != null ? String(row.stream_count_30d) : <span style={{ color: '#655F7D' }}>—</span>}</span></td>
+                      <td style={TD}><span style={{ color: '#046C4E', fontWeight: 600, fontSize: '13px' }}>{fmt(row.followers)}</span></td>
+                      <td style={TD}><span style={{ color: inkOf(CHZZK_COLOR), fontWeight: 600, fontSize: '13px' }}>{fmt(row.avg_viewers)}</span></td>
+                      <td style={TD}><span style={{ color: '#6D28D9', fontWeight: 600, fontSize: '13px' }}>{fmt(row.live_avg_viewers)}</span></td>
+                      <td style={TD}><span style={{ fontSize: '13px', color: '#4A4462' }}>{row.stream_count_30d != null ? String(row.stream_count_30d) : <span style={{ color: '#655F7D' }}>—</span>}</span></td>
                       <td style={{ ...TD, maxWidth: '180px' }} onClick={e => e.stopPropagation()}>
                         {hasValue(row.email)
                           ? <a href={`mailto:${row.email}`} style={{ color: '#1D4ED8', fontSize: '12px', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{String(row.email)}</a>
@@ -469,7 +469,7 @@ export default function ChzzkPage() {
               <button
                 onClick={() => setPage(p => Math.max(1, p - 1))}
                 disabled={page <= 1}
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '30px', borderRadius: '8px', border: '1px solid #E8E4F1', backgroundColor: 'transparent', color: page <= 1 ? '#655F7D' : '#4A4462', cursor: page <= 1 ? 'not-allowed' : 'pointer' }}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '30px', borderRadius: '7px', border: '1px solid #E8E4F1', backgroundColor: 'transparent', color: page <= 1 ? '#655F7D' : '#4A4462', cursor: page <= 1 ? 'not-allowed' : 'pointer' }}
               >
                 <ChevronLeft size={14} />
               </button>
@@ -478,7 +478,7 @@ export default function ChzzkPage() {
                 <button
                   key={n}
                   onClick={() => setPage(n)}
-                  style={{ minWidth: '30px', height: '30px', borderRadius: '8px', border: `1px solid ${n === page ? CHZZK_COLOR : '#E8E4F1'}`, backgroundColor: n === page ? 'rgba(0,212,170,0.15)' : 'transparent', color: n === page ? inkOf(CHZZK_COLOR) : '#4A4462', fontSize: '12px', fontWeight: 600, cursor: 'pointer', padding: '0 6px' }}
+                  style={{ minWidth: '30px', height: '30px', borderRadius: '7px', border: `1px solid ${n === page ? CHZZK_COLOR : '#E8E4F1'}`, backgroundColor: n === page ? 'rgba(0,212,170,0.15)' : 'transparent', color: n === page ? inkOf(CHZZK_COLOR) : '#4A4462', fontSize: '12px', fontWeight: 600, cursor: 'pointer', padding: '0 6px' }}
                 >
                   {n}
                 </button>
@@ -487,7 +487,7 @@ export default function ChzzkPage() {
               <button
                 onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                 disabled={page >= totalPages}
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '30px', borderRadius: '8px', border: '1px solid #E8E4F1', backgroundColor: 'transparent', color: page >= totalPages ? '#655F7D' : '#4A4462', cursor: page >= totalPages ? 'not-allowed' : 'pointer' }}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '30px', borderRadius: '7px', border: '1px solid #E8E4F1', backgroundColor: 'transparent', color: page >= totalPages ? '#655F7D' : '#4A4462', cursor: page >= totalPages ? 'not-allowed' : 'pointer' }}
               >
                 <ChevronRight size={14} />
               </button>
@@ -498,7 +498,7 @@ export default function ChzzkPage() {
         {/* Overlay + drawer */}
         {selected && (
           <>
-            <div onClick={() => setSelected(null)} style={{ position: 'fixed', inset: 0, backgroundColor: '#6D28D9', zIndex: 999 }} />
+            <div onClick={() => setSelected(null)} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(23,18,43,0.35)', zIndex: 999 }} />
             <DetailPanel row={selected} onClose={() => setSelected(null)} />
           </>
         )}

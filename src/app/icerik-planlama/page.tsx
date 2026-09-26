@@ -13,7 +13,7 @@ const PLATFORM_COLORS: Record<string, string> = {
   instagram: '#e1306c',
   tiktok:    '#fe2c55',
   linkedin:  '#0a66c2',
-  youtube:   '#FF0000',
+  youtube:   '#ff4444',
   reddit:    '#ff4500',
   ig:        '#c13584',
 }
@@ -23,7 +23,7 @@ const PLATFORMS = [
   { key: 'instagram', label: 'Instagram', color: '#e1306c', icon: '/icons/instagram.png' },
   { key: 'tiktok',    label: 'TikTok',    color: '#fe2c55', icon: '/icons/tiktok.png' },
   { key: 'linkedin',  label: 'LinkedIn',  color: '#0a66c2', icon: '/icons/linkedin.png' },
-  { key: 'youtube',   label: 'YouTube',   color: '#FF0000', icon: '/icons/youtube.png' },
+  { key: 'youtube',   label: 'YouTube',   color: '#ff4444', icon: '/icons/youtube.png' },
   { key: 'reddit',    label: 'Reddit',    color: '#ff4500', icon: '/icons/reddit.svg' },
   { key: 'ig',        label: 'IG',        color: '#c13584', icon: '/icons/instagram.png' },
 ]
@@ -56,7 +56,7 @@ export default async function IcerikPlanlamaPage() {
         title="İçerik Planlaması"
         subtitle="Tüm platformlardaki planlanmış gönderiler"
         icon={CalendarCheck}
-        gradient="linear-gradient(135deg, #7C3AED, #6D28D9)"
+        gradient="linear-gradient(135deg, #6D28D9, #4338CA)"
       >
         <BulkPostModal />
       </PageHeader>
@@ -68,19 +68,19 @@ export default async function IcerikPlanlamaPage() {
               <div style={{
                 backgroundColor: '#FFFFFF',
                 border: `1px solid ${p.color}33`,
-                borderRadius: '12px',
+                borderRadius: '10px',
                 padding: '14px 16px',
                 cursor: 'pointer',
                 transition: 'border-color 0.15s',
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                  <Image src={p.icon} alt={p.label} width={18} height={18} style={{ objectFit: 'contain', borderRadius: '8px', flexShrink: 0 }} />
+                  <Image src={p.icon} alt={p.label} width={18} height={18} style={{ objectFit: 'contain', borderRadius: '3px', flexShrink: 0 }} />
                   <span style={{ fontSize: '12px', fontWeight: 600, color: '#4A4462' }}>{p.label}</span>
                 </div>
-                <div style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.01em', fontWeight: 600, color: inkOf(p.color) }}>
+                <div style={{ fontSize: '20px', fontWeight: 700, color: inkOf(p.color) }}>
                   {totalByPlatform[p.key] ?? 0}
                 </div>
-                <div style={{ fontSize: '12px', color: '#655F7D', marginTop: '2px' }}>gönderi</div>
+                <div style={{ fontSize: '11px', color: '#655F7D', marginTop: '2px' }}>gönderi</div>
               </div>
             </a>
           ))}
@@ -89,7 +89,7 @@ export default async function IcerikPlanlamaPage() {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 200px', gap: '24px', alignItems: 'start', marginBottom: '28px' }}>
           <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', padding: '24px' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
-              <span style={{ fontFamily: 'var(--font-display)', fontSize: '15px', letterSpacing: '-0.01em', fontWeight: 600, color: '#17122B' }}>Takvim</span>
+              <span style={{ fontSize: '15px', fontWeight: 600, color: '#17122B' }}>Takvim</span>
               <span style={{ fontSize: '12px', color: '#655F7D' }}>Tüm platformlar</span>
             </div>
             <ContentCalendar posts={posts} platformColors={PLATFORM_COLORS} />
@@ -97,22 +97,22 @@ export default async function IcerikPlanlamaPage() {
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', padding: '16px' }}>
-              <div style={{ fontSize: '12px', fontWeight: 600, color: '#655F7D', marginBottom: '8px' }}>Toplam</div>
-              <div style={{ fontFamily: 'var(--font-display)', fontSize: '24px', fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.03em', fontWeight: 600, color: '#17122B' }}>{posts.length}</div>
+              <div style={{ fontSize: '11px', fontWeight: 600, color: '#655F7D', marginBottom: '8px' }}>Toplam</div>
+              <div style={{ fontSize: '26px', fontWeight: 700, color: '#17122B' }}>{posts.length}</div>
               <div style={{ fontSize: '12px', color: '#655F7D', marginTop: '2px' }}>planlı gönderi</div>
             </div>
             <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', padding: '16px' }}>
-              <div style={{ fontSize: '12px', fontWeight: 600, color: '#655F7D', marginBottom: '8px' }}>Yaklaşan</div>
-              <div style={{ fontFamily: 'var(--font-display)', fontSize: '24px', fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.03em', fontWeight: 600, color: '#047857' }}>{upcoming}</div>
+              <div style={{ fontSize: '11px', fontWeight: 600, color: '#655F7D', marginBottom: '8px' }}>Yaklaşan</div>
+              <div style={{ fontSize: '26px', fontWeight: 700, color: '#046C4E' }}>{upcoming}</div>
               <div style={{ fontSize: '12px', color: '#655F7D', marginTop: '2px' }}>bu tarihten sonra</div>
             </div>
 
             <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', padding: '16px' }}>
-              <div style={{ fontSize: '12px', fontWeight: 600, color: '#655F7D', marginBottom: '12px' }}>Renk Kodu</div>
+              <div style={{ fontSize: '11px', fontWeight: 600, color: '#655F7D', marginBottom: '12px' }}>Renk Kodu</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '7px' }}>
                 {PLATFORMS.map(p => (
                   <div key={p.key} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Image src={p.icon} alt={p.label} width={14} height={14} style={{ objectFit: 'contain', borderRadius: '8px', flexShrink: 0 }} />
+                    <Image src={p.icon} alt={p.label} width={14} height={14} style={{ objectFit: 'contain', borderRadius: '2px', flexShrink: 0 }} />
                     <span style={{ fontSize: '12px', color: '#4A4462' }}>{p.label}</span>
                   </div>
                 ))}

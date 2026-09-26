@@ -108,11 +108,11 @@ export function PostModal({ platform, platformColor, mode = 'add', initialData, 
   }
 
   const overlay: React.CSSProperties = {
-    position: 'fixed', inset: 0, backgroundColor: '#6D28D9', backdropFilter: 'blur(4px)',
+    position: 'fixed', inset: 0, backgroundColor: 'rgba(23,18,43,0.35)', backdropFilter: 'blur(4px)',
     display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '20px',
   }
   const modal: React.CSSProperties = {
-    backgroundColor: '#FFFFFF', border: '1px solid #E8E4F1', borderRadius: '12px',
+    backgroundColor: '#FFFFFF', border: '1px solid #E8E4F1', borderRadius: '14px',
     width: '100%', maxWidth: '480px', padding: '28px', position: 'relative',
     boxShadow: '0 25px 60px rgba(0,0,0,0.12)',
   }
@@ -141,13 +141,13 @@ export function PostModal({ platform, platformColor, mode = 'add', initialData, 
             </button>
 
             <div style={{ marginBottom: '24px' }}>
-              <div style={{ width: '36px', height: '36px', borderRadius: '12px', backgroundColor: platformColor + '25', border: `1px solid ${platformColor}44`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}>
+              <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: platformColor + '25', border: `1px solid ${platformColor}44`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}>
                 <TitleIcon size={18} color={platformColor} />
               </div>
-              <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.01em', fontWeight: 600, color: '#17122B', margin: 0, marginBottom: '4px' }}>
+              <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#17122B', margin: 0, marginBottom: '4px' }}>
                 {mode === 'edit' ? 'Gönderiyi Düzenle' : 'Gönderi Ekle'}
               </h2>
-              <p style={{ fontSize: '12.5px', color: '#655F7D', margin: 0 }}>{platform.charAt(0).toUpperCase() + platform.slice(1)} için içerik {mode === 'edit' ? 'düzenle' : 'planla'}</p>
+              <p style={{ fontSize: '13px', color: '#655F7D', margin: 0 }}>{platform.charAt(0).toUpperCase() + platform.slice(1)} için içerik {mode === 'edit' ? 'düzenle' : 'planla'}</p>
             </div>
 
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -217,7 +217,7 @@ export function PostModal({ platform, platformColor, mode = 'add', initialData, 
               </div>
 
               {error && (
-                <div style={{ padding: '10px 12px', backgroundColor: '#FEF2F2', border: '1px solid #D8D2E6', borderRadius: '8px', fontSize: '14px', color: '#B91C1C' }}>
+                <div style={{ padding: '10px 12px', backgroundColor: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: '8px', fontSize: '13px', color: '#B91C1C' }}>
                   {error}
                 </div>
               )}

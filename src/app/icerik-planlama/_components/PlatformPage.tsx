@@ -29,12 +29,12 @@ function dateCell(v: unknown) {
 function statusBadge(status: string | null) {
   if (!status) return <span style={{ color: '#655F7D' }}>—</span>
   const map: Record<string, [string, string]> = {
-    'Taslak':     ['#F4F2F9', '#4A4462'],
-    'Planlandı':  ['#EFF6FF',  '#1D4ED8'],
-    'Yayınlandı': ['#ECFDF5',   '#047857'],
+    'Taslak':     ['rgba(100,116,139,0.15)', '#4A4462'],
+    'Planlandı':  ['rgba(59,130,246,0.15)',  '#1D4ED8'],
+    'Yayınlandı': ['rgba(34,197,94,0.15)',   '#047857'],
   }
-  const [bg, text] = map[status] ?? ['#F4F2F9', '#4A4462']
-  return <span style={{ fontSize: '12px', fontWeight: 600, color: text, backgroundColor: bg, borderRadius: '8px', padding: '2px 8px' }}>{status}</span>
+  const [bg, text] = map[status] ?? ['rgba(100,116,139,0.15)', '#4A4462']
+  return <span style={{ fontSize: '12px', fontWeight: 600, color: text, backgroundColor: bg, borderRadius: '5px', padding: '2px 8px' }}>{status}</span>
 }
 
 export async function PlatformPage({ platform, label, color, gradient, icon, imageSrc }: PlatformPageProps) {
@@ -70,7 +70,7 @@ export async function PlatformPage({ platform, label, color, gradient, icon, ima
       key: 'content',
       label: 'İçerik',
       render: (v: unknown) => v
-        ? <span style={{ fontSize: '12.5px', color: '#4A4462', maxWidth: '300px', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{String(v)}</span>
+        ? <span style={{ fontSize: '13px', color: '#4A4462', maxWidth: '300px', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{String(v)}</span>
         : <span style={{ color: '#655F7D' }}>—</span>,
     },
     { key: 'scheduled_date', label: 'Tarih', render: dateCell },
@@ -83,7 +83,7 @@ export async function PlatformPage({ platform, label, color, gradient, icon, ima
     },
     { key: 'status', label: 'Durum', render: (v: unknown) => statusBadge(v as string | null) },
     { key: 'url', label: 'Link', render: (v: unknown) => v ? (
-      <a href={String(v)} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '12px', fontWeight: 600, color: '#1D4ED8', backgroundColor: '#EFF6FF', border: '1px solid #E8E4F1', borderRadius: '8px', padding: '2px 8px', textDecoration: 'none', whiteSpace: 'nowrap' }}>
+      <a href={String(v)} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '12px', fontWeight: 600, color: '#1D4ED8', backgroundColor: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.25)', borderRadius: '5px', padding: '2px 8px', textDecoration: 'none', whiteSpace: 'nowrap' }}>
         <ExternalLink size={11} />
         Link
       </a>
@@ -105,23 +105,23 @@ export async function PlatformPage({ platform, label, color, gradient, icon, ima
       <div style={{ padding: '24px 32px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '16px', marginBottom: '28px' }}>
           <StatCard label="Toplam Gönderi" value={total}     icon={FileText}    iconColor={color}    iconBg={color + '20'} />
-          <StatCard label="Planlandı"      value={planned}   icon={Calendar}    iconColor="#1D4ED8"  iconBg="#EFF6FF" />
-          <StatCard label="Yayınlandı"     value={published} icon={CheckCircle} iconColor="#047857"  iconBg="#ECFDF5" />
-          <StatCard label="Taslak"         value={drafts}    icon={Clock}       iconColor="#4A4462"  iconBg="#F4F2F9" />
+          <StatCard label="Planlandı"      value={planned}   icon={Calendar}    iconColor="#1D4ED8"  iconBg="rgba(59,130,246,0.12)" />
+          <StatCard label="Yayınlandı"     value={published} icon={CheckCircle} iconColor="#047857"  iconBg="rgba(34,197,94,0.12)" />
+          <StatCard label="Taslak"         value={drafts}    icon={Clock}       iconColor="#4A4462"  iconBg="rgba(100,116,139,0.12)" />
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: '24px', marginBottom: '28px', alignItems: 'start' }}>
           <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', overflow: 'hidden' }}>
             <div style={{ padding: '14px 20px', borderBottom: '1px solid #E8E4F1', display: 'flex', alignItems: 'center', gap: '10px' }}>
               <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: color }} />
-              <span style={{ fontFamily: 'var(--font-display)', fontSize: '15px', letterSpacing: '-0.01em', fontWeight: 600, color: '#17122B' }}>Gönderiler</span>
-              <span style={{ marginLeft: 'auto', backgroundColor: color + '20', color: inkOf(color), border: `1px solid ${color}44`, borderRadius: '9999px', padding: '2px 10px', fontSize: '14px', fontWeight: 600 }}>{total}</span>
+              <span style={{ fontSize: '15px', fontWeight: 600, color: '#17122B' }}>Gönderiler</span>
+              <span style={{ marginLeft: 'auto', backgroundColor: color + '20', color: inkOf(color), border: `1px solid ${color}44`, borderRadius: '9999px', padding: '2px 10px', fontSize: '13px', fontWeight: 600 }}>{total}</span>
             </div>
             <DataTable columns={cols} data={rows} emptyMessage="Henüz gönderi eklenmedi" />
           </div>
 
           <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', padding: '20px' }}>
-            <div style={{ fontSize: '14px', fontWeight: 600, color: '#4A4462', marginBottom: '14px', }}>
+            <div style={{ fontSize: '13px', fontWeight: 600, color: '#4A4462', marginBottom: '14px', }}>
               Takvim
             </div>
             <ContentCalendar posts={calPosts} singleColor={color} compact={true} />

@@ -6,6 +6,7 @@ import { Globe, ExternalLink, ArrowRight, User } from 'lucide-react'
 import Link from 'next/link'
 import { PlatformModal, EditPlatformButton } from '@/components/PlatformModal'
 import { DeleteButton } from '@/components/DeleteButton'
+import { inkOf } from '@/lib/theme'
 
 async function getData() {
   const { data: platforms } = await supabase
@@ -20,7 +21,7 @@ type Row = Record<string, unknown>
 const TH: React.CSSProperties = {
   backgroundColor: 'var(--color-bg-section)',
   color: '#655F7D',
-  fontSize: '12px',
+  fontSize: '11px',
   fontWeight: 600,
   letterSpacing: '0.06em',
   padding: '12px 20px',
@@ -35,7 +36,7 @@ function WorkTopicBadges({ value }: { value: unknown }) {
   return (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
       {topics.map((t, i) => (
-        <span key={i} style={{ fontSize: '12px', fontWeight: 600, color: '#1D4ED8', backgroundColor: '#EFF6FF', border: '1px solid #E8E4F1', borderRadius: '8px', padding: '2px 9px', whiteSpace: 'nowrap', cursor: 'default' }}>
+        <span key={i} style={{ fontSize: '12px', fontWeight: 600, color: '#1D4ED8', backgroundColor: 'rgba(59,130,246,0.12)', border: '1px solid rgba(59,130,246,0.28)', borderRadius: '5px', padding: '2px 9px', whiteSpace: 'nowrap', cursor: 'default' }}>
           {t}
         </span>
       ))}
@@ -53,9 +54,9 @@ export default async function PlatformlarPage() {
       desc: 'Oyun pazarlama ve influencer kampanya yönetim platformu',
       href: '/platformlar/lurkit',
       externalHref: 'https://lurkit.com',
-      gradient: 'linear-gradient(135deg, #7C3AED, #6D28D9)',
-      color: '#C2410C',
-      dot: '#C2410C',
+      gradient: 'linear-gradient(135deg, #f97316, #B91C1C)',
+      color: '#AF3A0B',
+      dot: '#f97316',
     },
     {
       key: 'terminals',
@@ -63,9 +64,9 @@ export default async function PlatformlarPage() {
       desc: 'Oyun yayıncıları ve içerik üreticileri için büyüme platformu',
       href: '/platformlar/terminals',
       externalHref: 'https://terminals.io',
-      gradient: 'linear-gradient(135deg, #7C3AED, #6D28D9)',
-      color: '#1D4ED8',
-      dot: '#0F766E',
+      gradient: 'linear-gradient(135deg, #06b6d4, #3b82f6)',
+      color: '#0D6882',
+      dot: '#06b6d4',
     },
     {
       key: 'mythic-talent',
@@ -73,9 +74,9 @@ export default async function PlatformlarPage() {
       desc: 'Oyun içerik üreticileri ve yayıncılar için talent yönetim ajansı',
       href: '/platformlar/mythic-talent',
       externalHref: 'https://mythictalent.com',
-      gradient: 'linear-gradient(135deg, #7C3AED, #6D28D9)',
+      gradient: 'linear-gradient(135deg, #8b5cf6, #ec4899)',
       color: '#6D28D9',
-      dot: '#6D28D9',
+      dot: '#8b5cf6',
     },
   ]
 
@@ -85,13 +86,13 @@ export default async function PlatformlarPage() {
         title="Platformlar & Partnerler"
         subtitle="CRM platformları ve iş ortakları"
         icon={Globe}
-        gradient="linear-gradient(135deg, #7C3AED, #6D28D9)"
+        gradient="linear-gradient(135deg, #6D28D9, #3b82f6)"
       />
       <div style={{ padding: '24px 32px' }}>
 
         {/* Featured partner platforms */}
         <div style={{ marginBottom: '28px' }}>
-          <div style={{ fontSize: '14px', fontWeight: 600, color: '#655F7D', marginBottom: '14px' }}>
+          <div style={{ fontSize: '13px', fontWeight: 600, color: '#655F7D', marginBottom: '14px' }}>
             Entegre Platformlar
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '16px' }}>
@@ -101,16 +102,18 @@ export default async function PlatformlarPage() {
                 style={{
                   backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)',
                   border: '1px solid #E8E4F1',
-                  borderRadius: '12px',
+                  borderRadius: '14px',
                   overflow: 'hidden',
                   display: 'flex',
                   flexDirection: 'column',
                 }}
               >
+                {/* Card top accent bar */}
+                <div style={{ height: '3px', background: p.gradient }} />
                 <div style={{ padding: '20px 22px' }}>
                   <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px', marginBottom: '12px' }}>
                     <div>
-                      <div style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.01em', fontWeight: 600, color: '#17122B', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <div style={{ fontSize: '17px', fontWeight: 700, color: '#17122B', display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <span
                           style={{
                             width: '10px',
@@ -118,13 +121,13 @@ export default async function PlatformlarPage() {
                             borderRadius: '50%',
                             backgroundColor: p.dot,
                             display: 'inline-block',
-                            boxShadow: 'none',
+                            boxShadow: `0 0 8px ${p.dot}80`,
                             flexShrink: 0,
                           }}
                         />
                         {p.name}
                       </div>
-                      <p style={{ fontSize: '12.5px', color: '#655F7D', margin: '6px 0 0 0', lineHeight: 1.5 }}>{p.desc}</p>
+                      <p style={{ fontSize: '13px', color: '#655F7D', margin: '6px 0 0 0', lineHeight: 1.5 }}>{p.desc}</p>
                     </div>
                   </div>
                   <div style={{ display: 'flex', gap: '8px', marginTop: '16px' }}>
@@ -136,14 +139,13 @@ export default async function PlatformlarPage() {
                         alignItems: 'center',
                         justifyContent: 'center',
                         gap: '6px',
-                        height: '40px',
-                        padding: '0 16px',
+                        padding: '9px 14px',
                         borderRadius: '8px',
-                        backgroundColor: 'var(--surface)',
-                        border: '1px solid var(--line-2)',
-                        color: 'var(--ink)',
+                        backgroundColor: p.color + '18',
+                        border: `1px solid ${p.color}35`,
+                        color: inkOf(p.color),
                         fontWeight: 600,
-                        fontSize: '14px',
+                        fontSize: '13px',
                         textDecoration: 'none',
                       }}
                     >
@@ -163,7 +165,7 @@ export default async function PlatformlarPage() {
                         border: '1px solid #E8E4F1',
                         color: '#655F7D',
                         fontWeight: 500,
-                        fontSize: '14px',
+                        fontSize: '13px',
                         textDecoration: 'none',
                       }}
                     >
@@ -204,10 +206,10 @@ export default async function PlatformlarPage() {
                 justifyContent: 'center',
               }}
             >
-              <Globe size={16} color="#1D4ED8" />
+              <Globe size={16} color="#3b82f6" />
             </div>
             <div>
-              <div style={{ fontFamily: 'var(--font-display)', fontSize: '15px', letterSpacing: '-0.01em', fontWeight: 600, color: '#17122B' }}>CRM Platformları</div>
+              <div style={{ fontSize: '15px', fontWeight: 600, color: '#17122B' }}>CRM Platformları</div>
               <div style={{ fontSize: '12px', color: '#655F7D' }}>İş ortağı platformlar</div>
             </div>
             <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -215,10 +217,10 @@ export default async function PlatformlarPage() {
                 style={{
                   backgroundColor: '#3b82f620',
                   color: '#1D4ED8',
-                  border: '1px solid #D8D2E6',
+                  border: '1px solid #3b82f640',
                   borderRadius: '9999px',
                   padding: '2px 12px',
-                  fontSize: '14px',
+                  fontSize: '13px',
                   fontWeight: 600,
                 }}
               >
@@ -256,7 +258,7 @@ export default async function PlatformlarPage() {
                   >
                     <td style={{ padding: '16px 20px', minWidth: '160px' }}>
                       <div style={{ fontWeight: 700, fontSize: '14px', color: '#17122B' }}>{p.name ? String(p.name) : '—'}</div>
-                      {!!p.type && <div style={{ fontSize: '12px', color: '#655F7D', marginTop: '2px' }}>{String(p.type)}</div>}
+                      {!!p.type && <div style={{ fontSize: '11px', color: '#655F7D', marginTop: '2px' }}>{String(p.type)}</div>}
                     </td>
                     <td style={{ padding: '16px 20px', minWidth: '200px' }}>
                       <WorkTopicBadges value={p.work_topic} />
@@ -264,7 +266,7 @@ export default async function PlatformlarPage() {
                     <td style={{ padding: '16px 20px', minWidth: '220px', maxWidth: '320px' }}>
                       {p.details ? (
                         <span style={{
-                          fontSize: '14px',
+                          fontSize: '13px',
                           color: '#4A4462',
                           display: '-webkit-box',
                           WebkitLineClamp: 3,
@@ -278,7 +280,7 @@ export default async function PlatformlarPage() {
                     </td>
                     <td style={{ padding: '16px 20px', whiteSpace: 'nowrap' }}>
                       {p.last_edited_by ? (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#4A4462', fontSize: '12.5px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#4A4462', fontSize: '13px' }}>
                           <User size={13} color="#655F7D" />
                           {String(p.last_edited_by)}
                         </div>

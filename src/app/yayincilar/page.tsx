@@ -12,7 +12,7 @@ const PLATFORMS = [
   { key: 'twitch',   label: 'Twitch',   color: '#9146ff', href: '/yayincilar/twitch' },
   { key: 'kick',     label: 'Kick',     color: '#53fc18', href: '/yayincilar/kick' },
   { key: 'soop',     label: 'SOOP',     color: '#1D4ED8', href: '/yayincilar/soop' },
-  { key: 'youtube',  label: 'YouTube',  color: '#FF0000', href: '/yayincilar/youtube' },
+  { key: 'youtube',  label: 'YouTube',  color: '#ff4444', href: '/yayincilar/youtube' },
   { key: 'chzzk',    label: 'Chzzk',    color: '#00ffa3', href: '/yayincilar/chzzk' },
   { key: 'bilibili', label: 'BiliBili', color: '#00a1d6', href: '/yayincilar/bilibili' },
   { key: 'douyin',   label: 'Douyin',   color: '#fe2c55', href: '/yayincilar/douyin' },
@@ -88,7 +88,7 @@ export default async function YayincilarPage() {
         title="Yayıncılar"
         subtitle={`${total} toplam yayıncı · ${PLATFORMS.length} platform`}
         icon={Tv2}
-        gradient="linear-gradient(135deg, #7C3AED, #6D28D9)"
+        gradient="linear-gradient(135deg, #3b82f6, #14b8a6)"
       />
       <div style={{ padding: '24px 32px' }}>
 
@@ -96,7 +96,7 @@ export default async function YayincilarPage() {
         <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', padding: '20px', marginBottom: '28px' }}>
           <div style={{ fontSize: '14px', fontWeight: 600, color: '#17122B', marginBottom: '4px' }}>Platform Karşılaştırması</div>
           <div style={{ fontSize: '12px', color: '#655F7D', marginBottom: '16px' }}>Platforma göre takip edilen yayıncı sayısı</div>
-          <BarChart data={platformBar} color="#1D4ED8" height={100} />
+          <BarChart data={platformBar} color="#3b82f6" height={100} />
         </div>
 
         {/* Platform cards grid */}
@@ -126,12 +126,12 @@ export default async function YayincilarPage() {
                           height: '10px',
                           borderRadius: '50%',
                           backgroundColor: platform.color,
-                          boxShadow: 'none',
+                          boxShadow: `0 0 8px ${platform.color}60`,
                         }}
                       />
-                      <span style={{ fontFamily: 'var(--font-display)', fontSize: '15px', letterSpacing: '-0.01em', fontWeight: 600, color: '#17122B' }}>{platform.label}</span>
+                      <span style={{ fontSize: '15px', fontWeight: 700, color: '#17122B' }}>{platform.label}</span>
                     </div>
-                    <span style={{ fontFamily: 'var(--font-display)', fontSize: '24px', fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.03em', fontWeight: 600, color: count > 0 ? inkOf(platform.color) : '#655F7D' }}>
+                    <span style={{ fontSize: '26px', fontWeight: 800, color: count > 0 ? inkOf(platform.color) : '#655F7D' }}>
                       {count}
                     </span>
                   </div>
@@ -144,7 +144,7 @@ export default async function YayincilarPage() {
                 <div style={{ padding: '14px 20px', flex: 1 }}>
                   {bars.length > 0 ? (
                     <>
-                      <div style={{ fontSize: '12px', color: '#655F7D', marginBottom: '10px', fontWeight: 500, }}>
+                      <div style={{ fontSize: '11px', color: '#655F7D', marginBottom: '10px', fontWeight: 500, }}>
                         Takipçiye göre top yayıncılar
                       </div>
                       <BarChart data={bars} color={platform.color} height={80} maxBars={8} />
@@ -164,7 +164,7 @@ export default async function YayincilarPage() {
                       display: 'flex',
                       alignItems: 'center',
                       gap: '6px',
-                      fontSize: '14px',
+                      fontSize: '13px',
                       fontWeight: 500,
                       color: inkOf(platform.color),
                       textDecoration: 'none',

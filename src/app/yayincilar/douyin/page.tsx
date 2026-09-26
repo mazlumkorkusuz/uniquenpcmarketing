@@ -39,7 +39,7 @@ function sanitizeSearch(s: string): string {
   return s.replace(/[,()%]/g, ' ').trim()
 }
 
-const AVATAR_PALETTE = [DOUYIN_COLOR, '#0F766E', '#1D4ED8', '#047857', '#B45309', '#BE123C', '#6D28D9', '#C2410C']
+const AVATAR_PALETTE = [DOUYIN_COLOR, '#25f4ee', '#1D4ED8', '#047857', '#B45309', '#BE185D', '#6D28D9', '#C2410C']
 function colorForName(name: unknown): string {
   const s = String(name ?? '')
   let hash = 0
@@ -51,7 +51,7 @@ function colorForName(name: unknown): string {
 function Avatar({ channelName, size }: { channelName: unknown; size: number }) {
   const color = colorForName(channelName)
   return (
-    <div style={{ width: size, height: size, borderRadius: '50%', backgroundColor: color + '22', border: `1px solid ${color}66`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: size * 0.32, color: inkOf(color), flexShrink: 0 }}>
+    <div style={{ width: size, height: size, borderRadius: '50%', backgroundColor: color + '22', border: `1px solid ${color}66`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: size * 0.32, color: inkOf(color), flexShrink: 0 }}>
       {initials(channelName)}
     </div>
   )
@@ -66,9 +66,9 @@ function SortableTH({ label, sk, active, dir, onSort }: { label: string; sk: Sor
   )
 }
 
-const STH: React.CSSProperties = { backgroundColor: '#F3EEFF', color: '#655F7D', fontSize: '12.5px', fontWeight: 500, padding: '11px 14px', textAlign: 'left', borderBottom: '1px solid #E8E4F1', whiteSpace: 'nowrap' }
+const STH: React.CSSProperties = { backgroundColor: 'rgba(23,18,43,0.02)', color: '#655F7D', fontSize: '12.5px', fontWeight: 500, padding: '11px 14px', textAlign: 'left', borderBottom: '1px solid #E8E4F1', whiteSpace: 'nowrap' }
 const TD: React.CSSProperties = { padding: '12px 14px', verticalAlign: 'middle' }
-const SEL: React.CSSProperties = { backgroundColor: '#FFFFFF', border: '1px solid #E8E4F1', borderRadius: '8px', padding: '7px 11px', fontSize: '14px', color: '#17122B', cursor: 'pointer', outline: 'none' }
+const SEL: React.CSSProperties = { backgroundColor: '#FFFFFF', border: '1px solid #E8E4F1', borderRadius: '7px', padding: '7px 11px', fontSize: '13px', color: '#17122B', cursor: 'pointer', outline: 'none' }
 
 // ── stats bar card styling ───────────────────────────────────────────────
 function statCardStyle(color: string): React.CSSProperties {
@@ -76,7 +76,7 @@ function statCardStyle(color: string): React.CSSProperties {
     backgroundColor: 'var(--color-bg-card)',
     boxShadow: 'var(--shadow-card)',
     border: '1px solid var(--color-border-card)',
-    borderRadius: '12px',
+    borderRadius: '14px',
     padding: '22px 24px',
     display: 'flex',
     flexDirection: 'column',
@@ -84,13 +84,13 @@ function statCardStyle(color: string): React.CSSProperties {
     minHeight: '132px',
   }
 }
-const statValueStyle: React.CSSProperties = { fontFamily: 'var(--font-display)', fontSize: '24px', fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.03em', fontWeight: 600, color: '#17122B', lineHeight: 1.15 }
+const statValueStyle: React.CSSProperties = { fontSize: '26px', fontWeight: 800, color: '#17122B', lineHeight: 1.15 }
 const statSubStyle: React.CSSProperties = { fontSize: '12px', color: '#655F7D' }
 
 function StatCardHeader({ icon, color, label }: { icon: React.ReactNode; color: string; label: string }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-      <div style={{ width: '36px', height: '36px', borderRadius: '12px', backgroundColor: color + '22', border: `1px solid ${color}55`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: inkOf(color), flexShrink: 0 }}>
+      <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: color + '22', border: `1px solid ${color}55`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: inkOf(color), flexShrink: 0 }}>
         {icon}
       </div>
       <span style={{ fontSize: '12px', fontWeight: 600, color: '#4A4462', }}>{label}</span>
@@ -107,7 +107,7 @@ function ContactRow({ href, icon, label, value }: { href?: string; icon: React.R
       </span>
     </>
   )
-  const style: React.CSSProperties = { display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '14px', padding: '5px 0', lineHeight: 1.5 }
+  const style: React.CSSProperties = { display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '13px', padding: '5px 0', lineHeight: 1.5 }
   if (!href) return <div style={{ ...style, color: '#4A4462' }}>{content}</div>
   return <a href={href} style={{ ...style, color: '#1D4ED8', textDecoration: 'none' }}>{content}</a>
 }
@@ -134,9 +134,9 @@ function DetailPanel({ row, onClose }: { row: Row; onClose: () => void }) {
       <div style={{ padding: '18px', borderBottom: '1px solid #E8E4F1', display: 'flex', alignItems: 'center', gap: '14px' }}>
         <Avatar channelName={row.channel_name} size={64} />
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontWeight: 600, fontFamily: 'var(--font-display)', fontSize: '15px', letterSpacing: '-0.01em', color: '#17122B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name}</div>
+          <div style={{ fontWeight: 700, fontSize: '16px', color: '#17122B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name}</div>
         </div>
-        <button onClick={onClose} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '30px', borderRadius: '8px', backgroundColor: 'transparent', border: '1px solid #E8E4F1', color: '#655F7D', cursor: 'pointer', flexShrink: 0 }}>
+        <button onClick={onClose} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '30px', borderRadius: '7px', backgroundColor: 'transparent', border: '1px solid #E8E4F1', color: '#655F7D', cursor: 'pointer', flexShrink: 0 }}>
           <X size={14} />
         </button>
       </div>
@@ -145,20 +145,20 @@ function DetailPanel({ row, onClose }: { row: Row; onClose: () => void }) {
         {/* Stats */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
           {[
-            { label: 'Takipçi', value: fmt(row.followers), color: '#047857' },
+            { label: 'Takipçi', value: fmt(row.followers), color: '#046C4E' },
             { label: 'Toplam Beğeni', value: fmt(row.total_likes), color: DOUYIN_COLOR },
-            { label: 'Ort. Beğeni 120g', value: fmt(row.avg_likes_120d), color: '#0F766E' },
+            { label: 'Ort. Beğeni 120g', value: fmt(row.avg_likes_120d), color: '#25f4ee' },
           ].map(s => (
             <div key={s.label} style={{ backgroundColor: '#FFFFFF', border: '1px solid #E8E4F1', borderRadius: '8px', padding: '12px 12px' }}>
-              <div style={{ fontSize: '12px', color: '#655F7D', fontWeight: 600, marginBottom: '5px' }}>{s.label}</div>
-              <div style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.01em', fontWeight: 600, color: inkOf(s.color) }}>{s.value}</div>
+              <div style={{ fontSize: '10px', color: '#655F7D', fontWeight: 600, marginBottom: '5px' }}>{s.label}</div>
+              <div style={{ fontSize: '17px', fontWeight: 800, color: inkOf(s.color) }}>{s.value}</div>
             </div>
           ))}
         </div>
 
         {/* Profile link */}
         {!!row.profile_url && (
-          <a href={String(row.profile_url)} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '10px', borderRadius: '8px', backgroundColor: 'rgba(254,44,85,0.08)', border: '1px solid rgba(254,44,85,0.3)', color: inkOf(DOUYIN_COLOR), fontWeight: 600, fontSize: '14px', textDecoration: 'none' }}>
+          <a href={String(row.profile_url)} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '10px', borderRadius: '8px', backgroundColor: 'rgba(254,44,85,0.08)', border: '1px solid rgba(254,44,85,0.3)', color: inkOf(DOUYIN_COLOR), fontWeight: 600, fontSize: '13px', textDecoration: 'none' }}>
             <ExternalLink size={14} /> Profile Git
           </a>
         )}
@@ -166,20 +166,20 @@ function DetailPanel({ row, onClose }: { row: Row; onClose: () => void }) {
         {/* Bio */}
         {hasValue(row.bio_en) && (
           <div>
-            <div style={{ fontSize: '12px', fontWeight: 600, color: '#655F7D', marginBottom: '8px' }}>Bio</div>
-            <div style={{ fontSize: '12.5px', color: '#4A4462', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{String(row.bio_en)}</div>
+            <div style={{ fontSize: '11px', fontWeight: 600, color: '#655F7D', marginBottom: '8px' }}>Bio</div>
+            <div style={{ fontSize: '13px', color: '#4A4462', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{String(row.bio_en)}</div>
           </div>
         )}
 
         {/* Contacts */}
         <div>
-          <div style={{ fontSize: '12px', fontWeight: 600, color: '#655F7D', marginBottom: '8px' }}>İletişim</div>
+          <div style={{ fontSize: '11px', fontWeight: 600, color: '#655F7D', marginBottom: '8px' }}>İletişim</div>
           {contacts.length > 0 ? (
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               {contacts.map((c, i) => <ContactRow key={i} {...c} />)}
             </div>
           ) : (
-            <div style={{ fontSize: '12.5px', color: '#655F7D' }}>İletişim bilgisi yok</div>
+            <div style={{ fontSize: '13px', color: '#655F7D' }}>İletişim bilgisi yok</div>
           )}
         </div>
       </div>
@@ -301,7 +301,7 @@ export default function DouyinPage() {
   }, [page, totalPages])
 
   const toggleStyle = (on: boolean, rgb: string, color: string): React.CSSProperties => ({
-    padding: '7px 14px', borderRadius: '8px', border: `1px solid ${on ? `rgba(${rgb},0.5)` : '#E8E4F1'}`, backgroundColor: on ? `rgba(${rgb},0.1)` : 'transparent', color: on ? inkOf(color) : '#655F7D', fontSize: '14px', fontWeight: 600, cursor: 'pointer',
+    padding: '7px 14px', borderRadius: '7px', border: `1px solid ${on ? `rgba(${rgb},0.5)` : '#E8E4F1'}`, backgroundColor: on ? `rgba(${rgb},0.1)` : 'transparent', color: on ? inkOf(color) : '#655F7D', fontSize: '13px', fontWeight: 600, cursor: 'pointer',
   })
 
   return (
@@ -345,7 +345,7 @@ export default function DouyinPage() {
               <MessageCircle size={14} aria-hidden /> İletişim Var
             </button>
             {hasFilters && (
-              <button onClick={() => { setSearchInput(''); setSearch(''); setEmailOnly(false); setContactOnly(false) }} style={{ fontSize: '12px', color: '#655F7D', background: 'none', border: '1px solid #E8E4F1', borderRadius: '8px', padding: '7px 12px', cursor: 'pointer' }}>
+              <button onClick={() => { setSearchInput(''); setSearch(''); setEmailOnly(false); setContactOnly(false) }} style={{ fontSize: '12px', color: '#655F7D', background: 'none', border: '1px solid #E8E4F1', borderRadius: '7px', padding: '7px 12px', cursor: 'pointer' }}>
                 Temizle
               </button>
             )}
@@ -387,14 +387,14 @@ export default function DouyinPage() {
                           target="_blank"
                           rel="noopener noreferrer"
                           onClick={e => e.stopPropagation()}
-                          style={{ fontWeight: 700, fontSize: '14px', color: inkOf(DOUYIN_COLOR), textDecoration: 'none', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+                          style={{ fontWeight: 700, fontSize: '13px', color: inkOf(DOUYIN_COLOR), textDecoration: 'none', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
                         >
                           {String(row.channel_name ?? '—')}
                         </a>
                       </td>
-                      <td style={TD}><span style={{ color: '#047857', fontWeight: 600, fontSize: '14px' }}>{fmt(row.followers)}</span></td>
-                      <td style={TD}><span style={{ color: inkOf(DOUYIN_COLOR), fontWeight: 600, fontSize: '14px' }}>{fmt(row.total_likes)}</span></td>
-                      <td style={TD}><span style={{ color: '#0F766E', fontWeight: 600, fontSize: '14px' }}>{fmt(row.avg_likes_120d)}</span></td>
+                      <td style={TD}><span style={{ color: '#046C4E', fontWeight: 600, fontSize: '13px' }}>{fmt(row.followers)}</span></td>
+                      <td style={TD}><span style={{ color: inkOf(DOUYIN_COLOR), fontWeight: 600, fontSize: '13px' }}>{fmt(row.total_likes)}</span></td>
+                      <td style={TD}><span style={{ color: '#25f4ee', fontWeight: 600, fontSize: '13px' }}>{fmt(row.avg_likes_120d)}</span></td>
                       <td style={{ ...TD, maxWidth: '200px' }} onClick={e => e.stopPropagation()}>
                         {hasValue(row.email)
                           ? <a href={`mailto:${row.email}`} style={{ color: '#1D4ED8', fontSize: '12px', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{String(row.email)}</a>
@@ -414,7 +414,7 @@ export default function DouyinPage() {
               <button
                 onClick={() => setPage(p => Math.max(1, p - 1))}
                 disabled={page <= 1}
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '30px', borderRadius: '8px', border: '1px solid #E8E4F1', backgroundColor: 'transparent', color: page <= 1 ? '#655F7D' : '#4A4462', cursor: page <= 1 ? 'not-allowed' : 'pointer' }}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '30px', borderRadius: '7px', border: '1px solid #E8E4F1', backgroundColor: 'transparent', color: page <= 1 ? '#655F7D' : '#4A4462', cursor: page <= 1 ? 'not-allowed' : 'pointer' }}
               >
                 <ChevronLeft size={14} />
               </button>
@@ -423,7 +423,7 @@ export default function DouyinPage() {
                 <button
                   key={n}
                   onClick={() => setPage(n)}
-                  style={{ minWidth: '30px', height: '30px', borderRadius: '8px', border: `1px solid ${n === page ? DOUYIN_COLOR : '#E8E4F1'}`, backgroundColor: n === page ? 'rgba(254,44,85,0.15)' : 'transparent', color: n === page ? inkOf(DOUYIN_COLOR) : '#4A4462', fontSize: '12px', fontWeight: 600, cursor: 'pointer', padding: '0 6px' }}
+                  style={{ minWidth: '30px', height: '30px', borderRadius: '7px', border: `1px solid ${n === page ? DOUYIN_COLOR : '#E8E4F1'}`, backgroundColor: n === page ? 'rgba(254,44,85,0.15)' : 'transparent', color: n === page ? inkOf(DOUYIN_COLOR) : '#4A4462', fontSize: '12px', fontWeight: 600, cursor: 'pointer', padding: '0 6px' }}
                 >
                   {n}
                 </button>
@@ -432,7 +432,7 @@ export default function DouyinPage() {
               <button
                 onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                 disabled={page >= totalPages}
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '30px', borderRadius: '8px', border: '1px solid #E8E4F1', backgroundColor: 'transparent', color: page >= totalPages ? '#655F7D' : '#4A4462', cursor: page >= totalPages ? 'not-allowed' : 'pointer' }}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '30px', borderRadius: '7px', border: '1px solid #E8E4F1', backgroundColor: 'transparent', color: page >= totalPages ? '#655F7D' : '#4A4462', cursor: page >= totalPages ? 'not-allowed' : 'pointer' }}
               >
                 <ChevronRight size={14} />
               </button>
@@ -443,7 +443,7 @@ export default function DouyinPage() {
         {/* Overlay + drawer */}
         {selected && (
           <>
-            <div onClick={() => setSelected(null)} style={{ position: 'fixed', inset: 0, backgroundColor: '#6D28D9', zIndex: 999 }} />
+            <div onClick={() => setSelected(null)} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(23,18,43,0.35)', zIndex: 999 }} />
             <DetailPanel row={selected} onClose={() => setSelected(null)} />
           </>
         )}

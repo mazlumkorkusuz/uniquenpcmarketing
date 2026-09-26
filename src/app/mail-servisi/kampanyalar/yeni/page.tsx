@@ -354,8 +354,8 @@ function YeniKampanya() {
               <label
                 style={{
                   display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px',
-                  padding: '24px', border: '1px dashed #D8D2E6', borderRadius: '12px',
-                  cursor: sending ? 'not-allowed' : 'pointer', color: '#4A4462', fontSize: '12.5px',
+                  padding: '24px', border: '1px dashed #D8D2E6', borderRadius: '10px',
+                  cursor: sending ? 'not-allowed' : 'pointer', color: '#4A4462', fontSize: '13px',
                 }}
               >
                 <Upload size={20} />
@@ -372,10 +372,10 @@ function YeniKampanya() {
                 Sütunlar: <code>email</code> (zorunlu), <code>name</code>, <code>platform</code>, <code>followers</code>, <code>language</code>
               </p>
               {csvStats && (
-                <p style={{ fontSize: '12.5px', color: '#4A4462', margin: '12px 0 0' }}>
-                  <strong style={{ color: '#047857' }}>{recipients.length}</strong> geçerli alıcı
+                <p style={{ fontSize: '13px', color: '#4A4462', margin: '12px 0 0' }}>
+                  <strong style={{ color: '#046C4E' }}>{recipients.length}</strong> geçerli alıcı
                   {csvStats.invalid > 0 && <> · <span style={{ color: '#B91C1C' }}>{csvStats.invalid} geçersiz</span></>}
-                  {csvStats.duplicates > 0 && <> · <span style={{ color: '#C2410C' }}>{csvStats.duplicates} tekrar</span></>}
+                  {csvStats.duplicates > 0 && <> · <span style={{ color: '#AF3A0B' }}>{csvStats.duplicates} tekrar</span></>}
                 </p>
               )}
               {recipients.length > 0 && (
@@ -426,7 +426,7 @@ function YeniKampanya() {
                 </button>
               ) : (
                 <button
-                  style={buttonStyle(campaignId ? 'secondary' : 'primary', !name || !accountId || !templateId || recipients.length === 0 || !!campaignId)}
+                  style={buttonStyle('primary', !name || !accountId || !templateId || recipients.length === 0 || !!campaignId)}
                   disabled={!name || !accountId || !templateId || recipients.length === 0 || !!campaignId}
                   onClick={createAndSend}
                 >
@@ -435,14 +435,14 @@ function YeniKampanya() {
               )}
             </div>
             {sending && (
-              <p style={{ fontSize: '12px', color: '#C2410C', margin: '10px 0 0' }}>
+              <p style={{ fontSize: '12px', color: '#AF3A0B', margin: '10px 0 0' }}>
                 Gönderim bu sekmede çalışıyor — sekmeyi kapatmayın. Kapatırsanız Kampanyalar sayfasından devam edebilirsiniz.
               </p>
             )}
             {log.length > 0 && (
               <div style={{ marginTop: '14px', maxHeight: '220px', overflowY: 'auto', fontSize: '12px', fontFamily: 'monospace' }}>
                 {log.map((l, i) => (
-                  <div key={i} style={{ color: l.ok ? '#047857' : '#B91C1C', padding: '2px 0' }}>
+                  <div key={i} style={{ color: l.ok ? '#046C4E' : '#B91C1C', padding: '2px 0' }}>
                     {l.ok ? '✓' : '✗'} {l.email} — {l.message}
                   </div>
                 ))}
@@ -454,7 +454,7 @@ function YeniKampanya() {
         <Card title="Önizleme">
           {selectedTemplate ? (
             <>
-              <div style={{ fontSize: '12.5px', color: '#4A4462', marginBottom: '10px' }}>
+              <div style={{ fontSize: '13px', color: '#4A4462', marginBottom: '10px' }}>
                 <span style={{ color: '#655F7D' }}>Konu:</span>{' '}
                 <span style={{ color: '#17122B', fontWeight: 600 }}>
                   {renderTemplate(selectedTemplate.subject, { name: recipients[0]?.name ?? 'Yayıncı Adı' }, true)}
@@ -468,7 +468,7 @@ function YeniKampanya() {
               />
             </>
           ) : (
-            <p style={{ fontSize: '12.5px', color: '#655F7D', margin: 0 }}>Önizleme için bir şablon seçin.</p>
+            <p style={{ fontSize: '13px', color: '#655F7D', margin: 0 }}>Önizleme için bir şablon seçin.</p>
           )}
         </Card>
       </div>

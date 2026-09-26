@@ -40,7 +40,7 @@ export function ModalBase({
               position: 'fixed',
               inset: 0,
               zIndex: 1000,
-              backgroundColor: '#6D28D9',
+              backgroundColor: 'rgba(23,18,43,0.4)',
               backdropFilter: 'blur(4px)',
               WebkitBackdropFilter: 'blur(4px)',
               display: 'flex',
@@ -112,7 +112,7 @@ export const inputStyle: React.CSSProperties = {
 
 export const labelStyle: React.CSSProperties = {
   display: 'block',
-  fontSize: '14px',
+  fontSize: '13px',
   fontWeight: 600,
   color: 'var(--ink-2)',
   marginBottom: '6px',
