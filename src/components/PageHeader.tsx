@@ -48,7 +48,7 @@ export default function PageHeader({ title, subtitle, icon: Icon, imageSrc, grad
               style={{ position: 'relative', width: '24px', height: '24px', objectFit: 'contain', display: 'block' }}
             />
           ) : Icon ? (
-            <Icon size={20} color="#6D28D9" strokeWidth={1.9} style={{ position: 'relative' }} />
+            <Icon size={20} color="var(--primary-ink)" strokeWidth={1.9} style={{ position: 'relative' }} />
           ) : null}
         </div>
         <div style={{ minWidth: 0 }}>

@@ -533,21 +533,21 @@ export default function TwitchPage() {
 
           {/* Email Olan */}
           <div style={statCardStyle('var(--orange)')}>
-            <StatCardHeader icon={<Mail size={17} />} color="#B45309" label="Email Olan" />
+            <StatCardHeader icon={<Mail size={17} />} color="var(--warning)" label="Email Olan" />
             <div style={statValueStyle}>{auxLoading ? '…' : stats.emailCount.toLocaleString('tr-TR')}</div>
             <div style={statSubStyle}>{auxLoading || stats.totalStreamers === 0 ? '—' : `%${Math.round((stats.emailCount / stats.totalStreamers) * 100)} kapsam`}</div>
           </div>
 
           {/* En az 1 iletişim/sosyal */}
           <div style={statCardStyle('var(--success)')}>
-            <StatCardHeader icon={<Share2 size={17} />} color="#047857" label="İletişim / Sosyal Medya" />
+            <StatCardHeader icon={<Share2 size={17} />} color="var(--success)" label="İletişim / Sosyal Medya" />
             <div style={statValueStyle}>{auxLoading ? '…' : stats.anyContactCount.toLocaleString('tr-TR')}</div>
             <div style={statSubStyle}>{auxLoading || stats.totalStreamers === 0 ? '—' : `%${Math.round((stats.anyContactCount / stats.totalStreamers) * 100)} en az 1 kanal`}</div>
           </div>
 
           {/* Popüler Dil */}
           <div style={statCardStyle('var(--info)')}>
-            <StatCardHeader icon={<Languages size={17} />} color="#1D4ED8" label="Popüler Dil" />
+            <StatCardHeader icon={<Languages size={17} />} color="var(--info)" label="Popüler Dil" />
             <div style={statValueStyle}>{auxLoading ? '…' : topLanguage ? `${languageFlag(topLanguage.name)} ${topLanguage.name}` : '—'}</div>
             <div style={statSubStyle}>{auxLoading || !topLanguage ? '—' : `${topLanguage.count.toLocaleString('tr-TR')} yayıncı`}</div>
           </div>

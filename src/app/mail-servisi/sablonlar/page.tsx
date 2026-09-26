@@ -253,7 +253,7 @@ export default function SablonlarPage() {
               {templates.map((t) => (
                 <div key={t.id} style={{ border: `1px solid ${editingId === t.id ? 'var(--primary)' : 'var(--border)'}`, borderRadius: '10px', padding: '14px', backgroundColor: 'var(--card)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-                    <FileText size={14} color="#6D28D9" />
+                    <FileText size={14} color="var(--primary-ink)" />
                     <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--foreground)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.name}</span>
                   </div>
                   <p style={{ fontSize: '12px', color: 'var(--text-2)', margin: '0 0 8px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.subject}</p>

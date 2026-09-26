@@ -312,19 +312,19 @@ export default function BilibiliPage() {
           </div>
 
           <div style={statCardStyle('var(--orange)')}>
-            <StatCardHeader icon={<Mail size={17} />} color="#B45309" label="Email Olan" />
+            <StatCardHeader icon={<Mail size={17} />} color="var(--warning)" label="Email Olan" />
             <div style={statValueStyle}>{auxLoading ? '…' : stats.emailCount.toLocaleString('tr-TR')}</div>
             <div style={statSubStyle}>{pct(stats.emailCount)}</div>
           </div>
 
           <div style={statCardStyle('var(--primary-ink)')}>
-            <StatCardHeader icon={<Contact size={17} />} color="#6D28D9" label="En Az 1 İletişim Olan" />
+            <StatCardHeader icon={<Contact size={17} />} color="var(--primary-ink)" label="En Az 1 İletişim Olan" />
             <div style={statValueStyle}>{auxLoading ? '…' : stats.anyContactCount.toLocaleString('tr-TR')}</div>
             <div style={statSubStyle}>{auxLoading ? '—' : `${pct(stats.anyContactCount)} · email/qq/wechat/weibo`}</div>
           </div>
 
           <div style={statCardStyle('var(--success)')}>
-            <StatCardHeader icon={<TrendingUp size={17} />} color="#047857" label="Ortalama Takipçi" />
+            <StatCardHeader icon={<TrendingUp size={17} />} color="var(--success)" label="Ortalama Takipçi" />
             <div style={statValueStyle}>{auxLoading ? '…' : fmt(stats.avgFollowers)}</div>
             <div style={statSubStyle}>Hesap başına ortalama</div>
           </div>

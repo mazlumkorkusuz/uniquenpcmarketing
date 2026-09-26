@@ -32,7 +32,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="tr" className={cn(display.variable, body.variable, 'font-sans')} suppressHydrationWarning>
-      <body style={{ margin: 0, minHeight: '100vh' }}>
+      <body>
         <ThemeProvider>
           <AppShell>{children}</AppShell>
         </ThemeProvider>

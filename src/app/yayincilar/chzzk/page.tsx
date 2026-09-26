@@ -356,13 +356,13 @@ export default function ChzzkPage() {
           </div>
 
           <div style={statCardStyle('var(--success)')}>
-            <StatCardHeader icon={<TrendingUp size={17} />} color="#047857" label="Toplam Takipçi" />
+            <StatCardHeader icon={<TrendingUp size={17} />} color="var(--success)" label="Toplam Takipçi" />
             <div style={statValueStyle}>{auxLoading ? '…' : fmt(stats.totalFollowers)}</div>
             <div style={statSubStyle}>Tüm kanallar toplamı</div>
           </div>
 
           <div style={statCardStyle('var(--orange)')}>
-            <StatCardHeader icon={<Mail size={17} />} color="#B45309" label="Email Olan" />
+            <StatCardHeader icon={<Mail size={17} />} color="var(--warning)" label="Email Olan" />
             <div style={statValueStyle}>{auxLoading ? '…' : stats.emailCount.toLocaleString('tr-TR')}</div>
             <div style={statSubStyle}>{auxLoading || stats.totalStreamers === 0 ? '—' : `%${Math.round((stats.emailCount / stats.totalStreamers) * 100)} kapsam`}</div>
           </div>

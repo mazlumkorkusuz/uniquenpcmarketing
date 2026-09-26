@@ -60,7 +60,7 @@ export default async function SosyalMedyaPlanlama() {
         <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', padding: '20px', marginBottom: '28px' }}>
           <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--foreground)', marginBottom: '4px' }}>Platform Karşılaştırması</div>
           <div style={{ fontSize: '12px', color: 'var(--muted-foreground)', marginBottom: '16px' }}>Platforma göre toplam planlanan gönderi sayısı</div>
-          <BarChart data={platformBar} color="#6D28D9" height={100} />
+          <BarChart data={platformBar} color="var(--primary-ink)" height={100} />
         </div>
 
         {/* Platform cards */}

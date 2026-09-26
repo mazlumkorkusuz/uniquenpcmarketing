@@ -213,7 +213,7 @@ export default function NewsPage() {
         {/* Right: Top 10 Categories */}
         <section style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', borderRadius: 16, border: '1px solid var(--color-border-card)', overflow: 'hidden' }}>
           <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: 10, background: 'color-mix(in srgb, var(--teal) 10%, transparent)' }}>
-            <Gamepad2 size={20} color="#0F766E" aria-hidden />
+            <Gamepad2 size={20} color="var(--teal)" aria-hidden />
             <div>
               <span style={{ fontWeight: 700, fontSize: 15, color: 'var(--teal)' }}>Twitch Top Kategoriler</span>
               {twitchUpdated && <div style={{ fontSize: 11, color: 'var(--muted-foreground)' }}>{lastUpdatedLabel(twitchUpdated)}</div>}

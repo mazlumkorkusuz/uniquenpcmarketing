@@ -1,4 +1,6 @@
 import { LucideIcon } from 'lucide-react'
+import { Card } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 import { inkOf } from '@/lib/theme'
 
 interface StatCardProps {
@@ -11,54 +13,38 @@ interface StatCardProps {
   trendUp?: boolean
 }
 
-// KPI tile in the dashboard's style: glass bento card, tinted icon chip, Space Grotesk number
+// Tremor-style KPI card on shadcn Card: label + icon chip, big metric, optional delta badge.
 export default function StatCard({ label, value, icon: Icon, iconColor, iconBg, trend, trendUp }: StatCardProps) {
-  // Neon platform colors (Kick, Chzzk) are darkened so the icon keeps 3:1+ on the light chip
   const ink = inkOf(iconColor)
   return (
-    <div
-      style={{
-        position: 'relative',
-        overflow: 'hidden',
-        backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)',
-        border: '1px solid var(--color-border-card)',
-        borderRadius: '20px',
-        padding: '20px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '14px',
-        minWidth: 0,
-      }}
-    >
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
-        <div style={{ fontSize: '12px', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ink-3)' }}>
-          {label}
-        </div>
-        <div
-          style={{
-            width: '34px',
-            height: '34px',
-            borderRadius: '10px',
-            backgroundColor: iconBg,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexShrink: 0,
-          }}
+    <Card className="glass-card kpi-card gap-3 px-5 py-5">
+      <div className="flex items-center justify-between gap-3">
+        <span className="text-[13px] font-medium text-muted-foreground">{label}</span>
+        <span
+          className="grid size-9 shrink-0 place-items-center rounded-[10px]"
+          style={{ backgroundColor: iconBg }}
+          aria-hidden
         >
-          <Icon size={17} color={ink} strokeWidth={2} aria-hidden />
-        </div>
+          <Icon size={17} color={ink} strokeWidth={2} />
+        </span>
       </div>
-      <div>
-        <div style={{ fontFamily: 'var(--font-display)', fontSize: '32px', fontWeight: 600, letterSpacing: '-0.03em', color: 'var(--ink)', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>
+      <div className="flex items-end justify-between gap-3">
+        <span className="font-heading text-[32px] leading-none font-semibold tracking-tight tabular-nums text-foreground">
           {value}
-        </div>
+        </span>
         {trend && (
-          <div style={{ fontSize: '12.5px', fontWeight: 500, color: trendUp ? 'var(--ok)' : 'var(--danger)', marginTop: '8px' }}>
+          <Badge
+            variant="outline"
+            className="h-6 rounded-md border-transparent px-2 text-xs font-semibold"
+            style={{
+              backgroundColor: trendUp ? 'var(--success-soft)' : 'var(--danger-soft)',
+              color: trendUp ? 'var(--success)' : 'var(--danger)',
+            }}
+          >
             {trendUp ? '↑' : '↓'} {trend}
-          </div>
+          </Badge>
         )}
       </div>
-    </div>
+    </Card>
   )
 }

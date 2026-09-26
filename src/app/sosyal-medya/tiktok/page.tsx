@@ -68,8 +68,8 @@ export default async function TikTokPage() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px', marginBottom: '28px' }}>
           <StatCard label="Toplam Video"   value={posts.length}                         icon={Share2}        iconColor="#fe2c55" iconBg="rgba(254,44,85,0.12)" />
           <StatCard label="Toplam Beğeni"  value={totalLikes.toLocaleString('en-US')}   icon={Heart}         iconColor="#BE185D" iconBg="rgba(244,114,182,0.12)" />
-          <StatCard label="Toplam Paylaşım" value={totalShares.toLocaleString('en-US')} icon={TrendingUp}    iconColor="#047857" iconBg="rgba(34,197,94,0.12)" />
-          <StatCard label="Metrik Kaydı"   value={metrics.length}                       icon={MessageCircle} iconColor="#6D28D9" iconBg="rgba(124,58,237,0.12)" />
+          <StatCard label="Toplam Paylaşım" value={totalShares.toLocaleString('en-US')} icon={TrendingUp}    iconColor="var(--success)" iconBg="rgba(34,197,94,0.12)" />
+          <StatCard label="Metrik Kaydı"   value={metrics.length}                       icon={MessageCircle} iconColor="var(--primary-ink)" iconBg="rgba(124,58,237,0.12)" />
         </div>
 
         {chartData.length > 0 && (

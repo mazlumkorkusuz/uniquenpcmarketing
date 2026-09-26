@@ -67,8 +67,8 @@ export default async function TikTokPlanlama() {
       <div style={{ padding: '24px 32px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px', marginBottom: '28px' }}>
           <StatCard label="Toplam Gönderi"  value={total}          icon={TrendingUp}  iconColor={COLOR}     iconBg={`${tint(COLOR, 13)}`} />
-          <StatCard label="Planlandı"        value={scheduledCount} icon={Clock}       iconColor="#1D4ED8"  iconBg="rgba(59,130,246,0.12)" />
-          <StatCard label="Yayınlandı"       value={publishedCount} icon={CheckCircle} iconColor="#047857"  iconBg="rgba(34,197,94,0.12)" />
+          <StatCard label="Planlandı"        value={scheduledCount} icon={Clock}       iconColor="var(--info)"  iconBg="rgba(59,130,246,0.12)" />
+          <StatCard label="Yayınlandı"       value={publishedCount} icon={CheckCircle} iconColor="var(--success)"  iconBg="rgba(34,197,94,0.12)" />
         </div>
 
         {/* Calendar placeholder */}

@@ -38,11 +38,11 @@ export default async function MailServisiPage() {
 
       <div style={{ padding: '24px 32px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px' }}>
-          <StatCard label="Kampanya" value={campaigns.length} icon={Users} iconColor="#6D28D9" iconBg="rgba(124,58,237,0.15)" />
-          <StatCard label="Gönderilen" value={sent.toLocaleString('tr-TR')} icon={Send} iconColor="#1D4ED8" iconBg="rgba(59,130,246,0.15)" />
-          <StatCard label="Açılma Oranı" value={percent(opens, sent)} icon={MailOpen} iconColor="#0F766E" iconBg="rgba(20,184,166,0.15)" />
-          <StatCard label="Yanıt Oranı" value={percent(replies, sent)} icon={Reply} iconColor="#047857" iconBg="rgba(34,197,94,0.15)" />
-          <StatCard label="Bounce Oranı" value={percent(bounces, sent + bounces)} icon={AlertTriangle} iconColor="#B91C1C" iconBg="rgba(239,68,68,0.15)" />
+          <StatCard label="Kampanya" value={campaigns.length} icon={Users} iconColor="var(--primary-ink)" iconBg="rgba(124,58,237,0.15)" />
+          <StatCard label="Gönderilen" value={sent.toLocaleString('tr-TR')} icon={Send} iconColor="var(--info)" iconBg="rgba(59,130,246,0.15)" />
+          <StatCard label="Açılma Oranı" value={percent(opens, sent)} icon={MailOpen} iconColor="var(--teal)" iconBg="rgba(20,184,166,0.15)" />
+          <StatCard label="Yanıt Oranı" value={percent(replies, sent)} icon={Reply} iconColor="var(--success)" iconBg="rgba(34,197,94,0.15)" />
+          <StatCard label="Bounce Oranı" value={percent(bounces, sent + bounces)} icon={AlertTriangle} iconColor="var(--danger)" iconBg="rgba(239,68,68,0.15)" />
         </div>
 
         <Card

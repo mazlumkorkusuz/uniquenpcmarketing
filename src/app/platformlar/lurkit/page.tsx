@@ -205,7 +205,7 @@ export default async function LurkitPage() {
           </div>
           {notes.length === 0 ? (
             <div style={{ padding: '40px', textAlign: 'center' }}>
-              <FileText size={28} color="#655F7D" style={{ margin: '0 auto 12px' }} />
+              <FileText size={28} color="var(--muted-foreground)" style={{ margin: '0 auto 12px' }} />
               <div style={{ fontSize: '14px', color: 'var(--muted-foreground)' }}>
                 Henüz Lurkit notu yok.{' '}
                 <Link href="/notlar" style={{ color: 'var(--orange)', textDecoration: 'none' }}>

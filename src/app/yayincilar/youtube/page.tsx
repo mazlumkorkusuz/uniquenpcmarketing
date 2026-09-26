@@ -406,7 +406,7 @@ export default function YouTubePage() {
           </div>
 
           <div style={statCardStyle('var(--orange)')}>
-            <StatCardHeader icon={<Mail size={17} />} color="#B45309" label="Email Olan" />
+            <StatCardHeader icon={<Mail size={17} />} color="var(--warning)" label="Email Olan" />
             <div style={statValueStyle}>{auxLoading ? '…' : emailCount.toLocaleString('tr-TR')}</div>
             <div style={statSubStyle}>{pct(emailCount)}</div>
           </div>
@@ -418,13 +418,13 @@ export default function YouTubePage() {
           </div>
 
           <div style={statCardStyle('var(--info)')}>
-            <StatCardHeader icon={<Flag size={17} />} color="#1D4ED8" label="Ülke Sayısı" />
+            <StatCardHeader icon={<Flag size={17} />} color="var(--info)" label="Ülke Sayısı" />
             <div style={statValueStyle}>{auxLoading ? '…' : countryOptions.length.toLocaleString('tr-TR')}</div>
             <div style={statSubStyle}>Farklı ülke</div>
           </div>
 
           <div style={statCardStyle('var(--success)')}>
-            <StatCardHeader icon={<TrendingUp size={17} />} color="#047857" label="Toplam Abone" />
+            <StatCardHeader icon={<TrendingUp size={17} />} color="var(--success)" label="Toplam Abone" />
             <div style={statValueStyle}>{auxLoading ? '…' : fmt(stats.totalFollowers)}</div>
             <div style={statSubStyle}>Tüm kanallar toplamı</div>
           </div>

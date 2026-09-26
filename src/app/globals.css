@@ -268,6 +268,8 @@ html {
 }
 
 body {
+  margin: 0;
+  min-height: 100vh;
   background-color: var(--bg);
   color: var(--ink);
   font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
@@ -368,7 +370,7 @@ textarea:focus-visible {
 .app-main::before {
   content: '';
   position: fixed;
-  inset: 0 0 0 248px;
+  inset: 0 0 0 256px;
   z-index: -1;
   pointer-events: none;
   background:
@@ -390,7 +392,8 @@ textarea:focus-visible {
 }
 
 /* ---------- Cards (inline `var(--shadow-card)` surfaces = MASTER bento card) ---------- */
-.app-main [style*='var(--shadow-card)'] {
+.app-main [style*='var(--shadow-card)'],
+.app-main .glass-card {
   border-radius: var(--r-lg) !important;
   -webkit-backdrop-filter: blur(18px) saturate(140%);
   backdrop-filter: blur(18px) saturate(140%);
@@ -405,7 +408,8 @@ textarea:focus-visible {
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .app-main [style*='var(--shadow-card)']:hover {
+  .app-main [style*='var(--shadow-card)']:hover,
+  .app-main .glass-card:hover {
     --spot: 1;
     transform: translateY(-4px);
     border-color: var(--line-2) !important;
@@ -419,11 +423,22 @@ textarea:focus-visible {
 }
 
 .app-main thead th {
+  height: 40px;
   font-size: 12px !important;
-  font-weight: 600 !important;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--ink-3) !important;
+  font-weight: 500 !important;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--muted-foreground) !important;
+  background-color: color-mix(in srgb, var(--muted) 60%, transparent) !important;
+  border-bottom: 1px solid var(--border) !important;
+}
+
+.app-main tbody tr {
+  border-bottom: 1px solid var(--border);
+}
+
+.app-main tbody tr:last-child {
+  border-bottom: 0;
 }
 
 .app-main tbody tr td {
@@ -497,8 +512,8 @@ textarea:focus-visible {
 
 /* ---------- App shell (sidebar + main) ---------- */
 .app-main {
-  margin-left: 248px;
-  max-width: calc(100vw - 248px);
+  margin-left: 256px;
+  max-width: calc(100vw - 256px);
 }
 
 .app-topbar,
@@ -555,7 +570,7 @@ textarea:focus-visible {
 
 /* ---------- Sidebar ---------- */
 .app-sidebar {
-  width: 248px;
+  width: 256px;
   font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
   color-scheme: dark;
   background: var(--sidebar);
@@ -578,7 +593,7 @@ textarea:focus-visible {
 .nav-item {
   display: flex;
   align-items: center;
-  height: 32px;
+  height: 34px;
   border-radius: 10px;
   color: var(--sidebar-muted);
   font-size: 14px;
@@ -1065,4 +1080,55 @@ textarea:focus-visible {
 .theme-toggle button:focus-visible {
   outline: 2px solid var(--sidebar-ring);
   outline-offset: 1px;
+}
+
+
+/* ---------- Glass card (shadcn Card with the page-card surface) ---------- */
+.app-main .glass-card {
+  position: relative;
+  background-color: var(--glass);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-card);
+  --tw-ring-shadow: 0 0 #0000;
+}
+
+/* Tremor-style KPI: a gold stripe wakes up along the top edge on hover */
+.kpi-card::after {
+  content: '';
+  position: absolute;
+  inset: 0 18px auto 18px;
+  height: 2px;
+  border-radius: 0 0 2px 2px;
+  background: var(--gradient);
+  opacity: 0;
+  transform: scaleX(0.4);
+  transition: opacity 200ms var(--ease-out), transform 300ms var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .kpi-card:hover::after {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+
+/* ---------- Sidebar workspace card (dashboard-01 team switcher look) ---------- */
+.sidebar-workspace {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  margin: 14px 12px 10px;
+  padding: 10px;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--sidebar-foreground) 5%, transparent);
+  border: 1px solid var(--sidebar-border);
+}
+
+.app-sidebar .nav-item a {
+  font-weight: 500;
+}
+
+.app-sidebar .nav-item.active a svg {
+  color: var(--sidebar-primary);
 }

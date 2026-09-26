@@ -153,13 +153,13 @@ export default function Sidebar({ open = false }: { open?: boolean }) {
 
   return (
     <aside id="app-sidebar" className={open ? 'app-sidebar open' : 'app-sidebar'}>
-      {/* Workspace */}
-      <div style={{ padding: '16px 14px 8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+      {/* Workspace (dashboard-01 style team card) */}
+      <div className="sidebar-workspace">
         <div
           style={{
-            width: '28px',
-            height: '28px',
-            borderRadius: '8px',
+            width: '34px',
+            height: '34px',
+            borderRadius: '10px',
             overflow: 'hidden',
             flexShrink: 0,
             backgroundColor: 'var(--card)',
@@ -169,14 +169,14 @@ export default function Sidebar({ open = false }: { open?: boolean }) {
           <Image
             src="/uniqlogo.png"
             alt="Unique NPC Games"
-            width={28}
-            height={28}
+            width={34}
+            height={34}
             style={{ display: 'block', width: '100%', height: '100%', objectFit: 'contain' }}
             priority
           />
         </div>
         <div style={{ minWidth: 0 }}>
-          <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--sidebar-foreground)', lineHeight: 1.2, letterSpacing: '-0.01em' }}>
+          <div style={{ fontFamily: 'var(--font-display)', fontSize: '15px', fontWeight: 700, color: 'var(--sidebar-foreground)', lineHeight: 1.15, letterSpacing: '-0.02em' }}>
             Unique NPC
           </div>
           <div style={{ fontSize: '12px', color: 'var(--sidebar-muted)', marginTop: '1px' }}>Marketing</div>
@@ -184,7 +184,7 @@ export default function Sidebar({ open = false }: { open?: boolean }) {
       </div>
 
       {/* Nav */}
-      <nav style={{ padding: '8px 10px', flex: 1, overflowY: 'auto' }}>
+      <nav style={{ padding: '6px 12px 12px', flex: 1, overflowY: 'auto' }}>
         {navItems.map((item) => {
           const Icon = item.icon
           const hasChildren = !!item.children
@@ -244,7 +244,7 @@ export default function Sidebar({ open = false }: { open?: boolean }) {
       </nav>
 
       {/* Account */}
-      <div style={{ padding: '10px', borderTop: '1px solid var(--sidebar-border)', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+      <div style={{ padding: '12px', borderTop: '1px solid var(--sidebar-border)', display: 'flex', flexDirection: 'column', gap: '10px' }}>
         <ThemeToggle />
         <div className="sidebar-user">
           <div

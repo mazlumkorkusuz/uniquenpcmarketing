@@ -105,9 +105,9 @@ export async function PlatformPage({ platform, label, color, gradient, icon, ima
       <div style={{ padding: '24px 32px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '16px', marginBottom: '28px' }}>
           <StatCard label="Toplam Gönderi" value={total}     icon={FileText}    iconColor={color}    iconBg={tint(color, 13)} />
-          <StatCard label="Planlandı"      value={planned}   icon={Calendar}    iconColor="#1D4ED8"  iconBg="rgba(59,130,246,0.12)" />
-          <StatCard label="Yayınlandı"     value={published} icon={CheckCircle} iconColor="#047857"  iconBg="rgba(34,197,94,0.12)" />
-          <StatCard label="Taslak"         value={drafts}    icon={Clock}       iconColor="#4A4462"  iconBg="rgba(100,116,139,0.12)" />
+          <StatCard label="Planlandı"      value={planned}   icon={Calendar}    iconColor="var(--info)"  iconBg="rgba(59,130,246,0.12)" />
+          <StatCard label="Yayınlandı"     value={published} icon={CheckCircle} iconColor="var(--success)"  iconBg="rgba(34,197,94,0.12)" />
+          <StatCard label="Taslak"         value={drafts}    icon={Clock}       iconColor="var(--text-2)"  iconBg="rgba(100,116,139,0.12)" />
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: '24px', marginBottom: '28px', alignItems: 'start' }}>

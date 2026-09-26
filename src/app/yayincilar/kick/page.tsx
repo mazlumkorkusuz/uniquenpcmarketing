@@ -418,21 +418,21 @@ export default function KickPage() {
 
           {/* Email Olan */}
           <div style={statCardStyle('var(--orange)')}>
-            <StatCardHeader icon={<Mail size={17} />} color="#B45309" label="Email Olan" />
+            <StatCardHeader icon={<Mail size={17} />} color="var(--warning)" label="Email Olan" />
             <div style={statValueStyle}>{auxLoading ? '…' : stats.emailCount.toLocaleString('tr-TR')}</div>
             <div style={statSubStyle}>{auxLoading || stats.totalStreamers === 0 ? '—' : `%${Math.round((stats.emailCount / stats.totalStreamers) * 100)} kapsam`}</div>
           </div>
 
           {/* En az 1 iletişim/sosyal */}
           <div style={statCardStyle('var(--info)')}>
-            <StatCardHeader icon={<Share2 size={17} />} color="#1D4ED8" label="İletişim / Sosyal Medya" />
+            <StatCardHeader icon={<Share2 size={17} />} color="var(--info)" label="İletişim / Sosyal Medya" />
             <div style={statValueStyle}>{auxLoading ? '…' : stats.anyContactCount.toLocaleString('tr-TR')}</div>
             <div style={statSubStyle}>{auxLoading || stats.totalStreamers === 0 ? '—' : `%${Math.round((stats.anyContactCount / stats.totalStreamers) * 100)} en az 1 kanal`}</div>
           </div>
 
           {/* Toplam Takipçi */}
           <div style={statCardStyle('var(--success)')}>
-            <StatCardHeader icon={<TrendingUp size={17} />} color="#047857" label="Toplam Takipçi" />
+            <StatCardHeader icon={<TrendingUp size={17} />} color="var(--success)" label="Toplam Takipçi" />
             <div style={statValueStyle}>{auxLoading ? '…' : fmt(stats.totalFollowers)}</div>
             <div style={statSubStyle}>Tüm kanallar toplamı</div>
           </div>
@@ -462,7 +462,7 @@ export default function KickPage() {
 
           {/* Ortalama Yayın Sayısı (wide) */}
           <div style={{ ...statCardStyle('var(--primary-ink)'), gridColumn: 'span 2' }}>
-            <StatCardHeader icon={<Video size={17} />} color="#6D28D9" label="Ortalama Yayın Sayısı" />
+            <StatCardHeader icon={<Video size={17} />} color="var(--primary-ink)" label="Ortalama Yayın Sayısı" />
             <div style={statValueStyle}>{auxLoading ? '…' : stats.avgStreamCount.toLocaleString('tr-TR', { maximumFractionDigits: 1 })}</div>
             <div style={statSubStyle}>Kanal başına ortalama yayın sayısı</div>
           </div>

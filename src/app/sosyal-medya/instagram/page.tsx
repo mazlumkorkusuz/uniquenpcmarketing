@@ -68,8 +68,8 @@ export default async function InstagramPage() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px', marginBottom: '28px' }}>
           <StatCard label="Toplam Gönderi"  value={posts.length}                            icon={Share2}       iconColor="#e1306c" iconBg="rgba(225,48,108,0.12)" />
           <StatCard label="Toplam Beğeni"   value={totalLikes.toLocaleString('en-US')}      icon={Heart}        iconColor="#BE185D" iconBg="rgba(244,114,182,0.12)" />
-          <StatCard label="Toplam Yorum"    value={totalComments.toLocaleString('en-US')}   icon={MessageCircle} iconColor="#6D28D9" iconBg="rgba(124,58,237,0.12)" />
-          <StatCard label="Metrik Kaydı"    value={metrics.length}                          icon={TrendingUp}   iconColor="#047857" iconBg="rgba(34,197,94,0.12)" />
+          <StatCard label="Toplam Yorum"    value={totalComments.toLocaleString('en-US')}   icon={MessageCircle} iconColor="var(--primary-ink)" iconBg="rgba(124,58,237,0.12)" />
+          <StatCard label="Metrik Kaydı"    value={metrics.length}                          icon={TrendingUp}   iconColor="var(--success)" iconBg="rgba(34,197,94,0.12)" />
         </div>
 
         {chartData.length > 0 && (

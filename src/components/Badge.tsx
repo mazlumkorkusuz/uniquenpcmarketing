@@ -1,14 +1,16 @@
+import { Badge as UIBadge } from '@/components/ui/badge'
+
 type BadgeVariant = 'green' | 'purple' | 'blue' | 'orange' | 'red' | 'gray' | 'teal'
 
-// MASTER status tag: tinted background + matching ink (4.5:1+), 6px dot
+// Status badge on shadcn Badge: a soft tint of the status colour with its ink and a dot.
 const styles: Record<BadgeVariant, { bg: string; color: string }> = {
-  green:  { bg: '#ECFDF5', color: 'var(--success)' },
+  green:  { bg: 'var(--success-soft)', color: 'var(--success)' },
   purple: { bg: 'var(--primary-soft)', color: 'var(--primary-ink)' },
-  blue:   { bg: '#EFF6FF', color: 'var(--info)' },
-  orange: { bg: '#FFF7ED', color: 'var(--orange)' },
-  red:    { bg: '#FEF2F2', color: 'var(--danger)' },
-  gray:   { bg: 'var(--muted)', color: 'var(--text-2)' },
-  teal:   { bg: '#F0FDFA', color: 'var(--teal)' },
+  blue:   { bg: 'var(--info-soft)',    color: 'var(--info)' },
+  orange: { bg: 'var(--orange-soft)',  color: 'var(--orange)' },
+  red:    { bg: 'var(--danger-soft)',  color: 'var(--danger)' },
+  gray:   { bg: 'var(--muted)',        color: 'var(--text-2)' },
+  teal:   { bg: 'var(--teal-soft)',    color: 'var(--teal)' },
 }
 
 interface BadgeProps {
@@ -19,23 +21,14 @@ interface BadgeProps {
 export default function Badge({ variant = 'gray', children }: BadgeProps) {
   const s = styles[variant]
   return (
-    <span
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: '6px',
-        padding: '3px 8px',
-        borderRadius: 'var(--r-sm)',
-        fontSize: '12px',
-        fontWeight: 600,
-        backgroundColor: s.bg,
-        color: s.color,
-        whiteSpace: 'nowrap',
-      }}
+    <UIBadge
+      variant="outline"
+      className="h-6 gap-1.5 rounded-md border-transparent px-2 text-xs font-semibold"
+      style={{ backgroundColor: s.bg, color: s.color }}
     >
-      <span aria-hidden style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'currentColor', flexShrink: 0 }} />
+      <span aria-hidden className="size-1.5 rounded-full bg-current" />
       {children}
-    </span>
+    </UIBadge>
   )
 }
 

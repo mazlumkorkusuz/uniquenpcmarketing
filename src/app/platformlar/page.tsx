@@ -281,7 +281,7 @@ export default async function PlatformlarPage() {
                     <td style={{ padding: '16px 20px', whiteSpace: 'nowrap' }}>
                       {p.last_edited_by ? (
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-2)', fontSize: '13px' }}>
-                          <User size={13} color="#655F7D" />
+                          <User size={13} color="var(--muted-foreground)" />
                           {String(p.last_edited_by)}
                         </div>
                       ) : <span style={{ color: 'var(--muted-foreground)' }}>—</span>}

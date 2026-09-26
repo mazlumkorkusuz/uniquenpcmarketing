@@ -124,9 +124,9 @@ export default function TwitterPage() {
         {/* Stats */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px', marginBottom: '28px' }}>
           <StatCard label="Toplam Hesap"   value={accounts.length}                        icon={Users}      iconColor="#1d9bf0" iconBg="rgba(29,155,240,0.12)" />
-          <StatCard label="Toplam Takipçi" value={totalFollowers.toLocaleString('en-US')} icon={TrendingUp} iconColor="#047857" iconBg="rgba(34,197,94,0.12)" />
-          <StatCard label="Yüksek Öncelik" value={highPriority}                           icon={Zap}        iconColor="#B91C1C" iconBg="rgba(239,68,68,0.12)" />
-          <StatCard label="Ort. Puan"      value={avgScore}                               icon={Star}       iconColor="#B45309" iconBg="rgba(234,179,8,0.12)" />
+          <StatCard label="Toplam Takipçi" value={totalFollowers.toLocaleString('en-US')} icon={TrendingUp} iconColor="var(--success)" iconBg="rgba(34,197,94,0.12)" />
+          <StatCard label="Yüksek Öncelik" value={highPriority}                           icon={Zap}        iconColor="var(--danger)" iconBg="rgba(239,68,68,0.12)" />
+          <StatCard label="Ort. Puan"      value={avgScore}                               icon={Star}       iconColor="var(--warning)" iconBg="rgba(234,179,8,0.12)" />
         </div>
 
         {/* Table card */}

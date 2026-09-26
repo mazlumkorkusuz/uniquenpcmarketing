@@ -12,9 +12,8 @@ import {
 } from 'recharts'
 
 const COLORS = [
-  'var(--primary-ink)', 'var(--info)', 'var(--teal)', 'var(--success)',
-  'var(--warning)', 'var(--danger)', 'var(--rose)', 'var(--primary-ink)',
-  'var(--teal)', 'var(--success)',
+  'var(--chart-1)', 'var(--chart-2)', 'var(--chart-3)', 'var(--chart-4)', 'var(--chart-5)',
+  'var(--primary-ink)', 'var(--teal)', 'var(--info)', 'var(--warning)', 'var(--rose)',
 ]
 
 export type BudgetDatum = { name: string; value: number }
@@ -34,7 +33,7 @@ function CustomTooltip({ active, payload }: {
   if (!active || !payload?.length) return null
   const item = payload[0]
   return (
-    <div style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)', borderRadius: '8px', padding: '10px 14px', boxShadow: '0 4px 16px rgba(0,0,0,0.12)' }}>
+    <div style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)', borderRadius: '8px', padding: '10px 14px', boxShadow: 'var(--shadow-2)' }}>
       <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--foreground)', marginBottom: '4px' }}>{item.name}</div>
       <div style={{ fontSize: '13px', color: 'var(--success)', fontWeight: 600 }}>{fmt(item.value)}</div>
       <div style={{ fontSize: '11px', color: 'var(--muted-foreground)', marginTop: '2px' }}>{(item.payload.percent * 100).toFixed(1)}%</div>
@@ -94,10 +93,10 @@ export default function BudgetDonutChart({ data }: { data: BudgetDatum[] }) {
               if (!vb) return null
               return (
                 <g>
-                  <text x={vb.cx} y={vb.cy - 10} textAnchor="middle" fill="#655F7D" fontSize={11}>
+                  <text x={vb.cx} y={vb.cy - 10} textAnchor="middle" fill="var(--muted-foreground)" fontSize={11}>
                     TOPLAM
                   </text>
-                  <text x={vb.cx} y={vb.cy + 13} textAnchor="middle" fill="#17122B" fontSize={20} fontWeight={700}>
+                  <text x={vb.cx} y={vb.cy + 13} textAnchor="middle" fill="var(--foreground)" fontSize={20} fontWeight={700}>
                     {fmt(total)}
                   </text>
                 </g>

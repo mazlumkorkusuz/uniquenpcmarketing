@@ -755,8 +755,8 @@
   align-items: center;
   gap: 10px;
   font-size: 13px;
-  font-weight: 600;
-  color: var(--ink-2);
+  font-weight: 500;
+  color: var(--muted-foreground);
 }
 
 .kpiIcon {
@@ -800,9 +800,9 @@
 
 .kpiValue {
   font-family: var(--font-display), sans-serif;
-  font-size: 32px;
-  font-weight: 600;
-  letter-spacing: -0.03em;
+  font-size: 36px;
+  font-weight: 700;
+  letter-spacing: -0.035em;
   line-height: 1;
   font-variant-numeric: tabular-nums;
   color: var(--ink);
@@ -1687,5 +1687,28 @@ a.rankRow:hover .capsule {
   .newsCard:hover .newsThumb,
   .featureCard:hover .featureMedia img {
     transform: none;
+  }
+}
+
+
+/* Tremor-style KPI accent: a gold stripe wakes up along the top edge on hover */
+.kpiCard::before {
+  content: '';
+  position: absolute;
+  inset: 0 18px auto 18px;
+  z-index: 3;
+  height: 2px;
+  border-radius: 0 0 2px 2px;
+  background: var(--gradient);
+  opacity: 0;
+  transform: scaleX(0.4);
+  transition: opacity 200ms var(--ease-out), transform 300ms var(--ease-out);
+  pointer-events: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .kpiCard:hover::before {
+    opacity: 1;
+    transform: scaleX(1);
   }
 }

@@ -184,11 +184,11 @@ function SalesHistoryChart({ history }: { history: HistoryPoint[] }) {
   return (
     <ResponsiveContainer width="100%" height={180}>
       <LineChart data={data} margin={{ top: 4, right: 8, bottom: 0, left: 0 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#E8E4F1" vertical={false} />
-        <XAxis dataKey="date" tick={{ fontSize: 10, fill: '#655F7D' }} tickLine={false} axisLine={false} interval={step - 1} />
-        <YAxis tick={{ fontSize: 10, fill: '#655F7D' }} tickLine={false} axisLine={false} tickFormatter={fmtTick} width={40} />
+        <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+        <XAxis dataKey="date" tick={{ fontSize: 10, fill: 'var(--muted-foreground)' }} tickLine={false} axisLine={false} interval={step - 1} />
+        <YAxis tick={{ fontSize: 10, fill: 'var(--muted-foreground)' }} tickLine={false} axisLine={false} tickFormatter={fmtTick} width={40} />
         <Tooltip content={<ChartTooltip />} />
-        <Line type="monotone" dataKey="sales" stroke="#6D28D9" strokeWidth={2} dot={false} activeDot={{ r: 4, fill: '#6D28D9' }} />
+        <Line type="monotone" dataKey="sales" stroke="var(--chart-1)" strokeWidth={2} dot={false} activeDot={{ r: 4, fill: 'var(--primary-ink)' }} />
       </LineChart>
     </ResponsiveContainer>
   )
@@ -202,8 +202,8 @@ function Collapsible({ title, icon: Icon, children }: {
     <div style={CARD_STYLE}>
       <button onClick={() => setOpen(o => !o)}
         style={{ width: '100%', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 0 }}>
-        <span style={{ ...SECTION_TITLE, marginBottom: 0 }}><Icon size={13} color="#4A4462" /> {title}</span>
-        {open ? <ChevronUp size={15} color="#655F7D" /> : <ChevronDown size={15} color="#655F7D" />}
+        <span style={{ ...SECTION_TITLE, marginBottom: 0 }}><Icon size={13} color="var(--text-2)" /> {title}</span>
+        {open ? <ChevronUp size={15} color="var(--muted-foreground)" /> : <ChevronDown size={15} color="var(--muted-foreground)" />}
       </button>
       {open && <div style={{ marginTop: '14px' }}>{children}</div>}
     </div>
@@ -355,28 +355,28 @@ export default function GamalyticPage() {
                       <div style={{ fontSize: '10px', color: 'var(--orange)', fontWeight: 600, letterSpacing: '0.04em' }}>METACRİTİC</div>
                       <div style={{ fontSize: '11px', color: 'var(--text-2)' }}>İncele</div>
                     </div>
-                    <ExternalLink size={12} color="#655F7D" />
+                    <ExternalLink size={12} color="var(--muted-foreground)" />
                   </a>
                 )}
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(148px, 1fr))', gap: '10px' }}>
-                <StatCard icon={DollarSign} iconColor="#047857"  iconBg="rgba(34,197,94,0.12)"   label="Tahmini Gelir"  value={fmtUSD(d?.revenue)} />
-                <StatCard icon={Globe}      iconColor="#1D4ED8"  iconBg="rgba(59,130,246,0.12)"  label="Satılan Kopya"  value={fmt(d?.copiesSold)} />
-                <StatCard icon={Star}       iconColor="#B45309"  iconBg="rgba(245,158,11,0.12)"  label="İnceleme Skoru" value={d?.reviewScore != null ? `${d.reviewScore}/100` : '—'} />
-                <StatCard icon={Heart}      iconColor="#B91C1C"  iconBg="rgba(239,68,68,0.12)"   label="Takipçi"        value={fmt(d?.followers)} />
-                <StatCard icon={Users}      iconColor="#C2410C"  iconBg="rgba(249,115,22,0.12)"  label="Toplam Oyuncu"  value={fmt(d?.players)} />
-                <StatCard icon={TrendingUp} iconColor="#6D28D9"  iconBg="rgba(124,58,237,0.12)"  label="İstek Listesi"  value={fmt(d?.wishlists)} />
-                <StatCard icon={Clock}      iconColor="#0F766E"  iconBg="rgba(20,184,166,0.12)"  label="Ort. Oynama"    value={d?.avgPlaytime != null ? `${Number(d.avgPlaytime).toFixed(1)} saat` : '—'} />
+                <StatCard icon={DollarSign} iconColor="var(--success)"  iconBg="rgba(34,197,94,0.12)"   label="Tahmini Gelir"  value={fmtUSD(d?.revenue)} />
+                <StatCard icon={Globe}      iconColor="var(--info)"  iconBg="rgba(59,130,246,0.12)"  label="Satılan Kopya"  value={fmt(d?.copiesSold)} />
+                <StatCard icon={Star}       iconColor="var(--warning)"  iconBg="rgba(245,158,11,0.12)"  label="İnceleme Skoru" value={d?.reviewScore != null ? `${d.reviewScore}/100` : '—'} />
+                <StatCard icon={Heart}      iconColor="var(--danger)"  iconBg="rgba(239,68,68,0.12)"   label="Takipçi"        value={fmt(d?.followers)} />
+                <StatCard icon={Users}      iconColor="var(--orange)"  iconBg="rgba(249,115,22,0.12)"  label="Toplam Oyuncu"  value={fmt(d?.players)} />
+                <StatCard icon={TrendingUp} iconColor="var(--primary-ink)"  iconBg="rgba(124,58,237,0.12)"  label="İstek Listesi"  value={fmt(d?.wishlists)} />
+                <StatCard icon={Clock}      iconColor="var(--teal)"  iconBg="rgba(20,184,166,0.12)"  label="Ort. Oynama"    value={d?.avgPlaytime != null ? `${Number(d.avgPlaytime).toFixed(1)} saat` : '—'} />
               </div>
               {d?.history && d.history.length > 1 && (
                 <div style={CARD_STYLE}>
-                  <div style={SECTION_TITLE}><TrendingUp size={13} color="#4A4462" /> Satış Geçmişi</div>
+                  <div style={SECTION_TITLE}><TrendingUp size={13} color="var(--text-2)" /> Satış Geçmişi</div>
                   <SalesHistoryChart history={d.history} />
                 </div>
               )}
               {d?.countryData && Object.keys(d.countryData).length > 0 && (
                 <div style={CARD_STYLE}>
-                  <div style={SECTION_TITLE}><Globe size={13} color="#4A4462" /> Ülke Dağılımı (Top 10)</div>
+                  <div style={SECTION_TITLE}><Globe size={13} color="var(--text-2)" /> Ülke Dağılımı (Top 10)</div>
                   <CountryDistribution data={d.countryData} />
                 </div>
               )}
@@ -396,7 +396,7 @@ export default function GamalyticPage() {
               )}
               {s?.dlc && s.dlc.length > 0 && (
                 <div style={CARD_STYLE}>
-                  <div style={SECTION_TITLE}><Gamepad2 size={13} color="#4A4462" /> DLC ({s.dlc.length})</div>
+                  <div style={SECTION_TITLE}><Gamepad2 size={13} color="var(--text-2)" /> DLC ({s.dlc.length})</div>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                     {s.dlc.slice(0, 20).map(id => (
                       <a key={id} href={`https://store.steampowered.com/app/${id}`} target="_blank" rel="noopener noreferrer"
@@ -414,7 +414,7 @@ export default function GamalyticPage() {
             <div style={{ width: '280px', flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '14px', position: 'sticky', top: '16px' }}>
               {d?.tags && d.tags.length > 0 && (
                 <div style={CARD_STYLE}>
-                  <div style={SECTION_TITLE}><Tag size={13} color="#4A4462" /> Etiketler</div>
+                  <div style={SECTION_TITLE}><Tag size={13} color="var(--text-2)" /> Etiketler</div>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', maxHeight: '300px', overflowY: 'auto' }}>
                     {d.tags.map((tag, i) => {
                       const [bg, color] = TAG_COLORS[i % TAG_COLORS.length]
@@ -425,7 +425,7 @@ export default function GamalyticPage() {
               )}
               {(d?.prediction1Month != null || d?.prediction1Year != null) && (
                 <div style={CARD_STYLE}>
-                  <div style={SECTION_TITLE}><TrendingUp size={13} color="#4A4462" /> Satış Tahminleri</div>
+                  <div style={SECTION_TITLE}><TrendingUp size={13} color="var(--text-2)" /> Satış Tahminleri</div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     {d?.prediction1Month != null && <div style={{ backgroundColor: 'var(--card)', borderRadius: '8px', padding: '12px' }}>
                       <div style={{ fontSize: '10px', color: 'var(--muted-foreground)', fontWeight: 600, marginBottom: '4px' }}>1 Aylık Tahmin</div>
@@ -455,13 +455,13 @@ export default function GamalyticPage() {
               {(genres.length > 0 || features.length > 0) && (
                 <div style={CARD_STYLE}>
                   {genres.length > 0 && <>
-                    <div style={SECTION_TITLE}><BarChart2 size={13} color="#4A4462" /> Türler</div>
+                    <div style={SECTION_TITLE}><BarChart2 size={13} color="var(--text-2)" /> Türler</div>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: features.length ? '12px' : 0 }}>
                       {genres.map(g => <span key={g} style={{ fontSize: '11px', color: 'var(--primary-ink)', backgroundColor: 'color-mix(in srgb, var(--primary) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--primary) 20%, transparent)', borderRadius: '5px', padding: '3px 8px' }}>{g}</span>)}
                     </div>
                   </>}
                   {features.length > 0 && <>
-                    <div style={{ ...SECTION_TITLE, marginTop: genres.length ? '4px' : 0 }}><Star size={13} color="#4A4462" /> Özellikler</div>
+                    <div style={{ ...SECTION_TITLE, marginTop: genres.length ? '4px' : 0 }}><Star size={13} color="var(--text-2)" /> Özellikler</div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
                       {features.slice(0, 12).map(f => (
                         <div key={f} style={{ fontSize: '12px', color: 'var(--text-2)', display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -531,7 +531,7 @@ export default function GamalyticPage() {
         <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', alignItems: 'center' }}>
           <div style={{ flex: 1, maxWidth: '560px', position: 'relative' }}>
             <div style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}>
-              <Search size={17} color="#655F7D" />
+              <Search size={17} color="var(--muted-foreground)" />
             </div>
             <input
               className="search-input"
@@ -640,7 +640,7 @@ export default function GamalyticPage() {
         ) : !searchHistory.length ? (
           <div style={{ textAlign: 'center', padding: '48px 20px' }}>
             <div style={{ width: '64px', height: '64px', borderRadius: '16px', background: 'linear-gradient(135deg, #7c3aed22, #4f46e522)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
-              <BarChart2 size={28} color="#6D28D9" />
+              <BarChart2 size={28} color="var(--primary-ink)" />
             </div>
             <div style={{ fontSize: '16px', fontWeight: 600, color: 'var(--foreground)', marginBottom: '6px' }}>Oyun Analitikleri</div>
             <div style={{ fontSize: '13px', color: 'var(--muted-foreground)' }}>Aramak istediğiniz Steam oyununun adını yazın</div>
