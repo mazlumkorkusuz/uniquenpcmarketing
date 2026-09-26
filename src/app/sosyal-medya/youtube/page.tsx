@@ -5,6 +5,7 @@ import PageHeader from '@/components/PageHeader'
 import { Search, X, ExternalLink, Mail, Globe, Trash2, BarChart3 } from 'lucide-react'
 import Image from 'next/image'
 import { inkOf } from '@/lib/theme'
+import SlideDrawer from '@/components/motion/SlideDrawer'
 
 type Row = Record<string, unknown>
 type SortKey = 'subscribers' | 'avg_long_views' | 'avg_shorts_views' | 'game_count' | 'score'
@@ -422,17 +423,16 @@ export default function YouTubePage() {
           </div>
 
         {/* Overlay + detail panel */}
-        {selected && (
-          <>
-            <div onClick={() => setSelected(null)} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(23,18,43,0.35)', zIndex: 999 }} />
+        <SlideDrawer item={selected} onClose={() => setSelected(null)}>
+          {(row) => (
             <DetailPanel
-              row={selected}
+              row={row}
               onClose={() => setSelected(null)}
               onDelete={deleteChannel}
               onNoteSave={saveNote}
             />
-          </>
-        )}
+          )}
+        </SlideDrawer>
       </div>
     </div>
   )

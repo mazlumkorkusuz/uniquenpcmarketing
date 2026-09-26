@@ -4,6 +4,7 @@ import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 import PageHeader from '@/components/PageHeader'
 import { Search, X, ExternalLink, Globe, Mail, ChevronLeft, ChevronRight, Users, Contact, Flag, TrendingUp, Link2 } from 'lucide-react'
 import { inkOf } from '@/lib/theme'
+import SlideDrawer from '@/components/motion/SlideDrawer'
 
 type Row = Record<string, unknown>
 type SortKey = 'channel_name' | 'followers' | 'country' | 'total_views' | 'long_video_avg_views' | 'shorts_avg_views' | 'live_avg_views'
@@ -565,12 +566,9 @@ export default function YouTubePage() {
         </div>
 
         {/* Overlay + drawer */}
-        {selected && (
-          <>
-            <div onClick={() => setSelected(null)} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(23,18,43,0.35)', zIndex: 999 }} />
-            <DetailPanel row={selected} onClose={() => setSelected(null)} />
-          </>
-        )}
+        <SlideDrawer item={selected} onClose={() => setSelected(null)}>
+          {(row) => <DetailPanel row={row} onClose={() => setSelected(null)} />}
+        </SlideDrawer>
       </div>
     </div>
   )

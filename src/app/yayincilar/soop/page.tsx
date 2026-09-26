@@ -4,6 +4,7 @@ import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 import PageHeader from '@/components/PageHeader'
 import { Search, X, ExternalLink, Mail, Globe, ChevronLeft, ChevronRight, Users, Share2, TrendingUp } from 'lucide-react'
 import { inkOf } from '@/lib/theme'
+import SlideDrawer from '@/components/motion/SlideDrawer'
 
 type Row = Record<string, unknown>
 type SortKey = 'channel_name' | 'followers' | 'vod_avg_views' | 'vod_count'
@@ -505,12 +506,9 @@ export default function SOOPPage() {
         </div>
 
         {/* Overlay + drawer */}
-        {selected && (
-          <>
-            <div onClick={() => setSelected(null)} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(23,18,43,0.35)', zIndex: 999 }} />
-            <DetailPanel row={selected} onClose={() => setSelected(null)} />
-          </>
-        )}
+        <SlideDrawer item={selected} onClose={() => setSelected(null)}>
+          {(row) => <DetailPanel row={row} onClose={() => setSelected(null)} />}
+        </SlideDrawer>
       </div>
     </div>
   )

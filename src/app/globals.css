@@ -227,8 +227,8 @@ textarea:focus-visible {
      inline glass fill */
   background-image: radial-gradient(360px circle at var(--mx, 50%) var(--my, -200px), rgba(124, 58, 237, calc(var(--spot) * 0.07)), transparent 60%);
   transition:
-    transform var(--dur-2) var(--ease-out),
-    box-shadow var(--dur-2) var(--ease-out),
+    transform var(--dur-1) var(--ease-out),
+    box-shadow var(--dur-1) var(--ease-out),
     border-color var(--dur-1) var(--ease-out),
     --spot var(--dur-2) var(--ease-out);
 }
@@ -236,15 +236,9 @@ textarea:focus-visible {
 @media (hover: hover) and (pointer: fine) {
   .app-main [style*='var(--shadow-card)']:hover {
     --spot: 1;
+    transform: translateY(-4px);
     border-color: var(--line-2) !important;
     box-shadow: var(--shadow-card-hover) !important;
-  }
-
-  /* Only clickable cards lift */
-  .app-main a[style*='var(--shadow-card)']:hover,
-  .app-main button[style*='var(--shadow-card)']:hover,
-  .app-main [role='button'][style*='var(--shadow-card)']:hover {
-    transform: translateY(-2px);
   }
 }
 
@@ -684,41 +678,6 @@ textarea:focus-visible {
 }
 
 
-/* ================= Route transitions (React <ViewTransition> in AppShell) ================= */
-/* The sidebar and shell stay still: only the page content cross-fades. The outgoing page leaves
-   fast with a slight blur; the new page arrives unanimated here because PageMotion staggers its
-   blocks in, so there is one entrance, not two. */
-::view-transition-old(root),
-::view-transition-new(root) {
-  animation: none;
-}
-
-::view-transition-old(.page-exit) {
-  animation: vt-leave 160ms cubic-bezier(0.4, 0, 1, 1) both;
-}
-
-::view-transition-new(.page-enter) {
-  animation: none;
-}
-
-@keyframes vt-leave {
-  to {
-    opacity: 0;
-    filter: blur(3px);
-    transform: translateY(-6px);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  ::view-transition-old(.page-exit) {
-    animation: vt-fade 120ms linear both;
-  }
-
-  @keyframes vt-fade {
-    to { opacity: 0; }
-  }
-}
-
 /* ================= Micro-interactions ================= */
 /* Directional icons lean toward where the control goes */
 .app-main a svg.lucide-arrow-right,
@@ -812,5 +771,90 @@ textarea:focus-visible {
     background-color: var(--surface) !important;
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
+  }
+}
+
+/* ================= Motion additions ================= */
+/* Detail drawers: the sliding layer spans the viewport but only the panel takes clicks */
+.drawer-layer > * {
+  pointer-events: auto;
+}
+
+/* Buttons: a slight scale and a soft shadow on hover (primary buttons keep their glow) */
+@media (hover: hover) and (pointer: fine) {
+  .app-main button:hover:not(:disabled),
+  .modal-surface button:hover:not(:disabled) {
+    transform: scale(1.02);
+    box-shadow: 0 4px 12px -4px rgba(23, 18, 43, 0.18);
+  }
+
+  .app-main button[style*='var(--gradient)']:hover:not(:disabled),
+  .modal-surface button[style*='var(--gradient)']:hover:not(:disabled) {
+    transform: scale(1.02);
+    box-shadow: var(--shadow-glow);
+  }
+}
+
+/* Filter toggles and tabs: colour, fill and border ease when toggled */
+.app-main button[aria-pressed],
+.app-main [role='tab'],
+.app-main button {
+  transition:
+    color 200ms var(--ease-out),
+    background-color 200ms var(--ease-out),
+    border-color 200ms var(--ease-out),
+    box-shadow 150ms var(--ease-out),
+    opacity 150ms var(--ease-out),
+    transform 150ms var(--ease-out);
+}
+
+/* Table rows: the hover tint eases in and out */
+.app-main tbody tr,
+.app-main tbody tr td {
+  transition: background-color 180ms var(--ease-out);
+}
+
+/* Sidebar: a bar slides in at the left edge on hover and settles full-height when active.
+   It uses the item's own text colour, so no new colours enter the console. */
+.nav-item,
+.sub-nav-item {
+  position: relative;
+}
+
+.nav-item::before,
+.sub-nav-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 7px;
+  bottom: 7px;
+  width: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  opacity: 0;
+  transform: translateX(-4px) scaleY(0.4);
+  transition:
+    opacity 200ms var(--ease-out),
+    transform 240ms var(--ease-out);
+  pointer-events: none;
+}
+
+.nav-item:hover::before,
+.sub-nav-item:hover::before {
+  opacity: 0.45;
+  transform: translateX(0) scaleY(0.6);
+}
+
+.nav-item.active::before,
+.sub-nav-item.active::before {
+  opacity: 1;
+  transform: translateX(0) scaleY(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-main button:hover:not(:disabled),
+  .modal-surface button:hover:not(:disabled),
+  .app-main [style*='var(--shadow-card)']:hover {
+    transform: none;
   }
 }

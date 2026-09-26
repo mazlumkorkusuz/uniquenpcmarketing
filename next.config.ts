@@ -5,8 +5,6 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   experimental: {
     optimizePackageImports: ['lucide-react', 'recharts'],
-    // Route navigations run as React view transitions (see AppShell + globals.css)
-    viewTransition: true,
   },
   images: {
     remotePatterns: [

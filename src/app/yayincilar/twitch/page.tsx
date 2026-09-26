@@ -5,6 +5,7 @@ import PageHeader from '@/components/PageHeader'
 import { Search, X, ExternalLink, Mail, Globe, ChevronLeft, ChevronRight, Gamepad2, Users, Share2, Languages, Radio } from 'lucide-react'
 import Image from 'next/image'
 import { inkOf } from '@/lib/theme'
+import SlideDrawer from '@/components/motion/SlideDrawer'
 
 type Row = Record<string, unknown>
 type Region = 'global' | 'japan'
@@ -702,12 +703,9 @@ export default function TwitchPage() {
         </div>
 
         {/* Overlay + drawer */}
-        {selected && (
-          <>
-            <div onClick={() => setSelected(null)} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(23,18,43,0.35)', zIndex: 999 }} />
-            <DetailPanel row={selected} profileSrc={profileMap[String(selected.username ?? '').trim().toLowerCase()]} onClose={() => setSelected(null)} />
-          </>
-        )}
+        <SlideDrawer item={selected} onClose={() => setSelected(null)}>
+          {(row) => <DetailPanel row={row} profileSrc={profileMap[String(row.username ?? '').trim().toLowerCase()]} onClose={() => setSelected(null)} />}
+        </SlideDrawer>
       </div>
     </div>
   )
