@@ -3,7 +3,7 @@ import { useState, useEffect, useMemo, useRef } from 'react'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 import PageHeader from '@/components/PageHeader'
 import { Search, X, ExternalLink, Mail, MessageCircle, Link2, ChevronLeft, ChevronRight, Users, Contact, TrendingUp } from 'lucide-react'
-import { inkOf } from '@/lib/theme'
+import { inkOf, tint } from '@/lib/theme'
 import SlideDrawer from '@/components/motion/SlideDrawer'
 
 type Row = Record<string, unknown>
@@ -41,7 +41,7 @@ function sanitizeSearch(s: string): string {
   return s.replace(/[,()%]/g, ' ').trim()
 }
 
-const AVATAR_PALETTE = [BILIBILI_COLOR, '#fb7299', '#1D4ED8', '#047857', '#B45309', '#BE185D', '#6D28D9', '#C2410C']
+const AVATAR_PALETTE = [BILIBILI_COLOR, 'var(--danger)', 'var(--info)', 'var(--success)', 'var(--orange)', 'var(--rose)', 'var(--primary-ink)', 'var(--orange)']
 function colorForName(name: unknown): string {
   const s = String(name ?? '')
   let hash = 0
@@ -53,7 +53,7 @@ function colorForName(name: unknown): string {
 function Avatar({ channelName, size }: { channelName: unknown; size: number }) {
   const color = colorForName(channelName)
   return (
-    <div style={{ width: size, height: size, borderRadius: '50%', backgroundColor: color + '22', border: `1px solid ${color}66`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: size * 0.32, color: inkOf(color), flexShrink: 0 }}>
+    <div style={{ width: size, height: size, borderRadius: '50%', backgroundColor: tint(color, 13), border: `1px solid ${tint(color, 40)}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: size * 0.32, color: inkOf(color), flexShrink: 0 }}>
       {initials(channelName)}
     </div>
   )
@@ -62,15 +62,15 @@ function Avatar({ channelName, size }: { channelName: unknown; size: number }) {
 // ── sortable column header ──────────────────────────────────────────────
 function SortableTH({ label, sk, active, dir, onSort }: { label: string; sk: SortKey; active: boolean; dir: SortDir; onSort: (k: SortKey) => void }) {
   return (
-    <th onClick={() => onSort(sk)} style={{ ...STH, cursor: 'pointer', userSelect: 'none', color: active ? inkOf(BILIBILI_COLOR) : '#655F7D' }}>
+    <th onClick={() => onSort(sk)} style={{ ...STH, cursor: 'pointer', userSelect: 'none', color: active ? inkOf(BILIBILI_COLOR) : 'var(--muted-foreground)' }}>
       {label} <span style={{ opacity: active ? 1 : 0.3 }}>{active ? (dir === 'desc' ? '↓' : '↑') : '↕'}</span>
     </th>
   )
 }
 
-const STH: React.CSSProperties = { backgroundColor: 'rgba(23,18,43,0.02)', color: '#655F7D', fontSize: '12.5px', fontWeight: 500, padding: '11px 14px', textAlign: 'left', borderBottom: '1px solid #E8E4F1', whiteSpace: 'nowrap' }
+const STH: React.CSSProperties = { backgroundColor: 'color-mix(in srgb, var(--foreground) 2%, transparent)', color: 'var(--muted-foreground)', fontSize: '12.5px', fontWeight: 500, padding: '11px 14px', textAlign: 'left', borderBottom: '1px solid var(--border)', whiteSpace: 'nowrap' }
 const TD: React.CSSProperties = { padding: '12px 14px', verticalAlign: 'middle' }
-const SEL: React.CSSProperties = { backgroundColor: '#FFFFFF', border: '1px solid #E8E4F1', borderRadius: '7px', padding: '7px 11px', fontSize: '13px', color: '#17122B', cursor: 'pointer', outline: 'none' }
+const SEL: React.CSSProperties = { backgroundColor: 'var(--card)', border: '1px solid var(--border)', borderRadius: '7px', padding: '7px 11px', fontSize: '13px', color: 'var(--foreground)', cursor: 'pointer', outline: 'none' }
 
 // ── stats bar card styling ───────────────────────────────────────────────
 function statCardStyle(color: string): React.CSSProperties {
@@ -86,16 +86,16 @@ function statCardStyle(color: string): React.CSSProperties {
     minHeight: '132px',
   }
 }
-const statValueStyle: React.CSSProperties = { fontSize: '26px', fontWeight: 800, color: '#17122B', lineHeight: 1.15 }
-const statSubStyle: React.CSSProperties = { fontSize: '12px', color: '#655F7D' }
+const statValueStyle: React.CSSProperties = { fontSize: '26px', fontWeight: 800, color: 'var(--foreground)', lineHeight: 1.15 }
+const statSubStyle: React.CSSProperties = { fontSize: '12px', color: 'var(--muted-foreground)' }
 
 function StatCardHeader({ icon, color, label }: { icon: React.ReactNode; color: string; label: string }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-      <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: color + '22', border: `1px solid ${color}55`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: inkOf(color), flexShrink: 0 }}>
+      <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: tint(color, 13), border: `1px solid ${tint(color, 33)}`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: inkOf(color), flexShrink: 0 }}>
         {icon}
       </div>
-      <span style={{ fontSize: '12px', fontWeight: 600, color: '#4A4462', }}>{label}</span>
+      <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-2)', }}>{label}</span>
     </div>
   )
 }
@@ -105,13 +105,13 @@ function ContactRow({ href, icon, label, value }: { href?: string; icon: React.R
     <>
       <span style={{ flexShrink: 0, display: 'flex', marginTop: '2px' }}>{icon}</span>
       <span style={{ minWidth: 0, wordBreak: 'break-word', whiteSpace: 'pre-wrap' }}>
-        <span style={{ color: '#655F7D' }}>{label}: </span>{value}
+        <span style={{ color: 'var(--muted-foreground)' }}>{label}: </span>{value}
       </span>
     </>
   )
   const style: React.CSSProperties = { display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '13px', padding: '5px 0', lineHeight: 1.5 }
-  if (!href) return <div style={{ ...style, color: '#4A4462' }}>{content}</div>
-  return <a href={href} style={{ ...style, color: '#1D4ED8', textDecoration: 'none' }}>{content}</a>
+  if (!href) return <div style={{ ...style, color: 'var(--text-2)' }}>{content}</div>
+  return <a href={href} style={{ ...style, color: 'var(--info)', textDecoration: 'none' }}>{content}</a>
 }
 
 // ── detail drawer ────────────────────────────────────────────────────────
@@ -130,23 +130,23 @@ function DetailPanel({ row, onClose }: { row: Row; onClose: () => void }) {
   if (hasValue(row.other_links)) contacts.push({ icon: <ExternalLink size={13} />, label: 'Diğer', value: String(row.other_links) })
 
   return (
-    <div style={{ width: '380px', backgroundColor: '#FFFFFF', borderLeft: '1px solid #E8E4F1', display: 'flex', flexDirection: 'column', overflowY: 'auto', position: 'fixed', top: 0, right: 0, height: '100vh', zIndex: 1000 }}>
+    <div style={{ width: '380px', backgroundColor: 'var(--card)', borderLeft: '1px solid var(--border)', display: 'flex', flexDirection: 'column', overflowY: 'auto', position: 'fixed', top: 0, right: 0, height: '100vh', zIndex: 1000 }}>
       {/* Header */}
-      <div style={{ padding: '18px', borderBottom: '1px solid #E8E4F1', display: 'flex', alignItems: 'center', gap: '14px' }}>
+      <div style={{ padding: '18px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: '14px' }}>
         <Avatar channelName={row.channel_name} size={64} />
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontWeight: 700, fontSize: '16px', color: '#17122B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name}</div>
+          <div style={{ fontWeight: 700, fontSize: '16px', color: 'var(--foreground)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name}</div>
         </div>
-        <button onClick={onClose} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '30px', borderRadius: '7px', backgroundColor: 'transparent', border: '1px solid #E8E4F1', color: '#655F7D', cursor: 'pointer', flexShrink: 0 }}>
+        <button onClick={onClose} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '30px', borderRadius: '7px', backgroundColor: 'transparent', border: '1px solid var(--border)', color: 'var(--muted-foreground)', cursor: 'pointer', flexShrink: 0 }}>
           <X size={14} />
         </button>
       </div>
 
       <div style={{ padding: '18px', display: 'flex', flexDirection: 'column', gap: '18px' }}>
         {/* Stats */}
-        <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #E8E4F1', borderRadius: '8px', padding: '12px 14px' }}>
-          <div style={{ fontSize: '10px', color: '#655F7D', fontWeight: 600, marginBottom: '5px' }}>Takipçi</div>
-          <div style={{ fontSize: '18px', fontWeight: 800, color: '#046C4E' }}>{fmt(row.followers)}</div>
+        <div style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)', borderRadius: '8px', padding: '12px 14px' }}>
+          <div style={{ fontSize: '10px', color: 'var(--muted-foreground)', fontWeight: 600, marginBottom: '5px' }}>Takipçi</div>
+          <div style={{ fontSize: '18px', fontWeight: 800, color: 'var(--success)' }}>{fmt(row.followers)}</div>
         </div>
 
         {/* Profile link */}
@@ -159,20 +159,20 @@ function DetailPanel({ row, onClose }: { row: Row; onClose: () => void }) {
         {/* Bio */}
         {hasValue(row.bio_en) && (
           <div>
-            <div style={{ fontSize: '11px', fontWeight: 600, color: '#655F7D', marginBottom: '8px' }}>Bio</div>
-            <div style={{ fontSize: '13px', color: '#4A4462', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{String(row.bio_en)}</div>
+            <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--muted-foreground)', marginBottom: '8px' }}>Bio</div>
+            <div style={{ fontSize: '13px', color: 'var(--text-2)', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{String(row.bio_en)}</div>
           </div>
         )}
 
         {/* Contacts */}
         <div>
-          <div style={{ fontSize: '11px', fontWeight: 600, color: '#655F7D', marginBottom: '8px' }}>İletişim</div>
+          <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--muted-foreground)', marginBottom: '8px' }}>İletişim</div>
           {contacts.length > 0 ? (
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               {contacts.map((c, i) => <ContactRow key={i} {...c} />)}
             </div>
           ) : (
-            <div style={{ fontSize: '13px', color: '#655F7D' }}>İletişim bilgisi yok</div>
+            <div style={{ fontSize: '13px', color: 'var(--muted-foreground)' }}>İletişim bilgisi yok</div>
           )}
         </div>
       </div>
@@ -295,7 +295,7 @@ export default function BilibiliPage() {
   }, [page, totalPages])
 
   const toggleStyle = (on: boolean, rgb: string, color: string): React.CSSProperties => ({
-    padding: '7px 14px', borderRadius: '7px', border: `1px solid ${on ? `rgba(${rgb},0.5)` : '#E8E4F1'}`, backgroundColor: on ? `rgba(${rgb},0.1)` : 'transparent', color: on ? inkOf(color) : '#655F7D', fontSize: '13px', fontWeight: 600, cursor: 'pointer',
+    padding: '7px 14px', borderRadius: '7px', border: `1px solid ${on ? `rgba(${rgb},0.5)` : 'var(--border)'}`, backgroundColor: on ? `rgba(${rgb},0.1)` : 'transparent', color: on ? inkOf(color) : 'var(--muted-foreground)', fontSize: '13px', fontWeight: 600, cursor: 'pointer',
   })
 
   return (
@@ -311,19 +311,19 @@ export default function BilibiliPage() {
             <div style={statSubStyle}>Takip edilen hesap</div>
           </div>
 
-          <div style={statCardStyle('#B45309')}>
+          <div style={statCardStyle('var(--orange)')}>
             <StatCardHeader icon={<Mail size={17} />} color="#B45309" label="Email Olan" />
             <div style={statValueStyle}>{auxLoading ? '…' : stats.emailCount.toLocaleString('tr-TR')}</div>
             <div style={statSubStyle}>{pct(stats.emailCount)}</div>
           </div>
 
-          <div style={statCardStyle('#6D28D9')}>
+          <div style={statCardStyle('var(--primary-ink)')}>
             <StatCardHeader icon={<Contact size={17} />} color="#6D28D9" label="En Az 1 İletişim Olan" />
             <div style={statValueStyle}>{auxLoading ? '…' : stats.anyContactCount.toLocaleString('tr-TR')}</div>
             <div style={statSubStyle}>{auxLoading ? '—' : `${pct(stats.anyContactCount)} · email/qq/wechat/weibo`}</div>
           </div>
 
-          <div style={statCardStyle('#047857')}>
+          <div style={statCardStyle('var(--success)')}>
             <StatCardHeader icon={<TrendingUp size={17} />} color="#047857" label="Ortalama Takipçi" />
             <div style={statValueStyle}>{auxLoading ? '…' : fmt(stats.avgFollowers)}</div>
             <div style={statSubStyle}>Hesap başına ortalama</div>
@@ -333,23 +333,23 @@ export default function BilibiliPage() {
         {/* Table card */}
         <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', overflow: 'hidden' }}>
           {/* Filters */}
-          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', padding: '12px 20px', borderBottom: '1px solid #E8E4F1', alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', padding: '12px 20px', borderBottom: '1px solid var(--border)', alignItems: 'center' }}>
             <div style={{ position: 'relative', flex: 1, minWidth: '180px' }}>
-              <Search size={13} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#655F7D', pointerEvents: 'none' }} />
+              <Search size={13} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--muted-foreground)', pointerEvents: 'none' }} />
               <input value={searchInput} onChange={e => setSearchInput(e.target.value)} placeholder="Kanal adı ara..." style={{ ...SEL, paddingLeft: '30px', width: '100%', boxSizing: 'border-box' }} />
             </div>
-            <button onClick={() => setEmailOnly(v => !v)} style={toggleStyle(emailOnly, '251,191,36', '#B45309')}>
+            <button onClick={() => setEmailOnly(v => !v)} style={toggleStyle(emailOnly, '251,191,36', 'var(--orange)')}>
               <Mail size={14} aria-hidden /> Email Var
             </button>
-            <button onClick={() => setContactOnly(v => !v)} style={toggleStyle(contactOnly, '167,139,250', '#6D28D9')}>
+            <button onClick={() => setContactOnly(v => !v)} style={toggleStyle(contactOnly, '167,139,250', 'var(--primary-ink)')}>
               <MessageCircle size={14} aria-hidden /> İletişim Var
             </button>
             {hasFilters && (
-              <button onClick={() => { setSearchInput(''); setSearch(''); setEmailOnly(false); setContactOnly(false) }} style={{ fontSize: '12px', color: '#655F7D', background: 'none', border: '1px solid #E8E4F1', borderRadius: '7px', padding: '7px 12px', cursor: 'pointer' }}>
+              <button onClick={() => { setSearchInput(''); setSearch(''); setEmailOnly(false); setContactOnly(false) }} style={{ fontSize: '12px', color: 'var(--muted-foreground)', background: 'none', border: '1px solid var(--border)', borderRadius: '7px', padding: '7px 12px', cursor: 'pointer' }}>
                 Temizle
               </button>
             )}
-            <span style={{ marginLeft: 'auto', fontSize: '12px', color: '#655F7D', whiteSpace: 'nowrap' }}>{rangeLabel}</span>
+            <span style={{ marginLeft: 'auto', fontSize: '12px', color: 'var(--muted-foreground)', whiteSpace: 'nowrap' }}>{rangeLabel}</span>
           </div>
 
           {/* Table */}
@@ -365,16 +365,16 @@ export default function BilibiliPage() {
               </thead>
               <tbody>
                 {loading ? (
-                  <tr><td colSpan={4} style={{ padding: '48px', textAlign: 'center', color: '#655F7D', fontSize: '14px' }}>Yükleniyor...</td></tr>
+                  <tr><td colSpan={4} style={{ padding: '48px', textAlign: 'center', color: 'var(--muted-foreground)', fontSize: '14px' }}>Yükleniyor...</td></tr>
                 ) : rows.length === 0 ? (
-                  <tr><td colSpan={4} style={{ padding: '48px', textAlign: 'center', color: '#655F7D', fontSize: '14px' }}>{hasFilters ? 'Eşleşen hesap bulunamadı' : 'Henüz hesap eklenmemiş'}</td></tr>
+                  <tr><td colSpan={4} style={{ padding: '48px', textAlign: 'center', color: 'var(--muted-foreground)', fontSize: '14px' }}>{hasFilters ? 'Eşleşen hesap bulunamadı' : 'Henüz hesap eklenmemiş'}</td></tr>
                 ) : rows.map((row, i) => {
                   const isActive = selected?.id === row.id
                   return (
                     <tr
                       key={String(row.id ?? i)}
                       onClick={() => setSelected(isActive ? null : row)}
-                      style={{ borderBottom: i < rows.length - 1 ? '1px solid #E8E4F1' : 'none', backgroundColor: isActive ? 'rgba(0,161,214,0.06)' : i % 2 === 1 ? '#FAF9FD' : 'transparent', cursor: 'pointer' }}
+                      style={{ borderBottom: i < rows.length - 1 ? '1px solid var(--border)' : 'none', backgroundColor: isActive ? 'rgba(0,161,214,0.06)' : i % 2 === 1 ? 'var(--row)' : 'transparent', cursor: 'pointer' }}
                     >
                       <td style={{ ...TD, paddingRight: '8px' }}>
                         <Avatar channelName={row.channel_name} size={32} />
@@ -390,11 +390,11 @@ export default function BilibiliPage() {
                           {String(row.channel_name ?? '—')}
                         </a>
                       </td>
-                      <td style={TD}><span style={{ color: '#046C4E', fontWeight: 600, fontSize: '13px' }}>{fmt(row.followers)}</span></td>
+                      <td style={TD}><span style={{ color: 'var(--success)', fontWeight: 600, fontSize: '13px' }}>{fmt(row.followers)}</span></td>
                       <td style={{ ...TD, maxWidth: '200px' }} onClick={e => e.stopPropagation()}>
                         {hasValue(row.email)
-                          ? <a href={`mailto:${row.email}`} style={{ color: '#1D4ED8', fontSize: '12px', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{String(row.email)}</a>
-                          : <span style={{ color: '#655F7D' }}>—</span>}
+                          ? <a href={`mailto:${row.email}`} style={{ color: 'var(--info)', fontSize: '12px', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{String(row.email)}</a>
+                          : <span style={{ color: 'var(--muted-foreground)' }}>—</span>}
                       </td>
                     </tr>
                   )
@@ -404,31 +404,31 @@ export default function BilibiliPage() {
           </div>
 
           {/* Pagination */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 20px', borderTop: '1px solid #E8E4F1', gap: '12px', flexWrap: 'wrap' }}>
-            <span style={{ fontSize: '12px', color: '#655F7D' }}>{rangeLabel}</span>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 20px', borderTop: '1px solid var(--border)', gap: '12px', flexWrap: 'wrap' }}>
+            <span style={{ fontSize: '12px', color: 'var(--muted-foreground)' }}>{rangeLabel}</span>
             <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
               <button
                 onClick={() => setPage(p => Math.max(1, p - 1))}
                 disabled={page <= 1}
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '30px', borderRadius: '7px', border: '1px solid #E8E4F1', backgroundColor: 'transparent', color: page <= 1 ? '#655F7D' : '#4A4462', cursor: page <= 1 ? 'not-allowed' : 'pointer' }}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '30px', borderRadius: '7px', border: '1px solid var(--border)', backgroundColor: 'transparent', color: page <= 1 ? 'var(--muted-foreground)' : 'var(--text-2)', cursor: page <= 1 ? 'not-allowed' : 'pointer' }}
               >
                 <ChevronLeft size={14} />
               </button>
-              {pageNumbers[0] > 1 && <span style={{ color: '#655F7D', fontSize: '12px', padding: '0 4px' }}>…</span>}
+              {pageNumbers[0] > 1 && <span style={{ color: 'var(--muted-foreground)', fontSize: '12px', padding: '0 4px' }}>…</span>}
               {pageNumbers.map(n => (
                 <button
                   key={n}
                   onClick={() => setPage(n)}
-                  style={{ minWidth: '30px', height: '30px', borderRadius: '7px', border: `1px solid ${n === page ? BILIBILI_COLOR : '#E8E4F1'}`, backgroundColor: n === page ? 'rgba(0,161,214,0.15)' : 'transparent', color: n === page ? inkOf(BILIBILI_COLOR) : '#4A4462', fontSize: '12px', fontWeight: 600, cursor: 'pointer', padding: '0 6px' }}
+                  style={{ minWidth: '30px', height: '30px', borderRadius: '7px', border: `1px solid ${n === page ? BILIBILI_COLOR : 'var(--border)'}`, backgroundColor: n === page ? 'rgba(0,161,214,0.15)' : 'transparent', color: n === page ? inkOf(BILIBILI_COLOR) : 'var(--text-2)', fontSize: '12px', fontWeight: 600, cursor: 'pointer', padding: '0 6px' }}
                 >
                   {n}
                 </button>
               ))}
-              {pageNumbers[pageNumbers.length - 1] < totalPages && <span style={{ color: '#655F7D', fontSize: '12px', padding: '0 4px' }}>…</span>}
+              {pageNumbers[pageNumbers.length - 1] < totalPages && <span style={{ color: 'var(--muted-foreground)', fontSize: '12px', padding: '0 4px' }}>…</span>}
               <button
                 onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                 disabled={page >= totalPages}
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '30px', borderRadius: '7px', border: '1px solid #E8E4F1', backgroundColor: 'transparent', color: page >= totalPages ? '#655F7D' : '#4A4462', cursor: page >= totalPages ? 'not-allowed' : 'pointer' }}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '30px', borderRadius: '7px', border: '1px solid var(--border)', backgroundColor: 'transparent', color: page >= totalPages ? 'var(--muted-foreground)' : 'var(--text-2)', cursor: page >= totalPages ? 'not-allowed' : 'pointer' }}
               >
                 <ChevronRight size={14} />
               </button>

@@ -5,7 +5,7 @@ import DataTable from '@/components/DataTable'
 import Badge from '@/components/Badge'
 import { Globe, ExternalLink, FileText, Zap, Users, Target } from 'lucide-react'
 import Link from 'next/link'
-import { inkOf } from '@/lib/theme'
+import { inkOf, tint } from '@/lib/theme'
 
 async function getData() {
   const { data: notes } = await supabase
@@ -17,9 +17,9 @@ async function getData() {
 }
 
 function dateCell(v: unknown) {
-  if (!v) return <span style={{ color: '#655F7D' }}>—</span>
+  if (!v) return <span style={{ color: 'var(--muted-foreground)' }}>—</span>
   return (
-    <span style={{ fontSize: '12px', color: '#655F7D' }}>
+    <span style={{ fontSize: '12px', color: 'var(--muted-foreground)' }}>
       {new Date(v as string).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', year: 'numeric' })}
     </span>
   )
@@ -29,13 +29,13 @@ export default async function TerminalsPage() {
   const { notes } = await getData()
 
   const noteCols = [
-    { key: 'title', label: 'Başlık', render: (v: unknown) => <span style={{ fontWeight: 600, color: '#17122B' }}>{String(v ?? '—')}</span> },
+    { key: 'title', label: 'Başlık', render: (v: unknown) => <span style={{ fontWeight: 600, color: 'var(--foreground)' }}>{String(v ?? '—')}</span> },
     { key: 'content', label: 'İçerik', render: (v: unknown) => {
       const s = String(v ?? '')
-      return <span style={{ fontSize: '13px', color: '#4A4462' }}>{s.length > 80 ? s.slice(0, 80) + '…' : s || <span style={{ color: '#655F7D' }}>—</span>}</span>
+      return <span style={{ fontSize: '13px', color: 'var(--text-2)' }}>{s.length > 80 ? s.slice(0, 80) + '…' : s || <span style={{ color: 'var(--muted-foreground)' }}>—</span>}</span>
     }},
     { key: 'tags', label: 'Etiketler', render: (v: unknown) => {
-      if (!v) return <span style={{ color: '#655F7D' }}>—</span>
+      if (!v) return <span style={{ color: 'var(--muted-foreground)' }}>—</span>
       return (
         <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
           {String(v).split(',').map(t => t.trim()).filter(Boolean).map((t, i) => <Badge key={i} variant="teal">{t}</Badge>)}
@@ -46,10 +46,10 @@ export default async function TerminalsPage() {
   ]
 
   const stats = [
-    { label: 'Platform', value: 'Terminals.io', color: '#0D6882', icon: Globe },
-    { label: 'Odak', value: 'Yayıncı', color: '#1D4ED8', icon: Users },
-    { label: 'Kapsam', value: 'Global', color: '#046C4E', icon: Target },
-    { label: 'Notlar', value: notes.length, color: '#6D28D9', icon: FileText },
+    { label: 'Platform', value: 'Terminals.io', color: 'var(--info)', icon: Globe },
+    { label: 'Odak', value: 'Yayıncı', color: 'var(--info)', icon: Users },
+    { label: 'Kapsam', value: 'Global', color: 'var(--success)', icon: Target },
+    { label: 'Notlar', value: notes.length, color: 'var(--primary-ink)', icon: FileText },
   ]
 
   return (
@@ -70,9 +70,9 @@ export default async function TerminalsPage() {
             gap: '6px',
             padding: '8px 16px',
             borderRadius: '8px',
-            backgroundColor: 'rgba(6,182,212,0.15)',
-            border: '1px solid rgba(6,182,212,0.35)',
-            color: '#0D6882',
+            backgroundColor: 'color-mix(in srgb, var(--teal) 15%, transparent)',
+            border: '1px solid color-mix(in srgb, var(--teal) 35%, transparent)',
+            color: 'var(--info)',
             fontWeight: 600,
             fontSize: '13px',
             textDecoration: 'none',
@@ -94,7 +94,7 @@ export default async function TerminalsPage() {
                 key={s.label}
                 style={{
                   backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)',
-                  border: '1px solid #E8E4F1',
+                  border: '1px solid var(--border)',
                   borderRadius: '12px',
                   padding: '20px',
                   display: 'flex',
@@ -107,7 +107,7 @@ export default async function TerminalsPage() {
                     width: '40px',
                     height: '40px',
                     borderRadius: '10px',
-                    backgroundColor: s.color + '20',
+                    backgroundColor: tint(s.color, 13),
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -117,7 +117,7 @@ export default async function TerminalsPage() {
                   <Icon size={18} color={s.color} />
                 </div>
                 <div>
-                  <div style={{ fontSize: '12px', color: '#655F7D', fontWeight: 500, marginBottom: '4px' }}>{s.label}</div>
+                  <div style={{ fontSize: '12px', color: 'var(--muted-foreground)', fontWeight: 500, marginBottom: '4px' }}>{s.label}</div>
                   <div style={{ fontSize: '18px', fontWeight: 700, color: inkOf(s.color) }}>{s.value}</div>
                 </div>
               </div>
@@ -129,7 +129,7 @@ export default async function TerminalsPage() {
         <div
           style={{
             backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)',
-            border: '1px solid #E8E4F1',
+            border: '1px solid var(--border)',
             borderRadius: '12px',
             padding: '24px',
             marginBottom: '24px',
@@ -137,18 +137,18 @@ export default async function TerminalsPage() {
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
             <div style={{ flex: 1, minWidth: '280px' }}>
-              <div style={{ fontSize: '15px', fontWeight: 700, color: '#17122B', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#06b6d4', boxShadow: '0 0 8px #06b6d480', display: 'inline-block' }} />
+              <div style={{ fontSize: '15px', fontWeight: 700, color: 'var(--foreground)', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--teal)', boxShadow: '0 0 8px #06b6d480', display: 'inline-block' }} />
                 Terminals.io Hakkında
               </div>
-              <p style={{ fontSize: '14px', color: '#4A4462', lineHeight: 1.7, margin: 0 }}>
+              <p style={{ fontSize: '14px', color: 'var(--text-2)', lineHeight: 1.7, margin: 0 }}>
                 Terminals.io, oyun yayıncıları ve içerik üreticileri için tasarlanmış bir büyüme platformudur.
                 Yayıncıların topluluklarını büyütmelerine, sponsorluklara erişmelerine ve içerik stratejilerini
                 optimize etmelerine yardımcı olan araçlar sunar.
               </p>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', minWidth: '180px' }}>
-              <div style={{ fontSize: '12px', color: '#655F7D', fontWeight: 500, marginBottom: '4px' }}>
+              <div style={{ fontSize: '12px', color: 'var(--muted-foreground)', fontWeight: 500, marginBottom: '4px' }}>
                 Hızlı Erişim
               </div>
               {[
@@ -167,9 +167,9 @@ export default async function TerminalsPage() {
                     gap: '6px',
                     padding: '7px 12px',
                     borderRadius: '7px',
-                    backgroundColor: 'rgba(6,182,212,0.08)',
-                    border: '1px solid rgba(6,182,212,0.2)',
-                    color: '#0D6882',
+                    backgroundColor: 'color-mix(in srgb, var(--teal) 8%, transparent)',
+                    border: '1px solid color-mix(in srgb, var(--teal) 20%, transparent)',
+                    color: 'var(--info)',
                     fontSize: '13px',
                     textDecoration: 'none',
                     fontWeight: 500,
@@ -185,15 +185,15 @@ export default async function TerminalsPage() {
 
         {/* Notes */}
         <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', overflow: 'hidden' }}>
-          <div style={{ padding: '14px 20px', borderBottom: '1px solid #E8E4F1', display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#06b6d4' }} />
-            <span style={{ fontSize: '15px', fontWeight: 600, color: '#17122B' }}>Notlar</span>
+          <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--teal)' }} />
+            <span style={{ fontSize: '15px', fontWeight: 600, color: 'var(--foreground)' }}>Notlar</span>
             <span
               style={{
                 marginLeft: 'auto',
-                backgroundColor: 'rgba(6,182,212,0.12)',
-                color: '#0D6882',
-                border: '1px solid rgba(6,182,212,0.3)',
+                backgroundColor: 'color-mix(in srgb, var(--teal) 12%, transparent)',
+                color: 'var(--info)',
+                border: '1px solid color-mix(in srgb, var(--teal) 30%, transparent)',
                 borderRadius: '9999px',
                 padding: '2px 10px',
                 fontSize: '13px',
@@ -206,9 +206,9 @@ export default async function TerminalsPage() {
           {notes.length === 0 ? (
             <div style={{ padding: '40px', textAlign: 'center' }}>
               <FileText size={28} color="#655F7D" style={{ margin: '0 auto 12px' }} />
-              <div style={{ fontSize: '14px', color: '#655F7D' }}>
+              <div style={{ fontSize: '14px', color: 'var(--muted-foreground)' }}>
                 Henüz Terminals.io notu yok.{' '}
-                <Link href="/notlar" style={{ color: '#0D6882', textDecoration: 'none' }}>
+                <Link href="/notlar" style={{ color: 'var(--info)', textDecoration: 'none' }}>
                   Notlar sayfasından
                 </Link>
                 {' '}kategori "Terminals.io" ile not ekleyin.

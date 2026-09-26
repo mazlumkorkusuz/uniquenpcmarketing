@@ -25,9 +25,9 @@ export default async function RedditPage() {
 
   const stats = [
     { label: 'Toplam Hesap', value: accounts.length, color: '#ff4500' },
-    { label: 'Toplam Karma', value: totalKarma.toLocaleString('tr-TR'), color: '#A24B08' },
-    { label: 'Toplam Yorum', value: totalComments.toLocaleString('tr-TR'), color: '#046C4E' },
-    { label: 'Toplam Post', value: posts.length, color: '#1D4ED8' },
+    { label: 'Toplam Karma', value: totalKarma.toLocaleString('tr-TR'), color: 'var(--orange)' },
+    { label: 'Toplam Yorum', value: totalComments.toLocaleString('tr-TR'), color: 'var(--success)' },
+    { label: 'Toplam Post', value: posts.length, color: 'var(--info)' },
   ]
 
   return (
@@ -48,7 +48,7 @@ export default async function RedditPage() {
           {stats.map(s => (
             <div key={s.label} style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', padding: '20px', textAlign: 'center' }}>
               <div style={{ fontSize: '30px', fontWeight: 800, color: inkOf(s.color), lineHeight: 1 }}>{s.value}</div>
-              <div style={{ fontSize: '12px', color: '#655F7D', marginTop: '8px', }}>{s.label}</div>
+              <div style={{ fontSize: '12px', color: 'var(--muted-foreground)', marginTop: '8px', }}>{s.label}</div>
             </div>
           ))}
         </div>
@@ -57,14 +57,14 @@ export default async function RedditPage() {
         <div style={{ marginBottom: '28px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
             <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#ff4500', boxShadow: '0 0 6px rgba(255,69,0,0.6)' }} />
-            <span style={{ fontSize: '15px', fontWeight: 600, color: '#17122B' }}>Reddit Hesapları</span>
-            <span style={{ backgroundColor: 'rgba(255,69,0,0.12)', color: '#A74322', border: '1px solid rgba(255,69,0,0.3)', borderRadius: '9999px', padding: '2px 10px', fontSize: '13px', fontWeight: 600 }}>
+            <span style={{ fontSize: '15px', fontWeight: 600, color: 'var(--foreground)' }}>Reddit Hesapları</span>
+            <span style={{ backgroundColor: 'rgba(255,69,0,0.12)', color: 'var(--orange)', border: '1px solid rgba(255,69,0,0.3)', borderRadius: '9999px', padding: '2px 10px', fontSize: '13px', fontWeight: 600 }}>
               {accounts.length}
             </span>
           </div>
 
           {accounts.length === 0 ? (
-            <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', padding: '48px', textAlign: 'center', color: '#655F7D', fontSize: '14px' }}>
+            <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', padding: '48px', textAlign: 'center', color: 'var(--muted-foreground)', fontSize: '14px' }}>
               Henüz hesap eklenmemiş
             </div>
           ) : (

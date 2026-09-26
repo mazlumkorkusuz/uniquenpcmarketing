@@ -33,7 +33,7 @@ export default function SlideDrawer<T>({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1, transition: { duration: 0.24, ease: EASE_OUT } }}
             exit={{ opacity: 0, transition: { duration: 0.18 } }}
-            style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(23,18,43,0.35)', zIndex: 999 }}
+            style={{ position: 'fixed', inset: 0, backgroundColor: 'var(--scrim)', zIndex: 999 }}
           />,
           <motion.div
             key="panel"

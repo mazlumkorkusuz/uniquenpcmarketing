@@ -6,7 +6,7 @@ import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 import { ModalBase, inputStyle, labelStyle, fieldStyle, cancelBtnStyle, submitBtnStyle } from './ModalBase'
 import { Toast } from './Toast'
 import { revalidateDashboard } from '@/app/actions'
-import { inkOf } from '@/lib/theme'
+import { inkOf, tint } from '@/lib/theme'
 import { Layers } from 'lucide-react'
 
 interface ToastState { message: string; type: 'success' | 'error' }
@@ -89,7 +89,7 @@ export function BulkPostModal() {
           borderRadius: '9px',
           background: 'var(--gradient)',
           border: 'none',
-          color: '#FFFFFF',
+          color: 'var(--gradient-foreground)',
           fontWeight: 700,
           fontSize: '14px',
           cursor: 'pointer',
@@ -116,9 +116,9 @@ export function BulkPostModal() {
                       gap: '6px',
                       padding: '6px 12px',
                       borderRadius: '7px',
-                      border: `1px solid ${isSelected ? p.color : '#655F7D'}`,
-                      backgroundColor: isSelected ? `${p.color}22` : '#FFFFFF',
-                      color: isSelected ? inkOf(p.color) : '#655F7D',
+                      border: `1px solid ${isSelected ? p.color : 'var(--muted-foreground)'}`,
+                      backgroundColor: isSelected ? `${tint(p.color, 13)}` : 'var(--card)',
+                      color: isSelected ? inkOf(p.color) : 'var(--muted-foreground)',
                       fontWeight: 600,
                       fontSize: '12px',
                       cursor: 'pointer',
@@ -131,14 +131,14 @@ export function BulkPostModal() {
               })}
             </div>
             {selected.length > 0 && (
-              <div style={{ fontSize: '11px', color: '#655F7D', marginTop: '6px' }}>
+              <div style={{ fontSize: '11px', color: 'var(--muted-foreground)', marginTop: '6px' }}>
                 {selected.length} platform seçildi
               </div>
             )}
           </div>
 
           {selected.length > 0 && (
-            <div style={{ ...fieldStyle, backgroundColor: '#FFFFFF', borderRadius: '8px', padding: '12px', border: '1px solid #E8E4F1' }}>
+            <div style={{ ...fieldStyle, backgroundColor: 'var(--card)', borderRadius: '8px', padding: '12px', border: '1px solid var(--border)' }}>
               <label style={{ ...labelStyle, marginBottom: '10px' }}>Platform Linkleri (opsiyonel)</label>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {selected.map(key => {
@@ -196,7 +196,7 @@ export function BulkPostModal() {
           </div>
           <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '8px' }}>
             <button type="button" onClick={close} style={cancelBtnStyle()}>İptal</button>
-            <button type="submit" disabled={isDisabled} style={submitBtnStyle('#6D28D9', isDisabled)}>
+            <button type="submit" disabled={isDisabled} style={submitBtnStyle('var(--primary-ink)', isDisabled)}>
               {loading ? 'Oluşturuluyor...' : `${selected.length > 0 ? selected.length + ' Platform İçin ' : ''}Gönderi Oluştur`}
             </button>
           </div>

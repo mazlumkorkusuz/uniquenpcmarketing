@@ -1,8 +1,10 @@
+import { tint } from '@/lib/theme'
+
 type BarDatum = { label: string; value: number }
 
 export default function BarChart({
   data,
-  color = '#6D28D9',
+  color = 'var(--primary-ink)',
   height = 120,
   maxBars = 10,
 }: {
@@ -24,7 +26,7 @@ export default function BarChart({
   if (bars.length === 0) {
     return (
       <div style={{ height: `${height}px`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <span style={{ fontSize: '12px', color: '#655F7D' }}>Veri yok</span>
+        <span style={{ fontSize: '12px', color: 'var(--muted-foreground)' }}>Veri yok</span>
       </div>
     )
   }
@@ -44,11 +46,11 @@ export default function BarChart({
             justifyContent: 'flex-end',
           }}
         >
-          <span style={{ fontSize: '9px', color: '#4A4462', fontWeight: 600, lineHeight: 1 }}>{fmt(d.value)}</span>
+          <span style={{ fontSize: '9px', color: 'var(--text-2)', fontWeight: 600, lineHeight: 1 }}>{fmt(d.value)}</span>
           <div
             style={{
               width: '100%',
-              background: `linear-gradient(180deg, ${color} 0%, ${color}88 100%)`,
+              background: `linear-gradient(180deg, ${color} 0%, ${tint(color, 53)} 100%)`,
               borderRadius: '3px 3px 0 0',
               height: `${Math.max((d.value / max) * 100, 2)}%`,
             }}
@@ -56,7 +58,7 @@ export default function BarChart({
           <span
             style={{
               fontSize: '9px',
-              color: '#655F7D',
+              color: 'var(--muted-foreground)',
               textAlign: 'center',
               overflow: 'hidden',
               textOverflow: 'ellipsis',

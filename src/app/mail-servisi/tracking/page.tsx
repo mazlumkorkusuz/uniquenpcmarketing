@@ -91,9 +91,9 @@ function Tracking() {
 
   const stat = (label: string, value: number, rate: string, color: string) => (
     <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', padding: '16px 20px' }}>
-      <div style={{ fontSize: '12px', color: '#655F7D', marginBottom: '6px' }}>{label}</div>
+      <div style={{ fontSize: '12px', color: 'var(--muted-foreground)', marginBottom: '6px' }}>{label}</div>
       <div style={{ fontSize: '22px', fontWeight: 700, color }}>{value.toLocaleString('tr-TR')}</div>
-      <div style={{ fontSize: '12px', color: '#4A4462' }}>{rate}</div>
+      <div style={{ fontSize: '12px', color: 'var(--text-2)' }}>{rate}</div>
     </div>
   )
 
@@ -104,10 +104,10 @@ function Tracking() {
 
       <div style={{ padding: '24px 32px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '16px' }}>
-          {stat('Gönderilen', totals.sent, campaignId ? campaignName[campaignId] ?? '' : 'Tüm kampanyalar', '#1D4ED8')}
-          {stat('Açan', totals.opens, percent(totals.opens, totals.sent) + ' açılma', '#0F766E')}
-          {stat('Yanıtlayan', totals.replies, percent(totals.replies, totals.sent) + ' yanıt', '#047857')}
-          {stat('Bounce', totals.bounces, percent(totals.bounces, totals.sent + totals.bounces) + ' bounce', '#B91C1C')}
+          {stat('Gönderilen', totals.sent, campaignId ? campaignName[campaignId] ?? '' : 'Tüm kampanyalar', 'var(--info)')}
+          {stat('Açan', totals.opens, percent(totals.opens, totals.sent) + ' açılma', 'var(--teal)')}
+          {stat('Yanıtlayan', totals.replies, percent(totals.replies, totals.sent) + ' yanıt', 'var(--success)')}
+          {stat('Bounce', totals.bounces, percent(totals.bounces, totals.sent + totals.bounces) + ' bounce', 'var(--danger)')}
         </div>
 
         <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
@@ -131,9 +131,9 @@ function Tracking() {
 
         <Card padded={false}>
           {loading ? (
-            <p style={{ padding: '20px', margin: 0, fontSize: '13px', color: '#655F7D' }}>Yükleniyor…</p>
+            <p style={{ padding: '20px', margin: 0, fontSize: '13px', color: 'var(--muted-foreground)' }}>Yükleniyor…</p>
           ) : rows.length === 0 ? (
-            <p style={{ padding: '20px', margin: 0, fontSize: '13px', color: '#655F7D' }}>Kayıt yok.</p>
+            <p style={{ padding: '20px', margin: 0, fontSize: '13px', color: 'var(--muted-foreground)' }}>Kayıt yok.</p>
           ) : (
             <div style={{ overflowX: 'auto' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -153,19 +153,19 @@ function Tracking() {
                   {rows.map((r) => (
                     <tr key={r.id}>
                       <td style={tdStyle}>
-                        <div style={{ fontWeight: 600, color: '#17122B' }}>{r.name ?? '—'}</div>
-                        <div style={{ fontSize: '12px', color: '#655F7D' }}>{r.email}{r.platform ? ` · ${r.platform}` : ''}</div>
+                        <div style={{ fontWeight: 600, color: 'var(--foreground)' }}>{r.name ?? '—'}</div>
+                        <div style={{ fontSize: '12px', color: 'var(--muted-foreground)' }}>{r.email}{r.platform ? ` · ${r.platform}` : ''}</div>
                       </td>
                       {!campaignId && <td style={{ ...tdStyle, fontSize: '12px' }}>{campaignName[r.campaign_id] ?? '—'}</td>}
                       <td style={tdStyle}><RecipientStatusBadge status={r.status} /></td>
-                      <td style={{ ...tdStyle, fontSize: '12px', color: '#4A4462' }}>{formatDateTime(r.sent_at)}</td>
-                      <td style={{ ...tdStyle, fontSize: '12px', color: '#4A4462' }}>{formatDateTime(r.opened_at)}</td>
+                      <td style={{ ...tdStyle, fontSize: '12px', color: 'var(--text-2)' }}>{formatDateTime(r.sent_at)}</td>
+                      <td style={{ ...tdStyle, fontSize: '12px', color: 'var(--text-2)' }}>{formatDateTime(r.opened_at)}</td>
                       <td style={tdStyle}>{r.open_count > 0 ? `${r.open_count}×` : '—'}</td>
-                      <td style={{ ...tdStyle, fontSize: '12px', color: '#4A4462' }}>
+                      <td style={{ ...tdStyle, fontSize: '12px', color: 'var(--text-2)' }}>
                         {r.replied_at
                           ? formatDateTime(r.replied_at)
                           : r.bounced_at
-                            ? <span style={{ color: '#B91C1C' }}>{formatDateTime(r.bounced_at)} ({r.bounce_type})</span>
+                            ? <span style={{ color: 'var(--danger)' }}>{formatDateTime(r.bounced_at)} ({r.bounce_type})</span>
                             : '—'}
                       </td>
                       <td style={{ ...tdStyle, textAlign: 'right' }}>
@@ -180,7 +180,7 @@ function Tracking() {
                 </tbody>
               </table>
               {rows.length === ROW_LIMIT && (
-                <p style={{ fontSize: '12px', color: '#655F7D', margin: 0, padding: '10px 16px' }}>İlk {ROW_LIMIT} kayıt gösteriliyor — daraltmak için kampanya seçin veya arayın.</p>
+                <p style={{ fontSize: '12px', color: 'var(--muted-foreground)', margin: 0, padding: '10px 16px' }}>İlk {ROW_LIMIT} kayıt gösteriliyor — daraltmak için kampanya seçin veya arayın.</p>
               )}
             </div>
           )}

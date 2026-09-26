@@ -5,7 +5,7 @@ import DataTable from '@/components/DataTable'
 import Badge from '@/components/Badge'
 import { Globe, ExternalLink, FileText, TrendingUp, Users, Target } from 'lucide-react'
 import Link from 'next/link'
-import { inkOf } from '@/lib/theme'
+import { inkOf, tint } from '@/lib/theme'
 
 async function getData() {
   const { data: notes } = await supabase
@@ -17,9 +17,9 @@ async function getData() {
 }
 
 function dateCell(v: unknown) {
-  if (!v) return <span style={{ color: '#655F7D' }}>—</span>
+  if (!v) return <span style={{ color: 'var(--muted-foreground)' }}>—</span>
   return (
-    <span style={{ fontSize: '12px', color: '#655F7D' }}>
+    <span style={{ fontSize: '12px', color: 'var(--muted-foreground)' }}>
       {new Date(v as string).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', year: 'numeric' })}
     </span>
   )
@@ -29,13 +29,13 @@ export default async function LurkitPage() {
   const { notes } = await getData()
 
   const noteCols = [
-    { key: 'title', label: 'Başlık', render: (v: unknown) => <span style={{ fontWeight: 600, color: '#17122B' }}>{String(v ?? '—')}</span> },
+    { key: 'title', label: 'Başlık', render: (v: unknown) => <span style={{ fontWeight: 600, color: 'var(--foreground)' }}>{String(v ?? '—')}</span> },
     { key: 'content', label: 'İçerik', render: (v: unknown) => {
       const s = String(v ?? '')
-      return <span style={{ fontSize: '13px', color: '#4A4462' }}>{s.length > 80 ? s.slice(0, 80) + '…' : s || <span style={{ color: '#655F7D' }}>—</span>}</span>
+      return <span style={{ fontSize: '13px', color: 'var(--text-2)' }}>{s.length > 80 ? s.slice(0, 80) + '…' : s || <span style={{ color: 'var(--muted-foreground)' }}>—</span>}</span>
     }},
     { key: 'tags', label: 'Etiketler', render: (v: unknown) => {
-      if (!v) return <span style={{ color: '#655F7D' }}>—</span>
+      if (!v) return <span style={{ color: 'var(--muted-foreground)' }}>—</span>
       return (
         <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
           {String(v).split(',').map(t => t.trim()).filter(Boolean).map((t, i) => <Badge key={i} variant="orange">{t}</Badge>)}
@@ -46,10 +46,10 @@ export default async function LurkitPage() {
   ]
 
   const stats = [
-    { label: 'Platform', value: 'Lurkit', color: '#AF3A0B', icon: Globe },
-    { label: 'Odak', value: 'Influencer', color: '#A24B08', icon: Users },
-    { label: 'Kapsam', value: 'Global', color: '#046C4E', icon: Target },
-    { label: 'Notlar', value: notes.length, color: '#6D28D9', icon: FileText },
+    { label: 'Platform', value: 'Lurkit', color: 'var(--orange)', icon: Globe },
+    { label: 'Odak', value: 'Influencer', color: 'var(--orange)', icon: Users },
+    { label: 'Kapsam', value: 'Global', color: 'var(--success)', icon: Target },
+    { label: 'Notlar', value: notes.length, color: 'var(--primary-ink)', icon: FileText },
   ]
 
   return (
@@ -70,9 +70,9 @@ export default async function LurkitPage() {
             gap: '6px',
             padding: '8px 16px',
             borderRadius: '8px',
-            backgroundColor: 'rgba(249,115,22,0.15)',
-            border: '1px solid rgba(249,115,22,0.35)',
-            color: '#AF3A0B',
+            backgroundColor: 'color-mix(in srgb, var(--orange) 15%, transparent)',
+            border: '1px solid color-mix(in srgb, var(--orange) 35%, transparent)',
+            color: 'var(--orange)',
             fontWeight: 600,
             fontSize: '13px',
             textDecoration: 'none',
@@ -94,7 +94,7 @@ export default async function LurkitPage() {
                 key={s.label}
                 style={{
                   backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)',
-                  border: '1px solid #E8E4F1',
+                  border: '1px solid var(--border)',
                   borderRadius: '12px',
                   padding: '20px',
                   display: 'flex',
@@ -107,7 +107,7 @@ export default async function LurkitPage() {
                     width: '40px',
                     height: '40px',
                     borderRadius: '10px',
-                    backgroundColor: s.color + '20',
+                    backgroundColor: tint(s.color, 13),
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -117,7 +117,7 @@ export default async function LurkitPage() {
                   <Icon size={18} color={s.color} />
                 </div>
                 <div>
-                  <div style={{ fontSize: '12px', color: '#655F7D', fontWeight: 500, marginBottom: '4px' }}>{s.label}</div>
+                  <div style={{ fontSize: '12px', color: 'var(--muted-foreground)', fontWeight: 500, marginBottom: '4px' }}>{s.label}</div>
                   <div style={{ fontSize: '18px', fontWeight: 700, color: inkOf(s.color) }}>{s.value}</div>
                 </div>
               </div>
@@ -129,7 +129,7 @@ export default async function LurkitPage() {
         <div
           style={{
             backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)',
-            border: '1px solid #E8E4F1',
+            border: '1px solid var(--border)',
             borderRadius: '12px',
             padding: '24px',
             marginBottom: '24px',
@@ -137,18 +137,18 @@ export default async function LurkitPage() {
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
             <div style={{ flex: 1, minWidth: '280px' }}>
-              <div style={{ fontSize: '15px', fontWeight: 700, color: '#17122B', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#f97316', boxShadow: '0 0 8px #f9731680', display: 'inline-block' }} />
+              <div style={{ fontSize: '15px', fontWeight: 700, color: 'var(--foreground)', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--orange)', boxShadow: '0 0 8px #f9731680', display: 'inline-block' }} />
                 Lurkit Hakkında
               </div>
-              <p style={{ fontSize: '14px', color: '#4A4462', lineHeight: 1.7, margin: 0 }}>
+              <p style={{ fontSize: '14px', color: 'var(--text-2)', lineHeight: 1.7, margin: 0 }}>
                 Lurkit, oyun stüdyolarının influencer kampanyalarını yönetmesine yardımcı olan bir pazarlama platformudur.
                 Twitch, YouTube ve diğer platformlardaki içerik üreticileriyle kampanya yönetimi, performans takibi ve raporlama
                 araçları sunar.
               </p>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', minWidth: '180px' }}>
-              <div style={{ fontSize: '12px', color: '#655F7D', fontWeight: 500, marginBottom: '4px' }}>
+              <div style={{ fontSize: '12px', color: 'var(--muted-foreground)', fontWeight: 500, marginBottom: '4px' }}>
                 Hızlı Erişim
               </div>
               {[
@@ -167,9 +167,9 @@ export default async function LurkitPage() {
                     gap: '6px',
                     padding: '7px 12px',
                     borderRadius: '7px',
-                    backgroundColor: 'rgba(249,115,22,0.08)',
-                    border: '1px solid rgba(249,115,22,0.2)',
-                    color: '#AF3A0B',
+                    backgroundColor: 'color-mix(in srgb, var(--orange) 8%, transparent)',
+                    border: '1px solid color-mix(in srgb, var(--orange) 20%, transparent)',
+                    color: 'var(--orange)',
                     fontSize: '13px',
                     textDecoration: 'none',
                     fontWeight: 500,
@@ -185,15 +185,15 @@ export default async function LurkitPage() {
 
         {/* Notes */}
         <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', overflow: 'hidden' }}>
-          <div style={{ padding: '14px 20px', borderBottom: '1px solid #E8E4F1', display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#f97316' }} />
-            <span style={{ fontSize: '15px', fontWeight: 600, color: '#17122B' }}>Notlar</span>
+          <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--orange)' }} />
+            <span style={{ fontSize: '15px', fontWeight: 600, color: 'var(--foreground)' }}>Notlar</span>
             <span
               style={{
                 marginLeft: 'auto',
-                backgroundColor: 'rgba(249,115,22,0.12)',
-                color: '#AF3A0B',
-                border: '1px solid rgba(249,115,22,0.3)',
+                backgroundColor: 'color-mix(in srgb, var(--orange) 12%, transparent)',
+                color: 'var(--orange)',
+                border: '1px solid color-mix(in srgb, var(--orange) 30%, transparent)',
                 borderRadius: '9999px',
                 padding: '2px 10px',
                 fontSize: '13px',
@@ -206,9 +206,9 @@ export default async function LurkitPage() {
           {notes.length === 0 ? (
             <div style={{ padding: '40px', textAlign: 'center' }}>
               <FileText size={28} color="#655F7D" style={{ margin: '0 auto 12px' }} />
-              <div style={{ fontSize: '14px', color: '#655F7D' }}>
+              <div style={{ fontSize: '14px', color: 'var(--muted-foreground)' }}>
                 Henüz Lurkit notu yok.{' '}
-                <Link href="/notlar" style={{ color: '#AF3A0B', textDecoration: 'none' }}>
+                <Link href="/notlar" style={{ color: 'var(--orange)', textDecoration: 'none' }}>
                   Notlar sayfasından
                 </Link>
                 {' '}kategori "Lurkit" ile not ekleyin.

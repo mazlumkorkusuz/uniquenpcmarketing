@@ -23,10 +23,10 @@ async function getData() {
 }
 
 function numCell(v: unknown) {
-  return v ? <span style={{ color: '#046C4E', fontWeight: 600 }}>{Number(v).toLocaleString('en-US')}</span> : <span style={{ color: '#655F7D' }}>—</span>
+  return v ? <span style={{ color: 'var(--success)', fontWeight: 600 }}>{Number(v).toLocaleString('en-US')}</span> : <span style={{ color: 'var(--muted-foreground)' }}>—</span>
 }
 function dateCell(v: unknown) {
-  return v ? <span style={{ fontSize: '12px', color: '#655F7D' }}>{new Date(v as string).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', year: 'numeric' })}</span> : <span style={{ color: '#655F7D' }}>—</span>
+  return v ? <span style={{ fontSize: '12px', color: 'var(--muted-foreground)' }}>{new Date(v as string).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', year: 'numeric' })}</span> : <span style={{ color: 'var(--muted-foreground)' }}>—</span>
 }
 
 export default async function InstagramPage() {
@@ -42,21 +42,21 @@ export default async function InstagramPage() {
   const chartData = Object.entries(campaignCounts).sort((a, b) => b[1] - a[1]).slice(0, 10).map(([label, value]) => ({ label, value }))
 
   const postCols = [
-    { key: 'content',     label: 'İçerik',    render: (v: unknown) => <span style={{ fontSize: '13px', color: '#4A4462', maxWidth: '320px', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{String(v ?? '—')}</span> },
-    { key: 'status',      label: 'Durum',     render: (v: unknown) => statusBadge(v as string) ?? <span style={{ color: '#655F7D' }}>—</span> },
+    { key: 'content',     label: 'İçerik',    render: (v: unknown) => <span style={{ fontSize: '13px', color: 'var(--text-2)', maxWidth: '320px', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{String(v ?? '—')}</span> },
+    { key: 'status',      label: 'Durum',     render: (v: unknown) => statusBadge(v as string) ?? <span style={{ color: 'var(--muted-foreground)' }}>—</span> },
     { key: 'posted_at',   label: 'Yayın',     render: dateCell },
     { key: 'likes',       label: 'Beğeni',    render: numCell },
     { key: 'shares',      label: 'Paylaşım',  render: numCell },
     { key: 'comments',    label: 'Yorum',     render: numCell },
-    { key: 'campaign',    label: 'Kampanya',  render: (v: unknown) => v ? <Badge variant="orange">{String(v)}</Badge> : <span style={{ color: '#655F7D' }}>—</span> },
+    { key: 'campaign',    label: 'Kampanya',  render: (v: unknown) => v ? <Badge variant="orange">{String(v)}</Badge> : <span style={{ color: 'var(--muted-foreground)' }}>—</span> },
     { key: 'id', label: '', width: '52px', render: (_: unknown, row: Row) => <DeleteButton table="social_posts" id={row.id as string} /> },
   ]
 
   const metricCols = [
-    { key: 'metric_name',  label: 'Metrik',    render: (v: unknown) => <span style={{ fontWeight: 500, color: '#17122B' }}>{String(v ?? '—')}</span> },
+    { key: 'metric_name',  label: 'Metrik',    render: (v: unknown) => <span style={{ fontWeight: 500, color: 'var(--foreground)' }}>{String(v ?? '—')}</span> },
     { key: 'metric_value', label: 'Değer',     render: numCell },
     { key: 'date',         label: 'Tarih',     render: dateCell },
-    { key: 'campaign',     label: 'Kampanya',  render: (v: unknown) => v ? <Badge variant="orange">{String(v)}</Badge> : <span style={{ color: '#655F7D' }}>—</span> },
+    { key: 'campaign',     label: 'Kampanya',  render: (v: unknown) => v ? <Badge variant="orange">{String(v)}</Badge> : <span style={{ color: 'var(--muted-foreground)' }}>—</span> },
   ]
 
   return (
@@ -74,26 +74,26 @@ export default async function InstagramPage() {
 
         {chartData.length > 0 && (
           <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', padding: '20px', marginBottom: '28px' }}>
-            <div style={{ fontSize: '14px', fontWeight: 600, color: '#17122B', marginBottom: '16px' }}>Kampanyaya Göre Gönderi Dağılımı</div>
+            <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--foreground)', marginBottom: '16px' }}>Kampanyaya Göre Gönderi Dağılımı</div>
             <BarChart data={chartData} color="#e1306c" height={120} maxBars={10} />
           </div>
         )}
 
         <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', overflow: 'hidden', marginBottom: '24px' }}>
-          <div style={{ padding: '14px 20px', borderBottom: '1px solid #E8E4F1', display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: '10px' }}>
             <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#e1306c' }} />
-            <span style={{ fontSize: '15px', fontWeight: 600, color: '#17122B' }}>Gönderiler</span>
-            <span style={{ marginLeft: 'auto', backgroundColor: 'rgba(225,48,108,0.12)', color: '#BE185D', border: '1px solid rgba(225,48,108,0.3)', borderRadius: '9999px', padding: '2px 10px', fontSize: '13px', fontWeight: 600 }}>{posts.length}</span>
+            <span style={{ fontSize: '15px', fontWeight: 600, color: 'var(--foreground)' }}>Gönderiler</span>
+            <span style={{ marginLeft: 'auto', backgroundColor: 'rgba(225,48,108,0.12)', color: 'var(--rose)', border: '1px solid rgba(225,48,108,0.3)', borderRadius: '9999px', padding: '2px 10px', fontSize: '13px', fontWeight: 600 }}>{posts.length}</span>
           </div>
           <DataTable columns={postCols} data={posts} emptyMessage="Instagram gönderisi bulunamadı" />
         </div>
 
         {metrics.length > 0 && (
           <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', overflow: 'hidden' }}>
-            <div style={{ padding: '14px 20px', borderBottom: '1px solid #E8E4F1', display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#f59e0b' }} />
-              <span style={{ fontSize: '15px', fontWeight: 600, color: '#17122B' }}>Pazarlama Metrikleri</span>
-              <span style={{ marginLeft: 'auto', backgroundColor: 'rgba(245,158,11,0.12)', color: '#A24B08', border: '1px solid rgba(245,158,11,0.3)', borderRadius: '9999px', padding: '2px 10px', fontSize: '13px', fontWeight: 600 }}>{metrics.length}</span>
+            <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--warning)' }} />
+              <span style={{ fontSize: '15px', fontWeight: 600, color: 'var(--foreground)' }}>Pazarlama Metrikleri</span>
+              <span style={{ marginLeft: 'auto', backgroundColor: 'color-mix(in srgb, var(--warning) 12%, transparent)', color: 'var(--orange)', border: '1px solid color-mix(in srgb, var(--warning) 30%, transparent)', borderRadius: '9999px', padding: '2px 10px', fontSize: '13px', fontWeight: 600 }}>{metrics.length}</span>
             </div>
             <DataTable columns={metricCols} data={metrics} emptyMessage="Metrik bulunamadı" />
           </div>

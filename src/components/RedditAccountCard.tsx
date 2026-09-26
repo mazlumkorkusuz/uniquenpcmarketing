@@ -32,7 +32,7 @@ export function RedditAccountCard({ account }: { account: Account }) {
   return (
     <div style={{
       backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)',
-      border: '1px solid #E8E4F1',
+      border: '1px solid var(--border)',
       borderRadius: '14px',
       padding: '20px',
       position: 'relative',
@@ -51,26 +51,26 @@ export function RedditAccountCard({ account }: { account: Account }) {
         <div style={{
           width: '44px', height: '44px', borderRadius: '50%',
           backgroundColor: '#ff4500', display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: '18px', fontWeight: 800, color: '#17122B', flexShrink: 0,
+          fontSize: '18px', fontWeight: 800, color: 'var(--foreground)', flexShrink: 0,
           boxShadow: '0 0 12px rgba(255,69,0,0.35)',
         }}>
           {initial}
         </div>
         <div style={{ minWidth: 0 }}>
-          <div style={{ fontWeight: 700, color: '#BA3200', fontSize: '15px' }}>u/{username}</div>
+          <div style={{ fontWeight: 700, color: 'var(--orange)', fontSize: '15px' }}>u/{username}</div>
           {createdDate && (
-            <div style={{ fontSize: '12px', color: '#655F7D', marginTop: '2px' }}>Katılım: {createdDate}</div>
+            <div style={{ fontSize: '12px', color: 'var(--muted-foreground)', marginTop: '2px' }}>Katılım: {createdDate}</div>
           )}
           {subreddits.length > 0 && (
             <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', marginTop: '6px' }}>
               {subreddits.slice(0, 4).map((s, i) => (
                 <span key={i} style={{
-                  fontSize: '11px', backgroundColor: 'rgba(255,69,0,0.1)', color: '#A74322',
+                  fontSize: '11px', backgroundColor: 'rgba(255,69,0,0.1)', color: 'var(--orange)',
                   border: '1px solid rgba(255,69,0,0.22)', borderRadius: '4px', padding: '1px 6px',
                 }}>r/{s}</span>
               ))}
               {subreddits.length > 4 && (
-                <span style={{ fontSize: '11px', color: '#655F7D', alignSelf: 'center' }}>+{subreddits.length - 4}</span>
+                <span style={{ fontSize: '11px', color: 'var(--muted-foreground)', alignSelf: 'center' }}>+{subreddits.length - 4}</span>
               )}
             </div>
           )}
@@ -79,17 +79,17 @@ export function RedditAccountCard({ account }: { account: Account }) {
 
       {/* Stat boxes */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
-        <div style={{ backgroundColor: '#FFFFFF', borderRadius: '8px', padding: '10px', textAlign: 'center' }}>
-          <div style={{ fontSize: '15px', fontWeight: 700, color: '#A24B08' }}>{fmt(karma)}</div>
-          <div style={{ fontSize: '10px', color: '#655F7D', marginTop: '3px', }}>Karma</div>
+        <div style={{ backgroundColor: 'var(--card)', borderRadius: '8px', padding: '10px', textAlign: 'center' }}>
+          <div style={{ fontSize: '15px', fontWeight: 700, color: 'var(--orange)' }}>{fmt(karma)}</div>
+          <div style={{ fontSize: '10px', color: 'var(--muted-foreground)', marginTop: '3px', }}>Karma</div>
         </div>
-        <div style={{ backgroundColor: '#FFFFFF', borderRadius: '8px', padding: '10px', textAlign: 'center' }}>
-          <div style={{ fontSize: '15px', fontWeight: 700, color: '#046C4E' }}>{fmt(commentKarma)}</div>
-          <div style={{ fontSize: '10px', color: '#655F7D', marginTop: '3px', }}>Yorum K.</div>
+        <div style={{ backgroundColor: 'var(--card)', borderRadius: '8px', padding: '10px', textAlign: 'center' }}>
+          <div style={{ fontSize: '15px', fontWeight: 700, color: 'var(--success)' }}>{fmt(commentKarma)}</div>
+          <div style={{ fontSize: '10px', color: 'var(--muted-foreground)', marginTop: '3px', }}>Yorum K.</div>
         </div>
-        <div style={{ backgroundColor: '#FFFFFF', borderRadius: '8px', padding: '10px', textAlign: 'center' }}>
-          <div style={{ fontSize: '15px', fontWeight: 700, color: '#1D4ED8' }}>{fmt(postCount)}</div>
-          <div style={{ fontSize: '10px', color: '#655F7D', marginTop: '3px', }}>Post</div>
+        <div style={{ backgroundColor: 'var(--card)', borderRadius: '8px', padding: '10px', textAlign: 'center' }}>
+          <div style={{ fontSize: '15px', fontWeight: 700, color: 'var(--info)' }}>{fmt(postCount)}</div>
+          <div style={{ fontSize: '10px', color: 'var(--muted-foreground)', marginTop: '3px', }}>Post</div>
         </div>
       </div>
 
@@ -97,19 +97,19 @@ export function RedditAccountCard({ account }: { account: Account }) {
       {password && (
         <div style={{
           display: 'flex', alignItems: 'center', gap: '8px',
-          backgroundColor: '#FFFFFF', borderRadius: '8px', padding: '8px 12px',
-          border: '1px solid #E8E4F1',
+          backgroundColor: 'var(--card)', borderRadius: '8px', padding: '8px 12px',
+          border: '1px solid var(--border)',
         }}>
-          <span style={{ fontSize: '11px', color: '#655F7D', flexShrink: 0, }}>Şifre</span>
+          <span style={{ fontSize: '11px', color: 'var(--muted-foreground)', flexShrink: 0, }}>Şifre</span>
           <span style={{
-            fontSize: '13px', color: '#17122B', fontFamily: 'monospace', flex: 1,
+            fontSize: '13px', color: 'var(--foreground)', fontFamily: 'monospace', flex: 1,
             letterSpacing: showPassword ? 'normal' : '3px',
           }}>
             {showPassword ? password : '••••••••'}
           </span>
           <button
             onClick={() => setShowPassword(s => !s)}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#655F7D', padding: '2px', display: 'flex', alignItems: 'center' }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--muted-foreground)', padding: '2px', display: 'flex', alignItems: 'center' }}
           >
             {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
           </button>
@@ -117,7 +117,7 @@ export function RedditAccountCard({ account }: { account: Account }) {
       )}
 
       {/* Footer */}
-      <div style={{ fontSize: '11px', color: '#655F7D', borderTop: '1px solid #E8E4F1', paddingTop: '10px' }}>
+      <div style={{ fontSize: '11px', color: 'var(--muted-foreground)', borderTop: '1px solid var(--border)', paddingTop: '10px' }}>
         Son aktif: {createdDate ?? '—'}
       </div>
     </div>

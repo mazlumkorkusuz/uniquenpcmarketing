@@ -8,7 +8,7 @@ import { PostModal, EditPostButton } from '@/components/PostModal'
 import { DeleteButton } from '@/components/DeleteButton'
 import { Calendar, CheckCircle, Clock, FileText, ExternalLink } from 'lucide-react'
 import { LucideIcon } from 'lucide-react'
-import { inkOf } from '@/lib/theme'
+import { inkOf, tint } from '@/lib/theme'
 
 type Row = Record<string, unknown>
 
@@ -22,18 +22,18 @@ interface PlatformPageProps {
 }
 
 function dateCell(v: unknown) {
-  if (!v) return <span style={{ color: '#655F7D' }}>—</span>
-  return <span style={{ fontSize: '12px', color: '#655F7D' }}>{new Date(v as string).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+  if (!v) return <span style={{ color: 'var(--muted-foreground)' }}>—</span>
+  return <span style={{ fontSize: '12px', color: 'var(--muted-foreground)' }}>{new Date(v as string).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
 }
 
 function statusBadge(status: string | null) {
-  if (!status) return <span style={{ color: '#655F7D' }}>—</span>
+  if (!status) return <span style={{ color: 'var(--muted-foreground)' }}>—</span>
   const map: Record<string, [string, string]> = {
-    'Taslak':     ['rgba(100,116,139,0.15)', '#4A4462'],
-    'Planlandı':  ['rgba(59,130,246,0.15)',  '#1D4ED8'],
-    'Yayınlandı': ['rgba(34,197,94,0.15)',   '#047857'],
+    'Taslak':     ['color-mix(in srgb, var(--muted-foreground) 15%, transparent)', 'var(--text-2)'],
+    'Planlandı':  ['color-mix(in srgb, var(--info) 15%, transparent)',  'var(--info)'],
+    'Yayınlandı': ['color-mix(in srgb, var(--success) 15%, transparent)',   'var(--success)'],
   }
-  const [bg, text] = map[status] ?? ['rgba(100,116,139,0.15)', '#4A4462']
+  const [bg, text] = map[status] ?? ['color-mix(in srgb, var(--muted-foreground) 15%, transparent)', 'var(--text-2)']
   return <span style={{ fontSize: '12px', fontWeight: 600, color: text, backgroundColor: bg, borderRadius: '5px', padding: '2px 8px' }}>{status}</span>
 }
 
@@ -63,31 +63,31 @@ export async function PlatformPage({ platform, label, color, gradient, icon, ima
       key: 'title',
       label: 'Başlık',
       render: (v: unknown) => v
-        ? <span style={{ fontWeight: 600, color: '#17122B' }}>{String(v)}</span>
-        : <span style={{ color: '#655F7D', fontStyle: 'italic' }}>Başlıksız</span>,
+        ? <span style={{ fontWeight: 600, color: 'var(--foreground)' }}>{String(v)}</span>
+        : <span style={{ color: 'var(--muted-foreground)', fontStyle: 'italic' }}>Başlıksız</span>,
     },
     {
       key: 'content',
       label: 'İçerik',
       render: (v: unknown) => v
-        ? <span style={{ fontSize: '13px', color: '#4A4462', maxWidth: '300px', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{String(v)}</span>
-        : <span style={{ color: '#655F7D' }}>—</span>,
+        ? <span style={{ fontSize: '13px', color: 'var(--text-2)', maxWidth: '300px', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{String(v)}</span>
+        : <span style={{ color: 'var(--muted-foreground)' }}>—</span>,
     },
     { key: 'scheduled_date', label: 'Tarih', render: dateCell },
     {
       key: 'scheduled_time',
       label: 'Saat',
       render: (v: unknown) => v
-        ? <span style={{ fontSize: '12px', color: '#655F7D', fontFamily: 'monospace' }}>{String(v).slice(0, 5)}</span>
-        : <span style={{ color: '#655F7D' }}>—</span>,
+        ? <span style={{ fontSize: '12px', color: 'var(--muted-foreground)', fontFamily: 'monospace' }}>{String(v).slice(0, 5)}</span>
+        : <span style={{ color: 'var(--muted-foreground)' }}>—</span>,
     },
     { key: 'status', label: 'Durum', render: (v: unknown) => statusBadge(v as string | null) },
     { key: 'url', label: 'Link', render: (v: unknown) => v ? (
-      <a href={String(v)} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '12px', fontWeight: 600, color: '#1D4ED8', backgroundColor: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.25)', borderRadius: '5px', padding: '2px 8px', textDecoration: 'none', whiteSpace: 'nowrap' }}>
+      <a href={String(v)} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '12px', fontWeight: 600, color: 'var(--info)', backgroundColor: 'color-mix(in srgb, var(--info) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--info) 25%, transparent)', borderRadius: '5px', padding: '2px 8px', textDecoration: 'none', whiteSpace: 'nowrap' }}>
         <ExternalLink size={11} />
         Link
       </a>
-    ) : <span style={{ color: '#655F7D' }}>—</span> },
+    ) : <span style={{ color: 'var(--muted-foreground)' }}>—</span> },
     { key: 'id', label: '', width: '80px', render: (_: unknown, row: Row) => (
       <div style={{ display: 'flex', gap: '4px' }}>
         <EditPostButton row={row} platform={platform} platformColor={color} />
@@ -104,7 +104,7 @@ export async function PlatformPage({ platform, label, color, gradient, icon, ima
 
       <div style={{ padding: '24px 32px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '16px', marginBottom: '28px' }}>
-          <StatCard label="Toplam Gönderi" value={total}     icon={FileText}    iconColor={color}    iconBg={color + '20'} />
+          <StatCard label="Toplam Gönderi" value={total}     icon={FileText}    iconColor={color}    iconBg={tint(color, 13)} />
           <StatCard label="Planlandı"      value={planned}   icon={Calendar}    iconColor="#1D4ED8"  iconBg="rgba(59,130,246,0.12)" />
           <StatCard label="Yayınlandı"     value={published} icon={CheckCircle} iconColor="#047857"  iconBg="rgba(34,197,94,0.12)" />
           <StatCard label="Taslak"         value={drafts}    icon={Clock}       iconColor="#4A4462"  iconBg="rgba(100,116,139,0.12)" />
@@ -112,16 +112,16 @@ export async function PlatformPage({ platform, label, color, gradient, icon, ima
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: '24px', marginBottom: '28px', alignItems: 'start' }}>
           <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', overflow: 'hidden' }}>
-            <div style={{ padding: '14px 20px', borderBottom: '1px solid #E8E4F1', display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: '10px' }}>
               <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: color }} />
-              <span style={{ fontSize: '15px', fontWeight: 600, color: '#17122B' }}>Gönderiler</span>
-              <span style={{ marginLeft: 'auto', backgroundColor: color + '20', color: inkOf(color), border: `1px solid ${color}44`, borderRadius: '9999px', padding: '2px 10px', fontSize: '13px', fontWeight: 600 }}>{total}</span>
+              <span style={{ fontSize: '15px', fontWeight: 600, color: 'var(--foreground)' }}>Gönderiler</span>
+              <span style={{ marginLeft: 'auto', backgroundColor: tint(color, 13), color: inkOf(color), border: `1px solid ${tint(color, 27)}`, borderRadius: '9999px', padding: '2px 10px', fontSize: '13px', fontWeight: 600 }}>{total}</span>
             </div>
             <DataTable columns={cols} data={rows} emptyMessage="Henüz gönderi eklenmedi" />
           </div>
 
           <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', padding: '20px' }}>
-            <div style={{ fontSize: '13px', fontWeight: 600, color: '#4A4462', marginBottom: '14px', }}>
+            <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-2)', marginBottom: '14px', }}>
               Takvim
             </div>
             <ContentCalendar posts={calPosts} singleColor={color} compact={true} />

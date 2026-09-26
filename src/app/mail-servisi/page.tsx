@@ -48,11 +48,11 @@ export default async function MailServisiPage() {
         <Card
           title="Mail Hesapları"
           padded={false}
-          action={<Link href="/mail-servisi/ayarlar" style={{ fontSize: '12px', color: '#17122B', fontWeight: 600, textDecoration: 'none' }}>Yönet →</Link>}
+          action={<Link href="/mail-servisi/ayarlar" style={{ fontSize: '12px', color: 'var(--foreground)', fontWeight: 600, textDecoration: 'none' }}>Yönet →</Link>}
         >
           {accounts.length === 0 ? (
-            <p style={{ padding: '20px', margin: 0, fontSize: '13px', color: '#655F7D' }}>
-              Henüz hesap yok. <Link href="/mail-servisi/ayarlar" style={{ color: '#17122B', fontWeight: 600 }}>Ayarlar</Link> sayfasından SMTP hesabı ekleyin.
+            <p style={{ padding: '20px', margin: 0, fontSize: '13px', color: 'var(--muted-foreground)' }}>
+              Henüz hesap yok. <Link href="/mail-servisi/ayarlar" style={{ color: 'var(--foreground)', fontWeight: 600 }}>Ayarlar</Link> sayfasından SMTP hesabı ekleyin.
             </p>
           ) : (
             <div style={{ overflowX: 'auto' }}>
@@ -69,10 +69,10 @@ export default async function MailServisiPage() {
                   {accounts.map((a) => (
                     <tr key={a.id}>
                       <td style={tdStyle}>
-                        <div style={{ fontWeight: 600, color: '#17122B' }}>{a.name}</div>
-                        <div style={{ fontSize: '12px', color: '#655F7D' }}>{a.email}</div>
+                        <div style={{ fontWeight: 600, color: 'var(--foreground)' }}>{a.name}</div>
+                        <div style={{ fontSize: '12px', color: 'var(--muted-foreground)' }}>{a.email}</div>
                       </td>
-                      <td style={{ ...tdStyle, color: '#4A4462' }}>{a.smtp_host}:{a.smtp_port}</td>
+                      <td style={{ ...tdStyle, color: 'var(--text-2)' }}>{a.smtp_host}:{a.smtp_port}</td>
                       <td style={tdStyle}><ProgressBar value={a.sent_today} total={a.daily_limit} /></td>
                       <td style={tdStyle}>
                         <Badge variant={a.status === 'active' ? 'green' : 'gray'}>{a.status === 'active' ? 'Aktif' : 'Pasif'}</Badge>
@@ -88,10 +88,10 @@ export default async function MailServisiPage() {
         <Card
           title="Son Kampanyalar"
           padded={false}
-          action={<Link href="/mail-servisi/kampanyalar" style={{ fontSize: '12px', color: '#17122B', fontWeight: 600, textDecoration: 'none' }}>Tümü →</Link>}
+          action={<Link href="/mail-servisi/kampanyalar" style={{ fontSize: '12px', color: 'var(--foreground)', fontWeight: 600, textDecoration: 'none' }}>Tümü →</Link>}
         >
           {recent.length === 0 ? (
-            <p style={{ padding: '20px', margin: 0, fontSize: '13px', color: '#655F7D' }}>Henüz kampanya yok.</p>
+            <p style={{ padding: '20px', margin: 0, fontSize: '13px', color: 'var(--muted-foreground)' }}>Henüz kampanya yok.</p>
           ) : (
             <div style={{ overflowX: 'auto' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -108,14 +108,14 @@ export default async function MailServisiPage() {
                 <tbody>
                   {recent.map((c) => (
                     <tr key={c.id}>
-                      <td style={{ ...tdStyle, fontWeight: 600, color: '#17122B' }}>
+                      <td style={{ ...tdStyle, fontWeight: 600, color: 'var(--foreground)' }}>
                         <Link href={`/mail-servisi/tracking?campaign=${c.id}`} style={{ color: 'inherit', textDecoration: 'none' }}>{c.name}</Link>
                       </td>
                       <td style={tdStyle}><CampaignStatusBadge status={c.status} /></td>
                       <td style={tdStyle}><ProgressBar value={c.sent_count + c.bounce_count} total={c.total_recipients} /></td>
                       <td style={tdStyle}>{percent(c.open_count, c.sent_count)}</td>
                       <td style={tdStyle}>{percent(c.reply_count, c.sent_count)}</td>
-                      <td style={{ ...tdStyle, color: '#655F7D', fontSize: '12px' }}>{formatDateTime(c.created_at)}</td>
+                      <td style={{ ...tdStyle, color: 'var(--muted-foreground)', fontSize: '12px' }}>{formatDateTime(c.created_at)}</td>
                     </tr>
                   ))}
                 </tbody>

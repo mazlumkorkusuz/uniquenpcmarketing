@@ -9,9 +9,9 @@ export const inputStyle: React.CSSProperties = {
   width: '100%',
   padding: '9px 12px',
   borderRadius: '8px',
-  border: '1px solid #E8E4F1',
-  backgroundColor: '#FFFFFF',
-  color: '#17122B',
+  border: '1px solid var(--border)',
+  backgroundColor: 'var(--card)',
+  color: 'var(--foreground)',
   fontSize: '13px',
   outline: 'none',
   boxSizing: 'border-box',
@@ -21,15 +21,15 @@ export const labelStyle: React.CSSProperties = {
   display: 'block',
   fontSize: '12px',
   fontWeight: 600,
-  color: '#4A4462',
+  color: 'var(--text-2)',
   marginBottom: '6px',
 }
 
 export function buttonStyle(variant: 'primary' | 'secondary' | 'danger' = 'primary', disabled = false): React.CSSProperties {
   const colors = {
-    primary: { bg: 'var(--gradient)', color: '#FFFFFF', border: 'transparent' },
-    secondary: { bg: '#FFFFFF', color: '#17122B', border: '#D8D2E6' },
-    danger: { bg: '#B91C1C', color: '#FFFFFF', border: '#B91C1C' },
+    primary: { bg: 'var(--gradient)', color: 'var(--primary-foreground)', border: 'transparent' },
+    secondary: { bg: 'var(--card)', color: 'var(--foreground)', border: 'var(--input)' },
+    danger: { bg: 'var(--danger)', color: '#FFFFFF', border: 'var(--danger)' },
   }[variant]
   return {
     padding: '9px 16px',
@@ -58,8 +58,8 @@ export function Card({ title, action, children, padded = true }: {
   return (
     <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', overflow: 'hidden' }}>
       {title && (
-        <div style={{ padding: '14px 20px', borderBottom: '1px solid #E8E4F1', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
-          <h2 style={{ fontSize: '14px', fontWeight: 600, color: '#17122B', margin: 0 }}>{title}</h2>
+        <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
+          <h2 style={{ fontSize: '14px', fontWeight: 600, color: 'var(--foreground)', margin: 0 }}>{title}</h2>
           {action}
         </div>
       )}
@@ -96,10 +96,10 @@ export function ProgressBar({ value, total }: { value: number; total: number }) 
   const pct = total ? Math.min(100, (value / total) * 100) : 0
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: '120px' }}>
-      <div style={{ flex: 1, height: '6px', borderRadius: '3px', backgroundColor: '#ECE9F3', overflow: 'hidden' }}>
+      <div style={{ flex: 1, height: '6px', borderRadius: '3px', backgroundColor: 'var(--muted)', overflow: 'hidden' }}>
         <div style={{ width: `${pct}%`, height: '100%', background: 'var(--gradient)', transition: 'width 0.3s' }} />
       </div>
-      <span style={{ fontSize: '12px', color: '#4A4462', whiteSpace: 'nowrap' }}>{value}/{total}</span>
+      <span style={{ fontSize: '12px', color: 'var(--text-2)', whiteSpace: 'nowrap' }}>{value}/{total}</span>
     </div>
   )
 }
@@ -111,20 +111,20 @@ export function formatDateTime(v: string | null | undefined): string {
 
 export const thStyle: React.CSSProperties = {
   backgroundColor: 'var(--color-bg-section)',
-  color: '#655F7D',
+  color: 'var(--muted-foreground)',
   fontSize: '11px',
   fontWeight: 600,
   letterSpacing: '0.06em',
   padding: '11px 16px',
   textAlign: 'left',
-  borderBottom: '1px solid #E8E4F1',
+  borderBottom: '1px solid var(--border)',
   whiteSpace: 'nowrap',
 }
 
 export const tdStyle: React.CSSProperties = {
   padding: '11px 16px',
-  borderBottom: '1px solid #E8E4F1',
+  borderBottom: '1px solid var(--border)',
   fontSize: '13px',
-  color: '#4A4462',
+  color: 'var(--text-2)',
   verticalAlign: 'middle',
 }

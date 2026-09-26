@@ -5,7 +5,7 @@ import DataTable from '@/components/DataTable'
 import StatCard from '@/components/StatCard'
 import Badge from '@/components/Badge'
 import { AtSign, Calendar, CheckCircle, Clock } from 'lucide-react'
-import { inkOf } from '@/lib/theme'
+import { inkOf, tint } from '@/lib/theme'
 
 type Row = Record<string, unknown>
 
@@ -51,8 +51,8 @@ export default async function TwitterPlanlama() {
 
   const cols = [
     { key: 'title',          label: 'Başlık',          render: (v: unknown) => <span style={{ fontWeight: 600, color: inkOf(COLOR) }}>{String(v ?? '—')}</span> },
-    { key: 'content',        label: 'İçerik',           render: (v: unknown) => <span style={{ color: '#4A4462', fontSize: '12px', display: 'block', maxWidth: '260px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{String(v ?? '—')}</span> },
-    { key: 'scheduled_date', label: 'Planlanan Tarih',  render: (v: unknown) => <span style={{ color: '#1D4ED8' }}>{formatDate(v as string)}</span> },
+    { key: 'content',        label: 'İçerik',           render: (v: unknown) => <span style={{ color: 'var(--text-2)', fontSize: '12px', display: 'block', maxWidth: '260px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{String(v ?? '—')}</span> },
+    { key: 'scheduled_date', label: 'Planlanan Tarih',  render: (v: unknown) => <span style={{ color: 'var(--info)' }}>{formatDate(v as string)}</span> },
     { key: 'status',         label: 'Durum',            render: planStatus },
   ]
 
@@ -66,7 +66,7 @@ export default async function TwitterPlanlama() {
       />
       <div style={{ padding: '24px 32px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px', marginBottom: '28px' }}>
-          <StatCard label="Toplam Gönderi"  value={total}          icon={AtSign}      iconColor={COLOR}    iconBg={`${COLOR}20`} />
+          <StatCard label="Toplam Gönderi"  value={total}          icon={AtSign}      iconColor={COLOR}    iconBg={`${tint(COLOR, 13)}`} />
           <StatCard label="Planlandı"        value={scheduledCount} icon={Clock}       iconColor="#1D4ED8" iconBg="rgba(59,130,246,0.12)" />
           <StatCard label="Yayınlandı"       value={publishedCount} icon={CheckCircle} iconColor="#047857" iconBg="rgba(34,197,94,0.12)" />
         </div>
@@ -74,18 +74,18 @@ export default async function TwitterPlanlama() {
         <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', padding: '20px', marginBottom: '28px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
             <Calendar size={15} color={COLOR} />
-            <span style={{ fontSize: '14px', fontWeight: 600, color: '#17122B' }}>Takvim Görünümü</span>
+            <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--foreground)' }}>Takvim Görünümü</span>
           </div>
-          <div style={{ height: '100px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FFFFFF', borderRadius: '8px', border: '1px dashed #E8E4F1' }}>
-            <span style={{ fontSize: '13px', color: '#655F7D' }}>Takvim görünümü yakında</span>
+          <div style={{ height: '100px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--card)', borderRadius: '8px', border: '1px dashed var(--border)' }}>
+            <span style={{ fontSize: '13px', color: 'var(--muted-foreground)' }}>Takvim görünümü yakında</span>
           </div>
         </div>
 
         <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', overflow: 'hidden' }}>
-          <div style={{ padding: '14px 20px', borderBottom: '1px solid #E8E4F1', display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: '10px' }}>
             <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: COLOR }} />
-            <span style={{ fontSize: '15px', fontWeight: 600, color: '#17122B' }}>Planlanan Gönderiler</span>
-            <span style={{ marginLeft: 'auto', backgroundColor: `${COLOR}20`, color: inkOf(COLOR), border: `1px solid ${COLOR}40`, borderRadius: '9999px', padding: '2px 10px', fontSize: '13px', fontWeight: 600 }}>{total}</span>
+            <span style={{ fontSize: '15px', fontWeight: 600, color: 'var(--foreground)' }}>Planlanan Gönderiler</span>
+            <span style={{ marginLeft: 'auto', backgroundColor: `${tint(COLOR, 13)}`, color: inkOf(COLOR), border: `1px solid ${tint(COLOR, 25)}`, borderRadius: '9999px', padding: '2px 10px', fontSize: '13px', fontWeight: 600 }}>{total}</span>
           </div>
           <DataTable columns={cols} data={rows} emptyMessage="Henüz Twitter gönderisi planlanmamış" />
         </div>

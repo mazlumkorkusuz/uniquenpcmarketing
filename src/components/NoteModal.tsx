@@ -94,7 +94,7 @@ export function NoteModal({ mode = 'add', initialData, open: externalOpen, onClo
     <>
       {toast && <Toast message={toast.message} type={toast.type} onDismiss={dismiss} />}
       {!isControlled && (
-        <button onClick={() => setInternalOpen(true)} style={addBtnStyle('#f59e0b')}>+ Not Ekle</button>
+        <button onClick={() => setInternalOpen(true)} style={addBtnStyle('var(--warning)')}>+ Not Ekle</button>
       )}
       <ModalBase isOpen={open} onClose={closeModal} title={mode === 'edit' ? 'Notu Düzenle' : 'Not Ekle'}>
         <form onSubmit={submit}>
@@ -125,7 +125,7 @@ export function NoteModal({ mode = 'add', initialData, open: externalOpen, onClo
           </div>
           <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '8px' }}>
             <button type="button" onClick={closeModal} style={cancelBtnStyle()}>İptal</button>
-            <button type="submit" disabled={loading} style={submitBtnStyle('#f59e0b', loading)}>
+            <button type="submit" disabled={loading} style={submitBtnStyle('var(--warning)', loading)}>
               {loading ? 'Kaydediliyor...' : mode === 'edit' ? 'Düzenle' : 'Kaydet'}
             </button>
           </div>

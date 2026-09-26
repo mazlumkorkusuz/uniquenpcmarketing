@@ -5,6 +5,7 @@ import { PlusCircle, X, Edit2 } from 'lucide-react'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 import { revalidateDashboard } from '@/app/actions'
 import { EditButton } from './EditButton'
+import { tint } from '@/lib/theme'
 
 interface PostData {
   id?: string | number
@@ -108,16 +109,16 @@ export function PostModal({ platform, platformColor, mode = 'add', initialData, 
   }
 
   const overlay: React.CSSProperties = {
-    position: 'fixed', inset: 0, backgroundColor: 'rgba(23,18,43,0.35)', backdropFilter: 'blur(4px)',
+    position: 'fixed', inset: 0, backgroundColor: 'var(--scrim)', backdropFilter: 'blur(4px)',
     display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '20px',
   }
   const modal: React.CSSProperties = {
-    backgroundColor: '#FFFFFF', border: '1px solid #E8E4F1', borderRadius: '14px',
+    backgroundColor: 'var(--card)', border: '1px solid var(--border)', borderRadius: '14px',
     width: '100%', maxWidth: '480px', padding: '28px', position: 'relative',
     boxShadow: '0 25px 60px rgba(0,0,0,0.12)',
   }
-  const label: React.CSSProperties = { display: 'block', fontSize: '12px', fontWeight: 600, color: '#4A4462', marginBottom: '6px', }
-  const input: React.CSSProperties = { width: '100%', backgroundColor: '#FFFFFF', border: '1px solid #E8E4F1', borderRadius: '8px', padding: '10px 12px', fontSize: '14px', color: '#17122B', outline: 'none', boxSizing: 'border-box' }
+  const label: React.CSSProperties = { display: 'block', fontSize: '12px', fontWeight: 600, color: 'var(--text-2)', marginBottom: '6px', }
+  const input: React.CSSProperties = { width: '100%', backgroundColor: 'var(--card)', border: '1px solid var(--border)', borderRadius: '8px', padding: '10px 12px', fontSize: '14px', color: 'var(--foreground)', outline: 'none', boxSizing: 'border-box' }
 
   const TitleIcon = mode === 'edit' ? Edit2 : PlusCircle
 
@@ -126,7 +127,7 @@ export function PostModal({ platform, platformColor, mode = 'add', initialData, 
       {!isControlled && (
         <button
           onClick={() => setInternalOpen(true)}
-          style={{ display: 'flex', alignItems: 'center', gap: '8px', height: '40px', padding: '0 16px', borderRadius: 'var(--r-sm)', background: 'var(--gradient)', border: 'none', color: '#FFFFFF', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}
+          style={{ display: 'flex', alignItems: 'center', gap: '8px', height: '40px', padding: '0 16px', borderRadius: 'var(--r-sm)', background: 'var(--gradient)', border: 'none', color: 'var(--primary-foreground)', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}
         >
           <PlusCircle size={15} />
           Gönderi Ekle
@@ -136,18 +137,18 @@ export function PostModal({ platform, platformColor, mode = 'add', initialData, 
       {open && (
         <div style={overlay} onClick={(e) => e.target === e.currentTarget && close()}>
           <div style={modal}>
-            <button onClick={close} style={{ position: 'absolute', top: '18px', right: '18px', background: 'none', border: 'none', color: '#655F7D', cursor: 'pointer', padding: '2px', display: 'flex', alignItems: 'center' }}>
+            <button onClick={close} style={{ position: 'absolute', top: '18px', right: '18px', background: 'none', border: 'none', color: 'var(--muted-foreground)', cursor: 'pointer', padding: '2px', display: 'flex', alignItems: 'center' }}>
               <X size={18} />
             </button>
 
             <div style={{ marginBottom: '24px' }}>
-              <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: platformColor + '25', border: `1px solid ${platformColor}44`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}>
+              <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: tint(platformColor, 15), border: `1px solid ${tint(platformColor, 27)}`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}>
                 <TitleIcon size={18} color={platformColor} />
               </div>
-              <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#17122B', margin: 0, marginBottom: '4px' }}>
+              <h2 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--foreground)', margin: 0, marginBottom: '4px' }}>
                 {mode === 'edit' ? 'Gönderiyi Düzenle' : 'Gönderi Ekle'}
               </h2>
-              <p style={{ fontSize: '13px', color: '#655F7D', margin: 0 }}>{platform.charAt(0).toUpperCase() + platform.slice(1)} için içerik {mode === 'edit' ? 'düzenle' : 'planla'}</p>
+              <p style={{ fontSize: '13px', color: 'var(--muted-foreground)', margin: 0 }}>{platform.charAt(0).toUpperCase() + platform.slice(1)} için içerik {mode === 'edit' ? 'düzenle' : 'planla'}</p>
             </div>
 
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -212,24 +213,24 @@ export function PostModal({ platform, platformColor, mode = 'add', initialData, 
                   onChange={e => setForm(f => ({ ...f, status: e.target.value }))}
                   style={{ ...input, cursor: 'pointer', appearance: 'none' }}
                 >
-                  {STATUS_OPTIONS.map(s => <option key={s} value={s} style={{ backgroundColor: '#FFFFFF' }}>{s}</option>)}
+                  {STATUS_OPTIONS.map(s => <option key={s} value={s} style={{ backgroundColor: 'var(--card)' }}>{s}</option>)}
                 </select>
               </div>
 
               {error && (
-                <div style={{ padding: '10px 12px', backgroundColor: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: '8px', fontSize: '13px', color: '#B91C1C' }}>
+                <div style={{ padding: '10px 12px', backgroundColor: 'color-mix(in srgb, var(--danger) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--danger) 30%, transparent)', borderRadius: '8px', fontSize: '13px', color: 'var(--danger)' }}>
                   {error}
                 </div>
               )}
 
               <div style={{ display: 'flex', gap: '10px', paddingTop: '4px' }}>
-                <button type="button" onClick={close} style={{ flex: 1, padding: '10px', borderRadius: '8px', border: '1px solid #E8E4F1', backgroundColor: 'transparent', color: '#655F7D', fontSize: '14px', fontWeight: 500, cursor: 'pointer' }}>
+                <button type="button" onClick={close} style={{ flex: 1, padding: '10px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'transparent', color: 'var(--muted-foreground)', fontSize: '14px', fontWeight: 500, cursor: 'pointer' }}>
                   İptal
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  style={{ flex: 2, height: '40px', padding: '0 16px', borderRadius: 'var(--r-sm)', border: 'none', background: 'var(--gradient)', color: '#FFFFFF', fontSize: '14px', fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.6 : 1 }}
+                  style={{ flex: 2, height: '40px', padding: '0 16px', borderRadius: 'var(--r-sm)', border: 'none', background: 'var(--gradient)', color: 'var(--primary-foreground)', fontSize: '14px', fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.6 : 1 }}
                 >
                   {loading ? 'Kaydediliyor...' : mode === 'edit' ? 'Düzenle' : 'Kaydet'}
                 </button>

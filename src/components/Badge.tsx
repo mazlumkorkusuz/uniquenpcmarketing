@@ -2,13 +2,13 @@ type BadgeVariant = 'green' | 'purple' | 'blue' | 'orange' | 'red' | 'gray' | 't
 
 // MASTER status tag: tinted background + matching ink (4.5:1+), 6px dot
 const styles: Record<BadgeVariant, { bg: string; color: string }> = {
-  green:  { bg: '#ECFDF5', color: '#047857' },
-  purple: { bg: '#F3EEFF', color: '#6D28D9' },
-  blue:   { bg: '#EFF6FF', color: '#1D4ED8' },
-  orange: { bg: '#FFF7ED', color: '#C2410C' },
-  red:    { bg: '#FEF2F2', color: '#B91C1C' },
-  gray:   { bg: '#F4F2F9', color: '#4A4462' },
-  teal:   { bg: '#F0FDFA', color: '#0F766E' },
+  green:  { bg: '#ECFDF5', color: 'var(--success)' },
+  purple: { bg: 'var(--primary-soft)', color: 'var(--primary-ink)' },
+  blue:   { bg: '#EFF6FF', color: 'var(--info)' },
+  orange: { bg: '#FFF7ED', color: 'var(--orange)' },
+  red:    { bg: '#FEF2F2', color: 'var(--danger)' },
+  gray:   { bg: 'var(--muted)', color: 'var(--text-2)' },
+  teal:   { bg: '#F0FDFA', color: 'var(--teal)' },
 }
 
 interface BadgeProps {

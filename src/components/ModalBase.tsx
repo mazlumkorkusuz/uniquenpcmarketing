@@ -40,7 +40,7 @@ export function ModalBase({
               position: 'fixed',
               inset: 0,
               zIndex: 1000,
-              backgroundColor: 'rgba(23,18,43,0.4)',
+              backgroundColor: 'var(--scrim)',
               backdropFilter: 'blur(4px)',
               WebkitBackdropFilter: 'blur(4px)',
               display: 'flex',

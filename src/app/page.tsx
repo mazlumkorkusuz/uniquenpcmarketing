@@ -186,7 +186,7 @@ export default async function DashboardPage() {
   const todayLabel = new Date().toLocaleDateString('tr-TR', {
     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: TZ,
   })
-  const budgetTone = d.budgetPercent >= 100 ? '#B91C1C' : d.budgetPercent >= 80 ? '#B45309' : '#7C3AED'
+  const budgetTone = d.budgetPercent >= 100 ? 'var(--danger)' : d.budgetPercent >= 80 ? 'var(--orange)' : 'var(--primary-ink)'
   const activeRoster = d.roster.filter((p) => p.count > 0)
   const pastMeetings = Math.max(d.meetingCount - d.upcomingCount, 0)
 

@@ -13,24 +13,24 @@ type SortDir = 'asc' | 'desc'
 
 const TD: React.CSSProperties = { padding: '14px 16px', verticalAlign: 'top' }
 const selectStyle: React.CSSProperties = {
-  backgroundColor: '#FFFFFF', border: '1px solid #E8E4F1', borderRadius: '7px',
-  padding: '7px 12px', fontSize: '13px', color: '#17122B', cursor: 'pointer', outline: 'none',
+  backgroundColor: 'var(--card)', border: '1px solid var(--border)', borderRadius: '7px',
+  padding: '7px 12px', fontSize: '13px', color: 'var(--foreground)', cursor: 'pointer', outline: 'none',
 }
 
 function ScoreBadge({ score }: { score: unknown }) {
   const n = Number(score)
-  if (!score && score !== 0) return <span style={{ color: '#655F7D' }}>—</span>
-  const [bg, fg] = n >= 90 ? ['rgba(34,197,94,0.15)', '#047857']
-    : n >= 80 ? ['rgba(234,179,8,0.15)', '#B45309']
-    : n >= 70 ? ['rgba(249,115,22,0.15)', '#C2410C']
-    : ['rgba(100,116,139,0.15)', '#4A4462']
+  if (!score && score !== 0) return <span style={{ color: 'var(--muted-foreground)' }}>—</span>
+  const [bg, fg] = n >= 90 ? ['color-mix(in srgb, var(--success) 15%, transparent)', 'var(--success)']
+    : n >= 80 ? ['color-mix(in srgb, var(--warning) 15%, transparent)', 'var(--orange)']
+    : n >= 70 ? ['color-mix(in srgb, var(--orange) 15%, transparent)', 'var(--orange)']
+    : ['color-mix(in srgb, var(--muted-foreground) 15%, transparent)', 'var(--text-2)']
   return <span style={{ fontSize: '13px', fontWeight: 700, color: fg, backgroundColor: bg, borderRadius: '6px', padding: '3px 9px', whiteSpace: 'nowrap' }}>{n}</span>
 }
 
 function LangBadge({ lang }: { lang: unknown }) {
-  if (!lang) return <span style={{ color: '#655F7D' }}>—</span>
+  if (!lang) return <span style={{ color: 'var(--muted-foreground)' }}>—</span>
   return (
-    <span style={{ fontSize: '11px', fontWeight: 700, color: '#6D28D9', backgroundColor: 'rgba(124,58,237,0.12)', border: '1px solid rgba(124,58,237,0.25)', borderRadius: '4px', padding: '2px 7px', letterSpacing: '0.05em' }}>
+    <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--primary-ink)', backgroundColor: 'color-mix(in srgb, var(--primary) 12%, transparent)', border: '1px solid color-mix(in srgb, var(--primary) 25%, transparent)', borderRadius: '4px', padding: '2px 7px', letterSpacing: '0.05em' }}>
       {String(lang).toUpperCase()}
     </span>
   )
@@ -41,11 +41,11 @@ function SortableTH({ label, sortKey, active, dir, onSort }: { label: string; so
     <th
       onClick={() => onSort(sortKey)}
       style={{
-        backgroundColor: 'rgba(23,18,43,0.02)', fontSize: '12.5px', fontWeight: 500,
+        backgroundColor: 'color-mix(in srgb, var(--foreground) 2%, transparent)', fontSize: '12.5px', fontWeight: 500,
         padding: '11px 16px',
-        textAlign: 'left', borderBottom: '1px solid #E8E4F1', whiteSpace: 'nowrap',
+        textAlign: 'left', borderBottom: '1px solid var(--border)', whiteSpace: 'nowrap',
         cursor: 'pointer', userSelect: 'none',
-        color: active ? '#13669E' : '#655F7D',
+        color: active ? 'var(--info)' : 'var(--muted-foreground)',
       }}
     >
       {label} <span style={{ opacity: active ? 1 : 0.35 }}>{active ? (dir === 'desc' ? '↓' : '↑') : '↕'}</span>
@@ -54,9 +54,9 @@ function SortableTH({ label, sortKey, active, dir, onSort }: { label: string; so
 }
 
 const STATIC_TH: React.CSSProperties = {
-  backgroundColor: 'rgba(23,18,43,0.02)', color: '#655F7D', fontSize: '12.5px', fontWeight: 500,
+  backgroundColor: 'color-mix(in srgb, var(--foreground) 2%, transparent)', color: 'var(--muted-foreground)', fontSize: '12.5px', fontWeight: 500,
   padding: '11px 16px',
-  textAlign: 'left', borderBottom: '1px solid #E8E4F1', whiteSpace: 'nowrap',
+  textAlign: 'left', borderBottom: '1px solid var(--border)', whiteSpace: 'nowrap',
 }
 
 export default function TwitterPage() {
@@ -112,7 +112,7 @@ export default function TwitterPage() {
           href="https://docs.google.com/spreadsheets/d/1cawscn0JAZwLBlkMPwNM9-cSfcUVebaPFLLt7pMtCPc/edit?gid=1920292925#gid=1920292925"
           target="_blank"
           rel="noopener noreferrer"
-          style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '9px 16px', borderRadius: '8px', backgroundColor: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.35)', color: '#046C4E', fontWeight: 600, fontSize: '13px', textDecoration: 'none', whiteSpace: 'nowrap' }}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '9px 16px', borderRadius: '8px', backgroundColor: 'color-mix(in srgb, var(--success) 8%, transparent)', border: '1px solid color-mix(in srgb, var(--success) 35%, transparent)', color: 'var(--success)', fontWeight: 600, fontSize: '13px', textDecoration: 'none', whiteSpace: 'nowrap' }}
         >
           <BarChart3 size={15} aria-hidden /> Tam Liste
         </a>
@@ -133,18 +133,18 @@ export default function TwitterPage() {
         <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', overflow: 'hidden' }}>
 
           {/* Header */}
-          <div style={{ padding: '14px 20px', borderBottom: '1px solid #E8E4F1', display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: '10px' }}>
             <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#1d9bf0', boxShadow: '0 0 6px rgba(29,155,240,0.5)' }} />
-            <span style={{ fontSize: '15px', fontWeight: 600, color: '#17122B' }}>Twitter Hesapları</span>
-            <span style={{ marginLeft: 'auto', backgroundColor: 'rgba(29,155,240,0.12)', color: '#13669E', border: '1px solid rgba(29,155,240,0.3)', borderRadius: '9999px', padding: '2px 10px', fontSize: '13px', fontWeight: 600 }}>
+            <span style={{ fontSize: '15px', fontWeight: 600, color: 'var(--foreground)' }}>Twitter Hesapları</span>
+            <span style={{ marginLeft: 'auto', backgroundColor: 'rgba(29,155,240,0.12)', color: 'var(--info)', border: '1px solid rgba(29,155,240,0.3)', borderRadius: '9999px', padding: '2px 10px', fontSize: '13px', fontWeight: 600 }}>
               {sorted.length}{hasFilters ? ` / ${accounts.length}` : ''}
             </span>
           </div>
 
           {/* Filters */}
-          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', padding: '12px 20px', borderBottom: '1px solid #E8E4F1', alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', padding: '12px 20px', borderBottom: '1px solid var(--border)', alignItems: 'center' }}>
             <div style={{ position: 'relative', flex: '1', minWidth: '180px' }}>
-              <Search size={13} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#655F7D', pointerEvents: 'none' }} />
+              <Search size={13} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--muted-foreground)', pointerEvents: 'none' }} />
               <input
                 value={search}
                 onChange={e => setSearch(e.target.value)}
@@ -168,7 +168,7 @@ export default function TwitterPage() {
             {hasFilters && (
               <button
                 onClick={() => { setSearch(''); setRegionFilter(''); setLangFilter(''); setPriorityFilter('') }}
-                style={{ fontSize: '12px', color: '#655F7D', background: 'none', border: '1px solid #E8E4F1', borderRadius: '7px', padding: '7px 12px', cursor: 'pointer' }}
+                style={{ fontSize: '12px', color: 'var(--muted-foreground)', background: 'none', border: '1px solid var(--border)', borderRadius: '7px', padding: '7px 12px', cursor: 'pointer' }}
               >
                 Temizle
               </button>
@@ -192,46 +192,46 @@ export default function TwitterPage() {
               </thead>
               <tbody>
                 {loading ? (
-                  <tr><td colSpan={8} style={{ padding: '48px 16px', textAlign: 'center', color: '#655F7D', fontSize: '14px' }}>Yükleniyor...</td></tr>
+                  <tr><td colSpan={8} style={{ padding: '48px 16px', textAlign: 'center', color: 'var(--muted-foreground)', fontSize: '14px' }}>Yükleniyor...</td></tr>
                 ) : sorted.length === 0 ? (
-                  <tr><td colSpan={8} style={{ padding: '48px 16px', textAlign: 'center', color: '#655F7D', fontSize: '14px' }}>
+                  <tr><td colSpan={8} style={{ padding: '48px 16px', textAlign: 'center', color: 'var(--muted-foreground)', fontSize: '14px' }}>
                     {hasFilters ? 'Filtreyle eşleşen hesap bulunamadı' : 'Henüz hesap eklenmemiş'}
                   </td></tr>
                 ) : sorted.map((row, i) => (
                   <tr key={String(row.id ?? i)} style={{
-                    borderBottom: i < sorted.length - 1 ? '1px solid #E8E4F1' : 'none',
-                    backgroundColor: i % 2 === 1 ? '#FAF9FD' : 'transparent',
+                    borderBottom: i < sorted.length - 1 ? '1px solid var(--border)' : 'none',
+                    backgroundColor: i % 2 === 1 ? 'var(--row)' : 'transparent',
                   }}>
                     <td style={TD}><ScoreBadge score={row.score} /></td>
                     <td style={TD}>
                       {row.profile_url ? (
                         <a href={String(row.profile_url)} target="_blank" rel="noopener noreferrer"
-                          style={{ fontWeight: 700, color: '#13669E', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '14px' }}>
+                          style={{ fontWeight: 700, color: 'var(--info)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '14px' }}>
                           @{String(row.username ?? '')} <ExternalLink size={11} />
                         </a>
                       ) : (
-                        <span style={{ fontWeight: 700, color: '#13669E', fontSize: '14px' }}>@{String(row.username ?? '')}</span>
+                        <span style={{ fontWeight: 700, color: 'var(--info)', fontSize: '14px' }}>@{String(row.username ?? '')}</span>
                       )}
-                      {!!row.display_name && <div style={{ fontSize: '12px', color: '#655F7D', marginTop: '2px' }}>{String(row.display_name)}</div>}
+                      {!!row.display_name && <div style={{ fontSize: '12px', color: 'var(--muted-foreground)', marginTop: '2px' }}>{String(row.display_name)}</div>}
                     </td>
                     <td style={TD}>
                       {row.followers
-                        ? <span style={{ color: '#046C4E', fontWeight: 600, fontSize: '13px' }}>{Number(row.followers).toLocaleString('en-US')}</span>
-                        : <span style={{ color: '#655F7D' }}>—</span>}
+                        ? <span style={{ color: 'var(--success)', fontWeight: 600, fontSize: '13px' }}>{Number(row.followers).toLocaleString('en-US')}</span>
+                        : <span style={{ color: 'var(--muted-foreground)' }}>—</span>}
                     </td>
                     <td style={TD}>
                       {row.avg_likes
-                        ? <span style={{ color: '#AF3A0B', fontWeight: 600, fontSize: '13px' }}>{Number(row.avg_likes).toLocaleString('en-US')}</span>
-                        : <span style={{ color: '#655F7D' }}>—</span>}
+                        ? <span style={{ color: 'var(--orange)', fontWeight: 600, fontSize: '13px' }}>{Number(row.avg_likes).toLocaleString('en-US')}</span>
+                        : <span style={{ color: 'var(--muted-foreground)' }}>—</span>}
                     </td>
                     <td style={TD}>
-                      {row.region ? <span style={{ fontSize: '13px', color: '#4A4462' }}>{String(row.region)}</span> : <span style={{ color: '#655F7D' }}>—</span>}
+                      {row.region ? <span style={{ fontSize: '13px', color: 'var(--text-2)' }}>{String(row.region)}</span> : <span style={{ color: 'var(--muted-foreground)' }}>—</span>}
                     </td>
                     <td style={TD}><LangBadge lang={row.language} /></td>
                     <td style={{ ...TD, maxWidth: '300px' }}>
                       {row.ai_comment
-                        ? <span style={{ fontSize: '12px', color: '#4A4462', whiteSpace: 'normal', lineHeight: 1.5 }}>{String(row.ai_comment)}</span>
-                        : <span style={{ color: '#655F7D' }}>—</span>}
+                        ? <span style={{ fontSize: '12px', color: 'var(--text-2)', whiteSpace: 'normal', lineHeight: 1.5 }}>{String(row.ai_comment)}</span>
+                        : <span style={{ color: 'var(--muted-foreground)' }}>—</span>}
                     </td>
                     <td style={TD}>
                       <div style={{ display: 'flex', gap: '4px' }}>

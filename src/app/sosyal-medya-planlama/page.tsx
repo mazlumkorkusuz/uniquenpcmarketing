@@ -4,7 +4,7 @@ import PageHeader from '@/components/PageHeader'
 import BarChart from '@/components/BarChart'
 import { CalendarCheck, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
-import { inkOf } from '@/lib/theme'
+import { inkOf, tint } from '@/lib/theme'
 
 type Row = Record<string, unknown>
 
@@ -58,8 +58,8 @@ export default async function SosyalMedyaPlanlama() {
 
         {/* Platform comparison */}
         <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', padding: '20px', marginBottom: '28px' }}>
-          <div style={{ fontSize: '14px', fontWeight: 600, color: '#17122B', marginBottom: '4px' }}>Platform Karşılaştırması</div>
-          <div style={{ fontSize: '12px', color: '#655F7D', marginBottom: '16px' }}>Platforma göre toplam planlanan gönderi sayısı</div>
+          <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--foreground)', marginBottom: '4px' }}>Platform Karşılaştırması</div>
+          <div style={{ fontSize: '12px', color: 'var(--muted-foreground)', marginBottom: '16px' }}>Platforma göre toplam planlanan gönderi sayısı</div>
           <BarChart data={platformBar} color="#6D28D9" height={100} />
         </div>
 
@@ -73,15 +73,15 @@ export default async function SosyalMedyaPlanlama() {
                 key={platform.key}
                 style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
               >
-                <div style={{ padding: '16px 20px', borderBottom: '1px solid #E8E4F1' }}>
+                <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: platform.color, boxShadow: `0 0 8px ${platform.color}60` }} />
-                      <span style={{ fontSize: '15px', fontWeight: 700, color: '#17122B' }}>{platform.label}</span>
+                      <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: platform.color, boxShadow: `0 0 8px ${tint(platform.color, 38)}` }} />
+                      <span style={{ fontSize: '15px', fontWeight: 700, color: 'var(--foreground)' }}>{platform.label}</span>
                     </div>
-                    <span style={{ fontSize: '26px', fontWeight: 800, color: count > 0 ? inkOf(platform.color) : '#655F7D' }}>{count}</span>
+                    <span style={{ fontSize: '26px', fontWeight: 800, color: count > 0 ? inkOf(platform.color) : 'var(--muted-foreground)' }}>{count}</span>
                   </div>
-                  <div style={{ fontSize: '12px', color: '#655F7D', marginTop: '4px' }}>
+                  <div style={{ fontSize: '12px', color: 'var(--muted-foreground)', marginTop: '4px' }}>
                     {count > 0 ? 'toplam gönderi' : 'henüz gönderi yok'}
                   </div>
                 </div>
@@ -89,21 +89,21 @@ export default async function SosyalMedyaPlanlama() {
                 <div style={{ padding: '14px 20px', flex: 1 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div style={{ textAlign: 'center' }}>
-                      <div style={{ fontSize: '20px', fontWeight: 700, color: '#1D4ED8' }}>{sched}</div>
-                      <div style={{ fontSize: '11px', color: '#655F7D', marginTop: '2px' }}>Planlandı</div>
+                      <div style={{ fontSize: '20px', fontWeight: 700, color: 'var(--info)' }}>{sched}</div>
+                      <div style={{ fontSize: '11px', color: 'var(--muted-foreground)', marginTop: '2px' }}>Planlandı</div>
                     </div>
                     <div style={{ textAlign: 'center' }}>
-                      <div style={{ fontSize: '20px', fontWeight: 700, color: '#046C4E' }}>{count - sched}</div>
-                      <div style={{ fontSize: '11px', color: '#655F7D', marginTop: '2px' }}>Diğer</div>
+                      <div style={{ fontSize: '20px', fontWeight: 700, color: 'var(--success)' }}>{count - sched}</div>
+                      <div style={{ fontSize: '11px', color: 'var(--muted-foreground)', marginTop: '2px' }}>Diğer</div>
                     </div>
                     <div style={{ textAlign: 'center' }}>
                       <div style={{ fontSize: '20px', fontWeight: 700, color: inkOf(platform.color) }}>{count}</div>
-                      <div style={{ fontSize: '11px', color: '#655F7D', marginTop: '2px' }}>Toplam</div>
+                      <div style={{ fontSize: '11px', color: 'var(--muted-foreground)', marginTop: '2px' }}>Toplam</div>
                     </div>
                   </div>
                 </div>
 
-                <div style={{ padding: '12px 20px', borderTop: '1px solid #E8E4F1' }}>
+                <div style={{ padding: '12px 20px', borderTop: '1px solid var(--border)' }}>
                   <Link
                     href={platform.href}
                     style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: 500, color: inkOf(platform.color), textDecoration: 'none' }}

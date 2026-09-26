@@ -77,5 +77,11 @@ export function inkOf(color: string): string {
 // Primary buttons use the MASTER signature gradient for every page (callers still pass a color)
 export function buttonColor(...args: [color?: string]): { background: string; text: string } {
   void args
-  return { background: 'var(--gradient)', text: '#FFFFFF' }
+  return { background: 'var(--gradient)', text: 'var(--gradient-foreground)' }
+}
+
+// A translucent version of any colour (hex or CSS variable), for tints and soft borders.
+// Replaces the old `color + '22'` hex-alpha concatenation, which only worked on hex values.
+export function tint(color: string, percent: number): string {
+  return `color-mix(in srgb, ${color} ${percent}%, transparent)`
 }

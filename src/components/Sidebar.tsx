@@ -23,6 +23,7 @@ import {
 import { LucideIcon } from 'lucide-react'
 import { useAuth } from '@/components/AppShell'
 import { useState, useEffect } from 'react'
+import ThemeToggle from '@/components/ThemeToggle'
 
 interface SubNavItem {
   href: string
@@ -161,8 +162,8 @@ export default function Sidebar({ open = false }: { open?: boolean }) {
             borderRadius: '8px',
             overflow: 'hidden',
             flexShrink: 0,
-            backgroundColor: '#FFFFFF',
-            boxShadow: '0 0 0 1px rgba(255,255,255,0.1)',
+            backgroundColor: 'var(--card)',
+            boxShadow: '0 0 0 1px var(--sidebar-border)',
           }}
         >
           <Image
@@ -175,10 +176,10 @@ export default function Sidebar({ open = false }: { open?: boolean }) {
           />
         </div>
         <div style={{ minWidth: 0 }}>
-          <div style={{ fontSize: '14px', fontWeight: 600, color: '#F0F0F0', lineHeight: 1.2, letterSpacing: '-0.01em' }}>
+          <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--sidebar-foreground)', lineHeight: 1.2, letterSpacing: '-0.01em' }}>
             Unique NPC
           </div>
-          <div style={{ fontSize: '12px', color: '#707070', marginTop: '1px' }}>Marketing</div>
+          <div style={{ fontSize: '12px', color: 'var(--sidebar-muted)', marginTop: '1px' }}>Marketing</div>
         </div>
       </div>
 
@@ -243,31 +244,32 @@ export default function Sidebar({ open = false }: { open?: boolean }) {
       </nav>
 
       {/* Account */}
-      <div style={{ padding: '10px', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+      <div style={{ padding: '10px', borderTop: '1px solid var(--sidebar-border)', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        <ThemeToggle />
         <div className="sidebar-user">
           <div
             style={{
               width: '28px',
               height: '28px',
               borderRadius: '50%',
-              background: 'linear-gradient(135deg, #3A3A3A, #1A1A1A)',
-              boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)',
+              background: 'var(--gradient)',
+              boxShadow: 'inset 0 0 0 1px var(--sidebar-border)',
               display: 'grid',
               placeItems: 'center',
               flexShrink: 0,
               fontSize: '12px',
               fontWeight: 600,
-              color: '#F0F0F0',
+              color: 'var(--gradient-foreground)',
             }}
           >
             {user?.email?.[0].toUpperCase() ?? 'U'}
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: '13px', color: '#F0F0F0', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <div style={{ fontSize: '13px', color: 'var(--sidebar-foreground)', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {user?.email ?? '—'}
             </div>
-            <div style={{ fontSize: '11px', color: '#707070', display: 'flex', alignItems: 'center', gap: '5px' }}>
-              <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: '#3DD68C', boxShadow: '0 0 6px #3DD68C' }} />
+            <div style={{ fontSize: '11px', color: 'var(--sidebar-muted)', display: 'flex', alignItems: 'center', gap: '5px' }}>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: '#4ADE9A' }} />
               Aktif
             </div>
           </div>

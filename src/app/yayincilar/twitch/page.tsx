@@ -4,7 +4,7 @@ import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 import PageHeader from '@/components/PageHeader'
 import { Search, X, ExternalLink, Mail, Globe, ChevronLeft, ChevronRight, Gamepad2, Users, Share2, Languages, Radio } from 'lucide-react'
 import Image from 'next/image'
-import { inkOf } from '@/lib/theme'
+import { inkOf, tint } from '@/lib/theme'
 import SlideDrawer from '@/components/motion/SlideDrawer'
 
 type Row = Record<string, unknown>
@@ -44,7 +44,7 @@ function languageFlag(lang: string): string {
   return LANGUAGE_FLAGS[lang] ?? '🌐'
 }
 
-const AVATAR_PALETTE = ['#9146ff', '#1D4ED8', '#047857', '#B45309', '#BE185D', '#B91C1C', '#4CCCE6', '#4338CA']
+const AVATAR_PALETTE = ['#9146ff', 'var(--info)', 'var(--success)', 'var(--orange)', 'var(--rose)', 'var(--danger)', 'var(--teal)', 'var(--info)']
 function colorForName(name: unknown): string {
   const s = String(name ?? '')
   let hash = 0
@@ -87,7 +87,7 @@ function Avatar({ username, src, size }: { username: unknown; src?: string; size
   const color = colorForName(uname)
   if (!uname || !src || broken) {
     return (
-      <div style={{ width: size, height: size, borderRadius: size / 3.5, backgroundColor: color + '22', border: `1px solid ${color}66`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: size * 0.32, color: inkOf(color), flexShrink: 0 }}>
+      <div style={{ width: size, height: size, borderRadius: size / 3.5, backgroundColor: tint(color, 13), border: `1px solid ${tint(color, 40)}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: size * 0.32, color: inkOf(color), flexShrink: 0 }}>
         {initials(uname)}
       </div>
     )
@@ -97,7 +97,7 @@ function Avatar({ username, src, size }: { username: unknown; src?: string; size
       src={src}
       alt={uname}
       onError={() => setBroken(true)}
-      style={{ width: size, height: size, borderRadius: size / 3.5, objectFit: 'cover', flexShrink: 0, border: `1px solid ${color}66`, backgroundColor: '#FFFFFF' }}
+      style={{ width: size, height: size, borderRadius: size / 3.5, objectFit: 'cover', flexShrink: 0, border: `1px solid ${tint(color, 40)}`, backgroundColor: 'var(--card)' }}
     />
   )
 }
@@ -105,15 +105,15 @@ function Avatar({ username, src, size }: { username: unknown; src?: string; size
 // ── sortable column header ──────────────────────────────────────────────
 function SortableTH({ label, sk, active, dir, onSort, style }: { label: string; sk: SortKey; active: boolean; dir: SortDir; onSort: (k: SortKey) => void; style?: React.CSSProperties }) {
   return (
-    <th onClick={() => onSort(sk)} style={{ ...STH, cursor: 'pointer', userSelect: 'none', color: active ? '#7539CF' : '#655F7D', ...style }}>
+    <th onClick={() => onSort(sk)} style={{ ...STH, cursor: 'pointer', userSelect: 'none', color: active ? 'var(--primary-ink)' : 'var(--muted-foreground)', ...style }}>
       {label} <span style={{ opacity: active ? 1 : 0.3 }}>{active ? (dir === 'desc' ? '↓' : '↑') : '↕'}</span>
     </th>
   )
 }
 
-const STH: React.CSSProperties = { backgroundColor: 'rgba(23,18,43,0.02)', color: '#655F7D', fontSize: '12.5px', fontWeight: 500, padding: '11px 14px', textAlign: 'left', borderBottom: '1px solid #E8E4F1', whiteSpace: 'nowrap' }
+const STH: React.CSSProperties = { backgroundColor: 'color-mix(in srgb, var(--foreground) 2%, transparent)', color: 'var(--muted-foreground)', fontSize: '12.5px', fontWeight: 500, padding: '11px 14px', textAlign: 'left', borderBottom: '1px solid var(--border)', whiteSpace: 'nowrap' }
 const TD: React.CSSProperties = { padding: '12px 14px', verticalAlign: 'middle' }
-const SEL: React.CSSProperties = { backgroundColor: '#FFFFFF', border: '1px solid #E8E4F1', borderRadius: '7px', padding: '7px 11px', fontSize: '13px', color: '#17122B', cursor: 'pointer', outline: 'none' }
+const SEL: React.CSSProperties = { backgroundColor: 'var(--card)', border: '1px solid var(--border)', borderRadius: '7px', padding: '7px 11px', fontSize: '13px', color: 'var(--foreground)', cursor: 'pointer', outline: 'none' }
 
 // ── stats bar card styling ───────────────────────────────────────────────
 function statCardStyle(color: string): React.CSSProperties {
@@ -129,23 +129,23 @@ function statCardStyle(color: string): React.CSSProperties {
     minHeight: '132px',
   }
 }
-const statValueStyle: React.CSSProperties = { fontSize: '26px', fontWeight: 800, color: '#17122B', lineHeight: 1.15 }
-const statSubStyle: React.CSSProperties = { fontSize: '12px', color: '#655F7D' }
+const statValueStyle: React.CSSProperties = { fontSize: '26px', fontWeight: 800, color: 'var(--foreground)', lineHeight: 1.15 }
+const statSubStyle: React.CSSProperties = { fontSize: '12px', color: 'var(--muted-foreground)' }
 
 function StatCardHeader({ icon, color, label }: { icon: React.ReactNode; color: string; label: string }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-      <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: color + '22', border: `1px solid ${color}55`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: inkOf(color), flexShrink: 0 }}>
+      <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: tint(color, 13), border: `1px solid ${tint(color, 33)}`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: inkOf(color), flexShrink: 0 }}>
         {icon}
       </div>
-      <span style={{ fontSize: '12px', fontWeight: 600, color: '#4A4462', }}>{label}</span>
+      <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-2)', }}>{label}</span>
     </div>
   )
 }
 
 function ContactRow({ href, icon, label }: { href: string; icon: React.ReactNode; label: string }) {
   return (
-    <a href={href} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#1D4ED8', textDecoration: 'none', padding: '5px 0', overflow: 'hidden' }}>
+    <a href={href} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: 'var(--info)', textDecoration: 'none', padding: '5px 0', overflow: 'hidden' }}>
       <span style={{ flexShrink: 0, display: 'flex' }}>{icon}</span>
       <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{label}</span>
     </a>
@@ -169,18 +169,18 @@ function DetailPanel({ row, profileSrc, onClose }: { row: Row; profileSrc?: stri
   if (row.facebook) contacts.push({ href: socialHref(row.facebook, 'https://facebook.com/'), icon: <Globe size={13} />, label: String(row.facebook) })
 
   return (
-    <div style={{ width: '380px', backgroundColor: '#FFFFFF', borderLeft: '1px solid #E8E4F1', display: 'flex', flexDirection: 'column', overflowY: 'auto', position: 'fixed', top: 0, right: 0, height: '100vh', zIndex: 1000 }}>
+    <div style={{ width: '380px', backgroundColor: 'var(--card)', borderLeft: '1px solid var(--border)', display: 'flex', flexDirection: 'column', overflowY: 'auto', position: 'fixed', top: 0, right: 0, height: '100vh', zIndex: 1000 }}>
       {/* Header */}
-      <div style={{ padding: '18px', borderBottom: '1px solid #E8E4F1', display: 'flex', alignItems: 'center', gap: '14px' }}>
+      <div style={{ padding: '18px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: '14px' }}>
         <Avatar key={String(row.username)} username={row.username} src={profileSrc} size={64} />
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontWeight: 700, fontSize: '16px', color: '#17122B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name}</div>
-          <div style={{ fontSize: '12px', color: '#655F7D', marginTop: '3px', display: 'flex', gap: '6px', alignItems: 'center' }}>
+          <div style={{ fontWeight: 700, fontSize: '16px', color: 'var(--foreground)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name}</div>
+          <div style={{ fontSize: '12px', color: 'var(--muted-foreground)', marginTop: '3px', display: 'flex', gap: '6px', alignItems: 'center' }}>
             @{String(row.username ?? '—')}
-            {!!row.language && <span style={{ backgroundColor: 'rgba(145,70,255,0.12)', color: '#7539CF', borderRadius: '4px', padding: '1px 6px' }}>{String(row.language)}</span>}
+            {!!row.language && <span style={{ backgroundColor: 'rgba(145,70,255,0.12)', color: 'var(--primary-ink)', borderRadius: '4px', padding: '1px 6px' }}>{String(row.language)}</span>}
           </div>
         </div>
-        <button onClick={onClose} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '30px', borderRadius: '7px', backgroundColor: 'transparent', border: '1px solid #E8E4F1', color: '#655F7D', cursor: 'pointer', flexShrink: 0 }}>
+        <button onClick={onClose} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '30px', borderRadius: '7px', backgroundColor: 'transparent', border: '1px solid var(--border)', color: 'var(--muted-foreground)', cursor: 'pointer', flexShrink: 0 }}>
           <X size={14} />
         </button>
       </div>
@@ -190,10 +190,10 @@ function DetailPanel({ row, profileSrc, onClose }: { row: Row; profileSrc?: stri
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
           {[
             { label: 'Ort. İzleyici', value: fmt(row.avg_viewers), color: '#9146FF' },
-            { label: 'Takipçi', value: fmt(row.followers), color: '#046C4E' },
+            { label: 'Takipçi', value: fmt(row.followers), color: 'var(--success)' },
           ].map(s => (
-            <div key={s.label} style={{ backgroundColor: '#FFFFFF', border: '1px solid #E8E4F1', borderRadius: '8px', padding: '12px 14px' }}>
-              <div style={{ fontSize: '10px', color: '#655F7D', fontWeight: 600, marginBottom: '5px' }}>{s.label}</div>
+            <div key={s.label} style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)', borderRadius: '8px', padding: '12px 14px' }}>
+              <div style={{ fontSize: '10px', color: 'var(--muted-foreground)', fontWeight: 600, marginBottom: '5px' }}>{s.label}</div>
               <div style={{ fontSize: '18px', fontWeight: 800, color: inkOf(s.color) }}>{s.value}</div>
             </div>
           ))}
@@ -201,7 +201,7 @@ function DetailPanel({ row, profileSrc, onClose }: { row: Row; profileSrc?: stri
 
         {/* Channel link */}
         {!!row.channel_url && (
-          <a href={String(row.channel_url)} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '10px', borderRadius: '8px', backgroundColor: 'rgba(145,70,255,0.08)', border: '1px solid rgba(145,70,255,0.3)', color: '#7539CF', fontWeight: 600, fontSize: '13px', textDecoration: 'none' }}>
+          <a href={String(row.channel_url)} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '10px', borderRadius: '8px', backgroundColor: 'rgba(145,70,255,0.08)', border: '1px solid rgba(145,70,255,0.3)', color: 'var(--primary-ink)', fontWeight: 600, fontSize: '13px', textDecoration: 'none' }}>
             <ExternalLink size={14} /> Kanala Git
           </a>
         )}
@@ -209,20 +209,20 @@ function DetailPanel({ row, profileSrc, onClose }: { row: Row; profileSrc?: stri
         {/* Bio */}
         {!!row.bio && (
           <div>
-            <div style={{ fontSize: '11px', fontWeight: 600, color: '#655F7D', marginBottom: '8px' }}>Bio</div>
-            <div style={{ fontSize: '13px', color: '#4A4462', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{String(row.bio)}</div>
+            <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--muted-foreground)', marginBottom: '8px' }}>Bio</div>
+            <div style={{ fontSize: '13px', color: 'var(--text-2)', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{String(row.bio)}</div>
           </div>
         )}
 
         {/* Games / categories */}
         {gameList.length > 0 && (
           <div>
-            <div style={{ fontSize: '11px', fontWeight: 600, color: '#655F7D', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--muted-foreground)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
               <Gamepad2 size={12} /> Oyunlar / Kategoriler
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
               {gameList.map((g, i) => (
-                <div key={i} style={{ fontSize: '13px', color: '#4A4462', padding: '5px 10px', backgroundColor: 'rgba(145,70,255,0.06)', border: '1px solid rgba(145,70,255,0.12)', borderRadius: '6px' }}>{g}</div>
+                <div key={i} style={{ fontSize: '13px', color: 'var(--text-2)', padding: '5px 10px', backgroundColor: 'rgba(145,70,255,0.06)', border: '1px solid rgba(145,70,255,0.12)', borderRadius: '6px' }}>{g}</div>
               ))}
             </div>
           </div>
@@ -231,7 +231,7 @@ function DetailPanel({ row, profileSrc, onClose }: { row: Row; profileSrc?: stri
         {/* Contacts */}
         {contacts.length > 0 && (
           <div>
-            <div style={{ fontSize: '11px', fontWeight: 600, color: '#655F7D', marginBottom: '8px' }}>İletişim &amp; Sosyal</div>
+            <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--muted-foreground)', marginBottom: '8px' }}>İletişim &amp; Sosyal</div>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               {contacts.map((c, i) => <ContactRow key={i} {...c} />)}
             </div>
@@ -274,41 +274,41 @@ function TwitchLiveCard() {
   return (
     <>
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-        <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: 'rgba(239,68,68,0.18)', border: '1px solid rgba(239,68,68,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#B91C1C', flexShrink: 0 }}>
+        <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: 'color-mix(in srgb, var(--danger) 18%, transparent)', border: '1px solid color-mix(in srgb, var(--danger) 40%, transparent)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--danger)', flexShrink: 0 }}>
           <Radio size={17} />
         </div>
-        <span style={{ fontSize: '12px', fontWeight: 600, color: '#4A4462', }}>Twitch Canlı</span>
-        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', marginLeft: 'auto', fontSize: '10px', fontWeight: 700, color: '#046C4E' }}>
-          <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#047857', boxShadow: '0 0 6px #047857', animation: 'twitchLivePulse 1.6s ease-in-out infinite' }} />
+        <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-2)', }}>Twitch Canlı</span>
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', marginLeft: 'auto', fontSize: '10px', fontWeight: 700, color: 'var(--success)' }}>
+          <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'var(--success)', boxShadow: '0 0 6px #047857', animation: 'twitchLivePulse 1.6s ease-in-out infinite' }} />
           CANLI
         </span>
       </div>
 
       {loading ? (
-        <div style={{ fontSize: '12px', color: '#655F7D', padding: '8px 0' }}>Yükleniyor...</div>
+        <div style={{ fontSize: '12px', color: 'var(--muted-foreground)', padding: '8px 0' }}>Yükleniyor...</div>
       ) : error ? (
-        <div style={{ fontSize: '12px', color: '#655F7D', padding: '8px 0' }}>Twitch verisi alınamadı</div>
+        <div style={{ fontSize: '12px', color: 'var(--muted-foreground)', padding: '8px 0' }}>Twitch verisi alınamadı</div>
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
           <div>
-            <div style={{ fontSize: '10px', fontWeight: 600, color: '#655F7D', marginBottom: '6px' }}>En Çok İzlenen</div>
+            <div style={{ fontSize: '10px', fontWeight: 600, color: 'var(--muted-foreground)', marginBottom: '6px' }}>En Çok İzlenen</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
               {streams.map((s, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px' }}>
-                  <span style={{ color: '#655F7D', width: '12px', flexShrink: 0 }}>{i + 1}</span>
-                  <span style={{ color: '#17122B', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>{s.user_name}</span>
-                  <span style={{ color: '#B91C1C', fontWeight: 700, flexShrink: 0 }}>{fmt(s.viewer_count)}</span>
+                  <span style={{ color: 'var(--muted-foreground)', width: '12px', flexShrink: 0 }}>{i + 1}</span>
+                  <span style={{ color: 'var(--foreground)', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>{s.user_name}</span>
+                  <span style={{ color: 'var(--danger)', fontWeight: 700, flexShrink: 0 }}>{fmt(s.viewer_count)}</span>
                 </div>
               ))}
             </div>
           </div>
           <div>
-            <div style={{ fontSize: '10px', fontWeight: 600, color: '#655F7D', marginBottom: '6px' }}>Popüler Kategoriler</div>
+            <div style={{ fontSize: '10px', fontWeight: 600, color: 'var(--muted-foreground)', marginBottom: '6px' }}>Popüler Kategoriler</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
               {categories.map((c, i) => (
                 <div key={c.id ?? i} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px' }}>
-                  <span style={{ color: '#655F7D', width: '12px', flexShrink: 0 }}>{i + 1}</span>
-                  <span style={{ color: '#17122B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.name}</span>
+                  <span style={{ color: 'var(--muted-foreground)', width: '12px', flexShrink: 0 }}>{i + 1}</span>
+                  <span style={{ color: 'var(--foreground)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.name}</span>
                 </div>
               ))}
             </div>
@@ -515,7 +515,7 @@ export default function TwitchPage() {
             <button
               key={t.key}
               onClick={() => switchTab(t.key)}
-              style={{ padding: '8px 18px', borderRadius: '8px', border: 'none', fontWeight: 600, fontSize: '13px', cursor: 'pointer', backgroundColor: activeTab === t.key ? '#F3EEFF' : 'transparent', color: activeTab === t.key ? '#6D28D9' : '#655F7D', transition: 'background-color 150ms var(--ease-out), color 150ms var(--ease-out)' }}
+              style={{ padding: '8px 18px', borderRadius: '8px', border: 'none', fontWeight: 600, fontSize: '13px', cursor: 'pointer', backgroundColor: activeTab === t.key ? 'var(--primary-soft)' : 'transparent', color: activeTab === t.key ? 'var(--primary-ink)' : 'var(--muted-foreground)', transition: 'background-color 150ms var(--ease-out), color 150ms var(--ease-out)' }}
             >
               {t.label}
             </button>
@@ -532,21 +532,21 @@ export default function TwitchPage() {
           </div>
 
           {/* Email Olan */}
-          <div style={statCardStyle('#B45309')}>
+          <div style={statCardStyle('var(--orange)')}>
             <StatCardHeader icon={<Mail size={17} />} color="#B45309" label="Email Olan" />
             <div style={statValueStyle}>{auxLoading ? '…' : stats.emailCount.toLocaleString('tr-TR')}</div>
             <div style={statSubStyle}>{auxLoading || stats.totalStreamers === 0 ? '—' : `%${Math.round((stats.emailCount / stats.totalStreamers) * 100)} kapsam`}</div>
           </div>
 
           {/* En az 1 iletişim/sosyal */}
-          <div style={statCardStyle('#047857')}>
+          <div style={statCardStyle('var(--success)')}>
             <StatCardHeader icon={<Share2 size={17} />} color="#047857" label="İletişim / Sosyal Medya" />
             <div style={statValueStyle}>{auxLoading ? '…' : stats.anyContactCount.toLocaleString('tr-TR')}</div>
             <div style={statSubStyle}>{auxLoading || stats.totalStreamers === 0 ? '—' : `%${Math.round((stats.anyContactCount / stats.totalStreamers) * 100)} en az 1 kanal`}</div>
           </div>
 
           {/* Popüler Dil */}
-          <div style={statCardStyle('#1D4ED8')}>
+          <div style={statCardStyle('var(--info)')}>
             <StatCardHeader icon={<Languages size={17} />} color="#1D4ED8" label="Popüler Dil" />
             <div style={statValueStyle}>{auxLoading ? '…' : topLanguage ? `${languageFlag(topLanguage.name)} ${topLanguage.name}` : '—'}</div>
             <div style={statSubStyle}>{auxLoading || !topLanguage ? '—' : `${topLanguage.count.toLocaleString('tr-TR')} yayıncı`}</div>
@@ -556,19 +556,19 @@ export default function TwitchPage() {
           <div
             onMouseEnter={() => setCategoriesHovered(true)}
             onMouseLeave={() => setCategoriesHovered(false)}
-            style={{ ...statCardStyle('#BE185D'), gridColumn: 'span 2', position: 'relative' }}
+            style={{ ...statCardStyle('var(--rose)'), gridColumn: 'span 2', position: 'relative' }}
           >
             <StatCardHeader icon={<Gamepad2 size={17} />} color="#BE185D" label="Popüler Kategoriler" />
             <div style={statValueStyle}>{auxLoading ? '…' : topCategory ? topCategory.name : '—'}</div>
             <div style={statSubStyle}>{auxLoading || !topCategory ? '—' : `${topCategory.count.toLocaleString('tr-TR')} yayıncının ana kategorisi · üzerine gelip ilk 3'ü gör`}</div>
 
             {categoriesHovered && top3Categories.length > 0 && (
-              <div style={{ position: 'absolute', top: 'calc(100% + 8px)', left: '20px', right: '20px', zIndex: 10, backgroundColor: '#FFFFFF', border: '1px solid rgba(244,114,182,0.35)', borderRadius: '12px', padding: '14px', boxShadow: '0 12px 28px rgba(0,0,0,0.12)', display: 'flex', gap: '10px' }}>
+              <div style={{ position: 'absolute', top: 'calc(100% + 8px)', left: '20px', right: '20px', zIndex: 10, backgroundColor: 'var(--card)', border: '1px solid color-mix(in srgb, var(--rose) 35%, transparent)', borderRadius: '12px', padding: '14px', boxShadow: '0 12px 28px rgba(0,0,0,0.12)', display: 'flex', gap: '10px' }}>
                 {top3Categories.map((c, i) => (
-                  <div key={c.name} style={{ flex: 1, backgroundColor: 'rgba(244,114,182,0.08)', border: '1px solid rgba(244,114,182,0.2)', borderRadius: '8px', padding: '10px 12px' }}>
-                    <div style={{ fontSize: '10px', fontWeight: 700, color: '#BE185D', marginBottom: '4px' }}>#{i + 1}</div>
-                    <div style={{ fontSize: '12px', fontWeight: 600, color: '#17122B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.name}</div>
-                    <div style={{ fontSize: '11px', color: '#4A4462', marginTop: '2px' }}>{c.count.toLocaleString('tr-TR')} yayıncı</div>
+                  <div key={c.name} style={{ flex: 1, backgroundColor: 'color-mix(in srgb, var(--rose) 8%, transparent)', border: '1px solid color-mix(in srgb, var(--rose) 20%, transparent)', borderRadius: '8px', padding: '10px 12px' }}>
+                    <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--rose)', marginBottom: '4px' }}>#{i + 1}</div>
+                    <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--foreground)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.name}</div>
+                    <div style={{ fontSize: '11px', color: 'var(--text-2)', marginTop: '2px' }}>{c.count.toLocaleString('tr-TR')} yayıncı</div>
                   </div>
                 ))}
               </div>
@@ -576,7 +576,7 @@ export default function TwitchPage() {
           </div>
 
           {/* Twitch Canlı (wide) */}
-          <div style={{ ...statCardStyle('#B91C1C'), gridColumn: 'span 2' }}>
+          <div style={{ ...statCardStyle('var(--danger)'), gridColumn: 'span 2' }}>
             <TwitchLiveCard />
           </div>
         </div>
@@ -584,9 +584,9 @@ export default function TwitchPage() {
         {/* Table card */}
         <div style={{ backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border-card)', borderRadius: '12px', overflow: 'hidden' }}>
           {/* Filters */}
-          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', padding: '12px 20px', borderBottom: '1px solid #E8E4F1', alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', padding: '12px 20px', borderBottom: '1px solid var(--border)', alignItems: 'center' }}>
             <div style={{ position: 'relative', flex: 1, minWidth: '180px' }}>
-              <Search size={13} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#655F7D', pointerEvents: 'none' }} />
+              <Search size={13} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--muted-foreground)', pointerEvents: 'none' }} />
               <input value={searchInput} onChange={e => setSearchInput(e.target.value)} placeholder="Kanal ara..." style={{ ...SEL, paddingLeft: '30px', width: '100%', boxSizing: 'border-box' }} />
             </div>
             <select value={languageFilter} onChange={e => setLanguageFilter(e.target.value)} style={SEL}>
@@ -595,16 +595,16 @@ export default function TwitchPage() {
             </select>
             <button
               onClick={() => setEmailOnly(v => !v)}
-              style={{ padding: '7px 14px', borderRadius: '7px', border: `1px solid ${emailOnly ? 'rgba(251,191,36,0.5)' : '#E8E4F1'}`, backgroundColor: emailOnly ? 'rgba(251,191,36,0.1)' : 'transparent', color: emailOnly ? '#A24B08' : '#655F7D', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}
+              style={{ padding: '7px 14px', borderRadius: '7px', border: `1px solid ${emailOnly ? 'color-mix(in srgb, var(--warning) 50%, transparent)' : 'var(--border)'}`, backgroundColor: emailOnly ? 'color-mix(in srgb, var(--warning) 10%, transparent)' : 'transparent', color: emailOnly ? 'var(--orange)' : 'var(--muted-foreground)', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}
             >
               <Mail size={14} aria-hidden /> Email Var
             </button>
             {hasFilters && (
-              <button onClick={() => { setSearchInput(''); setSearch(''); setLanguageFilter(''); setEmailOnly(false) }} style={{ fontSize: '12px', color: '#655F7D', background: 'none', border: '1px solid #E8E4F1', borderRadius: '7px', padding: '7px 12px', cursor: 'pointer' }}>
+              <button onClick={() => { setSearchInput(''); setSearch(''); setLanguageFilter(''); setEmailOnly(false) }} style={{ fontSize: '12px', color: 'var(--muted-foreground)', background: 'none', border: '1px solid var(--border)', borderRadius: '7px', padding: '7px 12px', cursor: 'pointer' }}>
                 Temizle
               </button>
             )}
-            <span style={{ marginLeft: 'auto', fontSize: '12px', color: '#655F7D', whiteSpace: 'nowrap' }}>
+            <span style={{ marginLeft: 'auto', fontSize: '12px', color: 'var(--muted-foreground)', whiteSpace: 'nowrap' }}>
               {totalCount === 0 ? '0 yayıncı' : `${rangeStart.toLocaleString('tr-TR')} - ${rangeEnd.toLocaleString('tr-TR')} / ${totalCount.toLocaleString('tr-TR')} yayıncı`}
             </span>
           </div>
@@ -624,16 +624,16 @@ export default function TwitchPage() {
               </thead>
               <tbody>
                 {loading ? (
-                  <tr><td colSpan={6} style={{ padding: '48px', textAlign: 'center', color: '#655F7D', fontSize: '14px' }}>Yükleniyor...</td></tr>
+                  <tr><td colSpan={6} style={{ padding: '48px', textAlign: 'center', color: 'var(--muted-foreground)', fontSize: '14px' }}>Yükleniyor...</td></tr>
                 ) : rows.length === 0 ? (
-                  <tr><td colSpan={6} style={{ padding: '48px', textAlign: 'center', color: '#655F7D', fontSize: '14px' }}>{hasFilters ? 'Eşleşen yayıncı bulunamadı' : 'Henüz yayıncı eklenmemiş'}</td></tr>
+                  <tr><td colSpan={6} style={{ padding: '48px', textAlign: 'center', color: 'var(--muted-foreground)', fontSize: '14px' }}>{hasFilters ? 'Eşleşen yayıncı bulunamadı' : 'Henüz yayıncı eklenmemiş'}</td></tr>
                 ) : rows.map((row, i) => {
                   const isActive = selected?.id === row.id
                   return (
                     <tr
                       key={String(row.id ?? i)}
                       onClick={() => setSelected(isActive ? null : row)}
-                      style={{ borderBottom: i < rows.length - 1 ? '1px solid #E8E4F1' : 'none', backgroundColor: isActive ? 'rgba(145,70,255,0.07)' : i % 2 === 1 ? '#FAF9FD' : 'transparent', cursor: 'pointer' }}
+                      style={{ borderBottom: i < rows.length - 1 ? '1px solid var(--border)' : 'none', backgroundColor: isActive ? 'rgba(145,70,255,0.07)' : i % 2 === 1 ? 'var(--row)' : 'transparent', cursor: 'pointer' }}
                     >
                       <td style={{ ...TD, paddingRight: '8px' }}>
                         <Avatar username={row.username} src={profileMap[String(row.username ?? '').trim().toLowerCase()]} size={32} />
@@ -644,21 +644,21 @@ export default function TwitchPage() {
                           target="_blank"
                           rel="noopener noreferrer"
                           onClick={e => e.stopPropagation()}
-                          style={{ fontWeight: 700, fontSize: '13px', color: '#7539CF', textDecoration: 'none' }}
+                          style={{ fontWeight: 700, fontSize: '13px', color: 'var(--primary-ink)', textDecoration: 'none' }}
                         >
                           {String(row.display_name ?? row.username ?? '—')}
                         </a>
                         {!!row.username && String(row.display_name ?? '') !== String(row.username) && (
-                          <div style={{ fontSize: '11px', color: '#655F7D', marginTop: '2px' }}>@{String(row.username)}</div>
+                          <div style={{ fontSize: '11px', color: 'var(--muted-foreground)', marginTop: '2px' }}>@{String(row.username)}</div>
                         )}
                       </td>
-                      <td style={TD}><span style={{ color: '#7539CF', fontWeight: 600, fontSize: '13px' }}>{fmt(row.avg_viewers)}</span></td>
-                      <td style={TD}><span style={{ color: '#046C4E', fontWeight: 600, fontSize: '13px' }}>{fmt(row.followers)}</span></td>
-                      <td style={TD}><span style={{ fontSize: '13px', color: '#4A4462' }}>{row.language ? String(row.language) : <span style={{ color: '#655F7D' }}>—</span>}</span></td>
+                      <td style={TD}><span style={{ color: 'var(--primary-ink)', fontWeight: 600, fontSize: '13px' }}>{fmt(row.avg_viewers)}</span></td>
+                      <td style={TD}><span style={{ color: 'var(--success)', fontWeight: 600, fontSize: '13px' }}>{fmt(row.followers)}</span></td>
+                      <td style={TD}><span style={{ fontSize: '13px', color: 'var(--text-2)' }}>{row.language ? String(row.language) : <span style={{ color: 'var(--muted-foreground)' }}>—</span>}</span></td>
                       <td style={{ ...TD, maxWidth: '180px' }} onClick={e => e.stopPropagation()}>
                         {hasEmail(row.email)
-                          ? <a href={`mailto:${row.email}`} style={{ color: '#1D4ED8', fontSize: '12px', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{String(row.email)}</a>
-                          : <span style={{ color: '#655F7D' }}>—</span>}
+                          ? <a href={`mailto:${row.email}`} style={{ color: 'var(--info)', fontSize: '12px', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{String(row.email)}</a>
+                          : <span style={{ color: 'var(--muted-foreground)' }}>—</span>}
                       </td>
                     </tr>
                   )
@@ -668,33 +668,33 @@ export default function TwitchPage() {
           </div>
 
           {/* Pagination */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 20px', borderTop: '1px solid #E8E4F1', gap: '12px', flexWrap: 'wrap' }}>
-            <span style={{ fontSize: '12px', color: '#655F7D' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 20px', borderTop: '1px solid var(--border)', gap: '12px', flexWrap: 'wrap' }}>
+            <span style={{ fontSize: '12px', color: 'var(--muted-foreground)' }}>
               {totalCount === 0 ? '0 yayıncı' : `${rangeStart.toLocaleString('tr-TR')} - ${rangeEnd.toLocaleString('tr-TR')} / ${totalCount.toLocaleString('tr-TR')} yayıncı`}
             </span>
             <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
               <button
                 onClick={() => setPage(p => Math.max(1, p - 1))}
                 disabled={page <= 1}
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '30px', borderRadius: '7px', border: '1px solid #E8E4F1', backgroundColor: 'transparent', color: page <= 1 ? '#655F7D' : '#4A4462', cursor: page <= 1 ? 'not-allowed' : 'pointer' }}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '30px', borderRadius: '7px', border: '1px solid var(--border)', backgroundColor: 'transparent', color: page <= 1 ? 'var(--muted-foreground)' : 'var(--text-2)', cursor: page <= 1 ? 'not-allowed' : 'pointer' }}
               >
                 <ChevronLeft size={14} />
               </button>
-              {pageNumbers[0] > 1 && <span style={{ color: '#655F7D', fontSize: '12px', padding: '0 4px' }}>…</span>}
+              {pageNumbers[0] > 1 && <span style={{ color: 'var(--muted-foreground)', fontSize: '12px', padding: '0 4px' }}>…</span>}
               {pageNumbers.map(n => (
                 <button
                   key={n}
                   onClick={() => setPage(n)}
-                  style={{ minWidth: '30px', height: '30px', borderRadius: '7px', border: `1px solid ${n === page ? '#9146ff' : '#E8E4F1'}`, backgroundColor: n === page ? 'rgba(145,70,255,0.15)' : 'transparent', color: n === page ? '#6D28D9' : '#4A4462', fontSize: '12px', fontWeight: 600, cursor: 'pointer', padding: '0 6px' }}
+                  style={{ minWidth: '30px', height: '30px', borderRadius: '7px', border: `1px solid ${n === page ? '#9146ff' : 'var(--border)'}`, backgroundColor: n === page ? 'rgba(145,70,255,0.15)' : 'transparent', color: n === page ? 'var(--primary-ink)' : 'var(--text-2)', fontSize: '12px', fontWeight: 600, cursor: 'pointer', padding: '0 6px' }}
                 >
                   {n}
                 </button>
               ))}
-              {pageNumbers[pageNumbers.length - 1] < totalPages && <span style={{ color: '#655F7D', fontSize: '12px', padding: '0 4px' }}>…</span>}
+              {pageNumbers[pageNumbers.length - 1] < totalPages && <span style={{ color: 'var(--muted-foreground)', fontSize: '12px', padding: '0 4px' }}>…</span>}
               <button
                 onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                 disabled={page >= totalPages}
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '30px', borderRadius: '7px', border: '1px solid #E8E4F1', backgroundColor: 'transparent', color: page >= totalPages ? '#655F7D' : '#4A4462', cursor: page >= totalPages ? 'not-allowed' : 'pointer' }}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '30px', borderRadius: '7px', border: '1px solid var(--border)', backgroundColor: 'transparent', color: page >= totalPages ? 'var(--muted-foreground)' : 'var(--text-2)', cursor: page >= totalPages ? 'not-allowed' : 'pointer' }}
               >
                 <ChevronRight size={14} />
               </button>

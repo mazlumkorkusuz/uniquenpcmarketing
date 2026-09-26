@@ -1,24 +1,17 @@
 import type { Metadata } from 'next'
-import { Inter, Space_Grotesk, DM_Sans, Geist } from 'next/font/google'
+import { Bricolage_Grotesque, Geist } from 'next/font/google'
 import './globals.css'
 import AppShell from '@/components/AppShell'
-import { cn } from "@/lib/utils";
+import ThemeProvider from '@/components/ThemeProvider'
+import { cn } from '@/lib/utils'
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
-
-
-// MASTER type: Space Grotesk for display/headings, DM Sans for body. Inter stays for the sidebar.
-const inter = Inter({
-  variable: '--font-inter',
-  subsets: ['latin', 'latin-ext'],
-})
-
-const display = Space_Grotesk({
+// Caravan type: Bricolage Grotesque carries the display voice, Geist does the work.
+const display = Bricolage_Grotesque({
   variable: '--font-display',
   subsets: ['latin', 'latin-ext'],
 })
 
-const body = DM_Sans({
+const body = Geist({
   variable: '--font-body',
   subsets: ['latin', 'latin-ext'],
 })
@@ -38,9 +31,11 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="tr" className={cn(inter.variable, display.variable, body.variable, "font-sans", geist.variable)}>
+    <html lang="tr" className={cn(display.variable, body.variable, 'font-sans')} suppressHydrationWarning>
       <body style={{ margin: 0, minHeight: '100vh' }}>
-        <AppShell>{children}</AppShell>
+        <ThemeProvider>
+          <AppShell>{children}</AppShell>
+        </ThemeProvider>
       </body>
     </html>
   )
