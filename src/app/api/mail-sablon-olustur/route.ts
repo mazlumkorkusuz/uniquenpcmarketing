@@ -6,7 +6,7 @@ import { createSupabaseServerClient } from '@/lib/supabase-server'
 // → { subject, html_content }
 
 const CLAUDE_MODEL = 'claude-opus-5-5'
-const GPT_MODEL = 'gpt-4o'
+const GPT_MODEL = 'gpt-6-astra'
 
 interface GenerateRequest {
   provider?: 'claude' | 'gpt'
