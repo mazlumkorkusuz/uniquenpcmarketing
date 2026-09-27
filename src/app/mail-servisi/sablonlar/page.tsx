@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Sparkles, Save, Trash2, FileText, Loader2, Mail, Upload, ImageIcon } from 'lucide-react'
+import { Sparkles, Save, Trash2, FileText, Loader2, Mail, Upload, ImageIcon, Images } from 'lucide-react'
 import PageHeader from '@/components/PageHeader'
 import Badge from '@/components/Badge'
 import { Toast } from '@/components/Toast'
@@ -10,6 +10,7 @@ import {
   MAIL_ACCOUNT_PUBLIC_COLUMNS, MAIL_LANGUAGES, MAIL_PLATFORMS, normalizeMailLanguage,
   renderTemplate, type MailAccount, type MailTemplate,
 } from '@/lib/mail'
+import MediaLibrary, { normalizeDomain, type MediaKind } from '../_components/MediaLibrary'
 import { Card, Field, MAIL_GRADIENT, buttonStyle, inputStyle, formatDateTime } from '../_components/ui'
 
 type Provider = 'claude' | 'gpt'
@@ -54,6 +55,9 @@ export default function SablonlarPage() {
   const [discordLink, setDiscordLink] = useState('')
   const [generating, setGenerating] = useState(false)
   const [uploading, setUploading] = useState<AssetKind | null>(null)
+  // Images picked from the media library for this template; override the account's own logo/banner
+  const [picked, setPicked] = useState<Record<MediaKind, string | null>>({ logo: null, banner: null })
+  const [libraryKind, setLibraryKind] = useState<MediaKind | null>(null)
 
   const [editingId, setEditingId] = useState<string | null>(null)
   const [templateName, setTemplateName] = useState('')
@@ -79,6 +83,16 @@ export default function SablonlarPage() {
   }, [supabase, fetchTemplates])
 
   const account = accounts.find((a) => a.id === accountId)
+  const accountDomain = normalizeDomain(account?.domain)
+  const logoUrl = picked.logo ?? account?.logo_url ?? null
+  const bannerUrl = picked.banner ?? account?.banner_url ?? null
+
+  const changeAccount = (id: string) => {
+    setAccountId(id)
+    setPicked({ logo: null, banner: null })
+  }
+
+  const closeLibrary = useCallback(() => setLibraryKind(null), [])
 
   const previewVars = useMemo(() => ({
     ...PREVIEW_VARS,
@@ -86,9 +100,9 @@ export default function SablonlarPage() {
     sender_name: account?.name ?? 'Unique NPC Games',
     sender_email: account?.email ?? 'info@example.com',
     domain: account?.domain,
-    logo_url: account?.logo_url,
-    banner_url: account?.banner_url,
-  }), [platform, account])
+    logo_url: logoUrl,
+    banner_url: bannerUrl,
+  }), [platform, account, logoUrl, bannerUrl])
 
   const previewHtml = useMemo(() => renderTemplate(html, previewVars), [html, previewVars])
   const previewSubject = useMemo(() => renderTemplate(subject, previewVars, true), [subject, previewVars])
@@ -102,8 +116,10 @@ export default function SablonlarPage() {
         body: JSON.stringify({
           provider, platform, language,
           gameDescription, keyOffer, contactName, discordLink,
-          hasLogo: !!account?.logo_url,
-          hasBanner: !!account?.banner_url,
+          hasLogo: !!logoUrl,
+          hasBanner: !!bannerUrl,
+          logoUrl: picked.logo ?? undefined,
+          bannerUrl: picked.banner ?? undefined,
         }),
       })
       const data = await res.json()
@@ -140,6 +156,7 @@ export default function SablonlarPage() {
       const { error: updateError } = await supabase.from('mail_accounts').update({ [column]: url }).eq('id', account.id)
       if (updateError) throw new Error(`Hesap güncellenemedi: ${updateError.message}`)
       setAccounts((list) => list.map((a) => (a.id === account.id ? { ...a, [column]: url } : a)))
+      setPicked((p) => ({ ...p, [kind]: null }))
       setToast({ message: kind === 'logo' ? 'Logo yüklendi' : 'Banner yüklendi', type: 'success' })
     } catch (e) {
       setToast({ message: (e as Error).message, type: 'error' })
@@ -216,6 +233,15 @@ export default function SablonlarPage() {
 
   return (
     <div>
+      {libraryKind && accountDomain && (
+        <MediaLibrary
+          domain={accountDomain}
+          initialKind={libraryKind}
+          selected={picked}
+          onSelect={(kind, url) => { setPicked((p) => ({ ...p, [kind]: url })); setLibraryKind(null) }}
+          onClose={closeLibrary}
+        />
+      )}
       {toast && <Toast message={toast.message} type={toast.type} onDismiss={() => setToast(null)} />}
       <PageHeader title="Şablon Oluştur" subtitle="AI ile yayıncı outreach maili" icon={Sparkles} gradient={MAIL_GRADIENT} />
 
@@ -273,7 +299,7 @@ export default function SablonlarPage() {
                   <input style={inputStyle} type="url" placeholder="https://discord.gg/…" value={discordLink} onChange={(e) => setDiscordLink(e.target.value)} />
                 </Field>
                 <Field label="Gönderen Hesap (logo / banner)">
-                  <select style={inputStyle} value={accountId} onChange={(e) => setAccountId(e.target.value)}>
+                  <select style={inputStyle} value={accountId} onChange={(e) => changeAccount(e.target.value)}>
                     <option value="">Yok</option>
                     {accounts.map((a) => <option key={a.id} value={a.id}>{a.name} — {a.email}</option>)}
                   </select>
@@ -281,7 +307,7 @@ export default function SablonlarPage() {
                 {account && (
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '10px' }}>
                     {(['logo', 'banner'] as const).map((kind) => {
-                      const url = kind === 'logo' ? account.logo_url : account.banner_url
+                      const url = kind === 'logo' ? logoUrl : bannerUrl
                       const label = kind === 'logo' ? 'Logo' : 'Banner'
                       const busy = uploading === kind
                       return (
@@ -300,6 +326,15 @@ export default function SablonlarPage() {
                               <ImageIcon size={20} strokeWidth={1.5} aria-label={`${label} yok`} />
                             )}
                           </div>
+                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(104px, 1fr))', gap: '6px' }}>
+                          <button
+                            style={{ ...buttonStyle('secondary', !accountDomain), justifyContent: 'center', padding: '6px 10px', fontSize: '12px' }}
+                            disabled={!accountDomain}
+                            title={accountDomain ? undefined : 'Bu hesabın domain alanı boş'}
+                            onClick={() => setLibraryKind(kind)}
+                          >
+                            <Images size={13} /> {label} Seç
+                          </button>
                           <label
                             style={{
                               ...buttonStyle('secondary', !!uploading), justifyContent: 'center', padding: '6px 10px', fontSize: '12px',
@@ -316,6 +351,7 @@ export default function SablonlarPage() {
                               onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadAsset(kind, f); e.target.value = '' }}
                             />
                           </label>
+                          </div>
                         </div>
                       )
                     })}
