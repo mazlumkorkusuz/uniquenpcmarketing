@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Sparkles, Save, Trash2, FileText, Loader2, Mail, Upload, ImageIcon, Images } from 'lucide-react'
+import { Sparkles, Save, Trash2, FileText, Loader2, Mail, Upload, ImageIcon, Images, X } from 'lucide-react'
 import PageHeader from '@/components/PageHeader'
 import Badge from '@/components/Badge'
 import { Toast } from '@/components/Toast'
@@ -85,6 +85,19 @@ function RadioPills({ legend, name, options, value, onChange }: {
   )
 }
 
+// One-click game presets: fill the game fields for a title we promote often
+const GAME_PRESETS = [
+  {
+    name: 'Tales of the Trade',
+    description: {
+      'Türkçe': "Dedenin bürokratik hatasından doğan 99.999.999.980 altınlık borcu ödemek için T.R.M.P. programına kayıt yaptırıyorsun. Rift'lere dalıp hammadde topluyorsun, bunları şehirde işleyip ürüne dönüştürüyorsun, kendi dükkânında NPC'lerle kıran kırana pazarlık yaparak satıyorsun. Zindanda ölürsen o koşuda topladıklarını kaybediyorsun ama şehirde her şey güvende. 1-4 kişilik co-op, solo da tam oynanır. PC için Steam'de çıkıyor.",
+      default: "You join the T.R.M.P. program to pay off your grandfather's 99,999,999,980-gold debt born from a bureaucratic filing error. You raid Rifts to gather materials, craft them into goods at your workshop, and haggle them away in your own shop with NPC customers. Die in the dungeon and lose everything you collected that run, but your shop and progress are always safe. 1-4 player co-op, fully playable solo. Coming to Steam on PC.",
+    } as Record<string, string>,
+    discordLink: 'discord.gg/bDJ9us8hr',
+    steamUrl: 'https://store.steampowered.com/app/4416430/Tales_of_the_Trade/',
+  },
+]
+
 const PREVIEW_VARS = {
   name: 'Yayıncı Adı',
   email: 'ornek@mail.com',
@@ -101,7 +114,9 @@ export default function SablonlarPage() {
   const [platform, setPlatform] = useState(MAIL_PLATFORMS[0])
   const [language, setLanguage] = useState(MAIL_LANGUAGES[0])
   const [accountId, setAccountId] = useState('')
+  const [gameName, setGameName] = useState('')
   const [gameDescription, setGameDescription] = useState('')
+  const [steamUrl, setSteamUrl] = useState('')
   const [keyOffer, setKeyOffer] = useState(KEY_OFFERS[0])
   const [tone, setTone] = useState(TONES[0])
   const [length, setLength] = useState(LENGTHS[0])
@@ -171,7 +186,7 @@ export default function SablonlarPage() {
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({
           provider, platform, language,
-          gameDescription, keyOffer, contactName, discordLink, tone, length, cta, brief: notes,
+          gameName, gameDescription, steamUrl, keyOffer, contactName, discordLink, tone, length, cta, brief: notes,
           hasLogo: !!logoUrl,
           hasBanner: !!bannerUrl,
           logoUrl: picked.logo ?? undefined,
@@ -319,6 +334,34 @@ export default function SablonlarPage() {
                 </div>
 
                 <div style={sectionLabel}>Oyun</div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '8px' }}>
+                  {GAME_PRESETS.map((g) => (
+                    <button
+                      key={g.name}
+                      style={{ ...buttonStyle('secondary'), padding: '6px 12px', fontSize: '12px' }}
+                      onClick={() => {
+                        setGameName(g.name)
+                        setGameDescription(g.description[language] ?? g.description.default)
+                        setDiscordLink(g.discordLink)
+                        setSteamUrl(g.steamUrl)
+                      }}
+                    >
+                      <Sparkles size={12} /> {g.name}
+                    </button>
+                  ))}
+                  {gameName && (
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '3px 4px 3px 10px', borderRadius: '999px', fontSize: '12px', backgroundColor: 'var(--muted)', color: 'var(--text-2)' }}>
+                      Oyun: <strong style={{ color: 'var(--foreground)' }}>{gameName}</strong>
+                      <button
+                        onClick={() => setGameName('')}
+                        aria-label="Oyun adını kaldır"
+                        style={{ display: 'inline-flex', padding: '2px', border: 'none', borderRadius: '999px', background: 'transparent', color: 'inherit', cursor: 'pointer' }}
+                      >
+                        <X size={12} />
+                      </button>
+                    </span>
+                  )}
+                </div>
                 <Field label="Oyun Açıklaması">
                   <textarea
                     style={{ ...inputStyle, minHeight: '100px', resize: 'vertical', fontFamily: 'inherit' }}
@@ -326,6 +369,9 @@ export default function SablonlarPage() {
                     value={gameDescription}
                     onChange={(e) => setGameDescription(e.target.value)}
                   />
+                </Field>
+                <Field label="Steam Sayfası">
+                  <input style={inputStyle} type="url" placeholder="https://store.steampowered.com/app/…" value={steamUrl} onChange={(e) => setSteamUrl(e.target.value)} />
                 </Field>
                 <Field label="Teklif">
                   <select style={inputStyle} value={keyOffer} onChange={(e) => setKeyOffer(e.target.value)}>

@@ -4,7 +4,7 @@ import { MAIL_LANGUAGE_ENGLISH } from '@/lib/mail'
 
 // Generates an outreach mail template with Claude (Anthropic) or GPT (OpenAI).
 // POST { provider: 'claude' | 'gpt', platform, language, gameName, gameDescription, keyOffer,
-//        contactName, discordLink, tone, length, cta, brief, hasLogo, hasBanner, logoUrl, bannerUrl }
+//        steamUrl, contactName, discordLink, tone, length, cta, brief, hasLogo, hasBanner, logoUrl, bannerUrl }
 // brief = "Özel Notlar": free-form extra instructions the AI must follow.
 // logoUrl/bannerUrl pin a specific image from the media library; otherwise the
 // account's {{logo_url}} / {{banner_url}} placeholders are used.
@@ -23,6 +23,7 @@ interface GenerateRequest {
   keyOffer?: string
   contactName?: string
   discordLink?: string
+  steamUrl?: string
   tone?: string
   length?: string
   cta?: string
@@ -50,6 +51,14 @@ const OFFER_DESCRIPTIONS: Record<string, string> = {
   'Revenue Share': 'a revenue share on sales generated through their coverage',
   'Flat Fee': 'a flat paid fee for a sponsored stream or video',
   'Free Copy': 'a free copy of the game, no strings attached',
+}
+
+// "discord.gg/abc" → "https://discord.gg/abc"; anything that isn't a plain URL is dropped
+function linkUrl(url: string | undefined): string | null {
+  const v = url?.trim()
+  if (!v) return null
+  const withScheme = /^https?:\/\//i.test(v) ? v : `https://${v}`
+  return /^https?:\/\/[^\s"'<>]+$/i.test(withScheme) ? withScheme : null
 }
 
 // Only plain https URLs are written into the prompt/template
@@ -89,9 +98,12 @@ function buildPrompt(req: GenerateRequest): string {
     req.gameDescription?.trim() && `Game description: ${req.gameDescription.trim()}`,
     req.keyOffer && `What we offer the creator: ${OFFER_DESCRIPTIONS[req.keyOffer] ?? req.keyOffer}`,
   ].filter(Boolean).join('\n')
+  const steamUrl = linkUrl(req.steamUrl)
+  const discordUrl = linkUrl(req.discordLink)
   const contact = [
     req.contactName?.trim() && `- Sign the email as ${req.contactName.trim()} from {{sender_name}}.`,
-    req.discordLink?.trim() && `- Include our Discord server as a clickable link: ${req.discordLink.trim()}`,
+    steamUrl && `- Link the game's Steam page naturally in the body text (e.g. on the game's name or a "wishlist on Steam" phrase): ${steamUrl}`,
+    discordUrl && `- Include our Discord server as a clickable link: ${discordUrl}`,
   ].filter(Boolean).join('\n')
   const tone = (req.tone && TONE_INSTRUCTIONS[req.tone]) || 'warm, friendly and personal'
   const length = (req.length && LENGTH_INSTRUCTIONS[req.length]) || '2-3 short paragraphs (roughly 80-150 words of body text)'
@@ -110,7 +122,7 @@ ${contact ? `\n${contact}\n` : ''}${notes ? `\nSpecial instructions from our tea
 Requirements:
 - Tone: ${tone}.
 - Length: ${length}.
-${cta ? `- Call to action: ${cta}.${needsLink ? ' Use the matching URL from the details above if one is given (the Discord link for Discord); otherwise use href="#" so we can fill it in before sending.' : ''}\n` : ''}- No spammy wording, no ALL CAPS, no excessive exclamation marks.
+${cta ? `- Call to action: ${cta}.${needsLink ? ' Use the matching URL from the details above if one is given (the Steam page for Steam, the Discord link for Discord); otherwise use href="#" so we can fill it in before sending.' : ''}\n` : ''}- No spammy wording, no ALL CAPS, no excessive exclamation marks.
 - Use these placeholders exactly where appropriate (they are filled in per recipient):
   {{name}} (creator name), {{platform}}, {{followers}}, {{sender_name}}, {{sender_email}}
 ${hasBanner ? `- Put <img src="${bannerSrc}" alt="" style="width:100%;max-width:600px;display:block;border:0"> at the top.\n` : ''}${hasLogo ? `- Put <img src="${logoSrc}" alt="" height="40" style="display:block;border:0"> in the signature.\n` : ''}- html_content must be a complete, email-client-safe HTML body: inline styles only, a single centered 600px-wide table layout, no <script>, no external CSS.
