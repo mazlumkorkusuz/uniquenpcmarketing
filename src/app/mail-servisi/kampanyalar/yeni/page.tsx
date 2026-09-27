@@ -3,11 +3,11 @@
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import { Send, Upload, Square, Play, Loader2 } from 'lucide-react'
+import { Send, Upload, Square, Play, Loader2, X, Search, Users } from 'lucide-react'
 import PageHeader from '@/components/PageHeader'
 import { Toast } from '@/components/Toast'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
-import { MAIL_ACCOUNT_PUBLIC_COLUMNS, renderTemplate, type MailAccount, type MailCampaign, type MailTemplate } from '@/lib/mail'
+import { MAIL_ACCOUNT_PUBLIC_COLUMNS, renderTemplate, type MailAccount, type MailCampaign, type MailRecipient, type MailTemplate } from '@/lib/mail'
 import { Card, Field, ProgressBar, MAIL_GRADIENT, buttonStyle, inputStyle, thStyle, tdStyle } from '../../_components/ui'
 
 interface Recipient {
@@ -49,9 +49,11 @@ const PLATFORMS: PlatformDef[] = [
   { key: 'douyin',   label: 'Douyin',   table: 'douyin_streamers',   icon: '/icons/douyin.png',   nameColumns: ['channel_name', 'username'], followersColumn: 'followers' },
 ]
 
-// Streamer tables store the contact address in the `email` column
-const EMAIL_COLUMN = 'email'
+// Tables are expected to expose contact_email; the current streamer tables still use `email`,
+// so fall back to it when contact_email doesn't exist (Postgres error 42703).
+const EMAIL_COLUMNS = ['contact_email', 'email']
 const PAGE_SIZE = 1000
+const UNKNOWN_LANGUAGE = '__unknown__'
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -136,6 +138,284 @@ function firstValidEmail(v: unknown): string | null {
   return v.split(/[\s,;/]+/).map((s) => s.trim().toLowerCase()).find((s) => EMAIL_RE.test(s)) ?? null
 }
 
+// Interleaves the queue by account so consecutive mails go out from different accounts
+function interleaveByAccount<T extends { account_id?: string | null }>(items: T[]): T[] {
+  const groups = new Map<string, T[]>()
+  for (const it of items) {
+    const k = it.account_id ?? ''
+    if (!groups.has(k)) groups.set(k, [])
+    groups.get(k)!.push(it)
+  }
+  const lists = [...groups.values()]
+  const out: T[] = []
+  for (let i = 0; out.length < items.length; i++) {
+    for (const l of lists) if (i < l.length) out.push(l[i])
+  }
+  return out
+}
+
+function StreamerDrawer({
+  platform,
+  onClose,
+  onAdd,
+  addedKeys,
+}: {
+  platform: PlatformDef
+  onClose: () => void
+  onAdd: (streamers: PlatformStreamer[]) => void
+  addedKeys: Set<string>
+}) {
+  const supabase = useMemo(() => createSupabaseBrowserClient(), [])
+  const [visible, setVisible] = useState(false)
+  const [streamers, setStreamers] = useState<PlatformStreamer[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [search, setSearch] = useState('')
+  const [language, setLanguage] = useState<string | null>(null)
+  const [picked, setPicked] = useState<Set<string>>(new Set())
+
+  // Slide in on mount
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setVisible(true))
+    return () => cancelAnimationFrame(id)
+  }, [])
+
+  const close = useCallback(() => {
+    setVisible(false)
+    setTimeout(onClose, 220)
+  }, [onClose])
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') close() }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [close])
+
+  useEffect(() => {
+    let cancelled = false
+    ;(async () => {
+      try {
+        let rows: Record<string, unknown>[] = []
+        let emailColumn: string | null = null
+        for (const col of EMAIL_COLUMNS) {
+          rows = []
+          let missingColumn = false
+          for (let from = 0; ; from += PAGE_SIZE) {
+            const { data, error } = await supabase
+              .from(platform.table)
+              .select('*')
+              .not(col, 'is', null)
+              .neq(col, '')
+              .order(platform.followersColumn, { ascending: false, nullsFirst: false })
+              .range(from, from + PAGE_SIZE - 1)
+            if (error) {
+              if (error.code === '42703') { missingColumn = true; break }
+              throw new Error(error.message)
+            }
+            rows.push(...(data ?? []))
+            if (!data || data.length < PAGE_SIZE) break
+          }
+          if (!missingColumn) { emailColumn = col; break }
+        }
+        if (!emailColumn) throw new Error('contact_email sütunu bulunamadı')
+
+        const seen = new Set<string>()
+        const list: PlatformStreamer[] = []
+        for (const row of rows) {
+          const email = firstValidEmail(row[emailColumn])
+          if (!email || seen.has(email)) continue
+          seen.add(email)
+          const displayName = platform.nameColumns.map((c) => row[c]).find((v) => typeof v === 'string' && v.trim())
+          const followers = Number(row[platform.followersColumn])
+          list.push({
+            key: `${platform.key}:${String(row.id)}`,
+            email,
+            name: (displayName as string | undefined)?.trim() ?? null,
+            platform: platform.label,
+            followers: Number.isFinite(followers) ? followers : null,
+            language: typeof row.language === 'string' && row.language.trim() ? row.language.trim() : null,
+          })
+        }
+        if (!cancelled) setStreamers(list)
+      } catch (e) {
+        if (!cancelled) setError((e as Error).message)
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    })()
+    return () => { cancelled = true }
+  }, [supabase, platform])
+
+  const languages = useMemo(() => {
+    const counts = new Map<string, number>()
+    for (const s of streamers) {
+      const k = s.language ?? UNKNOWN_LANGUAGE
+      counts.set(k, (counts.get(k) ?? 0) + 1)
+    }
+    return [...counts.entries()].sort((a, b) => b[1] - a[1])
+  }, [streamers])
+
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase()
+    return streamers.filter((s) => {
+      if (language && (s.language ?? UNKNOWN_LANGUAGE) !== language) return false
+      if (q && !s.email.includes(q) && !(s.name ?? '').toLowerCase().includes(q)) return false
+      return true
+    })
+  }, [streamers, search, language])
+
+  const toggle = (key: string) => {
+    setPicked((prev) => {
+      const next = new Set(prev)
+      if (next.has(key)) next.delete(key)
+      else next.add(key)
+      return next
+    })
+  }
+
+  const selectAll = () => {
+    setPicked((prev) => {
+      const next = new Set(prev)
+      for (const s of filtered) if (!addedKeys.has(s.key)) next.add(s.key)
+      return next
+    })
+  }
+
+  const add = () => {
+    onAdd(streamers.filter((s) => picked.has(s.key)))
+    close()
+  }
+
+  const chipStyle = (active: boolean): React.CSSProperties => ({
+    padding: '4px 10px',
+    fontSize: '12px',
+    fontWeight: 600,
+    borderRadius: '999px',
+    border: `1px solid ${active ? 'var(--foreground)' : 'var(--border)'}`,
+    backgroundColor: active ? 'var(--foreground)' : 'transparent',
+    color: active ? 'var(--background)' : 'var(--text-2)',
+    cursor: 'pointer',
+    whiteSpace: 'nowrap',
+  })
+
+  return (
+    <div style={{ position: 'fixed', inset: 0, zIndex: 100 }} role="dialog" aria-modal="true" aria-label={`${platform.label} yayıncıları`}>
+      <div
+        onClick={close}
+        style={{
+          position: 'absolute', inset: 0, backgroundColor: 'rgba(0,0,0,0.45)',
+          opacity: visible ? 1 : 0, transition: 'opacity 200ms ease',
+        }}
+      />
+      <aside
+        style={{
+          position: 'absolute', top: 0, right: 0, bottom: 0, width: 'min(520px, 100vw)',
+          display: 'flex', flexDirection: 'column',
+          backgroundColor: 'var(--card)', borderLeft: '1px solid var(--border)', boxShadow: '-12px 0 32px rgba(0,0,0,0.2)',
+          transform: visible ? 'translateX(0)' : 'translateX(100%)', transition: 'transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1)',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '16px 20px', borderBottom: '1px solid var(--border)' }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={platform.icon} alt="" width={22} height={22} style={{ borderRadius: '5px', objectFit: 'cover' }} />
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: '15px', fontWeight: 700, color: 'var(--foreground)' }}>{platform.label} Yayıncıları</div>
+            <div style={{ fontSize: '12px', color: 'var(--muted-foreground)' }}>
+              {loading ? 'Yükleniyor…' : `${streamers.length} yayıncı · email adresi olanlar`}
+            </div>
+          </div>
+          <button onClick={close} aria-label="Kapat" style={{ ...buttonStyle('secondary'), padding: '6px' }}>
+            <X size={16} />
+          </button>
+        </div>
+
+        <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <div style={{ position: 'relative' }}>
+            <Search size={14} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--muted-foreground)' }} />
+            <input
+              style={{ ...inputStyle, paddingLeft: '30px' }}
+              placeholder="İsim veya email ara…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              autoFocus
+            />
+          </div>
+          {languages.length > 1 && (
+            <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '2px' }}>
+              <button style={chipStyle(language === null)} onClick={() => setLanguage(null)}>Tümü</button>
+              {languages.map(([lang, count]) => (
+                <button key={lang} style={chipStyle(language === lang)} onClick={() => setLanguage(lang)}>
+                  {lang === UNKNOWN_LANGUAGE ? 'Bilinmiyor' : lang} <span style={{ opacity: 0.6 }}>{count}</span>
+                </button>
+              ))}
+            </div>
+          )}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span style={{ fontSize: '12px', color: 'var(--muted-foreground)' }}>{filtered.length} sonuç</span>
+            <div style={{ display: 'flex', gap: '6px' }}>
+              <button style={buttonStyle('secondary', filtered.length === 0)} disabled={filtered.length === 0} onClick={selectAll}>Tümünü Seç</button>
+              <button style={buttonStyle('secondary', picked.size === 0)} disabled={picked.size === 0} onClick={() => setPicked(new Set())}>Temizle</button>
+            </div>
+          </div>
+        </div>
+
+        <div style={{ flex: 1, overflowY: 'auto' }}>
+          {loading ? (
+            <p style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: 'var(--muted-foreground)', padding: '20px', margin: 0 }}>
+              <Loader2 size={14} className="animate-spin" /> Yayıncılar yükleniyor…
+            </p>
+          ) : error ? (
+            <p style={{ fontSize: '13px', color: 'var(--danger)', padding: '20px', margin: 0 }}>{platform.label} yayıncıları yüklenemedi: {error}</p>
+          ) : filtered.length === 0 ? (
+            <p style={{ fontSize: '13px', color: 'var(--muted-foreground)', padding: '20px', margin: 0 }}>
+              {streamers.length === 0 ? 'Bu platformda email adresi olan yayıncı yok.' : 'Aramaya uyan yayıncı yok.'}
+            </p>
+          ) : (
+            filtered.map((s) => {
+              const added = addedKeys.has(s.key)
+              const checked = added || picked.has(s.key)
+              return (
+                <label
+                  key={s.key}
+                  style={{
+                    display: 'grid', gridTemplateColumns: 'auto minmax(0, 1fr) auto', alignItems: 'center', gap: '10px',
+                    padding: '9px 20px', borderBottom: '1px solid var(--border)', fontSize: '13px',
+                    cursor: added ? 'default' : 'pointer', opacity: added ? 0.55 : 1,
+                    backgroundColor: picked.has(s.key) ? 'var(--muted)' : 'transparent',
+                  }}
+                >
+                  <input type="checkbox" checked={checked} disabled={added} onChange={() => toggle(s.key)} />
+                  <span style={{ minWidth: 0 }}>
+                    <span style={{ display: 'block', fontWeight: 600, color: 'var(--foreground)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {s.name ?? '—'}{added && <span style={{ fontWeight: 500, color: 'var(--muted-foreground)' }}> · eklendi</span>}
+                    </span>
+                    <span style={{ display: 'block', color: 'var(--muted-foreground)', fontSize: '12px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {s.email}
+                    </span>
+                  </span>
+                  <span style={{ color: 'var(--success)', fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
+                    {s.followers?.toLocaleString('tr-TR') ?? '—'}
+                  </span>
+                </label>
+              )
+            })
+          )}
+        </div>
+
+        <div style={{ padding: '14px 20px', borderTop: '1px solid var(--border)' }}>
+          <button
+            style={{ ...buttonStyle('primary', picked.size === 0), width: '100%', justifyContent: 'center' }}
+            disabled={picked.size === 0}
+            onClick={add}
+          >
+            {picked.size} Seçileni Ekle
+          </button>
+        </div>
+      </aside>
+    </div>
+  )
+}
+
 function YeniKampanya() {
   const router = useRouter()
   const resumeId = useSearchParams().get('resume')
@@ -144,21 +424,15 @@ function YeniKampanya() {
   const [accounts, setAccounts] = useState<MailAccount[]>([])
   const [templates, setTemplates] = useState<MailTemplate[]>([])
   const [name, setName] = useState('')
-  const [accountId, setAccountId] = useState('')
+  const [accountIds, setAccountIds] = useState<string[]>([])
   const [templateId, setTemplateId] = useState('')
   const [delay, setDelay] = useState(30)
 
   const [recipientTab, setRecipientTab] = useState<RecipientTab>('platform')
+  const [drawerPlatform, setDrawerPlatform] = useState<PlatformDef | null>(null)
+  // Streamers added from platform drawers, keyed by PlatformStreamer.key
+  const [platformRecipients, setPlatformRecipients] = useState<Map<string, PlatformStreamer>>(new Map())
 
-  // Platform tab
-  const [platformKey, setPlatformKey] = useState<string | null>(null)
-  const [streamerCache, setStreamerCache] = useState<Record<string, PlatformStreamer[]>>({})
-  const [loadingPlatform, setLoadingPlatform] = useState(false)
-  const [platformError, setPlatformError] = useState<string | null>(null)
-  // Selected streamers across all platforms, keyed by PlatformStreamer.key
-  const [selected, setSelected] = useState<Map<string, PlatformStreamer>>(new Map())
-
-  // CSV tab
   const [fileName, setFileName] = useState('')
   const [csvRecipients, setCsvRecipients] = useState<Recipient[]>([])
   const [csvStats, setCsvStats] = useState<{ invalid: number; duplicates: number } | null>(null)
@@ -181,15 +455,22 @@ function YeniKampanya() {
     })
   }, [supabase])
 
-  // Resuming an unfinished campaign: load its settings and pending count
+  // Resuming an unfinished campaign: load its settings, pending count and the accounts in use
   useEffect(() => {
     if (!resumeId) return
     ;(async () => {
       const { data: c } = await supabase.from('mail_campaigns').select('*').eq('id', resumeId).single<MailCampaign>()
       if (!c) return
+      const { data: pending } = await supabase.from('mail_recipients').select('*').eq('campaign_id', c.id).eq('status', 'pending')
+      const ids = new Set<string>()
+      for (const r of (pending ?? []) as MailRecipient[]) {
+        const id = r.account_id ?? c.account_id
+        if (id) ids.add(id)
+      }
+      if (ids.size === 0 && c.account_id) ids.add(c.account_id)
       setCampaignId(c.id)
       setName(c.name)
-      setAccountId(c.account_id ?? '')
+      setAccountIds([...ids])
       setTemplateId(c.template_id ?? '')
       setDelay(c.delay_seconds)
       setProgress({ done: c.sent_count + c.bounce_count, total: c.total_recipients })
@@ -204,94 +485,48 @@ function YeniKampanya() {
     return () => window.removeEventListener('beforeunload', handler)
   }, [sending])
 
-  const loadPlatform = useCallback(async (p: PlatformDef) => {
-    setPlatformKey(p.key)
-    setPlatformError(null)
-    if (streamerCache[p.key]) return
-    setLoadingPlatform(true)
-    try {
-      const rows: Record<string, unknown>[] = []
-      for (let from = 0; ; from += PAGE_SIZE) {
-        const { data, error } = await supabase
-          .from(p.table)
-          .select('*')
-          .not(EMAIL_COLUMN, 'is', null)
-          .neq(EMAIL_COLUMN, '')
-          .order(p.followersColumn, { ascending: false, nullsFirst: false })
-          .range(from, from + PAGE_SIZE - 1)
-        if (error) throw new Error(error.message)
-        rows.push(...(data ?? []))
-        if (!data || data.length < PAGE_SIZE) break
-      }
-
-      const seen = new Set<string>()
-      const streamers: PlatformStreamer[] = []
-      for (const row of rows) {
-        const email = firstValidEmail(row[EMAIL_COLUMN])
-        if (!email || seen.has(email)) continue
-        seen.add(email)
-        const displayName = p.nameColumns.map((c) => row[c]).find((v) => typeof v === 'string' && v.trim())
-        const followers = Number(row[p.followersColumn])
-        streamers.push({
-          key: `${p.key}:${String(row.id)}`,
-          email,
-          name: (displayName as string | undefined)?.trim() ?? null,
-          platform: p.label,
-          followers: Number.isFinite(followers) ? followers : null,
-          language: typeof row.language === 'string' ? row.language : null,
-        })
-      }
-      setStreamerCache((c) => ({ ...c, [p.key]: streamers }))
-    } catch (e) {
-      setPlatformError(`${p.label} yayıncıları yüklenemedi: ${(e as Error).message}`)
-    } finally {
-      setLoadingPlatform(false)
-    }
-  }, [supabase, streamerCache])
-
-  const currentStreamers = platformKey ? streamerCache[platformKey] ?? [] : []
-
-  const toggleStreamer = (s: PlatformStreamer) => {
-    setSelected((prev) => {
-      const next = new Map(prev)
-      if (next.has(s.key)) next.delete(s.key)
-      else next.set(s.key, s)
-      return next
-    })
-  }
-
-  const selectAll = () => {
-    setSelected((prev) => {
-      const next = new Map(prev)
-      for (const s of currentStreamers) next.set(s.key, s)
-      return next
-    })
-  }
-
-  const deselectAll = () => {
-    setSelected((prev) => {
-      const next = new Map(prev)
-      for (const s of currentStreamers) next.delete(s.key)
-      return next
-    })
-  }
-
-  const selectedInCurrent = currentStreamers.filter((s) => selected.has(s.key)).length
-
-  // Final recipient list: platform selections + CSV rows, deduplicated by email
+  // Final recipient list: platform picks + CSV rows, deduplicated by email
   const recipients = useMemo<Recipient[]>(() => {
     const seen = new Set<string>()
     const out: Recipient[] = []
-    for (const r of [...selected.values(), ...csvRecipients]) {
+    for (const r of [...platformRecipients.values(), ...csvRecipients]) {
       if (seen.has(r.email)) continue
       seen.add(r.email)
       out.push({ email: r.email, name: r.name, platform: r.platform, followers: r.followers, language: r.language })
     }
     return out
-  }, [selected, csvRecipients])
+  }, [platformRecipients, csvRecipients])
+
+  const addedKeys = useMemo(() => new Set(platformRecipients.keys()), [platformRecipients])
+
+  const platformCounts = useMemo(() => {
+    const counts = new Map<string, number>()
+    for (const r of platformRecipients.values()) counts.set(r.platform ?? '', (counts.get(r.platform ?? '') ?? 0) + 1)
+    return counts
+  }, [platformRecipients])
+
+  const addStreamers = (streamers: PlatformStreamer[]) => {
+    setPlatformRecipients((prev) => {
+      const next = new Map(prev)
+      for (const s of streamers) next.set(s.key, s)
+      return next
+    })
+  }
+
+  const clearRecipients = () => {
+    setPlatformRecipients(new Map())
+    setCsvRecipients([])
+    setCsvStats(null)
+    setFileName('')
+  }
+
+  const toggleAccount = (id: string) => {
+    setAccountIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]))
+  }
 
   const selectedTemplate = templates.find((t) => t.id === templateId)
-  const selectedAccount = accounts.find((a) => a.id === accountId)
+  const selectedAccounts = accounts.filter((a) => accountIds.includes(a.id))
+  const previewAccount = selectedAccounts[0]
 
   const previewHtml = useMemo(() => {
     if (!selectedTemplate) return ''
@@ -302,13 +537,13 @@ function YeniKampanya() {
       platform: r?.platform ?? 'Twitch',
       followers: (r?.followers ?? 25000).toLocaleString('en-US'),
       language: r?.language,
-      sender_name: selectedAccount?.name,
-      sender_email: selectedAccount?.email,
-      domain: selectedAccount?.domain,
-      logo_url: selectedAccount?.logo_url,
-      banner_url: selectedAccount?.banner_url,
+      sender_name: previewAccount?.name,
+      sender_email: previewAccount?.email,
+      domain: previewAccount?.domain,
+      logo_url: previewAccount?.logo_url,
+      banner_url: previewAccount?.banner_url,
     })
-  }, [selectedTemplate, selectedAccount, recipients])
+  }, [selectedTemplate, previewAccount, recipients])
 
   const handleFile = async (file: File) => {
     setFileName(file.name)
@@ -339,16 +574,23 @@ function YeniKampanya() {
 
     const { data: pending } = await supabase
       .from('mail_recipients')
-      .select('id, email')
+      .select('*')
       .eq('campaign_id', cid)
       .eq('status', 'pending')
       .order('created_at')
-    const queue = pending ?? []
+    const queue = interleaveByAccount((pending ?? []) as MailRecipient[])
 
+    // Accounts that hit their daily limit or became inactive; their recipients stay pending
+    const unavailable = new Set<string>()
     let stoppedReason: string | null = null
+    let sentAny = false
     for (let i = 0; i < queue.length; i++) {
       if (stopRef.current) { stoppedReason = 'Gönderim durduruldu'; break }
       const r = queue[i]
+      if (r.account_id && unavailable.has(r.account_id)) continue
+      if (sentAny) await sleepWithCountdown(delaySeconds)
+      if (stopRef.current) { stoppedReason = 'Gönderim durduruldu'; break }
+
       const res = await fetch('/api/mail-gonder', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
@@ -357,21 +599,26 @@ function YeniKampanya() {
       const data = await res.json().catch(() => ({}))
 
       if (res.ok && data.ok) {
+        sentAny = true
         setLog((l) => [{ email: r.email, ok: true, message: 'Gönderildi' }, ...l])
         setProgress((p) => ({ ...p, done: p.done + 1 }))
       } else if (data.bounced) {
+        sentAny = true
         setLog((l) => [{ email: r.email, ok: false, message: `Bounce: ${data.error}` }, ...l])
         setProgress((p) => ({ ...p, done: p.done + 1 }))
       } else if (data.skipped) {
         continue
+      } else if (data.accountUnavailable && r.account_id) {
+        // Only this account is blocked — keep sending from the others
+        unavailable.add(r.account_id)
+        stoppedReason = data.error
+        setLog((l) => [{ email: r.email, ok: false, message: data.error }, ...l])
       } else {
-        // Limit reached or account/SMTP problem — stop and let the user resume later
+        // Account/SMTP problem — stop and let the user resume later
         stoppedReason = data.error ?? `Hata (${res.status})`
         setLog((l) => [{ email: r.email, ok: false, message: stoppedReason! }, ...l])
         break
       }
-
-      if (i < queue.length - 1) await sleepWithCountdown(delaySeconds)
     }
 
     if (stoppedReason) {
@@ -385,17 +632,18 @@ function YeniKampanya() {
   }, [supabase, router])
 
   const createAndSend = async () => {
-    if (!name.trim() || !accountId || !templateId || recipients.length === 0) {
-      setToast({ message: 'Kampanya adı, hesap, şablon ve en az bir alıcı gerekli', type: 'error' })
+    if (!name.trim() || accountIds.length === 0 || !templateId || recipients.length === 0) {
+      setToast({ message: 'Kampanya adı, en az bir hesap, şablon ve alıcı gerekli', type: 'error' })
       return
     }
-    if (!confirm(`${recipients.length} kişiye ${delay} sn aralıkla mail gönderilecek. Devam edilsin mi?`)) return
+    const accountsNote = accountIds.length > 1 ? ` (${accountIds.length} hesap sırayla)` : ''
+    if (!confirm(`${recipients.length} kişiye ${delay} sn aralıkla mail gönderilecek${accountsNote}. Devam edilsin mi?`)) return
 
     const { data: campaign, error } = await supabase
       .from('mail_campaigns')
       .insert({
         name: name.trim(),
-        account_id: accountId,
+        account_id: accountIds[0],
         template_id: templateId,
         status: 'draft',
         total_recipients: recipients.length,
@@ -408,11 +656,21 @@ function YeniKampanya() {
       return
     }
 
+    // With several accounts each recipient gets one round-robin; a single account stays on the campaign
+    const multi = accountIds.length > 1
     for (let i = 0; i < recipients.length; i += 500) {
-      const chunk = recipients.slice(i, i + 500).map((r) => ({ ...r, campaign_id: campaign.id }))
+      const chunk = recipients.slice(i, i + 500).map((r, j) => ({
+        ...r,
+        campaign_id: campaign.id,
+        ...(multi ? { account_id: accountIds[(i + j) % accountIds.length] } : {}),
+      }))
       const { error: insertError } = await supabase.from('mail_recipients').insert(chunk)
       if (insertError) {
-        setToast({ message: `Alıcılar eklenemedi: ${insertError.message}`, type: 'error' })
+        const hint = multi && /account_id/.test(insertError.message)
+          ? ' — mail_recipients.account_id migration\'ı uygulanmamış'
+          : ''
+        setToast({ message: `Alıcılar eklenemedi: ${insertError.message}${hint}`, type: 'error' })
+        await supabase.from('mail_campaigns').delete().eq('id', campaign.id)
         return
       }
     }
@@ -424,6 +682,7 @@ function YeniKampanya() {
 
   const isResume = !!resumeId && !!campaignId
   const locked = sending || !!campaignId
+  const canSend = !!name && accountIds.length > 0 && !!templateId && recipients.length > 0 && !campaignId
 
   const tabStyle = (active: boolean): React.CSSProperties => ({
     flex: 1,
@@ -438,7 +697,7 @@ function YeniKampanya() {
     boxShadow: active ? '0 1px 2px rgba(0,0,0,0.08)' : 'none',
   })
 
-  const platformButtonStyle = (active: boolean): React.CSSProperties => ({
+  const platformButtonStyle: React.CSSProperties = {
     display: 'inline-flex',
     alignItems: 'center',
     gap: '6px',
@@ -446,17 +705,24 @@ function YeniKampanya() {
     fontSize: '13px',
     fontWeight: 600,
     borderRadius: '999px',
-    border: `1px solid ${active ? 'var(--foreground)' : 'var(--border)'}`,
-    backgroundColor: active ? 'var(--foreground)' : 'transparent',
-    color: active ? 'var(--background)' : 'var(--text-2)',
+    border: '1px solid var(--border)',
+    backgroundColor: 'transparent',
+    color: 'var(--text-2)',
     cursor: locked ? 'not-allowed' : 'pointer',
-  })
-
-  const activePlatform = PLATFORMS.find((p) => p.key === platformKey)
+  }
 
   return (
     <div>
       {toast && <Toast message={toast.message} type={toast.type} onDismiss={() => setToast(null)} />}
+      {drawerPlatform && (
+        <StreamerDrawer
+          key={drawerPlatform.key}
+          platform={drawerPlatform}
+          addedKeys={addedKeys}
+          onAdd={addStreamers}
+          onClose={() => setDrawerPlatform(null)}
+        />
+      )}
       <PageHeader
         title={isResume ? 'Kampanyaya Devam Et' : 'Yeni Kampanya'}
         subtitle={isResume ? name : 'Alıcıları seç, şablon seç, gönder'}
@@ -471,16 +737,38 @@ function YeniKampanya() {
               <Field label="Kampanya Adı">
                 <input style={inputStyle} value={name} onChange={(e) => setName(e.target.value)} disabled={isResume || sending} />
               </Field>
-              <Field label="Gönderen Hesap">
-                <select style={inputStyle} value={accountId} onChange={(e) => setAccountId(e.target.value)} disabled={isResume || sending}>
-                  <option value="">Seçin…</option>
-                  {accounts.map((a) => (
-                    <option key={a.id} value={a.id}>{a.name} — {a.email} ({a.sent_today}/{a.daily_limit})</option>
-                  ))}
-                </select>
+              <Field label="Gönderen Hesaplar">
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  {accounts.map((a) => {
+                    const checked = accountIds.includes(a.id)
+                    const disabled = isResume || sending
+                    return (
+                      <label
+                        key={a.id}
+                        style={{
+                          display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 12px', fontSize: '13px',
+                          border: `1px solid ${checked ? 'var(--foreground)' : 'var(--border)'}`, borderRadius: '8px',
+                          cursor: disabled ? 'not-allowed' : 'pointer', opacity: disabled && !checked ? 0.5 : 1,
+                        }}
+                      >
+                        <input type="checkbox" checked={checked} disabled={disabled} onChange={() => toggleAccount(a.id)} />
+                        <span style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          <strong style={{ color: 'var(--foreground)' }}>{a.name}</strong>{' '}
+                          <span style={{ color: 'var(--muted-foreground)' }}>{a.email}</span>
+                        </span>
+                        <span style={{ color: 'var(--muted-foreground)', fontVariantNumeric: 'tabular-nums' }}>{a.sent_today}/{a.daily_limit}</span>
+                      </label>
+                    )
+                  })}
+                </div>
                 {accounts.length === 0 && (
                   <p style={{ fontSize: '12px', color: 'var(--muted-foreground)', margin: '6px 0 0' }}>
                     Aktif hesap yok. <Link href="/mail-servisi/ayarlar" style={{ color: 'var(--foreground)', fontWeight: 600 }}>Hesap ekle</Link>
+                  </p>
+                )}
+                {accountIds.length > 1 && (
+                  <p style={{ fontSize: '12px', color: 'var(--muted-foreground)', margin: '6px 0 0' }}>
+                    Mailler seçili hesaplar arasında sırayla gönderilir.
                   </p>
                 )}
               </Field>
@@ -513,7 +801,31 @@ function YeniKampanya() {
           </Card>
 
           {!isResume && (
-            <Card title="Alıcılar">
+            <Card
+              title="Alıcılar"
+              action={
+                <span
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '3px 4px 3px 10px',
+                    borderRadius: '999px', fontSize: '12px', fontWeight: 700,
+                    backgroundColor: recipients.length ? 'var(--foreground)' : 'var(--muted)',
+                    color: recipients.length ? 'var(--background)' : 'var(--muted-foreground)',
+                  }}
+                >
+                  <Users size={12} /> {recipients.length} alıcı
+                  {recipients.length > 0 && !locked ? (
+                    <button
+                      onClick={clearRecipients}
+                      aria-label="Tüm alıcıları temizle"
+                      title="Tüm alıcıları temizle"
+                      style={{ display: 'inline-flex', padding: '2px', border: 'none', borderRadius: '999px', background: 'transparent', color: 'inherit', cursor: 'pointer' }}
+                    >
+                      <X size={12} />
+                    </button>
+                  ) : <span style={{ width: '4px' }} />}
+                </span>
+              }
+            >
               <div style={{ display: 'flex', gap: '4px', padding: '4px', borderRadius: '10px', backgroundColor: 'var(--muted)', marginBottom: '16px' }}>
                 <button style={tabStyle(recipientTab === 'platform')} onClick={() => setRecipientTab('platform')}>Platform</button>
                 <button style={tabStyle(recipientTab === 'csv')} onClick={() => setRecipientTab('csv')}>CSV Upload</button>
@@ -522,88 +834,20 @@ function YeniKampanya() {
               {recipientTab === 'platform' ? (
                 <div>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                    {PLATFORMS.map((p) => (
-                      <button
-                        key={p.key}
-                        style={platformButtonStyle(p.key === platformKey)}
-                        disabled={locked || loadingPlatform}
-                        onClick={() => loadPlatform(p)}
-                      >
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={p.icon} alt="" width={16} height={16} style={{ borderRadius: '4px', objectFit: 'cover' }} />
-                        {p.label}
-                      </button>
-                    ))}
+                    {PLATFORMS.map((p) => {
+                      const count = platformCounts.get(p.label) ?? 0
+                      return (
+                        <button key={p.key} style={platformButtonStyle} disabled={locked} onClick={() => setDrawerPlatform(p)}>
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={p.icon} alt="" width={16} height={16} style={{ borderRadius: '4px', objectFit: 'cover' }} />
+                          {p.label}
+                          {count > 0 && <span style={{ color: 'var(--success)', fontWeight: 700 }}>{count}</span>}
+                        </button>
+                      )
+                    })}
                   </div>
-
-                  {platformError && (
-                    <p style={{ fontSize: '13px', color: 'var(--danger)', margin: '14px 0 0' }}>{platformError}</p>
-                  )}
-
-                  {loadingPlatform && (
-                    <p style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: 'var(--muted-foreground)', margin: '14px 0 0' }}>
-                      <Loader2 size={14} className="animate-spin" /> Yayıncılar yükleniyor…
-                    </p>
-                  )}
-
-                  {!platformKey && !loadingPlatform && (
-                    <p style={{ fontSize: '13px', color: 'var(--muted-foreground)', margin: '14px 0 0' }}>
-                      Email adresi olan yayıncıları listelemek için bir platform seçin.
-                    </p>
-                  )}
-
-                  {activePlatform && !loadingPlatform && !platformError && (
-                    <>
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '14px 0 8px' }}>
-                        <span style={{ fontSize: '13px', color: 'var(--text-2)' }}>
-                          {activePlatform.label}: <strong>{currentStreamers.length}</strong> yayıncı
-                        </span>
-                        <div style={{ display: 'flex', gap: '6px' }}>
-                          <button style={buttonStyle('secondary', locked || currentStreamers.length === 0)} disabled={locked || currentStreamers.length === 0} onClick={selectAll}>
-                            Tümünü Seç
-                          </button>
-                          <button style={buttonStyle('secondary', locked || selectedInCurrent === 0)} disabled={locked || selectedInCurrent === 0} onClick={deselectAll}>
-                            Seçimi Kaldır
-                          </button>
-                        </div>
-                      </div>
-
-                      {currentStreamers.length === 0 ? (
-                        <p style={{ fontSize: '13px', color: 'var(--muted-foreground)', margin: 0 }}>Bu platformda email adresi olan yayıncı yok.</p>
-                      ) : (
-                        <div style={{ maxHeight: '360px', overflowY: 'auto', border: '1px solid var(--border)', borderRadius: '8px' }}>
-                          {currentStreamers.map((s) => (
-                            <label
-                              key={s.key}
-                              style={{
-                                display: 'grid', gridTemplateColumns: 'auto minmax(0, 1fr) auto', alignItems: 'center', gap: '10px',
-                                padding: '8px 12px', borderBottom: '1px solid var(--border)', fontSize: '13px',
-                                cursor: locked ? 'not-allowed' : 'pointer',
-                                backgroundColor: selected.has(s.key) ? 'var(--muted)' : 'transparent',
-                              }}
-                            >
-                              <input type="checkbox" checked={selected.has(s.key)} disabled={locked} onChange={() => toggleStreamer(s)} />
-                              <span style={{ minWidth: 0 }}>
-                                <span style={{ display: 'block', fontWeight: 600, color: 'var(--foreground)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                  {s.name ?? '—'}
-                                </span>
-                                <span style={{ display: 'block', color: 'var(--muted-foreground)', fontSize: '12px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                  {s.email}
-                                </span>
-                              </span>
-                              <span style={{ color: 'var(--success)', fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
-                                {s.followers?.toLocaleString('tr-TR') ?? '—'}
-                              </span>
-                            </label>
-                          ))}
-                        </div>
-                      )}
-                    </>
-                  )}
-
-                  <p style={{ fontSize: '13px', color: 'var(--text-2)', margin: '12px 0 0' }}>
-                    <strong style={{ color: 'var(--success)' }}>{selected.size}</strong> yayıncı seçildi
-                    {platformKey && selected.size !== selectedInCurrent && <> ({selectedInCurrent} bu platformdan)</>}
+                  <p style={{ fontSize: '12px', color: 'var(--muted-foreground)', margin: '12px 0 0' }}>
+                    Platforma tıklayarak email adresi olan yayıncıları seçin.
                   </p>
                 </div>
               ) : (
@@ -662,28 +906,18 @@ function YeniKampanya() {
                       )}
                     </div>
                   )}
-                  {csvRecipients.length > 0 && !locked && (
-                    <button
-                      style={{ ...buttonStyle('secondary'), marginTop: '12px' }}
-                      onClick={() => { setCsvRecipients([]); setCsvStats(null); setFileName('') }}
-                    >
-                      CSV&apos;yi Temizle
-                    </button>
-                  )}
                 </div>
+              )}
+
+              {platformRecipients.size > 0 && csvRecipients.length > 0 && (
+                <p style={{ fontSize: '12px', color: 'var(--muted-foreground)', margin: '12px 0 0' }}>
+                  {platformRecipients.size} platform + {csvRecipients.length} CSV, tekrarlar çıkarıldı
+                </p>
               )}
             </Card>
           )}
 
           <Card title="Gönderim">
-            {!isResume && (
-              <p style={{ fontSize: '13px', color: 'var(--text-2)', margin: '0 0 14px' }}>
-                Toplam <strong style={{ color: 'var(--foreground)' }}>{recipients.length}</strong> alıcı
-                {selected.size > 0 && csvRecipients.length > 0 && (
-                  <span style={{ color: 'var(--muted-foreground)' }}> ({selected.size} platform + {csvRecipients.length} CSV, tekrarlar çıkarıldı)</span>
-                )}
-              </p>
-            )}
             {(sending || progress.total > 0) && (
               <div style={{ marginBottom: '14px' }}>
                 <ProgressBar value={progress.done} total={progress.total} />
@@ -700,11 +934,7 @@ function YeniKampanya() {
                   <Play size={14} /> Kalan Alıcılara Gönder
                 </button>
               ) : (
-                <button
-                  style={buttonStyle('primary', !name || !accountId || !templateId || recipients.length === 0 || !!campaignId)}
-                  disabled={!name || !accountId || !templateId || recipients.length === 0 || !!campaignId}
-                  onClick={createAndSend}
-                >
+                <button style={buttonStyle('primary', !canSend)} disabled={!canSend} onClick={createAndSend}>
                   <Send size={14} /> Kampanyayı Oluştur ve Gönder
                 </button>
               )}

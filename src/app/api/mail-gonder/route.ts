@@ -51,13 +51,29 @@ function startOfToday(): string {
   return d.toISOString()
 }
 
+// Counts mails sent today from an account: recipients assigned to it directly, plus recipients
+// without an account_id whose campaign uses it. Falls back to the campaign-only count when the
+// mail_recipients.account_id column hasn't been migrated yet.
 async function countSentToday(supabase: SupabaseClient, accountId: string): Promise<number> {
-  const { count } = await supabase
+  const since = startOfToday()
+  const own = await supabase
+    .from('mail_recipients')
+    .select('id', { count: 'exact', head: true })
+    .eq('account_id', accountId)
+    .gte('sent_at', since)
+
+  const viaCampaign = supabase
     .from('mail_recipients')
     .select('id, mail_campaigns!inner(account_id)', { count: 'exact', head: true })
     .eq('mail_campaigns.account_id', accountId)
-    .gte('sent_at', startOfToday())
-  return count ?? 0
+    .gte('sent_at', since)
+
+  if (own.error) {
+    const { count } = await viaCampaign
+    return count ?? 0
+  }
+  const { count: legacy } = await viaCampaign.is('account_id', null)
+  return (own.count ?? 0) + (legacy ?? 0)
 }
 
 // Marks the campaign completed once no pending recipients remain; returns the pending count
@@ -130,24 +146,25 @@ export async function POST(request: NextRequest) {
     .select('*')
     .eq('id', recipient.campaign_id)
     .single<MailCampaign>()
-  if (!campaign?.template_id || !campaign.account_id) {
+  const accountId = recipient.account_id ?? campaign?.account_id
+  if (!campaign?.template_id || !accountId) {
     return NextResponse.json({ error: 'Kampanyanın şablonu veya hesabı yok' }, { status: 400 })
   }
 
   const [{ data: template }, { data: account }] = await Promise.all([
     supabase.from('mail_templates').select('*').eq('id', campaign.template_id).single<MailTemplate>(),
-    supabase.from('mail_accounts').select('*').eq('id', campaign.account_id).single<MailAccount>(),
+    supabase.from('mail_accounts').select('*').eq('id', accountId).single<MailAccount>(),
   ])
   if (!template) return NextResponse.json({ error: 'Şablon bulunamadı' }, { status: 404 })
   if (!account) return NextResponse.json({ error: 'Hesap bulunamadı' }, { status: 404 })
   if (account.status !== 'active') {
-    return NextResponse.json({ error: `${account.email} hesabı aktif değil` }, { status: 409 })
+    return NextResponse.json({ error: `${account.email} hesabı aktif değil`, accountUnavailable: true, account_id: account.id }, { status: 409 })
   }
 
   const sentToday = await countSentToday(supabase, account.id)
   if (sentToday >= account.daily_limit) {
     return NextResponse.json(
-      { error: `Günlük limit doldu (${sentToday}/${account.daily_limit})`, limitReached: true },
+      { error: `${account.email}: günlük limit doldu (${sentToday}/${account.daily_limit})`, limitReached: true, accountUnavailable: true, account_id: account.id },
       { status: 429 },
     )
   }

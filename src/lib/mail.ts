@@ -53,6 +53,8 @@ export interface MailCampaign {
 export interface MailRecipient {
   id: string
   campaign_id: string
+  // Sending account for this recipient; null → the campaign's account_id
+  account_id?: string | null
   email: string
   name: string | null
   platform: string | null
