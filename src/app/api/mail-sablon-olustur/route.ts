@@ -31,6 +31,17 @@ interface GenerateRequest {
 
 // Describes what each offer type means for the creator, so the model phrases it correctly
 const OFFER_DESCRIPTIONS: Record<string, string> = {
+  'Steam Key (Ücretsiz Steam Key)': 'a free Steam key so they can play and cover the game',
+  'Gelir Paylaşımı (Revenue Share)': 'a revenue share on sales generated through their coverage',
+  'Sabit Ücret (Flat Fee)': 'a flat paid fee for a sponsored stream or video',
+  'Ücretsiz Kopya + Gelir Paylaşımı': 'a free copy of the game plus a revenue share on sales generated through their coverage',
+  'Özel İçerik Anlaşması': 'a custom content deal — a sponsored video or stream built around their format and audience',
+  'Uzun Vadeli Sponsorluk': 'a long-term sponsorship covering multiple streams or videos over several months',
+  'Beta Erken Erişim': 'early access to the closed beta before public release, so they can be among the first to show it',
+  'Turnuva / Etkinlik Sponsorluğu': 'sponsorship of a tournament or community event they host, featuring the game',
+  'Affiliate / Referral Linki': 'a personal affiliate/referral link that earns them a commission on every sale it drives',
+  'Bedava Kopya (No Strings Attached)': 'a free copy of the game, no strings attached — no obligation to cover it',
+  // Offer names saved before the Turkish labels
   'Steam Key': 'a free Steam key so they can play and cover the game',
   'Revenue Share': 'a revenue share on sales generated through their coverage',
   'Flat Fee': 'a flat paid fee for a sponsored stream or video',

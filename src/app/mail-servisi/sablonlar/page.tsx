@@ -20,7 +20,19 @@ const PROVIDERS: { value: Provider; label: string }[] = [
   { value: 'gpt', label: 'GPT-6 Astra' },
 ]
 
-const KEY_OFFERS = ['Steam Key', 'Revenue Share', 'Flat Fee', 'Free Copy']
+// Keep in sync with OFFER_DESCRIPTIONS in /api/mail-sablon-olustur, which explains each offer to the AI
+const KEY_OFFERS = [
+  'Steam Key (Ücretsiz Steam Key)',
+  'Gelir Paylaşımı (Revenue Share)',
+  'Sabit Ücret (Flat Fee)',
+  'Ücretsiz Kopya + Gelir Paylaşımı',
+  'Özel İçerik Anlaşması',
+  'Uzun Vadeli Sponsorluk',
+  'Beta Erken Erişim',
+  'Turnuva / Etkinlik Sponsorluğu',
+  'Affiliate / Referral Linki',
+  'Bedava Kopya (No Strings Attached)',
+]
 
 const ASSET_BUCKET = 'mail-assets'
 const MAX_ASSET_BYTES = 5 * 1024 * 1024
@@ -127,7 +139,7 @@ export default function SablonlarPage() {
       setEditingId(null)
       setSubject(data.subject)
       setHtml(data.html_content)
-      setTemplateName(`${platform} · ${keyOffer} · ${language}`)
+      setTemplateName(`${platform} · ${keyOffer.replace(/\s*\(.*\)$/, '')} · ${language}`)
     } catch (e) {
       setToast({ message: (e as Error).message, type: 'error' })
     } finally {
@@ -243,7 +255,7 @@ export default function SablonlarPage() {
         />
       )}
       {toast && <Toast message={toast.message} type={toast.type} onDismiss={() => setToast(null)} />}
-      <PageHeader title="Şablon Oluştur" subtitle="AI ile yayıncı outreach maili" icon={Sparkles} gradient={MAIL_GRADIENT} />
+      <PageHeader title="Şablon Oluştur" subtitle="AI ile yayıncılara tanıtım maili" icon={Sparkles} gradient={MAIL_GRADIENT} />
 
       <div style={{ padding: '24px 32px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'minmax(320px, 1fr) minmax(0, 1.5fr)', gap: '24px', alignItems: 'start' }}>
@@ -298,7 +310,7 @@ export default function SablonlarPage() {
                 <Field label="Discord Sunucu Linki">
                   <input style={inputStyle} type="url" placeholder="https://discord.gg/…" value={discordLink} onChange={(e) => setDiscordLink(e.target.value)} />
                 </Field>
-                <Field label="Gönderen Hesap (logo / banner)">
+                <Field label="Gönderen Hesap">
                   <select style={inputStyle} value={accountId} onChange={(e) => changeAccount(e.target.value)}>
                     <option value="">Yok</option>
                     {accounts.map((a) => <option key={a.id} value={a.id}>{a.name} — {a.email}</option>)}
