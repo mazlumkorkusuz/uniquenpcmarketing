@@ -189,9 +189,20 @@ export async function POST(request: NextRequest) {
     banner_url: account.banner_url,
   }
   const subject = renderTemplate(template.subject, vars, true)
-  const pixel = `<img src="${publicBaseUrl(request)}/api/mail-tracking?r=${recipient.id}" width="1" height="1" alt="" style="display:block;width:1px;height:1px;border:0" />`
   const bodyHtml = renderTemplate(template.html_content, vars)
-  const html = /<\/body>/i.test(bodyHtml) ? bodyHtml.replace(/<\/body>/i, `${pixel}</body>`) : bodyHtml + pixel
+
+  // Tracking: the account logo at the top (proxied through /api/mail-tracking so loading it counts
+  // as an open) and a hidden pixel at the bottom as a fallback.
+  const tracking = (type: 'logo' | 'pixel', extra: Record<string, string> = {}) =>
+    `${publicBaseUrl(request)}/api/mail-tracking?` +
+    new URLSearchParams({ type, ...extra, e: recipient.email, c: campaign.id, r: recipient.id }).toString().replace(/&/g, '&amp;')
+  const logo = account.logo_url
+    ? `<div style="text-align:center;padding:16px 0"><img src="${tracking('logo', { logo: account.logo_url })}" alt="${account.name.replace(/["<>&]/g, '')}" height="56" style="display:inline-block;height:56px;width:auto;border:0" /></div>`
+    : ''
+  const pixel = `<img src="${tracking('pixel')}" width="1" height="1" alt="" style="display:none;" />`
+
+  let html = /<body[^>]*>/i.test(bodyHtml) ? bodyHtml.replace(/<body[^>]*>/i, (tag) => tag + logo) : logo + bodyHtml
+  html = /<\/body>/i.test(html) ? html.replace(/<\/body>/i, `${pixel}</body>`) : html + pixel
 
   try {
     await createTransport(account).sendMail({
