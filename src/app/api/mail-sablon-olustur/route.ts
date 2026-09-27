@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createSupabaseServerClient } from '@/lib/supabase-server'
 
-// Generates an outreach mail template with Claude (Anthropic) or GPT-4o (OpenAI).
-// POST { provider: 'claude' | 'gpt', platform, tier, language, brief, hasLogo, hasBanner }
+// Generates an outreach mail template with Claude (Anthropic) or GPT (OpenAI).
+// POST { provider: 'claude' | 'gpt', platform, language, gameName, gameDescription, keyOffer,
+//        contactName, discordLink, brief, hasLogo, hasBanner }
 // → { subject, html_content }
 
 const CLAUDE_MODEL = 'claude-opus-5-5'
@@ -13,21 +14,44 @@ interface GenerateRequest {
   platform?: string
   tier?: string
   language?: string
+  gameName?: string
+  gameDescription?: string
+  keyOffer?: string
+  contactName?: string
+  discordLink?: string
   brief?: string
   hasLogo?: boolean
   hasBanner?: boolean
 }
 
+// Describes what each offer type means for the creator, so the model phrases it correctly
+const OFFER_DESCRIPTIONS: Record<string, string> = {
+  'Steam Key': 'a free Steam key so they can play and cover the game',
+  'Revenue Share': 'a revenue share on sales generated through their coverage',
+  'Flat Fee': 'a flat paid fee for a sponsored stream or video',
+  'Free Copy': 'a free copy of the game, no strings attached',
+}
+
 function buildPrompt(req: GenerateRequest): string {
+  const game = [
+    req.gameName?.trim() && `Game name: ${req.gameName.trim()}`,
+    req.gameDescription?.trim() && `Game description: ${req.gameDescription.trim()}`,
+    req.keyOffer && `What we offer the creator: ${OFFER_DESCRIPTIONS[req.keyOffer] ?? req.keyOffer}`,
+    req.brief?.trim() && `Extra notes: ${req.brief.trim()}`,
+  ].filter(Boolean).join('\n')
+  const contact = [
+    req.contactName?.trim() && `- Sign the email as ${req.contactName.trim()} from {{sender_name}}.`,
+    req.discordLink?.trim() && `- Include our Discord server as a clickable link: ${req.discordLink.trim()}`,
+  ].filter(Boolean).join('\n')
+
   return `You are writing a cold outreach email from Unique NPC Games, an indie game publisher, to a content creator.
 
 Creator platform: ${req.platform || 'any'}
-Creator size tier: ${req.tier || 'any'}
-Write the email in this language: ${req.language || 'English'}
+${req.tier ? `Creator size tier: ${req.tier}\n` : ''}Write the email in this language: ${req.language || 'English'}
 
-What we want from the creator / game details:
-${req.brief?.trim() || '(no extra details — invite them to try and cover our upcoming game)'}
-
+Game and offer:
+${game || '(no extra details — invite them to try and cover our upcoming game)'}
+${contact ? `\n${contact}\n` : ''}
 Requirements:
 - Short, friendly and personal; no spammy wording, no ALL CAPS, max ~150 words of body text.
 - Use these placeholders exactly where appropriate (they are filled in per recipient):
