@@ -3,19 +3,23 @@
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import { Send, Upload, Square, Play } from 'lucide-react'
+import { Send, Upload, Square, Play, Loader2 } from 'lucide-react'
 import PageHeader from '@/components/PageHeader'
 import { Toast } from '@/components/Toast'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 import { MAIL_ACCOUNT_PUBLIC_COLUMNS, renderTemplate, type MailAccount, type MailCampaign, type MailTemplate } from '@/lib/mail'
 import { Card, Field, ProgressBar, MAIL_GRADIENT, buttonStyle, inputStyle, thStyle, tdStyle } from '../../_components/ui'
 
-interface CsvRecipient {
+interface Recipient {
   email: string
   name: string | null
   platform: string | null
   followers: number | null
   language: string | null
+}
+
+interface PlatformStreamer extends Recipient {
+  key: string
 }
 
 interface LogLine {
@@ -24,9 +28,34 @@ interface LogLine {
   message: string
 }
 
+type RecipientTab = 'platform' | 'csv'
+
+interface PlatformDef {
+  key: string
+  label: string
+  table: string
+  icon: string
+  nameColumns: string[]
+  followersColumn: string
+}
+
+const PLATFORMS: PlatformDef[] = [
+  { key: 'twitch',   label: 'Twitch',   table: 'twitch_streamers',   icon: '/icons/twitch.png',   nameColumns: ['display_name', 'username'], followersColumn: 'followers' },
+  { key: 'kick',     label: 'Kick',     table: 'kick_streamers',     icon: '/icons/kick.png',     nameColumns: ['channel_name', 'username'], followersColumn: 'followers' },
+  { key: 'soop',     label: 'SOOP',     table: 'soop_streamers',     icon: '/icons/soop.jpeg',    nameColumns: ['channel_name', 'username'], followersColumn: 'followers' },
+  { key: 'youtube',  label: 'YouTube',  table: 'youtube_channels',   icon: '/icons/youtube.png',  nameColumns: ['channel_name'],             followersColumn: 'subscribers' },
+  { key: 'chzzk',    label: 'Chzzk',    table: 'chzzk_streamers',    icon: '/icons/chzzk.png',    nameColumns: ['channel_name', 'username'], followersColumn: 'followers' },
+  { key: 'bilibili', label: 'BiliBili', table: 'bilibili_streamers', icon: '/icons/bilibili.png', nameColumns: ['channel_name', 'username'], followersColumn: 'followers' },
+  { key: 'douyin',   label: 'Douyin',   table: 'douyin_streamers',   icon: '/icons/douyin.png',   nameColumns: ['channel_name', 'username'], followersColumn: 'followers' },
+]
+
+// Streamer tables store the contact address in the `email` column
+const EMAIL_COLUMN = 'email'
+const PAGE_SIZE = 1000
+
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-const HEADER_ALIASES: Record<keyof CsvRecipient, string[]> = {
+const HEADER_ALIASES: Record<keyof Recipient, string[]> = {
   email: ['email', 'e-mail', 'mail', 'eposta', 'e-posta', 'contact_email'],
   name: ['name', 'isim', 'ad', 'username', 'display_name', 'channel', 'channel_name', 'kanal'],
   platform: ['platform'],
@@ -73,15 +102,15 @@ function parseFollowers(v: string | undefined): number | null {
   return Math.round(m[2] === 'm' ? n * 1_000_000 : m[2] === 'k' ? n * 1_000 : n)
 }
 
-function toRecipients(rows: string[][]): { valid: CsvRecipient[]; invalid: number; duplicates: number } {
+function toRecipients(rows: string[][]): { valid: Recipient[]; invalid: number; duplicates: number } {
   if (rows.length < 2) return { valid: [], invalid: 0, duplicates: 0 }
   const header = rows[0].map((h) => h.trim().toLowerCase())
-  const col = (key: keyof CsvRecipient) => header.findIndex((h) => HEADER_ALIASES[key].includes(h))
+  const col = (key: keyof Recipient) => header.findIndex((h) => HEADER_ALIASES[key].includes(h))
   const idx = { email: col('email'), name: col('name'), platform: col('platform'), followers: col('followers'), language: col('language') }
   if (idx.email === -1) throw new Error('CSV\'de "email" sütunu bulunamadı')
 
   const seen = new Set<string>()
-  const valid: CsvRecipient[] = []
+  const valid: Recipient[] = []
   let invalid = 0
   let duplicates = 0
   for (const r of rows.slice(1)) {
@@ -101,6 +130,12 @@ function toRecipients(rows: string[][]): { valid: CsvRecipient[]; invalid: numbe
   return { valid, invalid, duplicates }
 }
 
+// A DB email cell may hold several addresses ("a@x.com, b@y.com") — take the first valid one
+function firstValidEmail(v: unknown): string | null {
+  if (typeof v !== 'string') return null
+  return v.split(/[\s,;/]+/).map((s) => s.trim().toLowerCase()).find((s) => EMAIL_RE.test(s)) ?? null
+}
+
 function YeniKampanya() {
   const router = useRouter()
   const resumeId = useSearchParams().get('resume')
@@ -112,8 +147,20 @@ function YeniKampanya() {
   const [accountId, setAccountId] = useState('')
   const [templateId, setTemplateId] = useState('')
   const [delay, setDelay] = useState(30)
+
+  const [recipientTab, setRecipientTab] = useState<RecipientTab>('platform')
+
+  // Platform tab
+  const [platformKey, setPlatformKey] = useState<string | null>(null)
+  const [streamerCache, setStreamerCache] = useState<Record<string, PlatformStreamer[]>>({})
+  const [loadingPlatform, setLoadingPlatform] = useState(false)
+  const [platformError, setPlatformError] = useState<string | null>(null)
+  // Selected streamers across all platforms, keyed by PlatformStreamer.key
+  const [selected, setSelected] = useState<Map<string, PlatformStreamer>>(new Map())
+
+  // CSV tab
   const [fileName, setFileName] = useState('')
-  const [recipients, setRecipients] = useState<CsvRecipient[]>([])
+  const [csvRecipients, setCsvRecipients] = useState<Recipient[]>([])
   const [csvStats, setCsvStats] = useState<{ invalid: number; duplicates: number } | null>(null)
 
   const [campaignId, setCampaignId] = useState<string | null>(null)
@@ -157,6 +204,92 @@ function YeniKampanya() {
     return () => window.removeEventListener('beforeunload', handler)
   }, [sending])
 
+  const loadPlatform = useCallback(async (p: PlatformDef) => {
+    setPlatformKey(p.key)
+    setPlatformError(null)
+    if (streamerCache[p.key]) return
+    setLoadingPlatform(true)
+    try {
+      const rows: Record<string, unknown>[] = []
+      for (let from = 0; ; from += PAGE_SIZE) {
+        const { data, error } = await supabase
+          .from(p.table)
+          .select('*')
+          .not(EMAIL_COLUMN, 'is', null)
+          .neq(EMAIL_COLUMN, '')
+          .order(p.followersColumn, { ascending: false, nullsFirst: false })
+          .range(from, from + PAGE_SIZE - 1)
+        if (error) throw new Error(error.message)
+        rows.push(...(data ?? []))
+        if (!data || data.length < PAGE_SIZE) break
+      }
+
+      const seen = new Set<string>()
+      const streamers: PlatformStreamer[] = []
+      for (const row of rows) {
+        const email = firstValidEmail(row[EMAIL_COLUMN])
+        if (!email || seen.has(email)) continue
+        seen.add(email)
+        const displayName = p.nameColumns.map((c) => row[c]).find((v) => typeof v === 'string' && v.trim())
+        const followers = Number(row[p.followersColumn])
+        streamers.push({
+          key: `${p.key}:${String(row.id)}`,
+          email,
+          name: (displayName as string | undefined)?.trim() ?? null,
+          platform: p.label,
+          followers: Number.isFinite(followers) ? followers : null,
+          language: typeof row.language === 'string' ? row.language : null,
+        })
+      }
+      setStreamerCache((c) => ({ ...c, [p.key]: streamers }))
+    } catch (e) {
+      setPlatformError(`${p.label} yayıncıları yüklenemedi: ${(e as Error).message}`)
+    } finally {
+      setLoadingPlatform(false)
+    }
+  }, [supabase, streamerCache])
+
+  const currentStreamers = platformKey ? streamerCache[platformKey] ?? [] : []
+
+  const toggleStreamer = (s: PlatformStreamer) => {
+    setSelected((prev) => {
+      const next = new Map(prev)
+      if (next.has(s.key)) next.delete(s.key)
+      else next.set(s.key, s)
+      return next
+    })
+  }
+
+  const selectAll = () => {
+    setSelected((prev) => {
+      const next = new Map(prev)
+      for (const s of currentStreamers) next.set(s.key, s)
+      return next
+    })
+  }
+
+  const deselectAll = () => {
+    setSelected((prev) => {
+      const next = new Map(prev)
+      for (const s of currentStreamers) next.delete(s.key)
+      return next
+    })
+  }
+
+  const selectedInCurrent = currentStreamers.filter((s) => selected.has(s.key)).length
+
+  // Final recipient list: platform selections + CSV rows, deduplicated by email
+  const recipients = useMemo<Recipient[]>(() => {
+    const seen = new Set<string>()
+    const out: Recipient[] = []
+    for (const r of [...selected.values(), ...csvRecipients]) {
+      if (seen.has(r.email)) continue
+      seen.add(r.email)
+      out.push({ email: r.email, name: r.name, platform: r.platform, followers: r.followers, language: r.language })
+    }
+    return out
+  }, [selected, csvRecipients])
+
   const selectedTemplate = templates.find((t) => t.id === templateId)
   const selectedAccount = accounts.find((a) => a.id === accountId)
 
@@ -181,11 +314,11 @@ function YeniKampanya() {
     setFileName(file.name)
     try {
       const { valid, invalid, duplicates } = toRecipients(parseCsv(await file.text()))
-      setRecipients(valid)
+      setCsvRecipients(valid)
       setCsvStats({ invalid, duplicates })
       if (!name) setName(file.name.replace(/\.csv$/i, ''))
     } catch (e) {
-      setRecipients([])
+      setCsvRecipients([])
       setCsvStats(null)
       setToast({ message: (e as Error).message, type: 'error' })
     }
@@ -253,7 +386,7 @@ function YeniKampanya() {
 
   const createAndSend = async () => {
     if (!name.trim() || !accountId || !templateId || recipients.length === 0) {
-      setToast({ message: 'Kampanya adı, hesap, şablon ve CSV gerekli', type: 'error' })
+      setToast({ message: 'Kampanya adı, hesap, şablon ve en az bir alıcı gerekli', type: 'error' })
       return
     }
     if (!confirm(`${recipients.length} kişiye ${delay} sn aralıkla mail gönderilecek. Devam edilsin mi?`)) return
@@ -290,13 +423,43 @@ function YeniKampanya() {
   }
 
   const isResume = !!resumeId && !!campaignId
+  const locked = sending || !!campaignId
+
+  const tabStyle = (active: boolean): React.CSSProperties => ({
+    flex: 1,
+    padding: '8px 12px',
+    fontSize: '13px',
+    fontWeight: 600,
+    borderRadius: '8px',
+    border: 'none',
+    cursor: 'pointer',
+    backgroundColor: active ? 'var(--card)' : 'transparent',
+    color: active ? 'var(--foreground)' : 'var(--muted-foreground)',
+    boxShadow: active ? '0 1px 2px rgba(0,0,0,0.08)' : 'none',
+  })
+
+  const platformButtonStyle = (active: boolean): React.CSSProperties => ({
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '6px',
+    padding: '6px 12px',
+    fontSize: '13px',
+    fontWeight: 600,
+    borderRadius: '999px',
+    border: `1px solid ${active ? 'var(--foreground)' : 'var(--border)'}`,
+    backgroundColor: active ? 'var(--foreground)' : 'transparent',
+    color: active ? 'var(--background)' : 'var(--text-2)',
+    cursor: locked ? 'not-allowed' : 'pointer',
+  })
+
+  const activePlatform = PLATFORMS.find((p) => p.key === platformKey)
 
   return (
     <div>
       {toast && <Toast message={toast.message} type={toast.type} onDismiss={() => setToast(null)} />}
       <PageHeader
         title={isResume ? 'Kampanyaya Devam Et' : 'Yeni Kampanya'}
-        subtitle={isResume ? name : 'CSV yükle, şablon seç, gönder'}
+        subtitle={isResume ? name : 'Alıcıları seç, şablon seç, gönder'}
         icon={Send}
         gradient={MAIL_GRADIENT}
       />
@@ -350,58 +513,162 @@ function YeniKampanya() {
           </Card>
 
           {!isResume && (
-            <Card title="Alıcı Listesi (CSV)">
-              <label
-                style={{
-                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px',
-                  padding: '24px', border: '1px dashed var(--input)', borderRadius: '10px',
-                  cursor: sending ? 'not-allowed' : 'pointer', color: 'var(--text-2)', fontSize: '13px',
-                }}
-              >
-                <Upload size={20} />
-                {fileName || 'CSV dosyası seçin'}
-                <input
-                  type="file"
-                  accept=".csv,text/csv"
-                  style={{ display: 'none' }}
-                  disabled={sending}
-                  onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f) }}
-                />
-              </label>
-              <p style={{ fontSize: '12px', color: 'var(--muted-foreground)', margin: '10px 0 0' }}>
-                Sütunlar: <code>email</code> (zorunlu), <code>name</code>, <code>platform</code>, <code>followers</code>, <code>language</code>
-              </p>
-              {csvStats && (
-                <p style={{ fontSize: '13px', color: 'var(--text-2)', margin: '12px 0 0' }}>
-                  <strong style={{ color: 'var(--success)' }}>{recipients.length}</strong> geçerli alıcı
-                  {csvStats.invalid > 0 && <> · <span style={{ color: 'var(--danger)' }}>{csvStats.invalid} geçersiz</span></>}
-                  {csvStats.duplicates > 0 && <> · <span style={{ color: 'var(--orange)' }}>{csvStats.duplicates} tekrar</span></>}
-                </p>
-              )}
-              {recipients.length > 0 && (
-                <div style={{ overflowX: 'auto', marginTop: '12px', border: '1px solid var(--border)', borderRadius: '8px' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                    <thead>
-                      <tr>
-                        <th style={thStyle}>Email</th>
-                        <th style={thStyle}>İsim</th>
-                        <th style={thStyle}>Platform</th>
-                        <th style={thStyle}>Takipçi</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {recipients.slice(0, 8).map((r) => (
-                        <tr key={r.email}>
-                          <td style={tdStyle}>{r.email}</td>
-                          <td style={tdStyle}>{r.name ?? '—'}</td>
-                          <td style={tdStyle}>{r.platform ?? '—'}</td>
-                          <td style={tdStyle}>{r.followers?.toLocaleString('tr-TR') ?? '—'}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                  {recipients.length > 8 && (
-                    <p style={{ fontSize: '12px', color: 'var(--muted-foreground)', margin: 0, padding: '8px 16px' }}>+{recipients.length - 8} kişi daha</p>
+            <Card title="Alıcılar">
+              <div style={{ display: 'flex', gap: '4px', padding: '4px', borderRadius: '10px', backgroundColor: 'var(--muted)', marginBottom: '16px' }}>
+                <button style={tabStyle(recipientTab === 'platform')} onClick={() => setRecipientTab('platform')}>Platform</button>
+                <button style={tabStyle(recipientTab === 'csv')} onClick={() => setRecipientTab('csv')}>CSV Upload</button>
+              </div>
+
+              {recipientTab === 'platform' ? (
+                <div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                    {PLATFORMS.map((p) => (
+                      <button
+                        key={p.key}
+                        style={platformButtonStyle(p.key === platformKey)}
+                        disabled={locked || loadingPlatform}
+                        onClick={() => loadPlatform(p)}
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={p.icon} alt="" width={16} height={16} style={{ borderRadius: '4px', objectFit: 'cover' }} />
+                        {p.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  {platformError && (
+                    <p style={{ fontSize: '13px', color: 'var(--danger)', margin: '14px 0 0' }}>{platformError}</p>
+                  )}
+
+                  {loadingPlatform && (
+                    <p style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: 'var(--muted-foreground)', margin: '14px 0 0' }}>
+                      <Loader2 size={14} className="animate-spin" /> Yayıncılar yükleniyor…
+                    </p>
+                  )}
+
+                  {!platformKey && !loadingPlatform && (
+                    <p style={{ fontSize: '13px', color: 'var(--muted-foreground)', margin: '14px 0 0' }}>
+                      Email adresi olan yayıncıları listelemek için bir platform seçin.
+                    </p>
+                  )}
+
+                  {activePlatform && !loadingPlatform && !platformError && (
+                    <>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '14px 0 8px' }}>
+                        <span style={{ fontSize: '13px', color: 'var(--text-2)' }}>
+                          {activePlatform.label}: <strong>{currentStreamers.length}</strong> yayıncı
+                        </span>
+                        <div style={{ display: 'flex', gap: '6px' }}>
+                          <button style={buttonStyle('secondary', locked || currentStreamers.length === 0)} disabled={locked || currentStreamers.length === 0} onClick={selectAll}>
+                            Tümünü Seç
+                          </button>
+                          <button style={buttonStyle('secondary', locked || selectedInCurrent === 0)} disabled={locked || selectedInCurrent === 0} onClick={deselectAll}>
+                            Seçimi Kaldır
+                          </button>
+                        </div>
+                      </div>
+
+                      {currentStreamers.length === 0 ? (
+                        <p style={{ fontSize: '13px', color: 'var(--muted-foreground)', margin: 0 }}>Bu platformda email adresi olan yayıncı yok.</p>
+                      ) : (
+                        <div style={{ maxHeight: '360px', overflowY: 'auto', border: '1px solid var(--border)', borderRadius: '8px' }}>
+                          {currentStreamers.map((s) => (
+                            <label
+                              key={s.key}
+                              style={{
+                                display: 'grid', gridTemplateColumns: 'auto minmax(0, 1fr) auto', alignItems: 'center', gap: '10px',
+                                padding: '8px 12px', borderBottom: '1px solid var(--border)', fontSize: '13px',
+                                cursor: locked ? 'not-allowed' : 'pointer',
+                                backgroundColor: selected.has(s.key) ? 'var(--muted)' : 'transparent',
+                              }}
+                            >
+                              <input type="checkbox" checked={selected.has(s.key)} disabled={locked} onChange={() => toggleStreamer(s)} />
+                              <span style={{ minWidth: 0 }}>
+                                <span style={{ display: 'block', fontWeight: 600, color: 'var(--foreground)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                  {s.name ?? '—'}
+                                </span>
+                                <span style={{ display: 'block', color: 'var(--muted-foreground)', fontSize: '12px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                  {s.email}
+                                </span>
+                              </span>
+                              <span style={{ color: 'var(--success)', fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
+                                {s.followers?.toLocaleString('tr-TR') ?? '—'}
+                              </span>
+                            </label>
+                          ))}
+                        </div>
+                      )}
+                    </>
+                  )}
+
+                  <p style={{ fontSize: '13px', color: 'var(--text-2)', margin: '12px 0 0' }}>
+                    <strong style={{ color: 'var(--success)' }}>{selected.size}</strong> yayıncı seçildi
+                    {platformKey && selected.size !== selectedInCurrent && <> ({selectedInCurrent} bu platformdan)</>}
+                  </p>
+                </div>
+              ) : (
+                <div>
+                  <label
+                    style={{
+                      display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px',
+                      padding: '24px', border: '1px dashed var(--input)', borderRadius: '10px',
+                      cursor: locked ? 'not-allowed' : 'pointer', color: 'var(--text-2)', fontSize: '13px',
+                    }}
+                  >
+                    <Upload size={20} />
+                    {fileName || 'CSV dosyası seçin'}
+                    <input
+                      type="file"
+                      accept=".csv,text/csv"
+                      style={{ display: 'none' }}
+                      disabled={locked}
+                      onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); e.target.value = '' }}
+                    />
+                  </label>
+                  <p style={{ fontSize: '12px', color: 'var(--muted-foreground)', margin: '10px 0 0' }}>
+                    Sütunlar: <code>email</code> (zorunlu), <code>name</code>, <code>platform</code>, <code>followers</code>
+                  </p>
+                  {csvStats && (
+                    <p style={{ fontSize: '13px', color: 'var(--text-2)', margin: '12px 0 0' }}>
+                      <strong style={{ color: 'var(--success)' }}>{csvRecipients.length}</strong> geçerli alıcı
+                      {csvStats.invalid > 0 && <> · <span style={{ color: 'var(--danger)' }}>{csvStats.invalid} geçersiz</span></>}
+                      {csvStats.duplicates > 0 && <> · <span style={{ color: 'var(--orange)' }}>{csvStats.duplicates} tekrar</span></>}
+                    </p>
+                  )}
+                  {csvRecipients.length > 0 && (
+                    <div style={{ overflowX: 'auto', marginTop: '12px', border: '1px solid var(--border)', borderRadius: '8px' }}>
+                      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                        <thead>
+                          <tr>
+                            <th style={thStyle}>Email</th>
+                            <th style={thStyle}>İsim</th>
+                            <th style={thStyle}>Platform</th>
+                            <th style={thStyle}>Takipçi</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {csvRecipients.slice(0, 8).map((r) => (
+                            <tr key={r.email}>
+                              <td style={tdStyle}>{r.email}</td>
+                              <td style={tdStyle}>{r.name ?? '—'}</td>
+                              <td style={tdStyle}>{r.platform ?? '—'}</td>
+                              <td style={tdStyle}>{r.followers?.toLocaleString('tr-TR') ?? '—'}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                      {csvRecipients.length > 8 && (
+                        <p style={{ fontSize: '12px', color: 'var(--muted-foreground)', margin: 0, padding: '8px 16px' }}>+{csvRecipients.length - 8} kişi daha</p>
+                      )}
+                    </div>
+                  )}
+                  {csvRecipients.length > 0 && !locked && (
+                    <button
+                      style={{ ...buttonStyle('secondary'), marginTop: '12px' }}
+                      onClick={() => { setCsvRecipients([]); setCsvStats(null); setFileName('') }}
+                    >
+                      CSV&apos;yi Temizle
+                    </button>
                   )}
                 </div>
               )}
@@ -409,6 +676,14 @@ function YeniKampanya() {
           )}
 
           <Card title="Gönderim">
+            {!isResume && (
+              <p style={{ fontSize: '13px', color: 'var(--text-2)', margin: '0 0 14px' }}>
+                Toplam <strong style={{ color: 'var(--foreground)' }}>{recipients.length}</strong> alıcı
+                {selected.size > 0 && csvRecipients.length > 0 && (
+                  <span style={{ color: 'var(--muted-foreground)' }}> ({selected.size} platform + {csvRecipients.length} CSV, tekrarlar çıkarıldı)</span>
+                )}
+              </p>
+            )}
             {(sending || progress.total > 0) && (
               <div style={{ marginBottom: '14px' }}>
                 <ProgressBar value={progress.done} total={progress.total} />
