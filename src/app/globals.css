@@ -1165,3 +1165,7 @@ textarea:focus-visible {
     display: none;
   }
 }
+
+/* Pill radio buttons (mail template settings): the native input is visually hidden */
+.radio-pill { position: relative; transition: background-color 120ms ease, border-color 120ms ease; }
+.radio-pill:has(input:focus-visible) { outline: 2px solid var(--foreground); outline-offset: 2px; }

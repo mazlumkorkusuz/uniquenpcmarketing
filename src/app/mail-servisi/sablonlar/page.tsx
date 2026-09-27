@@ -45,6 +45,46 @@ function assetPath(accountId: string, kind: AssetKind, file: File): string {
   return `${accountId}/${kind}-${Date.now()}.${ext}`
 }
 
+// Keep in sync with TONE/LENGTH/CTA_INSTRUCTIONS in /api/mail-sablon-olustur
+const TONES = ['Samimi ve Sıcak', 'Profesyonel', 'Eğlenceli ve Enerjik', 'Kısa ve Net']
+const LENGTHS = ['Kısa (2-3 paragraf)', 'Orta (4-5 paragraf)', 'Uzun (6+ paragraf)']
+const CTAS = ['Sadece yanıt ver', 'Steam sayfasına bak', "Discord'a katıl", 'Formu doldur', 'Linke tıkla']
+
+// Pill-style radio group built on real radio inputs (keyboard + screen reader friendly)
+function RadioPills({ legend, name, options, value, onChange }: {
+  legend: string
+  name: string
+  options: string[]
+  value: string
+  onChange: (v: string) => void
+}) {
+  return (
+    <fieldset style={{ border: 0, margin: 0, padding: 0, minWidth: 0 }}>
+      <legend style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-2)', marginBottom: '6px', padding: 0 }}>{legend}</legend>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+        {options.map((o) => {
+          const checked = value === o
+          return (
+            <label
+              key={o}
+              className="radio-pill"
+              style={{
+                padding: '6px 12px', fontSize: '13px', fontWeight: 600, borderRadius: '999px', cursor: 'pointer',
+                border: `1px solid ${checked ? 'var(--foreground)' : 'var(--border)'}`,
+                backgroundColor: checked ? 'var(--foreground)' : 'transparent',
+                color: checked ? 'var(--background)' : 'var(--text-2)',
+              }}
+            >
+              <input type="radio" name={name} value={o} checked={checked} onChange={() => onChange(o)} style={{ position: 'absolute', opacity: 0, width: 1, height: 1 }} />
+              {o}
+            </label>
+          )
+        })}
+      </div>
+    </fieldset>
+  )
+}
+
 const PREVIEW_VARS = {
   name: 'Yayıncı Adı',
   email: 'ornek@mail.com',
@@ -63,6 +103,10 @@ export default function SablonlarPage() {
   const [accountId, setAccountId] = useState('')
   const [gameDescription, setGameDescription] = useState('')
   const [keyOffer, setKeyOffer] = useState(KEY_OFFERS[0])
+  const [tone, setTone] = useState(TONES[0])
+  const [length, setLength] = useState(LENGTHS[0])
+  const [cta, setCta] = useState(CTAS[0])
+  const [notes, setNotes] = useState('')
   const [contactName, setContactName] = useState('')
   const [discordLink, setDiscordLink] = useState('')
   const [generating, setGenerating] = useState(false)
@@ -127,7 +171,7 @@ export default function SablonlarPage() {
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({
           provider, platform, language,
-          gameDescription, keyOffer, contactName, discordLink,
+          gameDescription, keyOffer, contactName, discordLink, tone, length, cta, brief: notes,
           hasLogo: !!logoUrl,
           hasBanner: !!bannerUrl,
           logoUrl: picked.logo ?? undefined,
@@ -287,6 +331,21 @@ export default function SablonlarPage() {
                   <select style={inputStyle} value={keyOffer} onChange={(e) => setKeyOffer(e.target.value)}>
                     {KEY_OFFERS.map((o) => <option key={o}>{o}</option>)}
                   </select>
+                </Field>
+                <RadioPills legend="Ton" name="tone" options={TONES} value={tone} onChange={setTone} />
+                <RadioPills legend="Mail Uzunluğu" name="length" options={LENGTHS} value={length} onChange={setLength} />
+                <Field label="CTA Türü">
+                  <select style={inputStyle} value={cta} onChange={(e) => setCta(e.target.value)}>
+                    {CTAS.map((c) => <option key={c}>{c}</option>)}
+                  </select>
+                </Field>
+                <Field label="Özel Notlar">
+                  <textarea
+                    style={{ ...inputStyle, minHeight: '90px', resize: 'vertical', fontFamily: 'inherit' }}
+                    placeholder="AI'ya ekstra talimat ver... (örn: oyunun çıkış tarihi 15 Kasım, mutlaka belirt)"
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                  />
                 </Field>
 
                 <div style={sectionLabel}>Hedef</div>
