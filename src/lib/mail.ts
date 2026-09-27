@@ -76,7 +76,19 @@ export interface MailRecipient {
 
 export const MAIL_PLATFORMS = ['Twitch', 'YouTube', 'Kick', 'TikTok', 'Instagram', 'Twitter', 'SOOP', 'Chzzk', 'BiliBili', 'Steam Küratör']
 export const MAIL_TIERS = ['Nano (<10K)', 'Micro (10K–100K)', 'Mid (100K–500K)', 'Macro (500K–1M)', 'Mega (1M+)']
-export const MAIL_LANGUAGES = ['Türkçe', 'English', 'Español', 'Português', 'Deutsch', 'Français', 'Русский', '日本語', '한국어', '中文']
+// Turkish display names (same naming as the streamer tables' language column)
+export const MAIL_LANGUAGES = ['İngilizce', 'Korece', 'Japonca', 'Çince', 'Türkçe', 'Almanca', 'Fransızca', 'İspanyolca', 'Portekizce']
+
+// English names for AI prompts, plus the native names older templates were saved with
+export const MAIL_LANGUAGE_ENGLISH: Record<string, string> = {
+  'İngilizce': 'English', 'Korece': 'Korean', 'Japonca': 'Japanese', 'Çince': 'Chinese', 'Türkçe': 'Turkish',
+  'Almanca': 'German', 'Fransızca': 'French', 'İspanyolca': 'Spanish', 'Portekizce': 'Portuguese',
+}
+const LEGACY_LANGUAGE_NAMES: Record<string, string> = {
+  'English': 'İngilizce', '한국어': 'Korece', '日本語': 'Japonca', '中文': 'Çince', 'Türkçe': 'Türkçe',
+  'Deutsch': 'Almanca', 'Français': 'Fransızca', 'Español': 'İspanyolca', 'Português': 'Portekizce',
+}
+export const normalizeMailLanguage = (language: string) => LEGACY_LANGUAGE_NAMES[language] ?? language
 
 export const CAMPAIGN_STATUS_LABELS: Record<string, string> = {
   draft: 'Taslak',

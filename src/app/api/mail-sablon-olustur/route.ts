@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createSupabaseServerClient } from '@/lib/supabase-server'
+import { MAIL_LANGUAGE_ENGLISH } from '@/lib/mail'
 
 // Generates an outreach mail template with Claude (Anthropic) or GPT (OpenAI).
 // POST { provider: 'claude' | 'gpt', platform, language, gameName, gameDescription, keyOffer,
@@ -47,7 +48,7 @@ function buildPrompt(req: GenerateRequest): string {
   return `You are writing a cold outreach email from Unique NPC Games, an indie game publisher, to a content creator.
 
 Creator platform: ${req.platform || 'any'}
-${req.tier ? `Creator size tier: ${req.tier}\n` : ''}Write the email in this language: ${req.language || 'English'}
+${req.tier ? `Creator size tier: ${req.tier}\n` : ''}Write the email in this language: ${(req.language && MAIL_LANGUAGE_ENGLISH[req.language]) || req.language || 'English'}
 
 Game and offer:
 ${game || '(no extra details — invite them to try and cover our upcoming game)'}

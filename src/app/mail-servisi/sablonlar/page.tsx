@@ -1,13 +1,13 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Sparkles, Save, Trash2, FileText, Loader2, Mail } from 'lucide-react'
+import { Sparkles, Save, Trash2, FileText, Loader2, Mail, Upload, ImageIcon } from 'lucide-react'
 import PageHeader from '@/components/PageHeader'
 import Badge from '@/components/Badge'
 import { Toast } from '@/components/Toast'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 import {
-  MAIL_ACCOUNT_PUBLIC_COLUMNS, MAIL_LANGUAGES, MAIL_PLATFORMS,
+  MAIL_ACCOUNT_PUBLIC_COLUMNS, MAIL_LANGUAGES, MAIL_PLATFORMS, normalizeMailLanguage,
   renderTemplate, type MailAccount, type MailTemplate,
 } from '@/lib/mail'
 import { Card, Field, MAIL_GRADIENT, buttonStyle, inputStyle, formatDateTime } from '../_components/ui'
@@ -20,6 +20,17 @@ const PROVIDERS: { value: Provider; label: string }[] = [
 ]
 
 const KEY_OFFERS = ['Steam Key', 'Revenue Share', 'Flat Fee', 'Free Copy']
+
+const ASSET_BUCKET = 'mail-assets'
+const MAX_ASSET_BYTES = 5 * 1024 * 1024
+
+type AssetKind = 'logo' | 'banner'
+
+// Timestamped so a re-upload gets a new URL and mail clients don't show a cached image
+function assetPath(accountId: string, kind: AssetKind, file: File): string {
+  const ext = file.name.split('.').pop()?.toLowerCase() || 'png'
+  return `${accountId}/${kind}-${Date.now()}.${ext}`
+}
 
 const PREVIEW_VARS = {
   name: 'Yayıncı Adı',
@@ -35,14 +46,14 @@ export default function SablonlarPage() {
 
   const [provider, setProvider] = useState<Provider>('claude')
   const [platform, setPlatform] = useState(MAIL_PLATFORMS[0])
-  const [language, setLanguage] = useState(MAIL_LANGUAGES[1])
+  const [language, setLanguage] = useState(MAIL_LANGUAGES[0])
   const [accountId, setAccountId] = useState('')
-  const [gameName, setGameName] = useState('')
   const [gameDescription, setGameDescription] = useState('')
   const [keyOffer, setKeyOffer] = useState(KEY_OFFERS[0])
   const [contactName, setContactName] = useState('')
   const [discordLink, setDiscordLink] = useState('')
   const [generating, setGenerating] = useState(false)
+  const [uploading, setUploading] = useState<AssetKind | null>(null)
 
   const [editingId, setEditingId] = useState<string | null>(null)
   const [templateName, setTemplateName] = useState('')
@@ -83,10 +94,6 @@ export default function SablonlarPage() {
   const previewSubject = useMemo(() => renderTemplate(subject, previewVars, true), [subject, previewVars])
 
   const generate = async () => {
-    if (!gameName.trim()) {
-      setToast({ message: 'Oyun adı gerekli', type: 'error' })
-      return
-    }
     setGenerating(true)
     try {
       const res = await fetch('/api/mail-sablon-olustur', {
@@ -94,7 +101,7 @@ export default function SablonlarPage() {
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({
           provider, platform, language,
-          gameName, gameDescription, keyOffer, contactName, discordLink,
+          gameDescription, keyOffer, contactName, discordLink,
           hasLogo: !!account?.logo_url,
           hasBanner: !!account?.banner_url,
         }),
@@ -104,11 +111,40 @@ export default function SablonlarPage() {
       setEditingId(null)
       setSubject(data.subject)
       setHtml(data.html_content)
-      setTemplateName(`${gameName.trim()} · ${platform} · ${language}`)
+      setTemplateName(`${platform} · ${keyOffer} · ${language}`)
     } catch (e) {
       setToast({ message: (e as Error).message, type: 'error' })
     } finally {
       setGenerating(false)
+    }
+  }
+
+  // Uploads a logo/banner to storage and stores its public URL on the selected account
+  const uploadAsset = async (kind: AssetKind, file: File) => {
+    if (!account) return
+    if (!file.type.startsWith('image/')) {
+      setToast({ message: 'Lütfen bir görsel dosyası seçin', type: 'error' })
+      return
+    }
+    if (file.size > MAX_ASSET_BYTES) {
+      setToast({ message: 'Görsel en fazla 5 MB olabilir', type: 'error' })
+      return
+    }
+    setUploading(kind)
+    try {
+      const path = assetPath(account.id, kind, file)
+      const { error: uploadError } = await supabase.storage.from(ASSET_BUCKET).upload(path, file, { contentType: file.type, upsert: true })
+      if (uploadError) throw new Error(`Yükleme başarısız: ${uploadError.message}`)
+      const url = supabase.storage.from(ASSET_BUCKET).getPublicUrl(path).data.publicUrl
+      const column = kind === 'logo' ? 'logo_url' : 'banner_url'
+      const { error: updateError } = await supabase.from('mail_accounts').update({ [column]: url }).eq('id', account.id)
+      if (updateError) throw new Error(`Hesap güncellenemedi: ${updateError.message}`)
+      setAccounts((list) => list.map((a) => (a.id === account.id ? { ...a, [column]: url } : a)))
+      setToast({ message: kind === 'logo' ? 'Logo yüklendi' : 'Banner yüklendi', type: 'success' })
+    } catch (e) {
+      setToast({ message: (e as Error).message, type: 'error' })
+    } finally {
+      setUploading(null)
     }
   }
 
@@ -145,7 +181,7 @@ export default function SablonlarPage() {
     setSubject(t.subject)
     setHtml(t.html_content)
     if (t.platform) setPlatform(t.platform)
-    if (t.language) setLanguage(t.language)
+    if (t.language) setLanguage(normalizeMailLanguage(t.language))
     if (t.account_id) setAccountId(t.account_id)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
@@ -201,9 +237,6 @@ export default function SablonlarPage() {
                 </div>
 
                 <div style={sectionLabel}>Oyun</div>
-                <Field label="Oyun Adı">
-                  <input style={inputStyle} placeholder="Örn: Hollow Depths" value={gameName} onChange={(e) => setGameName(e.target.value)} />
-                </Field>
                 <Field label="Oyun Açıklaması">
                   <textarea
                     style={{ ...inputStyle, minHeight: '100px', resize: 'vertical', fontFamily: 'inherit' }}
@@ -245,6 +278,49 @@ export default function SablonlarPage() {
                     {accounts.map((a) => <option key={a.id} value={a.id}>{a.name} — {a.email}</option>)}
                   </select>
                 </Field>
+                {account && (
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '10px' }}>
+                    {(['logo', 'banner'] as const).map((kind) => {
+                      const url = kind === 'logo' ? account.logo_url : account.banner_url
+                      const label = kind === 'logo' ? 'Logo' : 'Banner'
+                      const busy = uploading === kind
+                      return (
+                        <div key={kind} style={{ display: 'flex', flexDirection: 'column', gap: '6px', minWidth: 0 }}>
+                          <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-2)' }}>{label}</span>
+                          <div
+                            style={{
+                              height: '72px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'var(--muted)',
+                              display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', color: 'var(--muted-foreground)',
+                            }}
+                          >
+                            {url ? (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img src={url} alt={`${account.name} ${label.toLowerCase()}`} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: kind === 'logo' ? 'contain' : 'cover', width: kind === 'banner' ? '100%' : undefined }} />
+                            ) : (
+                              <ImageIcon size={20} strokeWidth={1.5} aria-label={`${label} yok`} />
+                            )}
+                          </div>
+                          <label
+                            style={{
+                              ...buttonStyle('secondary', !!uploading), justifyContent: 'center', padding: '6px 10px', fontSize: '12px',
+                              cursor: uploading ? 'not-allowed' : 'pointer',
+                            }}
+                          >
+                            {busy ? <Loader2 size={13} className="animate-spin" /> : <Upload size={13} />}
+                            {busy ? 'Yükleniyor…' : `${label} Yükle`}
+                            <input
+                              type="file"
+                              accept="image/png,image/jpeg,image/gif,image/webp"
+                              style={{ display: 'none' }}
+                              disabled={!!uploading}
+                              onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadAsset(kind, f); e.target.value = '' }}
+                            />
+                          </label>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
 
                 <button style={buttonStyle('primary', generating)} disabled={generating} onClick={generate}>
                   {generating ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
