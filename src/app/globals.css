@@ -1169,3 +1169,7 @@ textarea:focus-visible {
 /* Pill radio buttons (mail template settings): the native input is visually hidden */
 .radio-pill { position: relative; transition: background-color 120ms ease, border-color 120ms ease; }
 .radio-pill:has(input:focus-visible) { outline: 2px solid var(--foreground); outline-offset: 2px; }
+
+/* Clickable rows on the mail tracking table */
+.tracking-row:hover { background-color: var(--muted); }
+.tracking-row:focus-visible { outline: 2px solid var(--foreground); outline-offset: -2px; }

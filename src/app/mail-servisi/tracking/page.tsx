@@ -2,11 +2,12 @@
 
 import { Suspense, useCallback, useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { Activity, Reply } from 'lucide-react'
+import { Activity, Reply, RefreshCw } from 'lucide-react'
 import PageHeader from '@/components/PageHeader'
 import { Toast } from '@/components/Toast'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 import { percent, type MailCampaign, type MailRecipient } from '@/lib/mail'
+import RecipientDrawer from '../_components/RecipientDrawer'
 import { Card, RecipientStatusBadge, MAIL_GRADIENT, buttonStyle, inputStyle, formatDateTime, thStyle, tdStyle } from '../_components/ui'
 
 type Filter = 'all' | 'opened' | 'unopened' | 'replied' | 'bounced'
@@ -32,12 +33,19 @@ function Tracking() {
   const [rows, setRows] = useState<MailRecipient[]>([])
   const [loading, setLoading] = useState(true)
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
+  const [selected, setSelected] = useState<MailRecipient | null>(null)
+  const [syncing, setSyncing] = useState(false)
+
+  const fetchCampaigns = useCallback(async () => {
+    const { data } = await supabase.from('mail_campaigns').select('*').order('created_at', { ascending: false })
+    return (data ?? []) as MailCampaign[]
+  }, [supabase])
+
+  const loadCampaigns = () => fetchCampaigns().then(setCampaigns)
 
   useEffect(() => {
-    supabase.from('mail_campaigns').select('*').order('created_at', { ascending: false }).then(({ data }) => {
-      setCampaigns((data ?? []) as MailCampaign[])
-    })
-  }, [supabase])
+    fetchCampaigns().then(setCampaigns)
+  }, [fetchCampaigns])
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -70,7 +78,30 @@ function Tracking() {
     )
   }, [campaigns, campaignId])
 
-  // Replies aren't detected automatically (no inbox access) — mark them by hand
+  const closeDrawer = useCallback(() => setSelected(null), [])
+
+  // Reads the accounts' inboxes over IMAP and marks recipients who wrote back
+  const syncReplies = async () => {
+    setSyncing(true)
+    try {
+      const res = await fetch('/api/mail-imap-sync', { method: 'POST' })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) throw new Error(data.error ?? `Senkronizasyon başarısız (${res.status})`)
+      const failed = (data.accounts as { account: string; error?: string }[]).filter((a) => a.error)
+      await Promise.all([load(), loadCampaigns()])
+      if (failed.length) {
+        setToast({ message: `${data.updated} yeni cevap. Bağlanılamayan hesap: ${failed.map((a) => `${a.account} (${a.error})`).join(', ')}`, type: 'error' })
+      } else {
+        setToast({ message: data.updated ? `${data.updated} yeni cevap bulundu` : 'Yeni cevap yok', type: 'success' })
+      }
+    } catch (e) {
+      setToast({ message: (e as Error).message, type: 'error' })
+    } finally {
+      setSyncing(false)
+    }
+  }
+
+  // Manual override for replies the IMAP sync can't match (e.g. answered from a different address)
   const markReplied = async (r: MailRecipient) => {
     const { error } = await supabase
       .from('mail_recipients')
@@ -100,6 +131,9 @@ function Tracking() {
   return (
     <div>
       {toast && <Toast message={toast.message} type={toast.type} onDismiss={() => setToast(null)} />}
+      {selected && (
+        <RecipientDrawer recipient={selected} campaignName={campaignName[selected.campaign_id] ?? null} onClose={closeDrawer} />
+      )}
       <PageHeader title="Tracking" subtitle="Açılma, yanıt ve bounce takibi" icon={Activity} gradient={MAIL_GRADIENT} />
 
       <div style={{ padding: '24px 32px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -116,7 +150,10 @@ function Tracking() {
             {campaigns.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
           </select>
           <input style={{ ...inputStyle, width: '240px' }} placeholder="Email veya isim ara…" value={search} onChange={(e) => setSearch(e.target.value)} />
-          <div style={{ display: 'flex', gap: '4px' }}>
+          <button style={{ ...buttonStyle('primary', syncing), marginLeft: 'auto' }} disabled={syncing} onClick={syncReplies}>
+            <RefreshCw size={14} className={syncing ? 'animate-spin' : undefined} /> {syncing ? 'Senkronize ediliyor…' : 'Cevapları Senkronize Et'}
+          </button>
+          <div style={{ display: 'flex', gap: '4px', order: -1 }}>
             {FILTERS.map((f) => (
               <button
                 key={f.key}
@@ -151,7 +188,15 @@ function Tracking() {
                 </thead>
                 <tbody>
                   {rows.map((r) => (
-                    <tr key={r.id}>
+                    <tr
+                      key={r.id}
+                      className="tracking-row"
+                      tabIndex={0}
+                      aria-label={`${r.name ?? r.email} detaylarını aç`}
+                      onClick={() => setSelected(r)}
+                      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelected(r) } }}
+                      style={{ cursor: 'pointer', backgroundColor: selected?.id === r.id ? 'var(--muted)' : undefined }}
+                    >
                       <td style={tdStyle}>
                         <div style={{ fontWeight: 600, color: 'var(--foreground)' }}>{r.name ?? '—'}</div>
                         <div style={{ fontSize: '12px', color: 'var(--muted-foreground)' }}>{r.email}{r.platform ? ` · ${r.platform}` : ''}</div>
@@ -170,7 +215,7 @@ function Tracking() {
                       </td>
                       <td style={{ ...tdStyle, textAlign: 'right' }}>
                         {!r.replied_at && r.status !== 'bounced' && r.status !== 'failed' && (
-                          <button style={{ ...buttonStyle('secondary'), padding: '5px 10px', fontSize: '12px' }} onClick={() => markReplied(r)}>
+                          <button style={{ ...buttonStyle('secondary'), padding: '5px 10px', fontSize: '12px' }} onClick={(e) => { e.stopPropagation(); markReplied(r) }}>
                             <Reply size={12} /> Yanıtladı
                           </button>
                         )}

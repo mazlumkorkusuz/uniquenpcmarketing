@@ -101,7 +101,7 @@ export const RECIPIENT_STATUS_LABELS: Record<string, string> = {
   pending: 'Bekliyor',
   sent: 'Gönderildi',
   opened: 'Açıldı',
-  replied: 'Yanıtladı',
+  replied: 'Cevap Verdi',
   bounced: 'Bounce',
   failed: 'Hata',
 }
