@@ -4,7 +4,7 @@ import PageHeader from '@/components/PageHeader'
 import StatCard from '@/components/StatCard'
 import Badge from '@/components/Badge'
 import { createSupabaseServerClient } from '@/lib/supabase-server'
-import { MAIL_ACCOUNT_PUBLIC_COLUMNS, percent, type MailAccount, type MailCampaign } from '@/lib/mail'
+import { MAIL_ACCOUNT_PUBLIC_COLUMNS, isAccountActive, percent, type MailAccount, type MailCampaign } from '@/lib/mail'
 import { Card, CampaignStatusBadge, ProgressBar, MAIL_GRADIENT, buttonStyle, formatDateTime, thStyle, tdStyle } from './_components/ui'
 
 async function getData() {
@@ -75,7 +75,7 @@ export default async function MailServisiPage() {
                       <td style={{ ...tdStyle, color: 'var(--text-2)' }}>{a.smtp_host}:{a.smtp_port}</td>
                       <td style={tdStyle}><ProgressBar value={a.sent_today} total={a.daily_limit} /></td>
                       <td style={tdStyle}>
-                        <Badge variant={a.status === 'active' ? 'green' : 'gray'}>{a.status === 'active' ? 'Aktif' : 'Pasif'}</Badge>
+                        <Badge variant={isAccountActive(a.status) ? 'green' : 'gray'}>{isAccountActive(a.status) ? 'Aktif' : 'Pasif'}</Badge>
                       </td>
                     </tr>
                   ))}

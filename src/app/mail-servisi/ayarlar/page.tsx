@@ -2,6 +2,7 @@ import { Settings, Mail } from 'lucide-react'
 import PageHeader from '@/components/PageHeader'
 import Badge from '@/components/Badge'
 import { createSupabaseServerClient } from '@/lib/supabase-server'
+import { isAccountActive } from '@/lib/mail'
 import { MAIL_GRADIENT } from '../_components/ui'
 
 interface AccountCard {
@@ -56,7 +57,7 @@ export default async function AyarlarPage() {
                   <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--foreground)' }}>{a.name}</div>
                   <div style={{ fontSize: '13px', color: 'var(--text-2)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.email}</div>
                 </div>
-                <Badge variant={a.status === 'active' ? 'green' : 'gray'}>{a.status === 'active' ? 'Aktif' : 'Pasif'}</Badge>
+                <Badge variant={isAccountActive(a.status) ? 'green' : 'gray'}>{isAccountActive(a.status) ? 'Aktif' : 'Pasif'}</Badge>
               </div>
             ))}
           </div>

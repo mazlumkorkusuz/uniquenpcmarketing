@@ -7,7 +7,7 @@ import { Send, Upload, Square, Play, Loader2, X, Search, Users } from 'lucide-re
 import PageHeader from '@/components/PageHeader'
 import { Toast } from '@/components/Toast'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
-import { MAIL_ACCOUNT_PUBLIC_COLUMNS, renderTemplate, type MailAccount, type MailCampaign, type MailRecipient, type MailTemplate } from '@/lib/mail'
+import { ACTIVE_ACCOUNT_STATUSES, MAIL_ACCOUNT_PUBLIC_COLUMNS, renderTemplate, type MailAccount, type MailCampaign, type MailRecipient, type MailTemplate } from '@/lib/mail'
 import { Card, Field, ProgressBar, MAIL_GRADIENT, buttonStyle, inputStyle, thStyle, tdStyle } from '../../_components/ui'
 
 interface Recipient {
@@ -43,7 +43,7 @@ const PLATFORMS: PlatformDef[] = [
   { key: 'twitch',   label: 'Twitch',   table: 'twitch_streamers',   icon: '/icons/twitch.png',   nameColumns: ['display_name', 'username'], followersColumn: 'followers' },
   { key: 'kick',     label: 'Kick',     table: 'kick_streamers',     icon: '/icons/kick.png',     nameColumns: ['channel_name', 'username'], followersColumn: 'followers' },
   { key: 'soop',     label: 'SOOP',     table: 'soop_streamers',     icon: '/icons/soop.jpeg',    nameColumns: ['channel_name', 'username'], followersColumn: 'followers' },
-  { key: 'youtube',  label: 'YouTube',  table: 'youtube_channels',   icon: '/icons/youtube.png',  nameColumns: ['channel_name'],             followersColumn: 'subscribers' },
+  { key: 'youtube',  label: 'YouTube',  table: 'youtube_streamers',  icon: '/icons/youtube.png',  nameColumns: ['channel_name', 'username'], followersColumn: 'followers' },
   { key: 'chzzk',    label: 'Chzzk',    table: 'chzzk_streamers',    icon: '/icons/chzzk.png',    nameColumns: ['channel_name', 'username'], followersColumn: 'followers' },
   { key: 'bilibili', label: 'BiliBili', table: 'bilibili_streamers', icon: '/icons/bilibili.png', nameColumns: ['channel_name', 'username'], followersColumn: 'followers' },
   { key: 'douyin',   label: 'Douyin',   table: 'douyin_streamers',   icon: '/icons/douyin.png',   nameColumns: ['channel_name', 'username'], followersColumn: 'followers' },
@@ -447,7 +447,7 @@ function YeniKampanya() {
 
   useEffect(() => {
     Promise.all([
-      supabase.from('mail_accounts').select(MAIL_ACCOUNT_PUBLIC_COLUMNS).eq('status', 'active').order('created_at'),
+      supabase.from('mail_accounts').select(MAIL_ACCOUNT_PUBLIC_COLUMNS).in('status', ACTIVE_ACCOUNT_STATUSES).order('created_at'),
       supabase.from('mail_templates').select('*').order('created_at', { ascending: false }),
     ]).then(([a, t]) => {
       setAccounts((a.data ?? []) as unknown as MailAccount[])

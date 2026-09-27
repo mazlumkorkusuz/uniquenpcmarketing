@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import nodemailer from 'nodemailer'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { createSupabaseServerClient } from '@/lib/supabase-server'
-import { renderTemplate, type MailAccount, type MailCampaign, type MailRecipient, type MailTemplate } from '@/lib/mail'
+import { isAccountActive, renderTemplate, type MailAccount, type MailCampaign, type MailRecipient, type MailTemplate } from '@/lib/mail'
 
 // Sends mail through the account's SMTP server (Hostinger: smtp.hostinger.com, 465/SSL).
 //
@@ -157,7 +157,7 @@ export async function POST(request: NextRequest) {
   ])
   if (!template) return NextResponse.json({ error: 'Şablon bulunamadı' }, { status: 404 })
   if (!account) return NextResponse.json({ error: 'Hesap bulunamadı' }, { status: 404 })
-  if (account.status !== 'active') {
+  if (!isAccountActive(account.status)) {
     return NextResponse.json({ error: `${account.email} hesabı aktif değil`, accountUnavailable: true, account_id: account.id }, { status: 409 })
   }
 

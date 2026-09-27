@@ -17,6 +17,10 @@ export interface MailAccount {
   created_at: string
 }
 
+// Accounts created in the app use 'active'; rows added by hand use 'Aktif'
+export const ACTIVE_ACCOUNT_STATUSES = ['active', 'Aktif']
+export const isAccountActive = (status: string) => ACTIVE_ACCOUNT_STATUSES.includes(status)
+
 // Every column except smtp_pass — use this for anything rendered in the browser
 export const MAIL_ACCOUNT_PUBLIC_COLUMNS =
   'id, name, email, smtp_host, smtp_port, smtp_user, daily_limit, sent_today, logo_url, banner_url, domain, status, created_at'
