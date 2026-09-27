@@ -22,6 +22,16 @@ const FILTERS: { key: Filter; label: string }[] = [
 
 const ROW_LIMIT = 1000
 
+// "az önce" / "12 dakika önce" / "3 saat önce" / "2 gün önce"
+function timeAgo(iso: string, now: number): string {
+  const minutes = Math.floor((now - new Date(iso).getTime()) / 60_000)
+  if (minutes < 1) return 'az önce'
+  if (minutes < 60) return `${minutes} dakika önce`
+  const hours = Math.floor(minutes / 60)
+  if (hours < 24) return `${hours} saat önce`
+  return `${Math.floor(hours / 24)} gün önce`
+}
+
 function Tracking() {
   const supabase = useMemo(() => createSupabaseBrowserClient(), [])
   const initialCampaign = useSearchParams().get('campaign') ?? ''
@@ -35,6 +45,8 @@ function Tracking() {
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
   const [selected, setSelected] = useState<MailRecipient | null>(null)
   const [syncing, setSyncing] = useState(false)
+  const [lastSync, setLastSync] = useState<string | null>(null)
+  const [now, setNow] = useState(() => Date.now())
 
   const fetchCampaigns = useCallback(async () => {
     const { data } = await supabase.from('mail_campaigns').select('*').order('created_at', { ascending: false })
@@ -46,6 +58,21 @@ function Tracking() {
   useEffect(() => {
     fetchCampaigns().then(setCampaigns)
   }, [fetchCampaigns])
+
+  // Latest inbox sync (button or the 15-minute cron); re-render the "X dakika önce" text every 30s
+  const fetchLastSync = useCallback(async () => {
+    const { data } = await supabase.from('mail_sync_runs').select('ran_at').order('ran_at', { ascending: false }).limit(1).maybeSingle()
+    return data?.ran_at ?? null
+  }, [supabase])
+
+  useEffect(() => {
+    fetchLastSync().then(setLastSync)
+    const t = setInterval(() => {
+      setNow(Date.now())
+      fetchLastSync().then(setLastSync)
+    }, 30_000)
+    return () => clearInterval(t)
+  }, [fetchLastSync])
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -88,11 +115,14 @@ function Tracking() {
       const data = await res.json().catch(() => ({}))
       if (!res.ok) throw new Error(data.error ?? `Senkronizasyon başarısız (${res.status})`)
       const failed = (data.accounts as { account: string; error?: string }[]).filter((a) => a.error)
+      setLastSync(data.ran_at)
+      setNow(Date.now())
       await Promise.all([load(), loadCampaigns()])
+      const found = data.replies || data.bounces ? `${data.replies} yeni cevap, ${data.bounces} bounce` : 'Yeni cevap veya bounce yok'
       if (failed.length) {
-        setToast({ message: `${data.updated} yeni cevap. Bağlanılamayan hesap: ${failed.map((a) => `${a.account} (${a.error})`).join(', ')}`, type: 'error' })
+        setToast({ message: `${found}. Bağlanılamayan hesap: ${failed.map((a) => `${a.account} (${a.error})`).join(', ')}`, type: 'error' })
       } else {
-        setToast({ message: data.updated ? `${data.updated} yeni cevap bulundu` : 'Yeni cevap yok', type: 'success' })
+        setToast({ message: found, type: 'success' })
       }
     } catch (e) {
       setToast({ message: (e as Error).message, type: 'error' })
@@ -150,9 +180,14 @@ function Tracking() {
             {campaigns.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
           </select>
           <input style={{ ...inputStyle, width: '240px' }} placeholder="Email veya isim ara…" value={search} onChange={(e) => setSearch(e.target.value)} />
-          <button style={{ ...buttonStyle('primary', syncing), marginLeft: 'auto' }} disabled={syncing} onClick={syncReplies}>
-            <RefreshCw size={14} className={syncing ? 'animate-spin' : undefined} /> {syncing ? 'Senkronize ediliyor…' : 'Cevapları Senkronize Et'}
-          </button>
+          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <span style={{ fontSize: '12px', color: 'var(--muted-foreground)' }} title={lastSync ? new Date(lastSync).toLocaleString('tr-TR') : undefined}>
+              Son senkronizasyon: {lastSync ? timeAgo(lastSync, now) : 'henüz yok'}
+            </span>
+            <button style={buttonStyle('primary', syncing)} disabled={syncing} onClick={syncReplies}>
+              <RefreshCw size={14} className={syncing ? 'animate-spin' : undefined} /> {syncing ? 'Senkronize ediliyor…' : 'Şimdi Senkronize Et'}
+            </button>
+          </div>
           <div style={{ display: 'flex', gap: '4px', order: -1 }}>
             {FILTERS.map((f) => (
               <button

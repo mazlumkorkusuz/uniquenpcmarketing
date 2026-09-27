@@ -1,0 +1,11 @@
+{
+  "$schema": "https://railway.com/railway.schema.json",
+  "build": {
+    "buildCommand": "echo 'imap sync cron: no build needed'"
+  },
+  "deploy": {
+    "startCommand": "node scripts/imap-sync-cron.mjs",
+    "cronSchedule": "*/15 * * * *",
+    "restartPolicyType": "NEVER"
+  }
+}
