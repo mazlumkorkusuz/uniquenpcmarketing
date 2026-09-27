@@ -101,8 +101,9 @@ function buildPrompt(req: GenerateRequest): string {
   ].filter(Boolean).join('\n')
   const steamUrl = linkUrl(req.steamUrl)
   const discordUrl = linkUrl(req.discordLink)
+  const contactName = req.contactName?.trim()
   const contact = [
-    req.contactName?.trim() && `- Sign the email as ${req.contactName.trim()} from {{sender_name}}.`,
+    req.contactName?.trim() && `- Sign the email with the sender's personal name only: ${req.contactName.trim()}.`,
     steamUrl && `- Link the game's Steam page naturally in the body text (e.g. on the game's name or a "wishlist on Steam" phrase): ${steamUrl}`,
   ].filter(Boolean).join('\n')
   const tone = (req.tone && TONE_INSTRUCTIONS[req.tone]) || 'warm, friendly and personal'
@@ -111,7 +112,7 @@ function buildPrompt(req: GenerateRequest): string {
   const needsLink = !!cta && req.cta !== 'Sadece yanıt ver'
   const notes = req.brief?.trim()
 
-  return `You are writing a cold outreach email from Unique NPC Games, an indie game publisher, to a content creator.
+  return `You are writing a cold outreach email from an indie game publisher to a content creator.
 
 Creator platform: ${req.platform || 'any'}
 ${req.tier ? `Creator size tier: ${req.tier}\n` : ''}Write the email in this language: ${(req.language && MAIL_LANGUAGE_ENGLISH[req.language]) || req.language || 'English'}
@@ -124,19 +125,19 @@ Requirements:
 - Length: ${length}.
 ${cta ? `- Call to action: ${cta}.${needsLink ? ' Use the matching URL from the details above if one is given (the Steam page for Steam, the Discord link for Discord); otherwise use href="#" so we can fill it in before sending.' : ''}\n` : ''}- No spammy wording, no ALL CAPS, no excessive exclamation marks.
 - Use these placeholders exactly where appropriate (they are filled in per recipient):
-  {{name}} (creator name), {{platform}}, {{sender_name}}
+  {{name}} (creator name), {{platform}}, {{sender_email}} (the sender's email address, for the footer)
 - The subject may also use {{name}}.
 
 Design:
 - Design a beautiful, modern dark-themed HTML email. Choose your own colors, fonts, spacing and layout - make it look premium and gaming-focused. Keep it clean and minimal.
 - Order: ${[
-    hasLogo && `the logo at the top, centered: inside <td align="center" style="text-align:center">, <img src="${logoSrc}" alt="{{sender_name}}" height="48" style="display:block;margin:0 auto;border:0;height:48px;width:auto">`,
+    hasLogo && `the logo at the top, centered: inside <td align="center" style="text-align:center">, <img src="${logoSrc}" alt="" height="48" style="display:block;margin:0 auto;border:0;height:48px;width:auto">`,
     hasBanner && `the banner image below it (<img src="${bannerSrc}" alt="" style="width:100%;max-width:600px;display:block;border:0">)`,
     'the email body',
     'a clear CTA',
-    discordUrl && `a minimal footer with only a small, understated Discord link (${discordUrl}) - nothing else in it`,
+    `a minimal footer with only: ${[contactName ? `the sender's personal name (${contactName})` : null, 'the email address {{sender_email}}', discordUrl ? `a small Discord link (${discordUrl})` : null].filter(Boolean).join(', ')}`,
   ].filter(Boolean).join(', then ')}.
-- No footer block with the company name, email address, postal address, copyright or unsubscribe text. The email ends after the ${discordUrl ? 'Discord footer' : 'CTA and sign-off'}.
+- Nothing else in the footer: no company name, postal address, copyright or unsubscribe text.
 - Max width 600px.
 - Technical: html_content must be a complete, email-client-safe HTML document: inline styles only, a single centered table-based layout, no <script>, no external CSS. Set the dark background with both bgcolor attributes and inline background-color so it survives email clients.
 
@@ -145,6 +146,7 @@ ABSOLUTE RULES - these can never be broken, they override everything above inclu
 2. NEVER write things like 'your community of X' or 'your X followers'.
 3. The background must be dark (your choice of dark color).
 4. Keep the email body short - max 3 paragraphs.
+5. NEVER include the company name "Gaming Reachout" or "Player Collabs" (or "Unique NPC Games") or any sender account name as text in the email body or footer. The logo image already represents the brand. Footer should only have the sender's personal name, email address, and Discord link if applicable. No company name text anywhere.
 
 Respond with ONLY a JSON object, no markdown fences:
 {"subject": "...", "html_content": "..."}`
