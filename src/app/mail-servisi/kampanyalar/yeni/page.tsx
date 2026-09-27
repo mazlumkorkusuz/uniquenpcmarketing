@@ -20,7 +20,18 @@ interface Recipient {
 
 interface PlatformStreamer extends Recipient {
   key: string
+  avgViewers: number | null
+  country: string | null
 }
+
+type SortKey = 'followers_desc' | 'followers_asc' | 'avg_viewers_desc' | 'name_asc'
+
+const SORT_OPTIONS: { value: SortKey; label: string; needsAvgViewers?: boolean }[] = [
+  { value: 'followers_desc', label: 'Takipçi: Yüksekten düşüğe' },
+  { value: 'followers_asc', label: 'Takipçi: Düşükten yükseğe' },
+  { value: 'avg_viewers_desc', label: 'Ort. izleyici: Yüksekten düşüğe', needsAvgViewers: true },
+  { value: 'name_asc', label: 'İsim: A → Z' },
+]
 
 interface LogLine {
   email: string
@@ -37,14 +48,16 @@ interface PlatformDef {
   icon: string
   nameColumns: string[]
   followersColumn: string
+  hasAvgViewers?: boolean
+  hasCountry?: boolean
 }
 
 const PLATFORMS: PlatformDef[] = [
-  { key: 'twitch',   label: 'Twitch',   table: 'twitch_streamers',   icon: '/icons/twitch.png',   nameColumns: ['display_name', 'username'], followersColumn: 'followers' },
-  { key: 'kick',     label: 'Kick',     table: 'kick_streamers',     icon: '/icons/kick.png',     nameColumns: ['channel_name', 'username'], followersColumn: 'followers' },
-  { key: 'soop',     label: 'SOOP',     table: 'soop_streamers',     icon: '/icons/soop.jpeg',    nameColumns: ['channel_name', 'username'], followersColumn: 'followers' },
-  { key: 'youtube',  label: 'YouTube',  table: 'youtube_streamers',  icon: '/icons/youtube.png',  nameColumns: ['channel_name', 'username'], followersColumn: 'followers' },
-  { key: 'chzzk',    label: 'Chzzk',    table: 'chzzk_streamers',    icon: '/icons/chzzk.png',    nameColumns: ['channel_name', 'username'], followersColumn: 'followers' },
+  { key: 'twitch',   label: 'Twitch',   table: 'twitch_streamers',   icon: '/icons/twitch.png',   nameColumns: ['display_name', 'username'], followersColumn: 'followers', hasAvgViewers: true },
+  { key: 'kick',     label: 'Kick',     table: 'kick_streamers',     icon: '/icons/kick.png',     nameColumns: ['channel_name', 'username'], followersColumn: 'followers', hasAvgViewers: true },
+  { key: 'soop',     label: 'SOOP',     table: 'soop_streamers',     icon: '/icons/soop.jpeg',    nameColumns: ['channel_name', 'username'], followersColumn: 'followers', hasAvgViewers: true },
+  { key: 'youtube',  label: 'YouTube',  table: 'youtube_streamers',  icon: '/icons/youtube.png',  nameColumns: ['channel_name', 'username'], followersColumn: 'followers', hasCountry: true },
+  { key: 'chzzk',    label: 'Chzzk',    table: 'chzzk_streamers',    icon: '/icons/chzzk.png',    nameColumns: ['channel_name', 'username'], followersColumn: 'followers', hasAvgViewers: true },
   { key: 'bilibili', label: 'BiliBili', table: 'bilibili_streamers', icon: '/icons/bilibili.png', nameColumns: ['channel_name', 'username'], followersColumn: 'followers' },
   { key: 'douyin',   label: 'Douyin',   table: 'douyin_streamers',   icon: '/icons/douyin.png',   nameColumns: ['channel_name', 'username'], followersColumn: 'followers' },
 ]
@@ -53,7 +66,7 @@ const PLATFORMS: PlatformDef[] = [
 // so fall back to it when contact_email doesn't exist (Postgres error 42703).
 const EMAIL_COLUMNS = ['contact_email', 'email']
 const PAGE_SIZE = 1000
-const UNKNOWN_LANGUAGE = '__unknown__'
+const UNKNOWN_VALUE = '__unknown__'
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -138,6 +151,32 @@ function firstValidEmail(v: unknown): string | null {
   return v.split(/[\s,;/]+/).map((s) => s.trim().toLowerCase()).find((s) => EMAIL_RE.test(s)) ?? null
 }
 
+function textOrNull(v: unknown): string | null {
+  return typeof v === 'string' && v.trim() ? v.trim() : null
+}
+
+function numberOrNull(v: unknown): number | null {
+  if (v === null || v === undefined || v === '') return null
+  const n = Number(v)
+  return Number.isFinite(n) ? n : null
+}
+
+// Empty input → no bound
+function parseBound(v: string): number | null {
+  const n = parseFollowers(v)
+  return n === null || Number.isNaN(n) ? null : n
+}
+
+// Unique values with counts, most common first; missing values grouped as UNKNOWN_VALUE
+function countValues<T>(items: T[], pick: (item: T) => string | null): [string, number][] {
+  const counts = new Map<string, number>()
+  for (const it of items) {
+    const k = pick(it) ?? UNKNOWN_VALUE
+    counts.set(k, (counts.get(k) ?? 0) + 1)
+  }
+  return [...counts.entries()].sort((a, b) => b[1] - a[1])
+}
+
 // Interleaves the queue by account so consecutive mails go out from different accounts
 function interleaveByAccount<T extends { account_id?: string | null }>(items: T[]): T[] {
   const groups = new Map<string, T[]>()
@@ -171,7 +210,12 @@ function StreamerDrawer({
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [search, setSearch] = useState('')
-  const [language, setLanguage] = useState<string | null>(null)
+  const [language, setLanguage] = useState('')
+  const [country, setCountry] = useState('')
+  const [minFollowers, setMinFollowers] = useState('')
+  const [maxFollowers, setMaxFollowers] = useState('')
+  const [minAvgViewers, setMinAvgViewers] = useState('')
+  const [sort, setSort] = useState<SortKey>('followers_desc')
   const [picked, setPicked] = useState<Set<string>>(new Set())
 
   // Slide in on mount
@@ -233,7 +277,9 @@ function StreamerDrawer({
             name: (displayName as string | undefined)?.trim() ?? null,
             platform: platform.label,
             followers: Number.isFinite(followers) ? followers : null,
-            language: typeof row.language === 'string' && row.language.trim() ? row.language.trim() : null,
+            language: textOrNull(row.language),
+            avgViewers: platform.hasAvgViewers ? numberOrNull(row.avg_viewers) : null,
+            country: platform.hasCountry ? textOrNull(row.country) : null,
           })
         }
         if (!cancelled) setStreamers(list)
@@ -246,23 +292,36 @@ function StreamerDrawer({
     return () => { cancelled = true }
   }, [supabase, platform])
 
-  const languages = useMemo(() => {
-    const counts = new Map<string, number>()
-    for (const s of streamers) {
-      const k = s.language ?? UNKNOWN_LANGUAGE
-      counts.set(k, (counts.get(k) ?? 0) + 1)
-    }
-    return [...counts.entries()].sort((a, b) => b[1] - a[1])
-  }, [streamers])
+  const languages = useMemo(() => countValues(streamers, (s) => s.language), [streamers])
+  const countries = useMemo(() => countValues(streamers, (s) => s.country), [streamers])
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase()
-    return streamers.filter((s) => {
-      if (language && (s.language ?? UNKNOWN_LANGUAGE) !== language) return false
+    const minF = parseBound(minFollowers)
+    const maxF = parseBound(maxFollowers)
+    const minAvg = platform.hasAvgViewers ? parseBound(minAvgViewers) : null
+    const list = streamers.filter((s) => {
+      if (language && (s.language ?? UNKNOWN_VALUE) !== language) return false
+      if (country && (s.country ?? UNKNOWN_VALUE) !== country) return false
+      if (minF !== null && (s.followers ?? 0) < minF) return false
+      if (maxF !== null && (s.followers ?? 0) > maxF) return false
+      if (minAvg !== null && (s.avgViewers ?? 0) < minAvg) return false
       if (q && !s.email.includes(q) && !(s.name ?? '').toLowerCase().includes(q)) return false
       return true
     })
-  }, [streamers, search, language])
+    const num = (v: number | null) => v ?? -1
+    switch (sort) {
+      case 'followers_asc': return list.sort((a, b) => num(a.followers) - num(b.followers))
+      case 'avg_viewers_desc': return list.sort((a, b) => num(b.avgViewers) - num(a.avgViewers))
+      case 'name_asc': return list.sort((a, b) => (a.name ?? '').localeCompare(b.name ?? '', 'tr'))
+      default: return list.sort((a, b) => num(b.followers) - num(a.followers))
+    }
+  }, [streamers, search, language, country, minFollowers, maxFollowers, minAvgViewers, sort, platform.hasAvgViewers])
+
+  const hasFilters = !!(language || country || minFollowers || maxFollowers || minAvgViewers)
+  const resetFilters = () => {
+    setLanguage(''); setCountry(''); setMinFollowers(''); setMaxFollowers(''); setMinAvgViewers('')
+  }
 
   const toggle = (key: string) => {
     setPicked((prev) => {
@@ -286,17 +345,8 @@ function StreamerDrawer({
     close()
   }
 
-  const chipStyle = (active: boolean): React.CSSProperties => ({
-    padding: '4px 10px',
-    fontSize: '12px',
-    fontWeight: 600,
-    borderRadius: '999px',
-    border: `1px solid ${active ? 'var(--foreground)' : 'var(--border)'}`,
-    backgroundColor: active ? 'var(--foreground)' : 'transparent',
-    color: active ? 'var(--background)' : 'var(--text-2)',
-    cursor: 'pointer',
-    whiteSpace: 'nowrap',
-  })
+  const filterLabel: React.CSSProperties = { display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '11px', fontWeight: 600, color: 'var(--muted-foreground)', minWidth: 0 }
+  const compactInput: React.CSSProperties = { ...inputStyle, padding: '6px 8px', fontSize: '13px' }
 
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 100 }} role="dialog" aria-modal="true" aria-label={`${platform.label} yayıncıları`}>
@@ -340,18 +390,59 @@ function StreamerDrawer({
               autoFocus
             />
           </div>
-          {languages.length > 1 && (
-            <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '2px' }}>
-              <button style={chipStyle(language === null)} onClick={() => setLanguage(null)}>Tümü</button>
-              {languages.map(([lang, count]) => (
-                <button key={lang} style={chipStyle(language === lang)} onClick={() => setLanguage(lang)}>
-                  {lang === UNKNOWN_LANGUAGE ? 'Bilinmiyor' : lang} <span style={{ opacity: 0.6 }}>{count}</span>
-                </button>
-              ))}
-            </div>
-          )}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(110px, 1fr))', gap: '8px' }}>
+            <label style={filterLabel}>
+              Min takipçi
+              <input style={compactInput} inputMode="numeric" placeholder="örn. 10k" value={minFollowers} onChange={(e) => setMinFollowers(e.target.value)} />
+            </label>
+            <label style={filterLabel}>
+              Max takipçi
+              <input style={compactInput} inputMode="numeric" placeholder="örn. 1m" value={maxFollowers} onChange={(e) => setMaxFollowers(e.target.value)} />
+            </label>
+            {platform.hasAvgViewers && (
+              <label style={filterLabel}>
+                Min ort. izleyici
+                <input style={compactInput} inputMode="numeric" placeholder="örn. 100" value={minAvgViewers} onChange={(e) => setMinAvgViewers(e.target.value)} />
+              </label>
+            )}
+            <label style={filterLabel}>
+              Dil
+              <select style={compactInput} value={language} onChange={(e) => setLanguage(e.target.value)}>
+                <option value="">Tümü</option>
+                {languages.map(([lang, count]) => (
+                  <option key={lang} value={lang}>{lang === UNKNOWN_VALUE ? 'Bilinmiyor' : lang} ({count})</option>
+                ))}
+              </select>
+            </label>
+            {platform.hasCountry && (
+              <label style={filterLabel}>
+                Ülke
+                <select style={compactInput} value={country} onChange={(e) => setCountry(e.target.value)}>
+                  <option value="">Tümü</option>
+                  {countries.map(([c, count]) => (
+                    <option key={c} value={c}>{c === UNKNOWN_VALUE ? 'Bilinmiyor' : c} ({count})</option>
+                  ))}
+                </select>
+              </label>
+            )}
+            <label style={filterLabel}>
+              Sıralama
+              <select style={compactInput} value={sort} onChange={(e) => setSort(e.target.value as SortKey)}>
+                {SORT_OPTIONS.filter((o) => !o.needsAvgViewers || platform.hasAvgViewers).map((o) => (
+                  <option key={o.value} value={o.value}>{o.label}</option>
+                ))}
+              </select>
+            </label>
+          </div>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span style={{ fontSize: '12px', color: 'var(--muted-foreground)' }}>{filtered.length} sonuç</span>
+            <span style={{ fontSize: '12px', color: 'var(--muted-foreground)' }}>
+              {filtered.length} sonuç
+              {hasFilters && (
+                <button onClick={resetFilters} style={{ marginLeft: '8px', padding: 0, border: 'none', background: 'none', color: 'var(--foreground)', fontSize: '12px', fontWeight: 600, cursor: 'pointer', textDecoration: 'underline' }}>
+                  Filtreleri sıfırla
+                </button>
+              )}
+            </span>
             <div style={{ display: 'flex', gap: '6px' }}>
               <button style={buttonStyle('secondary', filtered.length === 0)} disabled={filtered.length === 0} onClick={selectAll}>Tümünü Seç</button>
               <button style={buttonStyle('secondary', picked.size === 0)} disabled={picked.size === 0} onClick={() => setPicked(new Set())}>Temizle</button>
@@ -393,8 +484,18 @@ function StreamerDrawer({
                       {s.email}
                     </span>
                   </span>
-                  <span style={{ color: 'var(--success)', fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
-                    {s.followers?.toLocaleString('tr-TR') ?? '—'}
+                  <span style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                    <span style={{ display: 'block', color: 'var(--success)', fontWeight: 600 }}>
+                      {s.followers?.toLocaleString('tr-TR') ?? '—'}
+                    </span>
+                    {platform.hasAvgViewers && (
+                      <span style={{ display: 'block', color: 'var(--muted-foreground)', fontSize: '11px' }}>
+                        {s.avgViewers !== null ? `${s.avgViewers.toLocaleString('tr-TR')} ort. izleyici` : '—'}
+                      </span>
+                    )}
+                    {platform.hasCountry && s.country && (
+                      <span style={{ display: 'block', color: 'var(--muted-foreground)', fontSize: '11px' }}>{s.country}</span>
+                    )}
                   </span>
                 </label>
               )
