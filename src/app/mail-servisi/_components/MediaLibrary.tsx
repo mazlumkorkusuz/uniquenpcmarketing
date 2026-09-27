@@ -152,10 +152,6 @@ export default function MediaLibrary({
                         </span>
                       )}
                     </span>
-                    <span style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 12px', fontSize: '13px' }}>
-                      <span style={{ color: '#f0f0f0', fontWeight: 600 }}>{file}</span>
-                      {isSelected && <span style={{ color: '#8a8d98' }}>Seçili</span>}
-                    </span>
                   </button>
                 </li>
               )
