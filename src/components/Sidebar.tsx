@@ -105,7 +105,6 @@ const navItems: NavItem[] = [
       { href: '/mail-servisi/kampanyalar/yeni', label: 'Yeni Kampanya' },
       { href: '/mail-servisi/sablonlar',        label: 'Şablon Oluştur' },
       { href: '/mail-servisi/tracking',         label: 'Tracking' },
-      { href: '/mail-servisi/ayarlar',          label: 'Ayarlar' },
     ],
   },
 ]
