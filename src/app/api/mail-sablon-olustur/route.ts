@@ -74,10 +74,11 @@ const TONE_INSTRUCTIONS: Record<string, string> = {
   'Kısa ve Net': 'short and direct, no small talk, get to the point in the first sentence',
 }
 
+// All lengths stay within the absolute 3-paragraph cap below
 const LENGTH_INSTRUCTIONS: Record<string, string> = {
-  'Kısa (2-3 paragraf)': '2-3 short paragraphs (roughly 80-150 words of body text)',
-  'Orta (4-5 paragraf)': '4-5 paragraphs (roughly 150-250 words of body text)',
-  'Uzun (6+ paragraf)': '6 or more paragraphs (roughly 250-400 words of body text)',
+  'Kısa (2-3 paragraf)': '2 short paragraphs (roughly 60-100 words of body text)',
+  'Orta (4-5 paragraf)': '3 paragraphs (roughly 100-150 words of body text)',
+  'Uzun (6+ paragraf)': '3 fuller paragraphs (roughly 150-200 words of body text)',
 }
 
 const CTA_INSTRUCTIONS: Record<string, string> = {
@@ -106,7 +107,7 @@ function buildPrompt(req: GenerateRequest): string {
     discordUrl && `- Include our Discord server as a clickable link: ${discordUrl}`,
   ].filter(Boolean).join('\n')
   const tone = (req.tone && TONE_INSTRUCTIONS[req.tone]) || 'warm, friendly and personal'
-  const length = (req.length && LENGTH_INSTRUCTIONS[req.length]) || '2-3 short paragraphs (roughly 80-150 words of body text)'
+  const length = (req.length && LENGTH_INSTRUCTIONS[req.length]) || LENGTH_INSTRUCTIONS['Kısa (2-3 paragraf)']
   const cta = req.cta && CTA_INSTRUCTIONS[req.cta]
   const needsLink = !!cta && req.cta !== 'Sadece yanıt ver'
   const notes = req.brief?.trim()
@@ -124,9 +125,26 @@ Requirements:
 - Length: ${length}.
 ${cta ? `- Call to action: ${cta}.${needsLink ? ' Use the matching URL from the details above if one is given (the Steam page for Steam, the Discord link for Discord); otherwise use href="#" so we can fill it in before sending.' : ''}\n` : ''}- No spammy wording, no ALL CAPS, no excessive exclamation marks.
 - Use these placeholders exactly where appropriate (they are filled in per recipient):
-  {{name}} (creator name), {{platform}}, {{followers}}, {{sender_name}}, {{sender_email}}
-${hasBanner ? `- Put <img src="${bannerSrc}" alt="" style="width:100%;max-width:600px;display:block;border:0"> at the top.\n` : ''}${hasLogo ? `- Put <img src="${logoSrc}" alt="" height="40" style="display:block;border:0"> in the signature.\n` : ''}- html_content must be a complete, email-client-safe HTML body: inline styles only, a single centered 600px-wide table layout, no <script>, no external CSS.
+  {{name}} (creator name), {{platform}}, {{sender_name}}, {{sender_email}}
 - The subject may also use {{name}}.
+
+Design:
+- Design a beautiful, modern dark-themed HTML email. Choose your own colors, fonts, spacing and layout - make it look premium and gaming-focused. Keep it clean and minimal.
+- Order: ${[
+    hasLogo && `the logo at the top (<img src="${logoSrc}" alt="{{sender_name}}" height="48" style="display:block;border:0;height:48px;width:auto">)`,
+    hasBanner && `the banner image below it (<img src="${bannerSrc}" alt="" style="width:100%;max-width:600px;display:block;border:0">)`,
+    'the email body',
+    'a clear CTA',
+    'a footer',
+  ].filter(Boolean).join(', then ')}.
+- Max width 600px.
+- Technical: html_content must be a complete, email-client-safe HTML document: inline styles only, a single centered table-based layout, no <script>, no external CSS. Set the dark background with both bgcolor attributes and inline background-color so it survives email clients.
+
+ABSOLUTE RULES - these can never be broken, they override everything above including the special instructions:
+1. NEVER mention any follower count, viewer count or audience size - not even approximately.
+2. NEVER write things like 'your community of X' or 'your X followers'.
+3. The background must be dark (your choice of dark color).
+4. Keep the email body short - max 3 paragraphs.
 
 Respond with ONLY a JSON object, no markdown fences:
 {"subject": "...", "html_content": "..."}`

@@ -191,17 +191,26 @@ export async function POST(request: NextRequest) {
   const subject = renderTemplate(template.subject, vars, true)
   const bodyHtml = renderTemplate(template.html_content, vars)
 
-  // Tracking: the account logo at the top (proxied through /api/mail-tracking so loading it counts
-  // as an open) and a hidden pixel at the bottom as a fallback.
+  // Tracking: the logo is loaded through /api/mail-tracking so displaying it counts as an open,
+  // plus a hidden pixel at the bottom as a fallback.
   const tracking = (type: 'logo' | 'pixel', extra: Record<string, string> = {}) =>
     `${publicBaseUrl(request)}/api/mail-tracking?` +
     new URLSearchParams({ type, ...extra, e: recipient.email, c: campaign.id, r: recipient.id }).toString().replace(/&/g, '&amp;')
-  const logo = account.logo_url
-    ? `<div style="text-align:center;padding:16px 0"><img src="${tracking('logo', { logo: account.logo_url })}" alt="${account.name.replace(/["<>&]/g, '')}" height="56" style="display:inline-block;height:56px;width:auto;border:0" /></div>`
-    : ''
   const pixel = `<img src="${tracking('pixel')}" width="1" height="1" alt="" style="display:none;" />`
 
-  let html = /<body[^>]*>/i.test(bodyHtml) ? bodyHtml.replace(/<body[^>]*>/i, (tag) => tag + logo) : logo + bodyHtml
+  // Templates normally show the logo themselves (account logo or one picked from the media library):
+  // route that image through the tracker. Only when the template has no logo, add one at the top.
+  const isLogoSrc = (src: string) => src === account.logo_url || /\/images\/Logo\d+\.(jpe?g|png|webp)$/i.test(src)
+  let trackedLogo = false
+  let html = bodyHtml.replace(/(<img\b[^>]*?\bsrc=")([^"]+)(")/gi, (match, pre: string, src: string, post: string) => {
+    if (trackedLogo || !/^https:\/\//i.test(src) || !isLogoSrc(src)) return match
+    trackedLogo = true
+    return pre + tracking('logo', { logo: src }) + post
+  })
+  if (!trackedLogo && account.logo_url) {
+    const logo = `<div style="text-align:center;padding:16px 0"><img src="${tracking('logo', { logo: account.logo_url })}" alt="${account.name.replace(/["<>&]/g, '')}" height="56" style="display:inline-block;height:56px;width:auto;border:0" /></div>`
+    html = /<body[^>]*>/i.test(html) ? html.replace(/<body[^>]*>/i, (tag) => tag + logo) : logo + html
+  }
   html = /<\/body>/i.test(html) ? html.replace(/<\/body>/i, `${pixel}</body>`) : html + pixel
 
   try {
