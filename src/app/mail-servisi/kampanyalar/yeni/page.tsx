@@ -20,18 +20,26 @@ interface Recipient {
 
 interface PlatformStreamer extends Recipient {
   key: string
-  avgViewers: number | null
+  // Secondary metric: avg viewers (streaming platforms) or avg long-video views (YouTube)
+  avg: number | null
   country: string | null
 }
 
-type SortKey = 'followers_desc' | 'followers_asc' | 'avg_viewers_desc' | 'name_asc'
+type SortKey = 'followers_desc' | 'followers_asc' | 'avg_desc' | 'avg_asc'
 
-const SORT_OPTIONS: { value: SortKey; label: string; needsAvgViewers?: boolean }[] = [
-  { value: 'followers_desc', label: 'Takipçi: Yüksekten düşüğe' },
-  { value: 'followers_asc', label: 'Takipçi: Düşükten yükseğe' },
-  { value: 'avg_viewers_desc', label: 'Ort. izleyici: Yüksekten düşüğe', needsAvgViewers: true },
-  { value: 'name_asc', label: 'İsim: A → Z' },
-]
+interface DrawerFilters {
+  minFollowers: string
+  maxFollowers: string
+  minAvg: string
+  maxAvg: string
+  language: string
+  country: string
+  sort: SortKey
+}
+
+const EMPTY_FILTERS: DrawerFilters = {
+  minFollowers: '', maxFollowers: '', minAvg: '', maxAvg: '', language: '', country: '', sort: 'followers_desc',
+}
 
 interface LogLine {
   email: string
@@ -48,18 +56,19 @@ interface PlatformDef {
   icon: string
   nameColumns: string[]
   followersColumn: string
-  hasAvgViewers?: boolean
+  followersLabel: string
+  avg?: { column: string; label: string }
   hasCountry?: boolean
 }
 
 const PLATFORMS: PlatformDef[] = [
-  { key: 'twitch',   label: 'Twitch',   table: 'twitch_streamers',   icon: '/icons/twitch.png',   nameColumns: ['display_name', 'username'], followersColumn: 'followers', hasAvgViewers: true },
-  { key: 'kick',     label: 'Kick',     table: 'kick_streamers',     icon: '/icons/kick.png',     nameColumns: ['channel_name', 'username'], followersColumn: 'followers', hasAvgViewers: true },
-  { key: 'soop',     label: 'SOOP',     table: 'soop_streamers',     icon: '/icons/soop.jpeg',    nameColumns: ['channel_name', 'username'], followersColumn: 'followers', hasAvgViewers: true },
-  { key: 'youtube',  label: 'YouTube',  table: 'youtube_streamers',  icon: '/icons/youtube.png',  nameColumns: ['channel_name', 'username'], followersColumn: 'followers', hasCountry: true },
-  { key: 'chzzk',    label: 'Chzzk',    table: 'chzzk_streamers',    icon: '/icons/chzzk.png',    nameColumns: ['channel_name', 'username'], followersColumn: 'followers', hasAvgViewers: true },
-  { key: 'bilibili', label: 'BiliBili', table: 'bilibili_streamers', icon: '/icons/bilibili.png', nameColumns: ['channel_name', 'username'], followersColumn: 'followers' },
-  { key: 'douyin',   label: 'Douyin',   table: 'douyin_streamers',   icon: '/icons/douyin.png',   nameColumns: ['channel_name', 'username'], followersColumn: 'followers' },
+  { key: 'twitch',   label: 'Twitch',   table: 'twitch_streamers',   icon: '/icons/twitch.png',   nameColumns: ['display_name', 'username'], followersColumn: 'followers', followersLabel: 'Takipçi', avg: { column: 'avg_viewers', label: 'Ort. izleyici' } },
+  { key: 'kick',     label: 'Kick',     table: 'kick_streamers',     icon: '/icons/kick.png',     nameColumns: ['channel_name', 'username'], followersColumn: 'followers', followersLabel: 'Takipçi', avg: { column: 'avg_viewers', label: 'Ort. izleyici' } },
+  { key: 'soop',     label: 'SOOP',     table: 'soop_streamers',     icon: '/icons/soop.jpeg',    nameColumns: ['channel_name', 'username'], followersColumn: 'followers', followersLabel: 'Takipçi', avg: { column: 'avg_viewers', label: 'Ort. izleyici' } },
+  { key: 'youtube',  label: 'YouTube',  table: 'youtube_streamers',  icon: '/icons/youtube.png',  nameColumns: ['channel_name', 'username'], followersColumn: 'followers', followersLabel: 'Abone', avg: { column: 'long_video_avg_views', label: 'Ort. izlenme (uzun video)' }, hasCountry: true },
+  { key: 'chzzk',    label: 'Chzzk',    table: 'chzzk_streamers',    icon: '/icons/chzzk.png',    nameColumns: ['channel_name', 'username'], followersColumn: 'followers', followersLabel: 'Takipçi', avg: { column: 'avg_viewers', label: 'Ort. izleyici' } },
+  { key: 'bilibili', label: 'BiliBili', table: 'bilibili_streamers', icon: '/icons/bilibili.png', nameColumns: ['channel_name', 'username'], followersColumn: 'followers', followersLabel: 'Takipçi' },
+  { key: 'douyin',   label: 'Douyin',   table: 'douyin_streamers',   icon: '/icons/douyin.png',   nameColumns: ['channel_name', 'username'], followersColumn: 'followers', followersLabel: 'Takipçi' },
 ]
 
 // Tables are expected to expose contact_email; the current streamer tables still use `email`,
@@ -193,6 +202,123 @@ function interleaveByAccount<T extends { account_id?: string | null }>(items: T[
   return out
 }
 
+// Applies a platform's drawer filters and sort order; runs on every keystroke, no refetch
+function applyDrawerFilters(streamers: PlatformStreamer[], platform: PlatformDef, f: DrawerFilters, search: string): PlatformStreamer[] {
+  const q = search.trim().toLowerCase()
+  const minF = parseBound(f.minFollowers)
+  const maxF = parseBound(f.maxFollowers)
+  const minA = platform.avg ? parseBound(f.minAvg) : null
+  const maxA = platform.avg ? parseBound(f.maxAvg) : null
+  const list = streamers.filter((s) => {
+    if (f.language && (s.language ?? UNKNOWN_VALUE) !== f.language) return false
+    if (platform.hasCountry && f.country && (s.country ?? UNKNOWN_VALUE) !== f.country) return false
+    if (minF !== null && (s.followers ?? 0) < minF) return false
+    if (maxF !== null && (s.followers ?? 0) > maxF) return false
+    if (minA !== null && (s.avg ?? 0) < minA) return false
+    if (maxA !== null && (s.avg ?? 0) > maxA) return false
+    if (q && !s.email.includes(q) && !(s.name ?? '').toLowerCase().includes(q)) return false
+    return true
+  })
+  // Missing values sort last in either direction
+  const by = (pick: (s: PlatformStreamer) => number | null, dir: 1 | -1) => (a: PlatformStreamer, b: PlatformStreamer) => {
+    const x = pick(a), y = pick(b)
+    if (x === null) return y === null ? 0 : 1
+    if (y === null) return -1
+    return (x - y) * dir
+  }
+  const sort = !platform.avg && f.sort.startsWith('avg') ? 'followers_desc' : f.sort
+  switch (sort) {
+    case 'followers_asc': return list.sort(by((s) => s.followers, 1))
+    case 'avg_desc': return list.sort(by((s) => s.avg, -1))
+    case 'avg_asc': return list.sort(by((s) => s.avg, 1))
+    default: return list.sort(by((s) => s.followers, -1))
+  }
+}
+
+function PlatformFilters({
+  platform,
+  values,
+  onChange,
+  languages,
+  countries,
+}: {
+  platform: PlatformDef
+  values: DrawerFilters
+  onChange: (patch: Partial<DrawerFilters>) => void
+  languages: [string, number][]
+  countries: [string, number][]
+}) {
+  const rowStyle: React.CSSProperties = { display: 'grid', gridTemplateColumns: '120px minmax(0, 1fr)', alignItems: 'center', gap: '10px' }
+  const labelStyle: React.CSSProperties = { fontSize: '12px', fontWeight: 600, color: 'var(--muted-foreground)' }
+  const compactInput: React.CSSProperties = { ...inputStyle, padding: '6px 8px', fontSize: '13px' }
+
+  const range = (label: string, min: keyof DrawerFilters, max: keyof DrawerFilters) => (
+    <div style={rowStyle}>
+      <span style={labelStyle}>{label}</span>
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto minmax(0, 1fr)', alignItems: 'center', gap: '6px' }}>
+        <input style={compactInput} inputMode="numeric" placeholder="Min" aria-label={`${label} min`} value={values[min]} onChange={(e) => onChange({ [min]: e.target.value })} />
+        <span style={{ fontSize: '12px', color: 'var(--muted-foreground)' }}>–</span>
+        <input style={compactInput} inputMode="numeric" placeholder="Max" aria-label={`${label} max`} value={values[max]} onChange={(e) => onChange({ [max]: e.target.value })} />
+      </div>
+    </div>
+  )
+
+  const dropdown = (label: string, key: 'language' | 'country', options: [string, number][]) => (
+    <div style={rowStyle}>
+      <span style={labelStyle}>{label}</span>
+      <select style={compactInput} value={values[key]} onChange={(e) => onChange({ [key]: e.target.value })}>
+        <option value="">Tümü</option>
+        {options.map(([v, count]) => (
+          <option key={v} value={v}>{v === UNKNOWN_VALUE ? 'Bilinmiyor' : v} ({count})</option>
+        ))}
+      </select>
+    </div>
+  )
+
+  const sorts: { value: SortKey; label: string }[] = [
+    { value: 'followers_desc', label: `${platform.followersLabel} ↓` },
+    { value: 'followers_asc', label: `${platform.followersLabel} ↑` },
+    ...(platform.avg
+      ? [
+          { value: 'avg_desc' as const, label: `${platform.avg.label} ↓` },
+          { value: 'avg_asc' as const, label: `${platform.avg.label} ↑` },
+        ]
+      : []),
+  ]
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+      {range(platform.followersLabel, 'minFollowers', 'maxFollowers')}
+      {platform.avg && range(platform.avg.label, 'minAvg', 'maxAvg')}
+      {platform.hasCountry && dropdown('Ülke', 'country', countries)}
+      {dropdown('Dil', 'language', languages)}
+      <div style={rowStyle}>
+        <span style={labelStyle}>Sıralama</span>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+          {sorts.map((o) => {
+            const active = values.sort === o.value
+            return (
+              <button
+                key={o.value}
+                onClick={() => onChange({ sort: o.value })}
+                aria-pressed={active}
+                style={{
+                  padding: '4px 10px', fontSize: '12px', fontWeight: 600, borderRadius: '999px', cursor: 'pointer', whiteSpace: 'nowrap',
+                  border: `1px solid ${active ? 'var(--foreground)' : 'var(--border)'}`,
+                  backgroundColor: active ? 'var(--foreground)' : 'transparent',
+                  color: active ? 'var(--background)' : 'var(--text-2)',
+                }}
+              >
+                {o.label}
+              </button>
+            )
+          })}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function StreamerDrawer({
   platform,
   onClose,
@@ -210,12 +336,7 @@ function StreamerDrawer({
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [search, setSearch] = useState('')
-  const [language, setLanguage] = useState('')
-  const [country, setCountry] = useState('')
-  const [minFollowers, setMinFollowers] = useState('')
-  const [maxFollowers, setMaxFollowers] = useState('')
-  const [minAvgViewers, setMinAvgViewers] = useState('')
-  const [sort, setSort] = useState<SortKey>('followers_desc')
+  const [filters, setFilters] = useState<DrawerFilters>(EMPTY_FILTERS)
   const [picked, setPicked] = useState<Set<string>>(new Set())
 
   // Slide in on mount
@@ -278,7 +399,7 @@ function StreamerDrawer({
             platform: platform.label,
             followers: Number.isFinite(followers) ? followers : null,
             language: textOrNull(row.language),
-            avgViewers: platform.hasAvgViewers ? numberOrNull(row.avg_viewers) : null,
+            avg: platform.avg ? numberOrNull(row[platform.avg.column]) : null,
             country: platform.hasCountry ? textOrNull(row.country) : null,
           })
         }
@@ -295,33 +416,15 @@ function StreamerDrawer({
   const languages = useMemo(() => countValues(streamers, (s) => s.language), [streamers])
   const countries = useMemo(() => countValues(streamers, (s) => s.country), [streamers])
 
-  const filtered = useMemo(() => {
-    const q = search.trim().toLowerCase()
-    const minF = parseBound(minFollowers)
-    const maxF = parseBound(maxFollowers)
-    const minAvg = platform.hasAvgViewers ? parseBound(minAvgViewers) : null
-    const list = streamers.filter((s) => {
-      if (language && (s.language ?? UNKNOWN_VALUE) !== language) return false
-      if (country && (s.country ?? UNKNOWN_VALUE) !== country) return false
-      if (minF !== null && (s.followers ?? 0) < minF) return false
-      if (maxF !== null && (s.followers ?? 0) > maxF) return false
-      if (minAvg !== null && (s.avgViewers ?? 0) < minAvg) return false
-      if (q && !s.email.includes(q) && !(s.name ?? '').toLowerCase().includes(q)) return false
-      return true
-    })
-    const num = (v: number | null) => v ?? -1
-    switch (sort) {
-      case 'followers_asc': return list.sort((a, b) => num(a.followers) - num(b.followers))
-      case 'avg_viewers_desc': return list.sort((a, b) => num(b.avgViewers) - num(a.avgViewers))
-      case 'name_asc': return list.sort((a, b) => (a.name ?? '').localeCompare(b.name ?? '', 'tr'))
-      default: return list.sort((a, b) => num(b.followers) - num(a.followers))
-    }
-  }, [streamers, search, language, country, minFollowers, maxFollowers, minAvgViewers, sort, platform.hasAvgViewers])
+  const filtered = useMemo(
+    () => applyDrawerFilters(streamers, platform, filters, search),
+    [streamers, platform, filters, search],
+  )
 
-  const hasFilters = !!(language || country || minFollowers || maxFollowers || minAvgViewers)
-  const resetFilters = () => {
-    setLanguage(''); setCountry(''); setMinFollowers(''); setMaxFollowers(''); setMinAvgViewers('')
-  }
+  const updateFilters = (patch: Partial<DrawerFilters>) => setFilters((f) => ({ ...f, ...patch }))
+  const hasFilters = (Object.keys(EMPTY_FILTERS) as (keyof DrawerFilters)[])
+    .some((k) => k !== 'sort' && filters[k] !== EMPTY_FILTERS[k])
+  const resetFilters = () => setFilters((f) => ({ ...EMPTY_FILTERS, sort: f.sort }))
 
   const toggle = (key: string) => {
     setPicked((prev) => {
@@ -344,9 +447,6 @@ function StreamerDrawer({
     onAdd(streamers.filter((s) => picked.has(s.key)))
     close()
   }
-
-  const filterLabel: React.CSSProperties = { display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '11px', fontWeight: 600, color: 'var(--muted-foreground)', minWidth: 0 }
-  const compactInput: React.CSSProperties = { ...inputStyle, padding: '6px 8px', fontSize: '13px' }
 
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 100 }} role="dialog" aria-modal="true" aria-label={`${platform.label} yayıncıları`}>
@@ -390,50 +490,7 @@ function StreamerDrawer({
               autoFocus
             />
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(110px, 1fr))', gap: '8px' }}>
-            <label style={filterLabel}>
-              Min takipçi
-              <input style={compactInput} inputMode="numeric" placeholder="örn. 10k" value={minFollowers} onChange={(e) => setMinFollowers(e.target.value)} />
-            </label>
-            <label style={filterLabel}>
-              Max takipçi
-              <input style={compactInput} inputMode="numeric" placeholder="örn. 1m" value={maxFollowers} onChange={(e) => setMaxFollowers(e.target.value)} />
-            </label>
-            {platform.hasAvgViewers && (
-              <label style={filterLabel}>
-                Min ort. izleyici
-                <input style={compactInput} inputMode="numeric" placeholder="örn. 100" value={minAvgViewers} onChange={(e) => setMinAvgViewers(e.target.value)} />
-              </label>
-            )}
-            <label style={filterLabel}>
-              Dil
-              <select style={compactInput} value={language} onChange={(e) => setLanguage(e.target.value)}>
-                <option value="">Tümü</option>
-                {languages.map(([lang, count]) => (
-                  <option key={lang} value={lang}>{lang === UNKNOWN_VALUE ? 'Bilinmiyor' : lang} ({count})</option>
-                ))}
-              </select>
-            </label>
-            {platform.hasCountry && (
-              <label style={filterLabel}>
-                Ülke
-                <select style={compactInput} value={country} onChange={(e) => setCountry(e.target.value)}>
-                  <option value="">Tümü</option>
-                  {countries.map(([c, count]) => (
-                    <option key={c} value={c}>{c === UNKNOWN_VALUE ? 'Bilinmiyor' : c} ({count})</option>
-                  ))}
-                </select>
-              </label>
-            )}
-            <label style={filterLabel}>
-              Sıralama
-              <select style={compactInput} value={sort} onChange={(e) => setSort(e.target.value as SortKey)}>
-                {SORT_OPTIONS.filter((o) => !o.needsAvgViewers || platform.hasAvgViewers).map((o) => (
-                  <option key={o.value} value={o.value}>{o.label}</option>
-                ))}
-              </select>
-            </label>
-          </div>
+          <PlatformFilters platform={platform} values={filters} onChange={updateFilters} languages={languages} countries={countries} />
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <span style={{ fontSize: '12px', color: 'var(--muted-foreground)' }}>
               {filtered.length} sonuç
@@ -488,9 +545,9 @@ function StreamerDrawer({
                     <span style={{ display: 'block', color: 'var(--success)', fontWeight: 600 }}>
                       {s.followers?.toLocaleString('tr-TR') ?? '—'}
                     </span>
-                    {platform.hasAvgViewers && (
+                    {platform.avg && (
                       <span style={{ display: 'block', color: 'var(--muted-foreground)', fontSize: '11px' }}>
-                        {s.avgViewers !== null ? `${s.avgViewers.toLocaleString('tr-TR')} ort. izleyici` : '—'}
+                        {s.avg !== null ? `${s.avg.toLocaleString('tr-TR')} ${platform.avg.label.toLowerCase()}` : '—'}
                       </span>
                     )}
                     {platform.hasCountry && s.country && (
