@@ -104,7 +104,6 @@ function buildPrompt(req: GenerateRequest): string {
   const contact = [
     req.contactName?.trim() && `- Sign the email as ${req.contactName.trim()} from {{sender_name}}.`,
     steamUrl && `- Link the game's Steam page naturally in the body text (e.g. on the game's name or a "wishlist on Steam" phrase): ${steamUrl}`,
-    discordUrl && `- Include our Discord server as a clickable link: ${discordUrl}`,
   ].filter(Boolean).join('\n')
   const tone = (req.tone && TONE_INSTRUCTIONS[req.tone]) || 'warm, friendly and personal'
   const length = (req.length && LENGTH_INSTRUCTIONS[req.length]) || LENGTH_INSTRUCTIONS['Kısa (2-3 paragraf)']
@@ -125,18 +124,19 @@ Requirements:
 - Length: ${length}.
 ${cta ? `- Call to action: ${cta}.${needsLink ? ' Use the matching URL from the details above if one is given (the Steam page for Steam, the Discord link for Discord); otherwise use href="#" so we can fill it in before sending.' : ''}\n` : ''}- No spammy wording, no ALL CAPS, no excessive exclamation marks.
 - Use these placeholders exactly where appropriate (they are filled in per recipient):
-  {{name}} (creator name), {{platform}}, {{sender_name}}, {{sender_email}}
+  {{name}} (creator name), {{platform}}, {{sender_name}}
 - The subject may also use {{name}}.
 
 Design:
 - Design a beautiful, modern dark-themed HTML email. Choose your own colors, fonts, spacing and layout - make it look premium and gaming-focused. Keep it clean and minimal.
 - Order: ${[
-    hasLogo && `the logo at the top (<img src="${logoSrc}" alt="{{sender_name}}" height="48" style="display:block;border:0;height:48px;width:auto">)`,
+    hasLogo && `the logo at the top, centered: inside <td align="center" style="text-align:center">, <img src="${logoSrc}" alt="{{sender_name}}" height="48" style="display:block;margin:0 auto;border:0;height:48px;width:auto">`,
     hasBanner && `the banner image below it (<img src="${bannerSrc}" alt="" style="width:100%;max-width:600px;display:block;border:0">)`,
     'the email body',
     'a clear CTA',
-    'a footer',
+    discordUrl && `a minimal footer with only a small, understated Discord link (${discordUrl}) - nothing else in it`,
   ].filter(Boolean).join(', then ')}.
+- No footer block with the company name, email address, postal address, copyright or unsubscribe text. The email ends after the ${discordUrl ? 'Discord footer' : 'CTA and sign-off'}.
 - Max width 600px.
 - Technical: html_content must be a complete, email-client-safe HTML document: inline styles only, a single centered table-based layout, no <script>, no external CSS. Set the dark background with both bgcolor attributes and inline background-color so it survives email clients.
 
