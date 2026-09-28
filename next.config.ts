@@ -13,6 +13,8 @@ const nextConfig: NextConfig = {
       { protocol: 'https', hostname: 'shared.akamai.steamstatic.com' },
       { protocol: 'https', hostname: 'shared.fastly.steamstatic.com' },
       { protocol: 'https', hostname: 'steamcdn-a.akamaihd.net' },
+      // Supabase storage (profile avatars)
+      { protocol: 'https', hostname: 'qvwncxjcvlpbwsusztds.supabase.co' },
     ],
   },
 };

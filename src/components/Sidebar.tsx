@@ -114,6 +114,9 @@ export default function Sidebar({ open = false }: { open?: boolean }) {
   const { user, profile, logout } = useAuth()
   // profiles.display_name; without a profile row, the part of the email before @
   const displayName = profile?.display_name?.trim() || user?.email?.split('@')[0] || '—'
+  // Photo when the profile has one; falls back to the initial if it's missing or fails to load
+  const [failedAvatar, setFailedAvatar] = useState<string | null>(null)
+  const avatarUrl = profile?.avatar_url && profile.avatar_url !== failedAvatar ? profile.avatar_url : null
   const [loggingOut, setLoggingOut] = useState(false)
 
   const [expanded, setExpanded] = useState<Set<string>>(() => {
@@ -250,9 +253,11 @@ export default function Sidebar({ open = false }: { open?: boolean }) {
         <div className="sidebar-user">
           <div
             style={{
+              position: 'relative',
               width: '28px',
               height: '28px',
               borderRadius: '50%',
+              overflow: 'hidden',
               background: 'var(--gradient)',
               boxShadow: 'inset 0 0 0 1px var(--sidebar-border)',
               display: 'grid',
@@ -263,7 +268,18 @@ export default function Sidebar({ open = false }: { open?: boolean }) {
               color: 'var(--gradient-foreground)',
             }}
           >
-            {displayName[0]?.toUpperCase() ?? 'U'}
+            {avatarUrl ? (
+              <Image
+                src={avatarUrl}
+                alt=""
+                width={28}
+                height={28}
+                onError={() => setFailedAvatar(avatarUrl)}
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
+            ) : (
+              displayName[0]?.toUpperCase() ?? 'U'
+            )}
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div
