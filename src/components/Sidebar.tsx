@@ -111,7 +111,9 @@ const navItems: NavItem[] = [
 
 export default function Sidebar({ open = false }: { open?: boolean }) {
   const pathname = usePathname()
-  const { user, logout } = useAuth()
+  const { user, profile, logout } = useAuth()
+  // profiles.display_name; without a profile row, the part of the email before @
+  const displayName = profile?.display_name?.trim() || user?.email?.split('@')[0] || '—'
   const [loggingOut, setLoggingOut] = useState(false)
 
   const [expanded, setExpanded] = useState<Set<string>>(() => {
@@ -261,15 +263,14 @@ export default function Sidebar({ open = false }: { open?: boolean }) {
               color: 'var(--gradient-foreground)',
             }}
           >
-            {user?.email?.[0].toUpperCase() ?? 'U'}
+            {displayName[0]?.toUpperCase() ?? 'U'}
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: '13px', color: 'var(--sidebar-foreground)', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {user?.email ?? '—'}
-            </div>
-            <div style={{ fontSize: '11px', color: 'var(--sidebar-muted)', display: 'flex', alignItems: 'center', gap: '5px' }}>
-              <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: '#4ADE9A' }} />
-              Aktif
+            <div
+              title={user?.email ?? undefined}
+              style={{ fontSize: '13px', color: 'var(--sidebar-foreground)', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+            >
+              {displayName}
             </div>
           </div>
           <button
