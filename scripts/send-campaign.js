@@ -77,20 +77,55 @@ function withTracking(bodyHtml, { account, campaign, recipient }) {
   const tracking = (type, extra = {}) =>
     `${TRACKING_URL}?` +
     new URLSearchParams({ type, ...extra, e: recipient.email, c: campaign.id, r: recipient.id }).toString().replace(/&/g, '&amp;')
-  const pixel = `<img src="${tracking('pixel')}" width="1" height="1" alt="" style="display:none;" />`
+  const pixel = `<img src="${tracking('pixel')}" width="1" height="1" style="display:none">`
 
-  const isLogoSrc = (src) => src === account.logo_url || /\/images\/Logo\d+\.(jpe?g|png|webp)$/i.test(src)
+  // The tracked logo always points at the brand site's own image (gamingreachout.com /
+  // playercollabs.com /images/LogoN.jpg), never a storage URL
+  const brandLogo = brandLogoUrl(account)
+  const isBrandLogo = (src) => isBrandHost(src, account) && /\/images\/Logo\d+\.(jpe?g|png|webp)$/i.test(src)
+  const isLogoSrc = (src) => isBrandLogo(src) || src === account.logo_url
+  // Explicit size + alt: Naver (and some others) skip small/unlabelled images as tracking pixels
+  const logoTag = (logoUrl, extraStyle = '') =>
+    `<img src="${tracking('logo', { logo: logoUrl })}" width="${LOGO_SIZE}" height="${LOGO_SIZE}" alt="Logo" ` +
+    `style="display:block;margin:0 auto;width:${LOGO_SIZE}px;height:${LOGO_SIZE}px;border:0;${extraStyle}">`
+
   let trackedLogo = false
-  let html = bodyHtml.replace(/(<img\b[^>]*?\bsrc=")([^"]+)(")/gi, (match, pre, src, post) => {
+  let html = bodyHtml.replace(/<img\b[^>]*?\bsrc="([^"]+)"[^>]*>/gi, (match, src) => {
     if (trackedLogo || !/^https:\/\//i.test(src) || !isLogoSrc(src)) return match
+    const logoUrl = isBrandLogo(src) ? src : brandLogo
+    if (!logoUrl) return match
     trackedLogo = true
-    return pre + tracking('logo', { logo: src }) + post
+    return logoTag(logoUrl)
   })
-  if (!trackedLogo && account.logo_url) {
-    const logo = `<div style="text-align:center;padding:16px 0"><img src="${tracking('logo', { logo: account.logo_url })}" alt="" height="56" style="display:inline-block;height:56px;width:auto;border:0" /></div>`
+  if (!trackedLogo && brandLogo) {
+    const logo = `<div style="text-align:center;padding:16px 0">${logoTag(brandLogo)}</div>`
     html = /<body[^>]*>/i.test(html) ? html.replace(/<body[^>]*>/i, (tag) => tag + logo) : logo + html
   }
   return /<\/body>/i.test(html) ? html.replace(/<\/body>/i, `${pixel}</body>`) : html + pixel
+}
+
+const LOGO_SIZE = 48
+const BRAND_HOSTS = ['gamingreachout.com', 'playercollabs.com']
+
+function hostOf(url) {
+  try {
+    return new URL(/^https?:\/\//i.test(url) ? url : `https://${url}`).hostname.toLowerCase().replace(/^www\./, '')
+  } catch {
+    return null
+  }
+}
+
+function isBrandHost(url, account) {
+  const host = hostOf(url)
+  return !!host && (BRAND_HOSTS.includes(host) || host === hostOf(account.domain ?? ''))
+}
+
+// The account's logo on its brand site: its saved logo_url if that already lives there,
+// otherwise the site's first library logo
+function brandLogoUrl(account) {
+  if (account.logo_url && isBrandHost(account.logo_url, account)) return account.logo_url
+  const domain = hostOf(account.domain ?? '')
+  return domain ? `https://${domain}/images/Logo1.jpg` : null
 }
 
 // ── Database helpers ────────────────────────────────────────────────────────
