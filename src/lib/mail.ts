@@ -71,6 +71,8 @@ export interface MailRecipient {
   replied_at: string | null
   bounced_at: string | null
   bounce_type: string | null
+  // Last send error (nullable until the error_message migration is applied)
+  error_message?: string | null
   created_at: string
 }
 
@@ -96,7 +98,11 @@ export const CAMPAIGN_STATUS_LABELS: Record<string, string> = {
   sending: 'Gönderiliyor',
   paused: 'Duraklatıldı',
   completed: 'Tamamlandı',
+  iptal: 'İptal Edildi',
 }
+
+// Statuses from which a campaign can still be cancelled ('Sirada' kept for rows written with the label)
+export const CANCELLABLE_CAMPAIGN_STATUSES = ['ready_to_send', 'Sirada', 'sending']
 
 export const RECIPIENT_STATUS_LABELS: Record<string, string> = {
   pending: 'Bekliyor',

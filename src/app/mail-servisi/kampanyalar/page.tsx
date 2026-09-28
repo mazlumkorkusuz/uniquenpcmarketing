@@ -3,6 +3,7 @@ import { Send, Plus } from 'lucide-react'
 import PageHeader from '@/components/PageHeader'
 import { createSupabaseServerClient } from '@/lib/supabase-server'
 import { percent, type MailCampaign } from '@/lib/mail'
+import CancelCampaignButton from '../_components/CancelCampaignButton'
 import { Card, CampaignStatusBadge, ProgressBar, MAIL_GRADIENT, buttonStyle, formatDateTime, thStyle, tdStyle } from '../_components/ui'
 
 type CampaignRow = MailCampaign & {
@@ -49,10 +50,12 @@ export default async function KampanyalarPage() {
                 <tbody>
                   {campaigns.map((c) => {
                     const done = c.sent_count + c.bounce_count
-                    const canResume = c.status !== 'completed' && done < c.total_recipients
+                    const canResume = !['completed', 'iptal', 'ready_to_send', 'sending'].includes(c.status) && done < c.total_recipients
                     return (
                       <tr key={c.id}>
-                        <td style={{ ...tdStyle, fontWeight: 600, color: 'var(--foreground)' }}>{c.name}</td>
+                        <td style={{ ...tdStyle, fontWeight: 600 }}>
+                          <Link href={`/mail-servisi/kampanyalar/${c.id}`} style={{ color: 'var(--foreground)', textDecoration: 'none' }}>{c.name}</Link>
+                        </td>
                         <td style={tdStyle}><CampaignStatusBadge status={c.status} /></td>
                         <td style={tdStyle}>
                           <div style={{ fontSize: '12px' }}>{c.mail_accounts?.email ?? '—'}</div>
@@ -64,12 +67,16 @@ export default async function KampanyalarPage() {
                         <td style={tdStyle}>{c.bounce_count}</td>
                         <td style={{ ...tdStyle, fontSize: '12px', color: 'var(--muted-foreground)' }}>{formatDateTime(c.started_at)}</td>
                         <td style={{ ...tdStyle, textAlign: 'right' }}>
-                          <div style={{ display: 'inline-flex', gap: '6px' }}>
+                          <div style={{ display: 'inline-flex', alignItems: 'flex-start', gap: '6px' }}>
+                            <CancelCampaignButton campaignId={c.id} campaignName={c.name} status={c.status} />
                             {canResume && (
                               <Link href={`/mail-servisi/kampanyalar/yeni?resume=${c.id}`} style={{ ...buttonStyle('primary'), padding: '6px 10px', fontSize: '12px' }}>
                                 Devam Et
                               </Link>
                             )}
+                            <Link href={`/mail-servisi/kampanyalar/${c.id}`} style={{ ...buttonStyle('secondary'), padding: '6px 10px', fontSize: '12px' }}>
+                              Alıcılar
+                            </Link>
                             <Link href={`/mail-servisi/tracking?campaign=${c.id}`} style={{ ...buttonStyle('secondary'), padding: '6px 10px', fontSize: '12px' }}>
                               Tracking
                             </Link>

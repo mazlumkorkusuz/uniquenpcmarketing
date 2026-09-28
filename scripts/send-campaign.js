@@ -154,6 +154,18 @@ function transportFor(account) {
   return transports.get(account.id)
 }
 
+// Cancelled from the campaigns page ('iptal') — checked before every mail so a send stops promptly
+async function isCancelled(campaignId) {
+  const { data } = await supabase.from('mail_campaigns').select('status').eq('id', campaignId).maybeSingle()
+  return !data || data.status === 'iptal'
+}
+
+// Best effort: the error_message column may not be migrated yet, and a failure here must never
+// affect the recipient's status update
+async function setErrorMessage(recipientId, message) {
+  await supabase.from('mail_recipients').update({ error_message: message ? String(message).slice(0, 500) : null }).eq('id', recipientId)
+}
+
 // Starts a fresh workflow run to carry on where this one stopped
 async function continueInNewRun() {
   const token = process.env.MAIL_SENDER_PAT
@@ -176,7 +188,7 @@ async function waitBetweenMails() {
   if (sentAny) await sleep(DELAY_MS)
 }
 
-// Returns 'done' | 'paused' | 'out_of_time'
+// Returns 'done' | 'paused' | 'out_of_time' | 'cancelled'
 async function sendCampaign(campaign) {
   const { data: template } = await supabase.from('mail_templates').select('*').eq('id', campaign.template_id).maybeSingle()
   if (!template) {
@@ -184,10 +196,14 @@ async function sendCampaign(campaign) {
     return 'paused'
   }
 
-  await supabase
+  // Only claim it if it's still queued (it may have been cancelled since it was loaded)
+  const { data: claimed } = await supabase
     .from('mail_campaigns')
     .update({ status: 'sending', started_at: campaign.started_at ?? new Date().toISOString() })
     .eq('id', campaign.id)
+    .eq('status', 'ready_to_send')
+    .select('id')
+  if (!claimed?.length) return 'cancelled'
 
   const { data: pending, error } = await supabase
     .from('mail_recipients')
@@ -204,6 +220,7 @@ async function sendCampaign(campaign) {
   let bounced = 0
 
   for (const recipient of queue) {
+    if (await isCancelled(campaign.id)) return 'cancelled'
     if (Date.now() - startedAt > RUN_BUDGET_MS - DELAY_MS - 60_000) return 'out_of_time'
 
     const accountId = recipient.account_id ?? campaign.account_id
@@ -236,6 +253,8 @@ async function sendCampaign(campaign) {
     const bodyHtml = renderTemplate(template.html_content, vars)
 
     await waitBetweenMails()
+    // The 90 s wait is when a cancel is most likely to arrive
+    if (await isCancelled(campaign.id)) return 'cancelled'
     try {
       await transportFor(account).sendMail({
         from: `"${account.name}" <${account.email}>`,
@@ -252,9 +271,11 @@ async function sendCampaign(campaign) {
           .from('mail_recipients')
           .update({ status: 'bounced', bounced_at: new Date().toISOString(), bounce_type: (e.responseCode ?? 550) >= 500 ? 'hard' : 'soft' })
           .eq('id', recipient.id)
+        await setErrorMessage(recipient.id, `Bounce: ${e.response ?? e.message}`)
         bounced++
         continue
       }
+      await setErrorMessage(recipient.id, `SMTP hatası (${e.code ?? e.responseCode ?? 'bilinmiyor'}): ${e.response ?? e.message}`)
       console.log(`Account ${account.id}: SMTP error (${e.code ?? e.responseCode ?? 'unknown'}) — its recipients stay pending.`)
       blocked.add(account.id)
       continue
@@ -263,6 +284,7 @@ async function sendCampaign(campaign) {
     sentAny = true
     sent++
     await supabase.from('mail_recipients').update({ status: 'sent', sent_at: new Date().toISOString() }).eq('id', recipient.id)
+    if (recipient.error_message) await setErrorMessage(recipient.id, null)
     await supabase.rpc('increment_campaign_sent', { cid: campaign.id })
     await supabase.from('mail_accounts').update({ sent_today: sentToday + 1 }).eq('id', account.id)
   }
@@ -295,18 +317,28 @@ async function main() {
 
   for (const campaign of campaigns) {
     const result = await sendCampaign(campaign)
+    if (result === 'cancelled') {
+      console.log(`Campaign ${campaign.id}: cancelled — stopped.`)
+      continue
+    }
+    // Status changes below only apply while the campaign is still ours ('sending'), so they never
+    // overwrite a cancellation that arrived in the meantime
     if (result === 'out_of_time') {
       // Put it back in the queue so the next run picks it up
-      await supabase.from('mail_campaigns').update({ status: 'ready_to_send' }).eq('id', campaign.id)
+      await supabase.from('mail_campaigns').update({ status: 'ready_to_send' }).eq('id', campaign.id).eq('status', 'sending')
       await continueInNewRun()
       return
     }
     if (result === 'done') {
-      await supabase.from('mail_campaigns').update({ status: 'completed', completed_at: new Date().toISOString() }).eq('id', campaign.id)
+      await supabase
+        .from('mail_campaigns')
+        .update({ status: 'completed', completed_at: new Date().toISOString() })
+        .eq('id', campaign.id)
+        .in('status', ['sending', 'ready_to_send'])
       console.log(`Campaign ${campaign.id}: completed.`)
     } else {
       // Recipients left but every usable account is blocked (daily limit / inactive / SMTP error)
-      await supabase.from('mail_campaigns').update({ status: 'paused' }).eq('id', campaign.id)
+      await supabase.from('mail_campaigns').update({ status: 'paused' }).eq('id', campaign.id).in('status', ['sending', 'ready_to_send'])
       console.log(`Campaign ${campaign.id}: paused with recipients still pending.`)
     }
   }

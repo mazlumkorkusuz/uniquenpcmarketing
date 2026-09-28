@@ -78,7 +78,7 @@ export function Field({ label, children }: { label: string; children: React.Reac
 }
 
 export function CampaignStatusBadge({ status }: { status: string }) {
-  const variant = status === 'completed' ? 'green' : status === 'sending' || status === 'ready_to_send' ? 'blue' : status === 'paused' ? 'orange' : 'gray'
+  const variant = status === 'completed' ? 'green' : status === 'sending' || status === 'ready_to_send' ? 'blue' : status === 'paused' ? 'orange' : status === 'iptal' ? 'red' : 'gray'
   return <Badge variant={variant}>{CAMPAIGN_STATUS_LABELS[status] ?? status}</Badge>
 }
 
