@@ -693,7 +693,7 @@ function YeniKampanya() {
         total: allResults.length,
         ok: allResults.filter((r) => r.status === 'OK').length,
         bounce: allResults.filter((r) => r.status === 'BOUNCE').length,
-        belirsiz: allResults.filter((r) => r.status === 'BELIRSIZ').length,
+        belirsiz: allResults.filter((r) => r.status === 'BELIRSIZ' || r.status === 'YOK').length,
         yok: allResults.filter((r) => r.status === 'YOK').length,
       }
       setBounceResults(allResults)
@@ -1110,11 +1110,6 @@ function YeniKampanya() {
                       {bounceStats.belirsiz > 0 && (
                         <span style={{ fontSize: '12px', padding: '3px 10px', borderRadius: '999px', backgroundColor: 'var(--orange)', color: '#fff', fontWeight: 600 }}>
                           ? {bounceStats.belirsiz} Belirsiz (listede)
-                        </span>
-                      )}
-                      {bounceStats.yok > 0 && (
-                        <span style={{ fontSize: '12px', padding: '3px 10px', borderRadius: '999px', backgroundColor: 'var(--muted-foreground)', color: '#fff', fontWeight: 600 }}>
-                          — {bounceStats.yok} Geçersiz format
                         </span>
                       )}
                     </div>
