@@ -34,7 +34,18 @@ jobs:
 
       - run: npm ci
 
-      - run: node send-campaign.js
+      # Step 1: Bounce check — marks invalid recipients before sending starts.
+      # Uses raw TCP port 25 (DNS MX + SMTP RCPT TO). GitHub Actions runners
+      # have full outbound network access including port 25.
+      - name: Bounce check
+        run: node bounce-check.js
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+
+      # Step 2: Send mails — skips recipients already marked 'Bounce'
+      - name: Send campaign
+        run: node send-campaign.js
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
