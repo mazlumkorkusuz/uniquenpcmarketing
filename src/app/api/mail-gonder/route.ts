@@ -1,287 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server'
-import nodemailer from 'nodemailer'
-import type { SupabaseClient } from '@supabase/supabase-js'
 import { createSupabaseServerClient } from '@/lib/supabase-server'
-import { isAccountActive, renderTemplate, type MailAccount, type MailCampaign, type MailRecipient, type MailTemplate } from '@/lib/mail'
 
-// Sends mail through the account's SMTP server (Hostinger: smtp.hostinger.com, 465/SSL).
-//
-// POST { recipient_id }            → sends one campaign mail to that recipient
-// POST { test: true, account_id, to } → sends a test mail from that account
-//
-// The new-campaign page calls this once per recipient and waits delay_seconds between calls.
-
-interface SmtpError extends Error {
-  code?: string
-  command?: string
-  responseCode?: number
-}
-
-const LOGO_SIZE = 48
-const BRAND_HOSTS = ['gamingreachout.com', 'playercollabs.com']
-
-function hostOf(url: string): string | null {
-  try {
-    return new URL(/^https?:\/\//i.test(url) ? url : `https://${url}`).hostname.toLowerCase().replace(/^www\./, '')
-  } catch {
-    return null
-  }
-}
-
-function isBrandHost(url: string, account: MailAccount): boolean {
-  const host = hostOf(url)
-  return !!host && (BRAND_HOSTS.includes(host) || host === hostOf(account.domain ?? ''))
-}
-
-// The account's logo on its brand site: its saved logo_url if that already lives there,
-// otherwise the site's first library logo
-function brandLogoUrl(account: MailAccount): string | null {
-  if (account.logo_url && isBrandHost(account.logo_url, account)) return account.logo_url
-  const domain = hostOf(account.domain ?? '')
-  return domain ? `https://${domain}/images/Logo1.jpg` : null
-}
-
-function createTransport(account: MailAccount) {
-  return nodemailer.createTransport({
-    host: account.smtp_host,
-    port: account.smtp_port,
-    secure: account.smtp_port === 465,
-    auth: { user: account.smtp_user, pass: account.smtp_pass },
-  })
-}
-
-function htmlToText(html: string): string {
-  return html
-    .replace(/<style[\s\S]*?<\/style>/gi, '')
-    .replace(/<br\s*\/?>/gi, '\n')
-    .replace(/<\/(p|div|h[1-6]|li|tr)>/gi, '\n')
-    .replace(/<[^>]+>/g, '')
-    .replace(/&nbsp;/g, ' ')
-    .replace(/\n{3,}/g, '\n\n')
-    .trim()
-}
-
-function publicBaseUrl(request: NextRequest): string {
-  const configured = process.env.NEXT_PUBLIC_SITE_URL
-  if (configured) return configured.replace(/\/$/, '')
-  const host = request.headers.get('x-forwarded-host') ?? request.headers.get('host')
-  const proto = request.headers.get('x-forwarded-proto') ?? request.nextUrl.protocol.replace(':', '')
-  return host ? `${proto}://${host}` : request.nextUrl.origin
-}
-
-function startOfToday(): string {
-  const d = new Date()
-  d.setHours(0, 0, 0, 0)
-  return d.toISOString()
-}
-
-// Counts mails sent today from an account: recipients assigned to it directly, plus recipients
-// without an account_id whose campaign uses it. Falls back to the campaign-only count when the
-// mail_recipients.account_id column hasn't been migrated yet.
-async function countSentToday(supabase: SupabaseClient, accountId: string): Promise<number> {
-  const since = startOfToday()
-  const own = await supabase
-    .from('mail_recipients')
-    .select('id', { count: 'exact', head: true })
-    .eq('account_id', accountId)
-    .gte('sent_at', since)
-
-  const viaCampaign = supabase
-    .from('mail_recipients')
-    .select('id, mail_campaigns!inner(account_id)', { count: 'exact', head: true })
-    .eq('mail_campaigns.account_id', accountId)
-    .gte('sent_at', since)
-
-  if (own.error) {
-    const { count } = await viaCampaign
-    return count ?? 0
-  }
-  const { count: legacy } = await viaCampaign.is('account_id', null)
-  return (own.count ?? 0) + (legacy ?? 0)
-}
-
-// Marks the campaign completed once no pending recipients remain; returns the pending count
-async function finishIfDone(supabase: SupabaseClient, campaignId: string): Promise<number> {
-  const { count } = await supabase
-    .from('mail_recipients')
-    .select('id', { count: 'exact', head: true })
-    .eq('campaign_id', campaignId)
-    .eq('status', 'pending')
-  const pending = count ?? 0
-  if (pending === 0) {
-    await supabase
-      .from('mail_campaigns')
-      .update({ status: 'completed', completed_at: new Date().toISOString() })
-      .eq('id', campaignId)
-  }
-  return pending
-}
+const MAIL_SERVICE_URL = process.env.MAIL_SERVICE_URL || 'https://uniquenpc-mail.fly.dev'
 
 export async function POST(request: NextRequest) {
   const supabase = await createSupabaseServerClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 })
 
-  let body: { recipient_id?: string; test?: boolean; account_id?: string; to?: string }
+  let body: unknown
   try {
     body = await request.json()
   } catch {
     return NextResponse.json({ error: 'Geçersiz istek' }, { status: 400 })
   }
 
-  // ── Test mail ────────────────────────────────────────────────────────────
-  if (body.test) {
-    if (!body.account_id || !body.to) {
-      return NextResponse.json({ error: 'account_id ve to gerekli' }, { status: 400 })
-    }
-    const { data: account } = await supabase.from('mail_accounts').select('*').eq('id', body.account_id).single<MailAccount>()
-    if (!account) return NextResponse.json({ error: 'Hesap bulunamadı' }, { status: 404 })
-
-    try {
-      await createTransport(account).sendMail({
-        from: `"${account.name}" <${account.email}>`,
-        to: body.to,
-        subject: 'Mail Servisi test maili',
-        text: `Bu bir test mailidir. ${account.email} hesabının SMTP ayarları çalışıyor.`,
-      })
-      return NextResponse.json({ ok: true })
-    } catch (e) {
-      return NextResponse.json({ error: (e as Error).message }, { status: 502 })
-    }
-  }
-
-  // ── Campaign mail ────────────────────────────────────────────────────────
-  if (!body.recipient_id) {
-    return NextResponse.json({ error: 'recipient_id gerekli' }, { status: 400 })
-  }
-
-  const { data: recipient } = await supabase
-    .from('mail_recipients')
-    .select('*')
-    .eq('id', body.recipient_id)
-    .single<MailRecipient>()
-  if (!recipient) return NextResponse.json({ error: 'Alıcı bulunamadı' }, { status: 404 })
-  if (recipient.status !== 'pending') {
-    return NextResponse.json({ ok: true, skipped: true, status: recipient.status })
-  }
-
-  const { data: campaign } = await supabase
-    .from('mail_campaigns')
-    .select('*')
-    .eq('id', recipient.campaign_id)
-    .single<MailCampaign>()
-  const accountId = recipient.account_id ?? campaign?.account_id
-  if (!campaign?.template_id || !accountId) {
-    return NextResponse.json({ error: 'Kampanyanın şablonu veya hesabı yok' }, { status: 400 })
-  }
-
-  const [{ data: template }, { data: account }] = await Promise.all([
-    supabase.from('mail_templates').select('*').eq('id', campaign.template_id).single<MailTemplate>(),
-    supabase.from('mail_accounts').select('*').eq('id', accountId).single<MailAccount>(),
-  ])
-  if (!template) return NextResponse.json({ error: 'Şablon bulunamadı' }, { status: 404 })
-  if (!account) return NextResponse.json({ error: 'Hesap bulunamadı' }, { status: 404 })
-  if (!isAccountActive(account.status)) {
-    return NextResponse.json({ error: `${account.email} hesabı aktif değil`, accountUnavailable: true, account_id: account.id }, { status: 409 })
-  }
-
-  const sentToday = await countSentToday(supabase, account.id)
-  if (sentToday >= account.daily_limit) {
-    return NextResponse.json(
-      { error: `${account.email}: günlük limit doldu (${sentToday}/${account.daily_limit})`, limitReached: true, accountUnavailable: true, account_id: account.id },
-      { status: 429 },
-    )
-  }
-
-  if (!campaign.started_at || campaign.status !== 'sending') {
-    await supabase
-      .from('mail_campaigns')
-      .update({ status: 'sending', started_at: campaign.started_at ?? new Date().toISOString() })
-      .eq('id', campaign.id)
-  }
-
-  const vars = {
-    name: recipient.name || recipient.email.split('@')[0],
-    email: recipient.email,
-    platform: recipient.platform,
-    followers: recipient.followers?.toLocaleString('en-US'),
-    language: recipient.language,
-    sender_name: account.name,
-    sender_email: account.email,
-    domain: account.domain,
-    logo_url: account.logo_url,
-    banner_url: account.banner_url,
-  }
-  const subject = renderTemplate(template.subject, vars, true)
-  const bodyHtml = renderTemplate(template.html_content, vars)
-
-  // Tracking: the logo is loaded through /api/mail-tracking so displaying it counts as an open,
-  // plus a hidden pixel at the bottom as a fallback.
-  const tracking = (type: 'logo' | 'pixel', extra: Record<string, string> = {}) =>
-    `${publicBaseUrl(request)}/api/mail-tracking?` +
-    new URLSearchParams({ type, ...extra, e: recipient.email, c: campaign.id, r: recipient.id }).toString().replace(/&/g, '&amp;')
-  const pixel = `<img src="${tracking('pixel')}" width="1" height="1" style="display:none">`
-
-  // The tracked logo always points at the brand site's own image (gamingreachout.com /
-  // playercollabs.com /images/LogoN.jpg), never a storage URL. Same rules as scripts/send-campaign.js.
-  const brandLogo = brandLogoUrl(account)
-  const isBrandLogo = (src: string) => isBrandHost(src, account) && /\/images\/Logo\d+\.(jpe?g|png|webp)$/i.test(src)
-  const isLogoSrc = (src: string) => isBrandLogo(src) || src === account.logo_url
-  // Explicit size + alt: Naver (and some others) skip small/unlabelled images as tracking pixels
-  const logoTag = (logoUrl: string) =>
-    `<img src="${tracking('logo', { logo: logoUrl })}" width="${LOGO_SIZE}" height="${LOGO_SIZE}" alt="Logo" ` +
-    `style="display:block;margin:0 auto;width:${LOGO_SIZE}px;height:${LOGO_SIZE}px;border:0;">`
-
-  let trackedLogo = false
-  let html = bodyHtml.replace(/<img\b[^>]*?\bsrc="([^"]+)"[^>]*>/gi, (match, src: string) => {
-    if (trackedLogo || !/^https:\/\//i.test(src) || !isLogoSrc(src)) return match
-    const logoUrl = isBrandLogo(src) ? src : brandLogo
-    if (!logoUrl) return match
-    trackedLogo = true
-    return logoTag(logoUrl)
-  })
-  if (!trackedLogo && brandLogo) {
-    const logo = `<div style="text-align:center;padding:16px 0">${logoTag(brandLogo)}</div>`
-    html = /<body[^>]*>/i.test(html) ? html.replace(/<body[^>]*>/i, (tag) => tag + logo) : logo + html
-  }
-  html = /<\/body>/i.test(html) ? html.replace(/<\/body>/i, `${pixel}</body>`) : html + pixel
-
   try {
-    await createTransport(account).sendMail({
-      from: `"${account.name}" <${account.email}>`,
-      to: recipient.name ? `"${recipient.name.replace(/"/g, '')}" <${recipient.email}>` : recipient.email,
-      subject,
-      html,
-      text: htmlToText(bodyHtml),
+    const res = await fetch(`${MAIL_SERVICE_URL}/send`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(body),
     })
-  } catch (e) {
-    const err = e as SmtpError
-    // Rejected at RCPT TO → the address itself is bad (bounce). Anything else (auth, network)
-    // is an account problem, so the recipient stays pending and can be retried.
-    const isBounce = err.command === 'RCPT TO' || err.code === 'EENVELOPE'
-    if (isBounce) {
-      const hard = (err.responseCode ?? 550) >= 500
-      await supabase
-        .from('mail_recipients')
-        .update({ status: 'bounced', bounced_at: new Date().toISOString(), bounce_type: hard ? 'hard' : 'soft' })
-        .eq('id', recipient.id)
-      await supabase
-        .from('mail_campaigns')
-        .update({ bounce_count: campaign.bounce_count + 1 })
-        .eq('id', campaign.id)
-      const pending = await finishIfDone(supabase, campaign.id)
-      return NextResponse.json({ ok: false, bounced: true, error: err.message, pending })
-    }
-    return NextResponse.json({ error: err.message }, { status: 502 })
+    const data = await res.json().catch(() => ({}))
+    return NextResponse.json(data, { status: res.status })
+  } catch (err) {
+    console.error('[mail-gonder] Fly.io bağlantı hatası:', err)
+    return NextResponse.json({ error: 'Mail servisi bağlantı hatası' }, { status: 502 })
   }
-
-  await supabase
-    .from('mail_recipients')
-    .update({ status: 'sent', sent_at: new Date().toISOString() })
-    .eq('id', recipient.id)
-  await supabase.rpc('increment_campaign_sent', { cid: campaign.id })
-  await supabase.from('mail_accounts').update({ sent_today: sentToday + 1 }).eq('id', account.id)
-
-  const pending = await finishIfDone(supabase, campaign.id)
-  return NextResponse.json({ ok: true, pending })
 }
