@@ -3,12 +3,13 @@
 import { Suspense, useCallback, useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import { Send, Upload, Play, Loader2, X, Search, Users } from 'lucide-react'
+import { Send, Upload, Play, Loader2, X, Search, Users, ShieldCheck } from 'lucide-react'
 import PageHeader from '@/components/PageHeader'
 import { Toast } from '@/components/Toast'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 import { ACTIVE_ACCOUNT_STATUSES, MAIL_ACCOUNT_PUBLIC_COLUMNS, renderTemplate, type MailAccount, type MailCampaign, type MailRecipient, type MailTemplate } from '@/lib/mail'
 import { Card, CampaignStatusBadge, Field, ProgressBar, MAIL_GRADIENT, buttonStyle, inputStyle, thStyle, tdStyle } from '../../_components/ui'
+import type { BounceResult } from '@/app/api/bounce-check/route'
 
 interface Recipient {
   email: string
@@ -574,6 +575,11 @@ function YeniKampanya() {
   const [csvRecipients, setCsvRecipients] = useState<Recipient[]>([])
   const [csvStats, setCsvStats] = useState<{ invalid: number; duplicates: number } | null>(null)
 
+  // Bounce check state
+  const [bounceChecking, setBounceChecking] = useState(false)
+  const [bounceResults, setBounceResults] = useState<BounceResult[] | null>(null)
+  const [bounceStats, setBounceStats] = useState<{ total: number; ok: number; bounce: number; belirsiz: number; yok: number } | null>(null)
+
   const [campaignId, setCampaignId] = useState<string | null>(null)
   const [campaignStatus, setCampaignStatus] = useState<string | null>(null)
   const [queueing, setQueueing] = useState(false)
@@ -658,6 +664,64 @@ function YeniKampanya() {
     setCsvRecipients([])
     setCsvStats(null)
     setFileName('')
+    setBounceResults(null)
+    setBounceStats(null)
+  }
+
+  // Run bounce check on all current recipients in batches of 100
+  const runBounceCheck = async () => {
+    if (recipients.length === 0) return
+    setBounceChecking(true)
+    setBounceResults(null)
+    setBounceStats(null)
+    try {
+      const emails = recipients.map((r) => r.email)
+      const allResults: BounceResult[] = []
+      // Process in batches of 100 to avoid timeout
+      for (let i = 0; i < emails.length; i += 100) {
+        const batch = emails.slice(i, i + 100)
+        const res = await fetch('/api/bounce-check', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ emails: batch }),
+        })
+        if (!res.ok) throw new Error(`Bounce check hatası (${res.status})`)
+        const data = await res.json()
+        allResults.push(...(data.results as BounceResult[]))
+      }
+      const stats = {
+        total: allResults.length,
+        ok: allResults.filter((r) => r.status === 'OK').length,
+        bounce: allResults.filter((r) => r.status === 'BOUNCE').length,
+        belirsiz: allResults.filter((r) => r.status === 'BELIRSIZ').length,
+        yok: allResults.filter((r) => r.status === 'YOK').length,
+      }
+      setBounceResults(allResults)
+      setBounceStats(stats)
+
+      // Remove definite bounces from the recipient lists
+      const bounceEmails = new Set(allResults.filter((r) => r.status === 'BOUNCE').map((r) => r.email))
+      if (bounceEmails.size > 0) {
+        setCsvRecipients((prev) => prev.filter((r) => !bounceEmails.has(r.email)))
+        setPlatformRecipients((prev) => {
+          const next = new Map(prev)
+          for (const [key, val] of next) {
+            if (bounceEmails.has(val.email)) next.delete(key)
+          }
+          return next
+        })
+        setToast({
+          message: `${bounceEmails.size} kesin bounce çıkarıldı, ${allResults.length - bounceEmails.size} alıcı kaldı`,
+          type: 'success',
+        })
+      } else {
+        setToast({ message: 'Bounce bulunamadı — tüm alıcılar temiz!', type: 'success' })
+      }
+    } catch (e) {
+      setToast({ message: (e as Error).message, type: 'error' })
+    } finally {
+      setBounceChecking(false)
+    }
   }
 
   const toggleAccount = (id: string) => {
@@ -1000,6 +1064,62 @@ function YeniKampanya() {
                 <p style={{ fontSize: '12px', color: 'var(--muted-foreground)', margin: '12px 0 0' }}>
                   {platformRecipients.size} platform + {csvRecipients.length} CSV, tekrarlar çıkarıldı
                 </p>
+              )}
+
+              {/* ── Bounce Check ── */}
+              {recipients.length > 0 && !locked && (
+                <div style={{
+                  marginTop: '16px',
+                  padding: '14px',
+                  borderRadius: '10px',
+                  border: '1px solid var(--border)',
+                  backgroundColor: 'var(--muted)',
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap' }}>
+                    <div>
+                      <p style={{ margin: 0, fontSize: '13px', fontWeight: 600, color: 'var(--foreground)' }}>
+                        <ShieldCheck size={14} style={{ verticalAlign: '-2px', marginRight: '6px' }} />
+                        Bounce Kontrolü
+                      </p>
+                      <p style={{ margin: '2px 0 0', fontSize: '12px', color: 'var(--muted-foreground)' }}>
+                        Göndermeden önce geçersiz emailler temizlenir (SMTP doğrulama)
+                      </p>
+                    </div>
+                    <button
+                      style={buttonStyle('secondary', bounceChecking || locked)}
+                      disabled={bounceChecking || locked}
+                      onClick={runBounceCheck}
+                    >
+                      {bounceChecking
+                        ? <><Loader2 size={14} className="animate-spin" /> Kontrol ediliyor…</>
+                        : <><ShieldCheck size={14} /> {recipients.length} emaili kontrol et</>
+                      }
+                    </button>
+                  </div>
+
+                  {bounceStats && (
+                    <div style={{ marginTop: '12px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                      <span style={{ fontSize: '12px', padding: '3px 10px', borderRadius: '999px', backgroundColor: 'var(--success)', color: '#fff', fontWeight: 600 }}>
+                        ✓ {bounceStats.ok} OK
+                      </span>
+                      {bounceStats.bounce > 0 && (
+                        <span style={{ fontSize: '12px', padding: '3px 10px', borderRadius: '999px', backgroundColor: 'var(--danger)', color: '#fff', fontWeight: 600 }}>
+                          ✗ {bounceStats.bounce} Bounce (çıkarıldı)
+                        </span>
+                      )}
+                      {bounceStats.belirsiz > 0 && (
+                        <span style={{ fontSize: '12px', padding: '3px 10px', borderRadius: '999px', backgroundColor: 'var(--orange)', color: '#fff', fontWeight: 600 }}>
+                          ? {bounceStats.belirsiz} Belirsiz (listede)
+                        </span>
+                      )}
+                      {bounceStats.yok > 0 && (
+                        <span style={{ fontSize: '12px', padding: '3px 10px', borderRadius: '999px', backgroundColor: 'var(--muted-foreground)', color: '#fff', fontWeight: 600 }}>
+                          — {bounceStats.yok} Geçersiz format
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </div>
               )}
             </Card>
           )}
