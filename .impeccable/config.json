@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "broken-image",
+        "value": "*",
+        "files": [
+          "scripts/send-campaign.js"
+        ],
+        "createdAt": "2026-09-28T07:07:33.572Z",
+        "reason": "Claude: src is a runtime template literal ${tracking(...)} building the tracked logo URL, not an empty/placeholder src"
+      }
+    ]
+  }
+}

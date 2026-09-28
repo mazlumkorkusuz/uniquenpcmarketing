@@ -1,14 +1,14 @@
 'use client'
 
-import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { Suspense, useCallback, useEffect, useMemo, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import { Send, Upload, Square, Play, Loader2, X, Search, Users } from 'lucide-react'
+import { Send, Upload, Play, Loader2, X, Search, Users } from 'lucide-react'
 import PageHeader from '@/components/PageHeader'
 import { Toast } from '@/components/Toast'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 import { ACTIVE_ACCOUNT_STATUSES, MAIL_ACCOUNT_PUBLIC_COLUMNS, renderTemplate, type MailAccount, type MailCampaign, type MailRecipient, type MailTemplate } from '@/lib/mail'
-import { Card, Field, ProgressBar, MAIL_GRADIENT, buttonStyle, inputStyle, thStyle, tdStyle } from '../../_components/ui'
+import { Card, CampaignStatusBadge, Field, ProgressBar, MAIL_GRADIENT, buttonStyle, inputStyle, thStyle, tdStyle } from '../../_components/ui'
 
 interface Recipient {
   email: string
@@ -41,11 +41,8 @@ const EMPTY_FILTERS: DrawerFilters = {
   minFollowers: '', maxFollowers: '', minAvg: '', maxAvg: '', language: '', country: '', sort: 'followers_desc',
 }
 
-interface LogLine {
-  email: string
-  ok: boolean
-  message: string
-}
+// Fixed pause between mails in the GitHub Actions sender (scripts/send-campaign.js DELAY_MS)
+const SEND_DELAY_SECONDS = 90
 
 type RecipientTab = 'platform' | 'csv'
 
@@ -184,22 +181,6 @@ function countValues<T>(items: T[], pick: (item: T) => string | null): [string, 
     counts.set(k, (counts.get(k) ?? 0) + 1)
   }
   return [...counts.entries()].sort((a, b) => b[1] - a[1])
-}
-
-// Interleaves the queue by account so consecutive mails go out from different accounts
-function interleaveByAccount<T extends { account_id?: string | null }>(items: T[]): T[] {
-  const groups = new Map<string, T[]>()
-  for (const it of items) {
-    const k = it.account_id ?? ''
-    if (!groups.has(k)) groups.set(k, [])
-    groups.get(k)!.push(it)
-  }
-  const lists = [...groups.values()]
-  const out: T[] = []
-  for (let i = 0; out.length < items.length; i++) {
-    for (const l of lists) if (i < l.length) out.push(l[i])
-  }
-  return out
 }
 
 // Applies a platform's drawer filters and sort order; runs on every keystroke, no refetch
@@ -575,7 +556,6 @@ function StreamerDrawer({
 }
 
 function YeniKampanya() {
-  const router = useRouter()
   const resumeId = useSearchParams().get('resume')
   const supabase = useMemo(() => createSupabaseBrowserClient(), [])
 
@@ -584,7 +564,6 @@ function YeniKampanya() {
   const [name, setName] = useState('')
   const [accountIds, setAccountIds] = useState<string[]>([])
   const [templateId, setTemplateId] = useState('')
-  const [delay, setDelay] = useState(30)
 
   const [recipientTab, setRecipientTab] = useState<RecipientTab>('platform')
   const [drawerPlatform, setDrawerPlatform] = useState<PlatformDef | null>(null)
@@ -596,12 +575,10 @@ function YeniKampanya() {
   const [csvStats, setCsvStats] = useState<{ invalid: number; duplicates: number } | null>(null)
 
   const [campaignId, setCampaignId] = useState<string | null>(null)
-  const [sending, setSending] = useState(false)
+  const [campaignStatus, setCampaignStatus] = useState<string | null>(null)
+  const [queueing, setQueueing] = useState(false)
   const [progress, setProgress] = useState({ done: 0, total: 0 })
-  const [countdown, setCountdown] = useState(0)
-  const [log, setLog] = useState<LogLine[]>([])
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
-  const stopRef = useRef(false)
 
   useEffect(() => {
     Promise.all([
@@ -630,18 +607,23 @@ function YeniKampanya() {
       setName(c.name)
       setAccountIds([...ids])
       setTemplateId(c.template_id ?? '')
-      setDelay(c.delay_seconds)
+      setCampaignStatus(c.status)
       setProgress({ done: c.sent_count + c.bounce_count, total: c.total_recipients })
     })()
   }, [resumeId, supabase])
 
-  // Warn before closing the tab mid-send
+  // While GitHub Actions is sending, refresh progress from the database
+  const inFlight = campaignStatus === 'ready_to_send' || campaignStatus === 'sending'
   useEffect(() => {
-    if (!sending) return
-    const handler = (e: BeforeUnloadEvent) => { e.preventDefault() }
-    window.addEventListener('beforeunload', handler)
-    return () => window.removeEventListener('beforeunload', handler)
-  }, [sending])
+    if (!campaignId || !inFlight) return
+    const t = setInterval(async () => {
+      const { data: c } = await supabase.from('mail_campaigns').select('*').eq('id', campaignId).single<MailCampaign>()
+      if (!c) return
+      setCampaignStatus(c.status)
+      setProgress({ done: c.sent_count + c.bounce_count, total: c.total_recipients })
+    }, 20_000)
+    return () => clearInterval(t)
+  }, [campaignId, inFlight, supabase])
 
   // Final recipient list: platform picks + CSV rows, deduplicated by email
   const recipients = useMemo<Recipient[]>(() => {
@@ -717,77 +699,25 @@ function YeniKampanya() {
     }
   }
 
-  const sleepWithCountdown = async (seconds: number) => {
-    for (let s = seconds; s > 0; s--) {
-      if (stopRef.current) break
-      setCountdown(s)
-      await new Promise((r) => setTimeout(r, 1000))
-    }
-    setCountdown(0)
-  }
-
-  const runSending = useCallback(async (cid: string, delaySeconds: number) => {
-    stopRef.current = false
-    setSending(true)
-
-    const { data: pending } = await supabase
-      .from('mail_recipients')
-      .select('*')
-      .eq('campaign_id', cid)
-      .eq('status', 'pending')
-      .order('created_at')
-    const queue = interleaveByAccount((pending ?? []) as MailRecipient[])
-
-    // Accounts that hit their daily limit or became inactive; their recipients stay pending
-    const unavailable = new Set<string>()
-    let stoppedReason: string | null = null
-    let sentAny = false
-    for (let i = 0; i < queue.length; i++) {
-      if (stopRef.current) { stoppedReason = 'Gönderim durduruldu'; break }
-      const r = queue[i]
-      if (r.account_id && unavailable.has(r.account_id)) continue
-      if (sentAny) await sleepWithCountdown(delaySeconds)
-      if (stopRef.current) { stoppedReason = 'Gönderim durduruldu'; break }
-
-      const res = await fetch('/api/mail-gonder', {
+  // Hands the campaign to the GitHub Actions sender (/api/kampanya-gonder → repository_dispatch)
+  const queueCampaign = async (cid: string) => {
+    setQueueing(true)
+    try {
+      const res = await fetch('/api/kampanya-gonder', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ recipient_id: r.id }),
+        body: JSON.stringify({ campaign_id: cid }),
       })
       const data = await res.json().catch(() => ({}))
-
-      if (res.ok && data.ok) {
-        sentAny = true
-        setLog((l) => [{ email: r.email, ok: true, message: 'Gönderildi' }, ...l])
-        setProgress((p) => ({ ...p, done: p.done + 1 }))
-      } else if (data.bounced) {
-        sentAny = true
-        setLog((l) => [{ email: r.email, ok: false, message: `Bounce: ${data.error}` }, ...l])
-        setProgress((p) => ({ ...p, done: p.done + 1 }))
-      } else if (data.skipped) {
-        continue
-      } else if (data.accountUnavailable && r.account_id) {
-        // Only this account is blocked — keep sending from the others
-        unavailable.add(r.account_id)
-        stoppedReason = data.error
-        setLog((l) => [{ email: r.email, ok: false, message: data.error }, ...l])
-      } else {
-        // Account/SMTP problem — stop and let the user resume later
-        stoppedReason = data.error ?? `Hata (${res.status})`
-        setLog((l) => [{ email: r.email, ok: false, message: stoppedReason! }, ...l])
-        break
-      }
+      if (!res.ok) throw new Error(data.error ?? `Kampanya sıraya alınamadı (${res.status})`)
+      setCampaignStatus('ready_to_send')
+      setToast({ message: 'Kampanya sıraya alındı — gönderim arka planda başlıyor', type: 'success' })
+    } catch (e) {
+      setToast({ message: (e as Error).message, type: 'error' })
+    } finally {
+      setQueueing(false)
     }
-
-    if (stoppedReason) {
-      await supabase.from('mail_campaigns').update({ status: 'paused' }).eq('id', cid)
-      setToast({ message: `${stoppedReason}. Kampanyalar sayfasından devam edebilirsiniz.`, type: 'error' })
-    } else {
-      setToast({ message: 'Kampanya tamamlandı', type: 'success' })
-    }
-    setSending(false)
-    router.refresh()
-  }, [supabase, router])
+  }
 
   const createAndSend = async () => {
     if (!name.trim() || accountIds.length === 0 || !templateId || recipients.length === 0) {
@@ -795,7 +725,7 @@ function YeniKampanya() {
       return
     }
     const accountsNote = accountIds.length > 1 ? ` (${accountIds.length} hesap sırayla)` : ''
-    if (!confirm(`${recipients.length} kişiye ${delay} sn aralıkla mail gönderilecek${accountsNote}. Devam edilsin mi?`)) return
+    if (!confirm(`${recipients.length} kişiye ${SEND_DELAY_SECONDS} sn aralıkla mail gönderilecek${accountsNote}. Gönderim arka planda (GitHub Actions) yapılır. Devam edilsin mi?`)) return
 
     const { data: campaign, error } = await supabase
       .from('mail_campaigns')
@@ -805,7 +735,7 @@ function YeniKampanya() {
         template_id: templateId,
         status: 'draft',
         total_recipients: recipients.length,
-        delay_seconds: delay,
+        delay_seconds: SEND_DELAY_SECONDS,
       })
       .select()
       .single<MailCampaign>()
@@ -834,12 +764,13 @@ function YeniKampanya() {
     }
 
     setCampaignId(campaign.id)
+    setCampaignStatus('draft')
     setProgress({ done: 0, total: recipients.length })
-    await runSending(campaign.id, delay)
+    await queueCampaign(campaign.id)
   }
 
   const isResume = !!resumeId && !!campaignId
-  const locked = sending || !!campaignId
+  const locked = queueing || !!campaignId
   const canSend = !!name && accountIds.length > 0 && !!templateId && recipients.length > 0 && !campaignId
 
   const tabStyle = (active: boolean): React.CSSProperties => ({
@@ -893,13 +824,13 @@ function YeniKampanya() {
           <Card title="Kampanya Ayarları">
             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               <Field label="Kampanya Adı">
-                <input style={inputStyle} value={name} onChange={(e) => setName(e.target.value)} disabled={isResume || sending} />
+                <input style={inputStyle} value={name} onChange={(e) => setName(e.target.value)} disabled={isResume || locked} />
               </Field>
               <Field label="Gönderen Hesaplar">
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                   {accounts.map((a) => {
                     const checked = accountIds.includes(a.id)
-                    const disabled = isResume || sending
+                    const disabled = isResume || locked
                     return (
                       <label
                         key={a.id}
@@ -931,7 +862,7 @@ function YeniKampanya() {
                 )}
               </Field>
               <Field label="Şablon">
-                <select style={inputStyle} value={templateId} onChange={(e) => setTemplateId(e.target.value)} disabled={isResume || sending}>
+                <select style={inputStyle} value={templateId} onChange={(e) => setTemplateId(e.target.value)} disabled={isResume || locked}>
                   <option value="">Seçin…</option>
                   {templates.map((t) => (
                     <option key={t.id} value={t.id}>
@@ -945,16 +876,9 @@ function YeniKampanya() {
                   </p>
                 )}
               </Field>
-              <Field label="Mailler arası bekleme (saniye)">
-                <input
-                  type="number"
-                  min={5}
-                  style={inputStyle}
-                  value={delay}
-                  onChange={(e) => setDelay(Math.max(5, Number(e.target.value) || 5))}
-                  disabled={isResume || sending}
-                />
-              </Field>
+              <p style={{ fontSize: '12px', color: 'var(--muted-foreground)', margin: 0 }}>
+                Mailler arka planda (GitHub Actions) {SEND_DELAY_SECONDS} saniye arayla gönderilir; bu sekmeyi açık tutmanız gerekmez.
+              </p>
             </div>
           </Card>
 
@@ -1076,40 +1000,44 @@ function YeniKampanya() {
           )}
 
           <Card title="Gönderim">
-            {(sending || progress.total > 0) && (
+            {campaignStatus && progress.total > 0 && (
               <div style={{ marginBottom: '14px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                  <CampaignStatusBadge status={campaignStatus} />
+                  {inFlight && <span style={{ fontSize: '12px', color: 'var(--muted-foreground)' }}>İlerleme 20 sn&apos;de bir güncellenir</span>}
+                </div>
                 <ProgressBar value={progress.done} total={progress.total} />
-                {countdown > 0 && <p style={{ fontSize: '12px', color: 'var(--muted-foreground)', margin: '8px 0 0' }}>Sonraki mail {countdown} sn içinde…</p>}
               </div>
             )}
             <div style={{ display: 'flex', gap: '8px' }}>
-              {sending ? (
-                <button style={buttonStyle('danger')} onClick={() => { stopRef.current = true }}>
-                  <Square size={14} /> Durdur
+              {inFlight ? (
+                <button style={buttonStyle('secondary', true)} disabled>
+                  <Loader2 size={14} className="animate-spin" /> Arka planda gönderiliyor
                 </button>
               ) : isResume ? (
-                <button style={buttonStyle('primary')} onClick={() => runSending(campaignId!, delay)}>
-                  <Play size={14} /> Kalan Alıcılara Gönder
+                <button
+                  style={buttonStyle('primary', queueing || campaignStatus === 'completed')}
+                  disabled={queueing || campaignStatus === 'completed'}
+                  onClick={() => queueCampaign(campaignId!)}
+                >
+                  {queueing ? <Loader2 size={14} className="animate-spin" /> : <Play size={14} />} Kalan Alıcılara Gönder
                 </button>
               ) : (
-                <button style={buttonStyle('primary', !canSend)} disabled={!canSend} onClick={createAndSend}>
-                  <Send size={14} /> Kampanyayı Oluştur ve Gönder
+                <button style={buttonStyle('primary', !canSend || queueing)} disabled={!canSend || queueing} onClick={createAndSend}>
+                  {queueing ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />} Kampanyayı Oluştur ve Gönder
                 </button>
               )}
             </div>
-            {sending && (
-              <p style={{ fontSize: '12px', color: 'var(--orange)', margin: '10px 0 0' }}>
-                Gönderim bu sekmede çalışıyor — sekmeyi kapatmayın. Kapatırsanız Kampanyalar sayfasından devam edebilirsiniz.
+            {campaignId && !isResume && campaignStatus === 'draft' && !queueing && (
+              <p style={{ fontSize: '12px', color: 'var(--danger)', margin: '10px 0 0' }}>
+                Kampanya oluşturuldu ama sıraya alınamadı.{' '}
+                <button
+                  onClick={() => queueCampaign(campaignId)}
+                  style={{ padding: 0, border: 'none', background: 'none', color: 'var(--foreground)', fontWeight: 600, textDecoration: 'underline', cursor: 'pointer', fontSize: '12px' }}
+                >
+                  Tekrar dene
+                </button>
               </p>
-            )}
-            {log.length > 0 && (
-              <div style={{ marginTop: '14px', maxHeight: '220px', overflowY: 'auto', fontSize: '12px', fontFamily: 'monospace' }}>
-                {log.map((l, i) => (
-                  <div key={i} style={{ color: l.ok ? 'var(--success)' : 'var(--danger)', padding: '2px 0' }}>
-                    {l.ok ? '✓' : '✗'} {l.email} — {l.message}
-                  </div>
-                ))}
-              </div>
             )}
           </Card>
         </div>

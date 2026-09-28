@@ -92,6 +92,7 @@ export const normalizeMailLanguage = (language: string) => LEGACY_LANGUAGE_NAMES
 
 export const CAMPAIGN_STATUS_LABELS: Record<string, string> = {
   draft: 'Taslak',
+  ready_to_send: 'Sırada',
   sending: 'Gönderiliyor',
   paused: 'Duraklatıldı',
   completed: 'Tamamlandı',

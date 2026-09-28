@@ -1,0 +1,42 @@
+name: Send campaign
+
+# Triggered by /api/kampanya-gonder (repository_dispatch "send_campaign"). Sends every campaign
+# marked 'ready_to_send', 90 seconds apart. Long campaigns re-dispatch this workflow (with
+# MAIL_SENDER_PAT) to continue before the job's time limit.
+on:
+  repository_dispatch:
+    types: [send_campaign]
+
+permissions:
+  contents: read
+
+# Never run two senders at once — they would pick up the same pending recipients
+concurrency:
+  group: send-campaign
+  cancel-in-progress: false
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    defaults:
+      run:
+        working-directory: scripts
+    steps:
+      - uses: actions/checkout@v4
+
+      # Node 20: @supabase/supabase-js and nodemailer require >= 20
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: scripts/package-lock.json
+
+      - run: npm ci
+
+      - run: node send-campaign.js
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          MAIL_SENDER_PAT: ${{ secrets.MAIL_SENDER_PAT }}

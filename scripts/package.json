@@ -1,0 +1,12 @@
+{
+  "name": "uniquenpcmarketing-scripts",
+  "private": true,
+  "description": "Standalone scripts run outside the Next.js app (GitHub Actions campaign sender).",
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.108.2",
+    "nodemailer": "^10.0.10"
+  }
+}

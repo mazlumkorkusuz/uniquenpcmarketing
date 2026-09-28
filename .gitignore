@@ -45,3 +45,6 @@ next-env.d.ts
 
 # supabase
 supabase/.temp/
+
+# Dependencies of the standalone scripts package
+/scripts/node_modules
