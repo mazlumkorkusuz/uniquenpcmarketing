@@ -11,8 +11,9 @@ import { isAccountActive, type MailAccount } from '@/lib/mail'
 //
 // Reads each active mail account's INBOX over IMAP (Hostinger: imap.hostinger.com:993, same login as
 // SMTP — credentials come from mail_accounts, never from code) and:
-//   - replies: the first message from a recipient after this account mailed them → status 'replied'
-//     ("Cevap Verdi"), replied_at = the reply's date, reply_subject + first 500 chars of reply_body
+//   - replies: ALL messages from a recipient after this account mailed them → status 'replied'
+//     ("Cevap Verdi"), replied_at = the first reply's date, reply_subject + first 500 chars of reply_body
+//     (most recent reply), plus a row in mail_reply_logs for each reply found
 //   - bounces: "Undelivered Mail…" / delivery-failure reports naming a recipient → status 'bounced'
 // Each run is recorded in mail_sync_runs (shown as "Son senkronizasyon" on the tracking page).
 //
@@ -145,7 +146,7 @@ function subjectAny(subjects: string[]): unknown[] {
 
 // ── Parsing ─────────────────────────────────────────────────────────────────
 
-// Every message per sender, oldest first; the reply is the first one after our mail was sent
+// Every message per sender, oldest first
 function messagesBySender(messages: InboxMessage[]): Map<string, InboxMessage[]> {
   const bySender = new Map<string, InboxMessage[]>()
   for (const m of messages) {
@@ -204,7 +205,7 @@ function bouncedAddresses(m: InboxMessage): Map<string, { date: Date; hard: bool
 
 // ── Database ────────────────────────────────────────────────────────────────
 
-// Recipients with these emails that this account mailed and that are still awaiting an outcome
+// Recipients with these emails that this account mailed
 async function candidates(db: SupabaseClient, account: MailAccount, emails: string[]): Promise<CandidateRecipient[]> {
   const out: CandidateRecipient[] = []
   for (let i = 0; i < emails.length; i += 200) {
@@ -212,13 +213,41 @@ async function candidates(db: SupabaseClient, account: MailAccount, emails: stri
       .from('mail_recipients')
       .select('*, mail_campaigns(account_id)')
       .in('email', emails.slice(i, i + 200))
-      .in('status', ['sent', 'opened'])
+      .in('status', ['sent', 'opened', 'replied'])
     if (error) throw new Error(error.message)
     for (const r of (data ?? []) as CandidateRecipient[]) {
       if ((r.account_id ?? r.mail_campaigns?.account_id) === account.id && r.sent_at) out.push(r)
     }
   }
   return out
+}
+
+// Insert a reply log row, deduplicating by recipient_id + received_at
+async function insertReplyLog(
+  db: SupabaseClient,
+  recipientId: string,
+  campaignId: string,
+  receivedAt: Date,
+  subject: string | null,
+  bodyPreview: string | null,
+): Promise<boolean> {
+  // Check for existing log with same recipient and timestamp to avoid duplicates
+  const { data: existing } = await db
+    .from('mail_reply_logs')
+    .select('id')
+    .eq('recipient_id', recipientId)
+    .eq('received_at', receivedAt.toISOString())
+    .maybeSingle()
+  if (existing) return false // already logged
+
+  const { error } = await db.from('mail_reply_logs').insert({
+    recipient_id: recipientId,
+    campaign_id: campaignId,
+    received_at: receivedAt.toISOString(),
+    subject,
+    body_preview: bodyPreview,
+  })
+  return !error
 }
 
 async function bumpCampaign(db: SupabaseClient, campaignId: string, changes: { reply?: number; bounce?: number }) {
@@ -243,7 +272,7 @@ async function syncAccount(db: SupabaseClient, account: MailAccount, since: Date
     const all = await fetchMessages(imap, await search(imap, [['SINCE', since]]), false)
     const bounceReports = await fetchMessages(imap, await search(imap, [['SINCE', since], subjectAny(BOUNCE_SUBJECTS)]), true)
 
-    const replies = messagesBySender(all)
+    const repliesBySender = messagesBySender(all)
     const bounces = new Map<string, { date: Date; hard: boolean }>()
     for (const report of bounceReports) for (const [email, b] of bouncedAddresses(report)) bounces.set(email, b)
 
@@ -256,12 +285,17 @@ async function syncAccount(db: SupabaseClient, account: MailAccount, since: Date
 
     let replyCount = 0
     let bounceCount = 0
-    for (const r of await candidates(db, account, [...new Set([...replies.keys(), ...bounces.keys()])])) {
+
+    // Include 'replied' status recipients so we can log additional replies from same sender
+    for (const r of await candidates(db, account, [...new Set([...repliesBySender.keys(), ...bounces.keys()])])) {
       const sentAt = new Date(r.sent_at!)
       const bounce = bounces.get(r.email)
-      const reply = replies.get(r.email)?.find((m) => m.date >= sentAt)
+      // Get ALL replies from this sender after their campaign was sent
+      const allReplies = (repliesBySender.get(r.email) ?? []).filter((m) => m.date >= sentAt)
+      const firstReply = allReplies[0] ?? null
+      const mostRecentReply = allReplies[allReplies.length - 1] ?? null
 
-      if (bounce && bounce.date >= sentAt) {
+      if (bounce && bounce.date >= sentAt && r.status !== 'replied') {
         const { error } = await db
           .from('mail_recipients')
           .update({ status: 'bounced', bounced_at: bounce.date.toISOString(), bounce_type: bounce.hard ? 'hard' : 'soft' })
@@ -270,33 +304,114 @@ async function syncAccount(db: SupabaseClient, account: MailAccount, since: Date
         if (error) throw new Error(error.message)
         bounceCount++
         tally(r.campaign_id, 'bounce')
-      } else if (reply) {
-        const { error } = await db
-          .from('mail_recipients')
-          .update({ status: 'replied', replied_at: reply.date.toISOString() })
-          .eq('id', r.id)
-          .is('replied_at', null)
-        if (error) throw new Error(error.message)
-        replyCount++
-        tally(r.campaign_id, 'reply')
+      } else if (allReplies.length > 0) {
+        // Mark as replied (using earliest reply date) if not already
+        if (r.status !== 'replied') {
+          const { error } = await db
+            .from('mail_recipients')
+            .update({ status: 'replied', replied_at: firstReply!.date.toISOString() })
+            .eq('id', r.id)
+            .is('replied_at', null)
+          if (error) throw new Error(error.message)
+          replyCount++
+          tally(r.campaign_id, 'reply')
+        }
 
-        // Best effort: reply content needs the reply_subject/reply_body migration, and a parsing or
-        // save failure must not undo the reply we just recorded
-        try {
-          const content = await replyContent(imap, reply.uid)
-          await db.from('mail_recipients').update({ reply_subject: content.subject, reply_body: content.body }).eq('id', r.id)
-        } catch {
-          // keep going
+        // Save ALL replies to mail_reply_logs and update reply_subject/reply_body with most recent
+        for (const replyMsg of allReplies) {
+          try {
+            const content = await replyContent(imap, replyMsg.uid)
+            // Insert into mail_reply_logs (deduplicated by received_at + recipient_id)
+            await insertReplyLog(db, r.id, r.campaign_id, replyMsg.date, content.subject, content.body)
+
+            // Update reply_subject/reply_body on mail_recipients with the most recent reply
+            if (replyMsg === mostRecentReply) {
+              await db
+                .from('mail_recipients')
+                .update({ reply_subject: content.subject, reply_body: content.body })
+                .eq('id', r.id)
+            }
+          } catch {
+            // keep going — don't let a parse failure block other replies
+          }
         }
       }
     }
 
     for (const [cid, t] of perCampaign) await bumpCampaign(db, cid, t)
+
+    // ── Backfill: find recipients marked 'Cevap Verdi' with no reply content ────
+    await backfillReplyContent(db, account, imap)
+
     return { account: account.email, scanned: all.length, replies: replyCount, bounces: bounceCount }
   } catch (e) {
     return { account: account.email, scanned: 0, replies: 0, bounces: 0, error: (e as Error).message }
   } finally {
     imap?.end()
+  }
+}
+
+// Backfill reply content for recipients that are marked as 'replied' but have no reply_subject
+async function backfillReplyContent(db: SupabaseClient, account: MailAccount, imap: Imap): Promise<void> {
+  try {
+    // Find recipients of this account's campaigns that replied but have no stored content
+    const { data: needsBackfill } = await db
+      .from('mail_recipients')
+      .select('id, email, campaign_id, sent_at, mail_campaigns(account_id, sent_at)')
+      .eq('status', 'replied')
+      .is('reply_subject', null)
+      .not('sent_at', 'is', null)
+      .limit(50) // process in batches to avoid timeouts
+
+    if (!needsBackfill || needsBackfill.length === 0) return
+
+    for (const r of needsBackfill as Array<{
+      id: string
+      email: string
+      campaign_id: string
+      sent_at: string | null
+      mail_campaigns: { account_id: string | null; sent_at: string | null } | null
+    }>) {
+      // Only process recipients belonging to this account
+      if (r.mail_campaigns?.account_id !== account.id) continue
+
+      const campaignSentAt = r.mail_campaigns?.sent_at ? new Date(r.mail_campaigns.sent_at) : r.sent_at ? new Date(r.sent_at) : null
+      if (!campaignSentAt) continue
+
+      try {
+        // Search for emails from this recipient after the campaign was sent
+        const uids = await search(imap, [['SINCE', campaignSentAt], ['FROM', r.email]])
+        if (uids.length === 0) continue
+
+        const msgs = await fetchMessages(imap, uids, false)
+        const replies = msgs.filter((m) => m.from.toLowerCase() === r.email.toLowerCase() && m.date >= campaignSentAt)
+          .sort((a, b) => a.date.getTime() - b.date.getTime())
+
+        if (replies.length === 0) continue
+
+        const mostRecent = replies[replies.length - 1]
+
+        for (const replyMsg of replies) {
+          try {
+            const content = await replyContent(imap, replyMsg.uid)
+            await insertReplyLog(db, r.id, r.campaign_id, replyMsg.date, content.subject, content.body)
+
+            if (replyMsg === mostRecent) {
+              await db
+                .from('mail_recipients')
+                .update({ reply_subject: content.subject, reply_body: content.body })
+                .eq('id', r.id)
+            }
+          } catch {
+            // keep going
+          }
+        }
+      } catch {
+        // keep going for next recipient
+      }
+    }
+  } catch {
+    // backfill is best-effort; don't let it fail the whole sync
   }
 }
 
@@ -337,7 +452,7 @@ export async function POST(request: NextRequest) {
   const { data: oldest } = await db
     .from('mail_recipients')
     .select('sent_at')
-    .in('status', ['sent', 'opened'])
+    .in('status', ['sent', 'opened', 'replied'])
     .not('sent_at', 'is', null)
     .order('sent_at', { ascending: true })
     .limit(1)

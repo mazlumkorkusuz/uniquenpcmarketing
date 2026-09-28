@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { X, Eye, Reply, AlertTriangle, Loader2 } from 'lucide-react'
+import { X, Eye, Reply, AlertTriangle, Loader2, RefreshCw } from 'lucide-react'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 import type { MailRecipient } from '@/lib/mail'
 import { RecipientStatusBadge } from './ui'
@@ -12,6 +12,13 @@ interface TrackingLog {
   ip: string | null
   user_agent: string | null
   created_at: string
+}
+
+interface ReplyLog {
+  id: string
+  received_at: string
+  subject: string | null
+  body_preview: string | null
 }
 
 // Exact timestamp: 27 Eylül 2026, 14:03:27
@@ -73,7 +80,9 @@ export default function RecipientDrawer({
   const supabase = useMemo(() => createSupabaseBrowserClient(), [])
   const [visible, setVisible] = useState(false)
   const [logs, setLogs] = useState<TrackingLog[] | null>(null)
+  const [replyLogs, setReplyLogs] = useState<ReplyLog[] | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [resyncing, setResyncing] = useState(false)
   const closeRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
@@ -101,6 +110,37 @@ export default function RecipientDrawer({
       })
     return () => { cancelled = true }
   }, [supabase, recipient.id])
+
+  // Fetch reply logs from mail_reply_logs table
+  useEffect(() => {
+    let cancelled = false
+    supabase
+      .from('mail_reply_logs')
+      .select('id, received_at, subject, body_preview')
+      .eq('recipient_id', recipient.id)
+      .order('received_at', { ascending: false })
+      .then(({ data }) => {
+        if (cancelled) return
+        setReplyLogs((data ?? []) as ReplyLog[])
+      })
+    return () => { cancelled = true }
+  }, [supabase, recipient.id])
+
+  const resync = async () => {
+    setResyncing(true)
+    try {
+      await fetch('/api/mail-imap-sync', { method: 'POST' })
+      // Reload reply logs after sync
+      const { data } = await supabase
+        .from('mail_reply_logs')
+        .select('id, received_at, subject, body_preview')
+        .eq('recipient_id', recipient.id)
+        .order('received_at', { ascending: false })
+      setReplyLogs((data ?? []) as ReplyLog[])
+    } finally {
+      setResyncing(false)
+    }
+  }
 
   const opens = logs?.filter((l) => l.event === 'open') ?? []
   const muted: React.CSSProperties = { fontSize: '13px', color: 'var(--muted-foreground)', margin: 0 }
@@ -134,14 +174,32 @@ export default function RecipientDrawer({
             </div>
             {campaignName && <p style={{ ...muted, marginTop: '10px' }}>Kampanya: <strong style={{ color: 'var(--foreground)' }}>{campaignName}</strong></p>}
           </div>
-          <button
-            ref={closeRef}
-            onClick={onClose}
-            aria-label="Kapat"
-            style={{ display: 'inline-flex', padding: '6px', borderRadius: '8px', border: '1px solid var(--border)', background: 'transparent', color: 'var(--foreground)', cursor: 'pointer' }}
-          >
-            <X size={16} />
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+            {recipient.status === 'replied' && (
+              <button
+                onClick={resyncing ? undefined : resync}
+                disabled={resyncing}
+                title="Yanıtları tekrar senkronize et"
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '6px 10px',
+                  borderRadius: '8px', border: '1px solid var(--border)', background: 'transparent',
+                  color: 'var(--foreground)', cursor: resyncing ? 'default' : 'pointer', fontSize: '12px',
+                  opacity: resyncing ? 0.6 : 1,
+                }}
+              >
+                <RefreshCw size={13} className={resyncing ? 'animate-spin' : undefined} />
+                {resyncing ? 'Senkronize…' : 'Tekrar Senkronize Et'}
+              </button>
+            )}
+            <button
+              ref={closeRef}
+              onClick={onClose}
+              aria-label="Kapat"
+              style={{ display: 'inline-flex', padding: '6px', borderRadius: '8px', border: '1px solid var(--border)', background: 'transparent', color: 'var(--foreground)', cursor: 'pointer' }}
+            >
+              <X size={16} />
+            </button>
+          </div>
         </div>
 
         <Section title={`Açılma Geçmişi${logs ? ` (${opens.length})` : ''}`} icon={<Eye size={14} />}>
@@ -164,25 +222,57 @@ export default function RecipientDrawer({
           )}
         </Section>
 
-        <Section title="Cevap" icon={<Reply size={14} />}>
+        <Section
+          title={`Yanıtlar${replyLogs ? ` (${replyLogs.length})` : ''}`}
+          icon={<Reply size={14} />}
+        >
           {recipient.replied_at ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <p style={{ margin: 0, fontSize: '13px', color: 'var(--success)', fontWeight: 600 }}>{formatExact(recipient.replied_at)}</p>
-              {recipient.reply_subject || recipient.reply_body ? (
-                <div style={{ borderRadius: '8px', border: '1px solid var(--border)', overflow: 'hidden' }}>
-                  {recipient.reply_subject && (
-                    <div style={{ padding: '10px 12px', borderBottom: recipient.reply_body ? '1px solid var(--border)' : undefined, fontSize: '13px', fontWeight: 600, color: 'var(--foreground)', overflowWrap: 'anywhere' }}>
-                      {recipient.reply_subject}
+              {replyLogs === null ? (
+                <p style={{ ...muted, display: 'flex', alignItems: 'center', gap: '8px' }}><Loader2 size={13} className="animate-spin" /> Yanıtlar yükleniyor…</p>
+              ) : replyLogs.length > 0 ? (
+                <ol style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  {replyLogs.map((log) => (
+                    <li key={log.id} style={{ borderRadius: '8px', border: '1px solid var(--border)', overflow: 'hidden' }}>
+                      <div style={{ padding: '8px 12px', backgroundColor: 'var(--muted)', borderBottom: '1px solid var(--border)', fontSize: '12px', color: 'var(--success)', fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
+                        {formatExact(log.received_at)}
+                      </div>
+                      {log.subject && (
+                        <div style={{ padding: '8px 12px', borderBottom: log.body_preview ? '1px solid var(--border)' : undefined, fontSize: '13px', fontWeight: 600, color: 'var(--foreground)', overflowWrap: 'anywhere' }}>
+                          {log.subject}
+                        </div>
+                      )}
+                      {log.body_preview ? (
+                        <p style={{ margin: 0, padding: '8px 12px', fontSize: '13px', lineHeight: 1.55, color: 'var(--text-2)', whiteSpace: 'pre-wrap', overflowWrap: 'anywhere' }}>
+                          {log.body_preview}
+                        </p>
+                      ) : (
+                        <p style={{ margin: 0, padding: '8px 12px', ...muted }}>İçerik yok</p>
+                      )}
+                    </li>
+                  ))}
+                </ol>
+              ) : (
+                // replied_at is set but no reply logs yet — suggest re-sync
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <p style={{ margin: 0, fontSize: '13px', color: 'var(--success)', fontWeight: 600 }}>{formatExact(recipient.replied_at)}</p>
+                  {recipient.reply_subject || recipient.reply_body ? (
+                    <div style={{ borderRadius: '8px', border: '1px solid var(--border)', overflow: 'hidden' }}>
+                      {recipient.reply_subject && (
+                        <div style={{ padding: '10px 12px', borderBottom: recipient.reply_body ? '1px solid var(--border)' : undefined, fontSize: '13px', fontWeight: 600, color: 'var(--foreground)', overflowWrap: 'anywhere' }}>
+                          {recipient.reply_subject}
+                        </div>
+                      )}
+                      {recipient.reply_body && (
+                        <p style={{ margin: 0, padding: '10px 12px', fontSize: '13px', lineHeight: 1.55, color: 'var(--text-2)', whiteSpace: 'pre-wrap', overflowWrap: 'anywhere' }}>
+                          {recipient.reply_body}
+                        </p>
+                      )}
                     </div>
-                  )}
-                  {recipient.reply_body && (
-                    <p style={{ margin: 0, padding: '10px 12px', fontSize: '13px', lineHeight: 1.55, color: 'var(--text-2)', whiteSpace: 'pre-wrap', overflowWrap: 'anywhere' }}>
-                      {recipient.reply_body}
-                    </p>
+                  ) : (
+                    <p style={muted}>Cevap içeriği kaydedilmemiş — Tekrar Senkronize Et butonuna basın</p>
                   )}
                 </div>
-              ) : (
-                <p style={muted}>Cevap içeriği yok (elle işaretlendi veya içerik kaydedilmeden önce senkronize edildi).</p>
               )}
             </div>
           ) : (
