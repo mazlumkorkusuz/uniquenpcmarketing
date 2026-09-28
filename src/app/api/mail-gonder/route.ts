@@ -17,6 +17,30 @@ interface SmtpError extends Error {
   responseCode?: number
 }
 
+const LOGO_SIZE = 48
+const BRAND_HOSTS = ['gamingreachout.com', 'playercollabs.com']
+
+function hostOf(url: string): string | null {
+  try {
+    return new URL(/^https?:\/\//i.test(url) ? url : `https://${url}`).hostname.toLowerCase().replace(/^www\./, '')
+  } catch {
+    return null
+  }
+}
+
+function isBrandHost(url: string, account: MailAccount): boolean {
+  const host = hostOf(url)
+  return !!host && (BRAND_HOSTS.includes(host) || host === hostOf(account.domain ?? ''))
+}
+
+// The account's logo on its brand site: its saved logo_url if that already lives there,
+// otherwise the site's first library logo
+function brandLogoUrl(account: MailAccount): string | null {
+  if (account.logo_url && isBrandHost(account.logo_url, account)) return account.logo_url
+  const domain = hostOf(account.domain ?? '')
+  return domain ? `https://${domain}/images/Logo1.jpg` : null
+}
+
 function createTransport(account: MailAccount) {
   return nodemailer.createTransport({
     host: account.smtp_host,
@@ -196,19 +220,28 @@ export async function POST(request: NextRequest) {
   const tracking = (type: 'logo' | 'pixel', extra: Record<string, string> = {}) =>
     `${publicBaseUrl(request)}/api/mail-tracking?` +
     new URLSearchParams({ type, ...extra, e: recipient.email, c: campaign.id, r: recipient.id }).toString().replace(/&/g, '&amp;')
-  const pixel = `<img src="${tracking('pixel')}" width="1" height="1" alt="" style="display:none;" />`
+  const pixel = `<img src="${tracking('pixel')}" width="1" height="1" style="display:none">`
 
-  // Templates normally show the logo themselves (account logo or one picked from the media library):
-  // route that image through the tracker. Only when the template has no logo, add one at the top.
-  const isLogoSrc = (src: string) => src === account.logo_url || /\/images\/Logo\d+\.(jpe?g|png|webp)$/i.test(src)
+  // The tracked logo always points at the brand site's own image (gamingreachout.com /
+  // playercollabs.com /images/LogoN.jpg), never a storage URL. Same rules as scripts/send-campaign.js.
+  const brandLogo = brandLogoUrl(account)
+  const isBrandLogo = (src: string) => isBrandHost(src, account) && /\/images\/Logo\d+\.(jpe?g|png|webp)$/i.test(src)
+  const isLogoSrc = (src: string) => isBrandLogo(src) || src === account.logo_url
+  // Explicit size + alt: Naver (and some others) skip small/unlabelled images as tracking pixels
+  const logoTag = (logoUrl: string) =>
+    `<img src="${tracking('logo', { logo: logoUrl })}" width="${LOGO_SIZE}" height="${LOGO_SIZE}" alt="Logo" ` +
+    `style="display:block;margin:0 auto;width:${LOGO_SIZE}px;height:${LOGO_SIZE}px;border:0;">`
+
   let trackedLogo = false
-  let html = bodyHtml.replace(/(<img\b[^>]*?\bsrc=")([^"]+)(")/gi, (match, pre: string, src: string, post: string) => {
+  let html = bodyHtml.replace(/<img\b[^>]*?\bsrc="([^"]+)"[^>]*>/gi, (match, src: string) => {
     if (trackedLogo || !/^https:\/\//i.test(src) || !isLogoSrc(src)) return match
+    const logoUrl = isBrandLogo(src) ? src : brandLogo
+    if (!logoUrl) return match
     trackedLogo = true
-    return pre + tracking('logo', { logo: src }) + post
+    return logoTag(logoUrl)
   })
-  if (!trackedLogo && account.logo_url) {
-    const logo = `<div style="text-align:center;padding:16px 0"><img src="${tracking('logo', { logo: account.logo_url })}" alt="${account.name.replace(/["<>&]/g, '')}" height="56" style="display:inline-block;height:56px;width:auto;border:0" /></div>`
+  if (!trackedLogo && brandLogo) {
+    const logo = `<div style="text-align:center;padding:16px 0">${logoTag(brandLogo)}</div>`
     html = /<body[^>]*>/i.test(html) ? html.replace(/<body[^>]*>/i, (tag) => tag + logo) : logo + html
   }
   html = /<\/body>/i.test(html) ? html.replace(/<\/body>/i, `${pixel}</body>`) : html + pixel
