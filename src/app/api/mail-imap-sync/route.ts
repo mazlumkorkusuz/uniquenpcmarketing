@@ -365,17 +365,14 @@ async function backfillReplyContent(db: SupabaseClient, account: MailAccount, im
 
     if (!needsBackfill || needsBackfill.length === 0) return
 
-    for (const r of needsBackfill as Array<{
-      id: string
-      email: string
-      campaign_id: string
-      sent_at: string | null
-      mail_campaigns: { account_id: string | null; sent_at: string | null } | null
-    }>) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    for (const r of needsBackfill as any[]) {
       // Only process recipients belonging to this account
-      if (r.mail_campaigns?.account_id !== account.id) continue
+      const campaigns = Array.isArray(r.mail_campaigns) ? r.mail_campaigns : r.mail_campaigns ? [r.mail_campaigns] : []
+      const campaignData = campaigns[0] ?? null
+      if (campaignData?.account_id !== account.id) continue
 
-      const campaignSentAt = r.mail_campaigns?.sent_at ? new Date(r.mail_campaigns.sent_at) : r.sent_at ? new Date(r.sent_at) : null
+      const campaignSentAt = campaignData?.sent_at ? new Date(campaignData.sent_at) : r.sent_at ? new Date(r.sent_at) : null
       if (!campaignSentAt) continue
 
       try {
