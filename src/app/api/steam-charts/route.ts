@@ -70,26 +70,46 @@ function isSteamOwn(item: { id: number; name: string }) {
 }
 
 // Fetch similar games via Steam store search filtered by tags
-// Tags: Simulation(599), Co-op(9), Management(21978), Building(1696), Store/Shop(492)
+// Tags: Simulation(599), Co-op(9), Management(21978), Building(1696)
+// Uses the storeapi endpoint which returns structured appid/name/tiny_image fields
 async function fetchSimilarGames(): Promise<SteamSearchItem[]> {
   const tags = '599,9,21978,1696'
-  const url = `https://store.steampowered.com/search/results/?tags=${tags}&filter=topsellers&json=1&count=20&cc=US&l=english`
+  // storeapi/appinfo endpoint returns appid directly — more reliable than search/results logo parsing
+  const url = `https://store.steampowered.com/search/results/?tags=${tags}&filter=topsellers&json=1&count=20&cc=US&l=english&v=2`
   const res = await fetch(url, { next: { revalidate: 1800 } })
   if (!res.ok) return []
-  const data = await res.json()
+
+  let data: Record<string, unknown>
+  try { data = await res.json() } catch { return [] }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const items: SteamSearchItem[] = (data.items ?? []).map((item: any) => ({
-    id: item.logo ? Number(item.logo.match(/\/apps\/(\d+)\//)?.[1] ?? 0) : 0,
-    name: item.name ?? '',
-    tiny_image: item.logo ?? '',
-    metascore: item.metascore ?? '',
-    price: item.price != null ? {
-      final: item.price.final ?? 0,
-      initial: item.price.initial ?? item.price.final ?? 0,
-      discount_percent: item.price.discount_percent ?? 0,
-    } : undefined,
-    platforms: item.platforms,
-  })).filter((i: SteamSearchItem) => i.id > 0 && i.name)
+  const rawItems: any[] = Array.isArray(data.items) ? data.items : []
+
+  const items: SteamSearchItem[] = rawItems.map((item: any) => {
+    // Try direct appid field first, fall back to parsing logo URL
+    const appid = item.appid
+      ?? item.id
+      ?? (item.logo ? Number(item.logo.match(/\/apps\/(\d+)\//)?.[1] ?? 0) : 0)
+      ?? (item.tiny_image ? Number(item.tiny_image.match(/\/apps\/(\d+)\//)?.[1] ?? 0) : 0)
+
+    const tinyImage = item.tiny_image
+      ?? item.logo
+      ?? (appid ? `https://cdn.akamai.steamstatic.com/steam/apps/${appid}/capsule_sm_120.jpg` : '')
+
+    return {
+      id: Number(appid) || 0,
+      name: item.name ?? '',
+      tiny_image: tinyImage,
+      metascore: String(item.metascore ?? ''),
+      price: item.price != null ? {
+        final: item.price.final ?? 0,
+        initial: item.price.initial ?? item.price.final ?? 0,
+        discount_percent: item.price.discount_percent ?? 0,
+      } : undefined,
+      platforms: item.platforms,
+    }
+  }).filter((i: SteamSearchItem) => i.id > 0 && i.name)
+
   return items
 }
 
@@ -114,7 +134,18 @@ export async function GET() {
       .map(mapItem)
       .filter(item => !isSteamOwn(item))
 
-    return NextResponse.json({ topSellers, newReleases: similarGames, specials })
+    // If Steam search API returned nothing, fall back to new_releases from featuredcategories
+    const newReleases = similarGames.length > 0
+      ? similarGames
+      : ((data.new_releases as SteamFeaturedSection)?.items ?? [])
+          .map(mapItem)
+          .filter(item => !isSteamOwn(item))
+
+    const newReleasesLabel = similarGames.length > 0
+      ? '🏪 Benzer Oyunlar — Simülasyon & Co-op & Yönetim'
+      : '🆕 Yeni Çıkanlar'
+
+    return NextResponse.json({ topSellers, newReleases, specials, newReleasesLabel })
   } catch (e) {
     return NextResponse.json({ error: String(e) }, { status: 500 })
   }
