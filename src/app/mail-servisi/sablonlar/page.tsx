@@ -479,9 +479,6 @@ export default function SablonlarPage() {
                   {generating ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
                   {generating ? 'Oluşturuluyor…' : 'Şablon Oluştur'}
                 </button>
-                <p style={{ fontSize: '12px', color: 'var(--muted-foreground)', margin: 0 }}>
-                  Kullanılabilir alanlar: {'{{name}} {{platform}} {{followers}} {{sender_name}} {{sender_email}} {{logo_url}} {{banner_url}}'}
-                </p>
               </div>
             </Card>
 
