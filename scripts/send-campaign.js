@@ -1,4 +1,8 @@
 /* eslint-disable @typescript-eslint/no-require-imports -- plain Node CommonJS script run by GitHub Actions */
+if (typeof globalThis.WebSocket === 'undefined') {
+  globalThis.WebSocket = require('ws');
+}
+
 // Campaign sender, run by .github/workflows/send-campaign.yml (GitHub Actions).
 //
 // Sends every campaign with status 'ready_to_send': each pending recipient gets the rendered
