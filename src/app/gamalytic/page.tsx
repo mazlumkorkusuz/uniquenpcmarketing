@@ -228,6 +228,14 @@ export default function GamalyticPage() {
   // Search history
   const [searchHistory, setSearchHistory] = useState<HistoryItem[]>([])
 
+  // Steam charts
+  const [steamCharts, setSteamCharts] = useState<{
+    topSellers: SteamItem[]
+    newReleases: SteamItem[]
+    specials: SteamItem[]
+  } | null>(null)
+  const [chartsLoading, setChartsLoading] = useState(false)
+
   // ── Effects ──────────────────────────────────────────────────────────────────
 
   useEffect(() => {
@@ -235,6 +243,15 @@ export default function GamalyticPage() {
       const raw = localStorage.getItem(HISTORY_KEY)
       if (raw) setSearchHistory(JSON.parse(raw))
     } catch {}
+  }, [])
+
+  useEffect(() => {
+    setChartsLoading(true)
+    fetch('/api/steam-charts')
+      .then(r => r.json())
+      .then(d => { if (!d.error) setSteamCharts(d) })
+      .catch(() => {})
+      .finally(() => setChartsLoading(false))
   }, [])
 
   // ── Actions ───────────────────────────────────────────────────────────────────
@@ -505,10 +522,11 @@ export default function GamalyticPage() {
     <div style={{ overflowX: 'hidden', maxWidth: '100%' }}>
       <style>{`
         .gama-scroll::-webkit-scrollbar { display: none; }
-        .tot-btn:hover      { border-color: var(--primary-ink) !important; }
-        .search-input:focus { border-color: var(--primary-ink) !important; }
-        .history-card:hover { border-color: var(--primary-ink) !important; }
-        .result-card:hover  { border-color: var(--primary-ink) !important; transform: translateY(-2px); }
+        .tot-btn:hover        { border-color: var(--primary-ink) !important; }
+        .search-input:focus   { border-color: var(--primary-ink) !important; }
+        .history-card:hover   { border-color: var(--primary-ink) !important; }
+        .result-card:hover    { border-color: var(--primary-ink) !important; transform: translateY(-2px); }
+        .steam-chart-card:hover { border-color: var(--primary-ink) !important; transform: translateY(-2px); }
       `}</style>
 
       <PageHeader
@@ -591,6 +609,120 @@ export default function GamalyticPage() {
               ))}
             </div>
           </div>
+        )}
+
+        {/* ── Steam Charts (shown when no active search) ── */}
+        {!query && !results.length && (
+          <>
+            {chartsLoading && (
+              <div style={{ textAlign: 'center', color: 'var(--muted-foreground)', fontSize: '13px', padding: '20px 0' }}>Steam verileri yükleniyor…</div>
+            )}
+            {steamCharts && (
+              <>
+                {/* Top Sellers */}
+                {steamCharts.topSellers.length > 0 && (
+                  <div style={{ marginBottom: '28px' }}>
+                    <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--muted-foreground)', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px', textTransform: 'uppercase', letterSpacing: '0.07em' }}>
+                      🔥 Steam Çok Satanlar
+                    </div>
+                    <div className="gama-scroll" style={{ display: 'flex', gap: '10px', overflowX: 'auto', scrollbarWidth: 'none', paddingBottom: '4px' }}>
+                      {steamCharts.topSellers.map((item, i) => {
+                        const disc = item.price?.discount_percent && item.price.discount_percent > 0
+                        const fin  = item.price ? (item.price.final / 100).toFixed(2) : null
+                        const orig = item.price ? (item.price.initial / 100).toFixed(2) : null
+                        return (
+                          <button key={item.id} className="steam-chart-card" onClick={() => handleSelectGame(item)}
+                            style={{ flexShrink: 0, background: 'none', border: '1px solid var(--color-border-card)', borderRadius: '10px', padding: 0, cursor: 'pointer', textAlign: 'left', overflow: 'hidden', backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', transition: 'border-color 0.2s, transform 0.15s', width: '160px' }}>
+                            <div style={{ position: 'relative', width: '100%', height: '72px', overflow: 'hidden', borderBottom: '1px solid var(--border)' }}>
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img src={item.tiny_image} alt={item.name} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+                              <div style={{ position: 'absolute', top: '4px', left: '4px', width: '18px', height: '18px', borderRadius: '5px', backgroundColor: 'rgba(0,0,0,0.65)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <span style={{ fontSize: '10px', fontWeight: 700, color: '#fff' }}>{i + 1}</span>
+                              </div>
+                            </div>
+                            <div style={{ padding: '8px 10px 10px' }}>
+                              <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--foreground)', marginBottom: '5px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', lineHeight: 1.3 }}>{item.name}</div>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap' }}>
+                                {disc && <span style={{ backgroundColor: 'var(--success)', color: '#fff', fontSize: '9px', fontWeight: 700, padding: '1px 4px', borderRadius: '3px' }}>-{item.price!.discount_percent}%</span>}
+                                {fin != null ? <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--success)' }}>${fin}</span> : <span style={{ fontSize: '10px', color: 'var(--muted-foreground)' }}>Ücretsiz</span>}
+                                {disc && orig && <span style={{ fontSize: '10px', color: 'var(--muted-foreground)', textDecoration: 'line-through' }}>${orig}</span>}
+                              </div>
+                            </div>
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* New Releases */}
+                {steamCharts.newReleases.length > 0 && (
+                  <div style={{ marginBottom: '28px' }}>
+                    <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--muted-foreground)', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px', textTransform: 'uppercase', letterSpacing: '0.07em' }}>
+                      🆕 Yeni Çıkanlar
+                    </div>
+                    <div className="gama-scroll" style={{ display: 'flex', gap: '10px', overflowX: 'auto', scrollbarWidth: 'none', paddingBottom: '4px' }}>
+                      {steamCharts.newReleases.map((item) => {
+                        const disc = item.price?.discount_percent && item.price.discount_percent > 0
+                        const fin  = item.price ? (item.price.final / 100).toFixed(2) : null
+                        const orig = item.price ? (item.price.initial / 100).toFixed(2) : null
+                        return (
+                          <button key={item.id} className="steam-chart-card" onClick={() => handleSelectGame(item)}
+                            style={{ flexShrink: 0, background: 'none', border: '1px solid var(--color-border-card)', borderRadius: '10px', padding: 0, cursor: 'pointer', textAlign: 'left', overflow: 'hidden', backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', transition: 'border-color 0.2s, transform 0.15s', width: '160px' }}>
+                            <div style={{ position: 'relative', width: '100%', height: '72px', overflow: 'hidden', borderBottom: '1px solid var(--border)' }}>
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img src={item.tiny_image} alt={item.name} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+                            </div>
+                            <div style={{ padding: '8px 10px 10px' }}>
+                              <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--foreground)', marginBottom: '5px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', lineHeight: 1.3 }}>{item.name}</div>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap' }}>
+                                {disc && <span style={{ backgroundColor: 'var(--success)', color: '#fff', fontSize: '9px', fontWeight: 700, padding: '1px 4px', borderRadius: '3px' }}>-{item.price!.discount_percent}%</span>}
+                                {fin != null ? <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--success)' }}>${fin}</span> : <span style={{ fontSize: '10px', color: 'var(--muted-foreground)' }}>Ücretsiz</span>}
+                                {disc && orig && <span style={{ fontSize: '10px', color: 'var(--muted-foreground)', textDecoration: 'line-through' }}>${orig}</span>}
+                              </div>
+                            </div>
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Specials / Discounts */}
+                {steamCharts.specials.length > 0 && (
+                  <div style={{ marginBottom: '28px' }}>
+                    <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--muted-foreground)', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px', textTransform: 'uppercase', letterSpacing: '0.07em' }}>
+                      💸 İndirimler
+                    </div>
+                    <div className="gama-scroll" style={{ display: 'flex', gap: '10px', overflowX: 'auto', scrollbarWidth: 'none', paddingBottom: '4px' }}>
+                      {steamCharts.specials.map((item) => {
+                        const disc = item.price?.discount_percent && item.price.discount_percent > 0
+                        const fin  = item.price ? (item.price.final / 100).toFixed(2) : null
+                        const orig = item.price ? (item.price.initial / 100).toFixed(2) : null
+                        return (
+                          <button key={item.id} className="steam-chart-card" onClick={() => handleSelectGame(item)}
+                            style={{ flexShrink: 0, background: 'none', border: '1px solid var(--color-border-card)', borderRadius: '10px', padding: 0, cursor: 'pointer', textAlign: 'left', overflow: 'hidden', backgroundColor: 'var(--color-bg-card)', boxShadow: 'var(--shadow-card)', transition: 'border-color 0.2s, transform 0.15s', width: '160px' }}>
+                            <div style={{ position: 'relative', width: '100%', height: '72px', overflow: 'hidden', borderBottom: '1px solid var(--border)' }}>
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img src={item.tiny_image} alt={item.name} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+                            </div>
+                            <div style={{ padding: '8px 10px 10px' }}>
+                              <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--foreground)', marginBottom: '5px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', lineHeight: 1.3 }}>{item.name}</div>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap' }}>
+                                {disc && <span style={{ backgroundColor: 'var(--danger)', color: '#fff', fontSize: '9px', fontWeight: 700, padding: '1px 4px', borderRadius: '3px' }}>-{item.price!.discount_percent}%</span>}
+                                {fin != null ? <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--success)' }}>${fin}</span> : <span style={{ fontSize: '10px', color: 'var(--muted-foreground)' }}>Ücretsiz</span>}
+                                {disc && orig && <span style={{ fontSize: '10px', color: 'var(--muted-foreground)', textDecoration: 'line-through' }}>${orig}</span>}
+                              </div>
+                            </div>
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+          </>
         )}
 
         {/* ── Results / empty state ── */}
