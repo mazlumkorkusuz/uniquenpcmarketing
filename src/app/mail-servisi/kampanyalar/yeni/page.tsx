@@ -724,8 +724,11 @@ function YeniKampanya() {
       setToast({ message: 'Kampanya adı, en az bir hesap, şablon ve alıcı gerekli', type: 'error' })
       return
     }
-    const accountsNote = accountIds.length > 1 ? ` (${accountIds.length} hesap sırayla)` : ''
-    if (!confirm(`${recipients.length} kişiye ${SEND_DELAY_SECONDS} sn aralıkla mail gönderilecek${accountsNote}. Gönderim arka planda (GitHub Actions) yapılır. Devam edilsin mi?`)) return
+    const multi = accountIds.length > 1
+    // Each recipient gets one mail per selected account when multiple accounts are chosen
+    const totalMails = recipients.length * accountIds.length
+    const accountsNote = multi ? ` (${accountIds.length} hesaptan her alıcıya ayrı mail — toplam ${totalMails} mail)` : ''
+    if (!confirm(`${totalMails} mail gönderilecek${accountsNote}. ${SEND_DELAY_SECONDS} sn aralıkla, arka planda (GitHub Actions) yapılır. Devam edilsin mi?`)) return
 
     const { data: campaign, error } = await supabase
       .from('mail_campaigns')
@@ -734,7 +737,7 @@ function YeniKampanya() {
         account_id: accountIds[0],
         template_id: templateId,
         status: 'draft',
-        total_recipients: recipients.length,
+        total_recipients: totalMails,
         delay_seconds: SEND_DELAY_SECONDS,
       })
       .select()
@@ -744,14 +747,16 @@ function YeniKampanya() {
       return
     }
 
-    // With several accounts each recipient gets one round-robin; a single account stays on the campaign
-    const multi = accountIds.length > 1
-    for (let i = 0; i < recipients.length; i += 500) {
-      const chunk = recipients.slice(i, i + 500).map((r, j) => ({
-        ...r,
-        campaign_id: campaign.id,
-        ...(multi ? { account_id: accountIds[(i + j) % accountIds.length] } : {}),
-      }))
+    // Multi-account: insert one row per recipient per account (each account mails everyone)
+    // Single account: insert one row per recipient with no account_id override
+    const allRows = multi
+      ? accountIds.flatMap((accId) =>
+          recipients.map((r) => ({ ...r, campaign_id: campaign.id, account_id: accId }))
+        )
+      : recipients.map((r) => ({ ...r, campaign_id: campaign.id }))
+
+    for (let i = 0; i < allRows.length; i += 500) {
+      const chunk = allRows.slice(i, i + 500)
       const { error: insertError } = await supabase.from('mail_recipients').insert(chunk)
       if (insertError) {
         const hint = multi && /account_id/.test(insertError.message)
@@ -857,7 +862,7 @@ function YeniKampanya() {
                 )}
                 {accountIds.length > 1 && (
                   <p style={{ fontSize: '12px', color: 'var(--muted-foreground)', margin: '6px 0 0' }}>
-                    Mailler seçili hesaplar arasında sırayla gönderilir.
+                    Her alıcıya seçili her hesaptan ayrı mail gönderilir.
                   </p>
                 )}
               </Field>
