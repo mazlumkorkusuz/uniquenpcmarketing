@@ -4,6 +4,7 @@ import PageHeader from '@/components/PageHeader'
 import { createSupabaseServerClient } from '@/lib/supabase-server'
 import { percent, type MailCampaign } from '@/lib/mail'
 import CancelCampaignButton from '../_components/CancelCampaignButton'
+import DeleteCampaignButton from '../_components/DeleteCampaignButton'
 import { Card, CampaignStatusBadge, ProgressBar, MAIL_GRADIENT, buttonStyle, formatDateTime, thStyle, tdStyle } from '../_components/ui'
 
 type CampaignRow = MailCampaign & {
@@ -69,6 +70,7 @@ export default async function KampanyalarPage() {
                         <td style={{ ...tdStyle, textAlign: 'right' }}>
                           <div style={{ display: 'inline-flex', alignItems: 'flex-start', gap: '6px' }}>
                             <CancelCampaignButton campaignId={c.id} campaignName={c.name} status={c.status} />
+                            <DeleteCampaignButton campaignId={c.id} campaignName={c.name} status={c.status} />
                             {canResume && (
                               <Link href={`/mail-servisi/kampanyalar/yeni?resume=${c.id}`} style={{ ...buttonStyle('primary'), padding: '6px 10px', fontSize: '12px' }}>
                                 Devam Et
