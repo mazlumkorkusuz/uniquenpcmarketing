@@ -46,10 +46,8 @@ export default function LoginPage() {
   const [countdown, setCountdown] = useState(0)
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
-  // Load lockout state from localStorage on mount
   useEffect(() => {
     const state = getLockout()
-    // Clear expired lockout
     if (state.lockedUntil && Date.now() >= state.lockedUntil) {
       clearLockout()
     } else {
@@ -57,7 +55,6 @@ export default function LoginPage() {
     }
   }, [])
 
-  // Countdown timer when locked
   useEffect(() => {
     if (lockout.lockedUntil && Date.now() < lockout.lockedUntil) {
       const tick = () => {
@@ -126,22 +123,38 @@ export default function LoginPage() {
         position: 'fixed',
         inset: 0,
         zIndex: 0,
-        backgroundImage: "url('/banner.png')",
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
+        overflow: 'hidden',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         padding: '24px',
       }}
     >
-      {/* Dark overlay with a soft top light, like resend.com */}
+      {/* Blurred video background */}
+      <video
+        autoPlay
+        muted
+        loop
+        playsInline
+        style={{
+          position: 'absolute',
+          inset: 0,
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          filter: 'blur(12px) brightness(0.35)',
+          transform: 'scale(1.08)',
+        }}
+      >
+        <source src="/login-bg.mp4" type="video/mp4" />
+      </video>
+
+      {/* Dark overlay with a soft top light */}
       <div
         style={{
           position: 'absolute',
           inset: 0,
-          background: 'radial-gradient(50rem 28rem at 50% -10%, rgba(255,255,255,0.08), transparent 70%), rgba(0,0,0,0.82)',
-          backdropFilter: 'blur(6px)',
+          background: 'radial-gradient(50rem 28rem at 50% -10%, rgba(255,255,255,0.08), transparent 70%), rgba(0,0,0,0.55)',
         }}
       />
 
@@ -213,7 +226,6 @@ export default function LoginPage() {
             animation: 'pop-in 600ms var(--ease-out-soft) 80ms both',
           }}
         >
-          {/* Lockout banner */}
           {isLocked && (
             <div
               style={{
@@ -234,7 +246,6 @@ export default function LoginPage() {
                 {MAX_ATTEMPTS} başarısız girişimden sonra hesabınız kilitlendi.
                 <strong style={{ color: '#EDEDED' }}> {countdown} saniye</strong> sonra tekrar deneyin.
               </p>
-              {/* Countdown bar */}
               <div style={{ height: '4px', backgroundColor: '#262626', borderRadius: '2px', overflow: 'hidden' }}>
                 <div
                   style={{
@@ -249,7 +260,6 @@ export default function LoginPage() {
             </div>
           )}
 
-          {/* Error */}
           {error && !isLocked && (
             <div
               style={{
@@ -269,7 +279,6 @@ export default function LoginPage() {
           )}
 
           <form onSubmit={handleLogin}>
-            {/* Email */}
             <div style={{ marginBottom: '16px' }}>
               <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, color: '#B4B4B4', marginBottom: '6px' }}>
                 E-posta
@@ -304,7 +313,6 @@ export default function LoginPage() {
               </div>
             </div>
 
-            {/* Password */}
             <div style={{ marginBottom: '24px' }}>
               <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, color: '#B4B4B4', marginBottom: '6px' }}>
                 Şifre
@@ -358,7 +366,6 @@ export default function LoginPage() {
               </div>
             </div>
 
-            {/* Attempt dots */}
             {lockout.attempts > 0 && lockout.attempts < MAX_ATTEMPTS && (
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '16px' }}>
                 <span style={{ fontSize: '12px', color: '#8F8F8F' }}>Deneme:</span>
@@ -376,15 +383,12 @@ export default function LoginPage() {
               </div>
             )}
 
-            {/* Submit */}
             <button
               type="submit"
               disabled={isLocked || loading || !email || !password}
               style={{
                 width: '100%',
-                background: isLocked
-                  ? '#0A0A0A'
-                  : '#EDEDED',
+                background: isLocked ? '#0A0A0A' : '#EDEDED',
                 color: isLocked ? '#8F8F8F' : '#000000',
                 border: isLocked ? '1px solid #262626' : 'none',
                 borderRadius: '12px',
