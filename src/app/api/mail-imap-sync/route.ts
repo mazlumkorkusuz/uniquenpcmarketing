@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { timingSafeEqual } from 'crypto'
 import Imap from 'imap'
+import { simpleParser } from 'mailparser'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { supabase as serviceClient } from '@/lib/supabase'
 import { createSupabaseServerClient } from '@/lib/supabase-server'
@@ -10,8 +11,8 @@ import { isAccountActive, type MailAccount } from '@/lib/mail'
 //
 // Reads each active mail account's INBOX over IMAP (Hostinger: imap.hostinger.com:993, same login as
 // SMTP — credentials come from mail_accounts, never from code) and:
-//   - replies: a message from a recipient this account mailed → status 'replied' ("Cevap Verdi"),
-//     replied_at = the reply's date
+//   - replies: the first message from a recipient after this account mailed them → status 'replied'
+//     ("Cevap Verdi"), replied_at = the reply's date, reply_subject + first 500 chars of reply_body
 //   - bounces: "Undelivered Mail…" / delivery-failure reports naming a recipient → status 'bounced'
 // Each run is recorded in mail_sync_runs (shown as "Son senkronizasyon" on the tracking page).
 //
@@ -22,6 +23,8 @@ const IMAP_HOST = 'imap.hostinger.com'
 const IMAP_PORT = 993
 const MAX_LOOKBACK_DAYS = 90
 const MAX_BOUNCE_BODY = 200_000
+const MAX_RAW_MESSAGE = 2_000_000
+const REPLY_PREVIEW_CHARS = 500
 const EMAIL_RE = /[^\s<>"',;:()[\]]+@[^\s<>"',;:()[\]]+\.[a-z]{2,}/i
 // Delivery-failure reports and other automated senders are never replies
 const SYSTEM_SENDER_RE = /^(mailer-daemon|postmaster|no-?reply|donotreply)@/i
@@ -30,6 +33,7 @@ const BOUNCE_SUBJECTS = ['Undelivered Mail', 'Delivery Status Notification', 'Ma
 type Trigger = 'manual' | 'cron'
 
 interface InboxMessage {
+  uid: number
   from: string
   date: Date
   subject: string
@@ -92,23 +96,44 @@ function fetchMessages(imap: Imap, uids: number[], withBody: boolean): Promise<I
       let header = ''
       let body = ''
       let internalDate: Date | null = null
+      let uid = 0
       msg.on('body', (stream, info) => {
         stream.on('data', (chunk: Buffer) => {
           if (info.which === 'TEXT') { if (body.length < MAX_BOUNCE_BODY) body += chunk.toString('utf8') }
           else header += chunk.toString('utf8')
         })
       })
-      msg.once('attributes', (attrs) => { internalDate = attrs.date })
+      msg.once('attributes', (attrs) => { internalDate = attrs.date; uid = attrs.uid })
       msg.once('end', () => {
         const h = Imap.parseHeader(header)
         const from = h.from?.[0]?.match(EMAIL_RE)?.[0]?.toLowerCase()
         const headerDate = h.date?.[0] ? new Date(h.date[0]) : null
         const date = headerDate && !Number.isNaN(headerDate.getTime()) ? headerDate : internalDate
-        if (from && date) messages.push({ from, date, subject: h.subject?.[0] ?? '', body: withBody ? body : undefined })
+        if (from && date) messages.push({ uid, from, date, subject: h.subject?.[0] ?? '', body: withBody ? body : undefined })
       })
     })
     fetch.once('error', reject)
     fetch.once('end', () => resolve(messages))
+  })
+}
+
+// Whole raw message (headers + all MIME parts), capped so a huge attachment can't exhaust memory
+function fetchRaw(imap: Imap, uid: number): Promise<Buffer> {
+  return new Promise((resolve, reject) => {
+    const chunks: Buffer[] = []
+    let size = 0
+    const fetch = imap.fetch([uid], { bodies: '', struct: false })
+    fetch.on('message', (msg) => {
+      msg.on('body', (stream) => {
+        stream.on('data', (chunk: Buffer) => {
+          if (size >= MAX_RAW_MESSAGE) return
+          chunks.push(chunk)
+          size += chunk.length
+        })
+      })
+    })
+    fetch.once('error', reject)
+    fetch.once('end', () => resolve(Buffer.concat(chunks)))
   })
 }
 
@@ -120,15 +145,47 @@ function subjectAny(subjects: string[]): unknown[] {
 
 // ── Parsing ─────────────────────────────────────────────────────────────────
 
-// Earliest message per sender — that's when they first replied
-function firstReplyBySender(messages: InboxMessage[]): Map<string, Date> {
-  const bySender = new Map<string, Date>()
+// Every message per sender, oldest first; the reply is the first one after our mail was sent
+function messagesBySender(messages: InboxMessage[]): Map<string, InboxMessage[]> {
+  const bySender = new Map<string, InboxMessage[]>()
   for (const m of messages) {
     if (SYSTEM_SENDER_RE.test(m.from)) continue
-    const prev = bySender.get(m.from)
-    if (!prev || m.date < prev) bySender.set(m.from, m.date)
+    const list = bySender.get(m.from) ?? []
+    list.push(m)
+    bySender.set(m.from, list)
   }
+  for (const list of bySender.values()) list.sort((a, b) => a.date.getTime() - b.date.getTime())
   return bySender
+}
+
+// Cuts the quoted original mail from a reply ("On … wrote:", Turkish "… tarihinde … yazdı:",
+// Outlook separators, "> " lines) and returns a plain-text preview
+function replyPreview(text: string): string {
+  const lines = text.replace(/\r\n/g, '\n').split('\n')
+  const out: string[] = []
+  for (const line of lines) {
+    if (/^\s*>/.test(line)) break
+    if (/^\s*(On .+wrote:|.+tarihinde .+yazdı:|-{2,}\s*(Original Message|Orijinal İleti|Forwarded message)|From: .+|Kimden: .+)\s*$/i.test(line)) break
+    if (/^_{8,}\s*$/.test(line)) break
+    out.push(line)
+  }
+  return out.join('\n').replace(/\n{3,}/g, '\n\n').trim().slice(0, REPLY_PREVIEW_CHARS)
+}
+
+async function replyContent(imap: Imap, uid: number): Promise<{ subject: string | null; body: string | null }> {
+  const parsed = await simpleParser(await fetchRaw(imap, uid))
+  const text = parsed.text ?? (typeof parsed.html === 'string' ? htmlToText(parsed.html) : '')
+  return { subject: parsed.subject?.trim() || null, body: replyPreview(text) || null }
+}
+
+function htmlToText(html: string): string {
+  return html
+    .replace(/<(style|script)[\s\S]*?<\/\1>/gi, '')
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<\/(p|div|h[1-6]|li|tr|blockquote)>/gi, '\n')
+    .replace(/<[^>]+>/g, '')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'")
 }
 
 // Failed addresses from a delivery report (RFC 3464 Final-Recipient, or Postfix "<addr>: host … said")
@@ -186,7 +243,7 @@ async function syncAccount(db: SupabaseClient, account: MailAccount, since: Date
     const all = await fetchMessages(imap, await search(imap, [['SINCE', since]]), false)
     const bounceReports = await fetchMessages(imap, await search(imap, [['SINCE', since], subjectAny(BOUNCE_SUBJECTS)]), true)
 
-    const replies = firstReplyBySender(all)
+    const replies = messagesBySender(all)
     const bounces = new Map<string, { date: Date; hard: boolean }>()
     for (const report of bounceReports) for (const [email, b] of bouncedAddresses(report)) bounces.set(email, b)
 
@@ -202,7 +259,7 @@ async function syncAccount(db: SupabaseClient, account: MailAccount, since: Date
     for (const r of await candidates(db, account, [...new Set([...replies.keys(), ...bounces.keys()])])) {
       const sentAt = new Date(r.sent_at!)
       const bounce = bounces.get(r.email)
-      const replyAt = replies.get(r.email)
+      const reply = replies.get(r.email)?.find((m) => m.date >= sentAt)
 
       if (bounce && bounce.date >= sentAt) {
         const { error } = await db
@@ -213,15 +270,24 @@ async function syncAccount(db: SupabaseClient, account: MailAccount, since: Date
         if (error) throw new Error(error.message)
         bounceCount++
         tally(r.campaign_id, 'bounce')
-      } else if (replyAt && replyAt >= sentAt) {
+      } else if (reply) {
         const { error } = await db
           .from('mail_recipients')
-          .update({ status: 'replied', replied_at: replyAt.toISOString() })
+          .update({ status: 'replied', replied_at: reply.date.toISOString() })
           .eq('id', r.id)
           .is('replied_at', null)
         if (error) throw new Error(error.message)
         replyCount++
         tally(r.campaign_id, 'reply')
+
+        // Best effort: reply content needs the reply_subject/reply_body migration, and a parsing or
+        // save failure must not undo the reply we just recorded
+        try {
+          const content = await replyContent(imap, reply.uid)
+          await db.from('mail_recipients').update({ reply_subject: content.subject, reply_body: content.body }).eq('id', r.id)
+        } catch {
+          // keep going
+        }
       }
     }
 

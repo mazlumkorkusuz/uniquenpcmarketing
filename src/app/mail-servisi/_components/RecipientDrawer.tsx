@@ -166,7 +166,25 @@ export default function RecipientDrawer({
 
         <Section title="Cevap" icon={<Reply size={14} />}>
           {recipient.replied_at ? (
-            <p style={{ margin: 0, fontSize: '13px', color: 'var(--success)', fontWeight: 600 }}>{formatExact(recipient.replied_at)}</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <p style={{ margin: 0, fontSize: '13px', color: 'var(--success)', fontWeight: 600 }}>{formatExact(recipient.replied_at)}</p>
+              {recipient.reply_subject || recipient.reply_body ? (
+                <div style={{ borderRadius: '8px', border: '1px solid var(--border)', overflow: 'hidden' }}>
+                  {recipient.reply_subject && (
+                    <div style={{ padding: '10px 12px', borderBottom: recipient.reply_body ? '1px solid var(--border)' : undefined, fontSize: '13px', fontWeight: 600, color: 'var(--foreground)', overflowWrap: 'anywhere' }}>
+                      {recipient.reply_subject}
+                    </div>
+                  )}
+                  {recipient.reply_body && (
+                    <p style={{ margin: 0, padding: '10px 12px', fontSize: '13px', lineHeight: 1.55, color: 'var(--text-2)', whiteSpace: 'pre-wrap', overflowWrap: 'anywhere' }}>
+                      {recipient.reply_body}
+                    </p>
+                  )}
+                </div>
+              ) : (
+                <p style={muted}>Cevap içeriği yok (elle işaretlendi veya içerik kaydedilmeden önce senkronize edildi).</p>
+              )}
+            </div>
           ) : (
             <p style={muted}>Henüz cevap yok</p>
           )}

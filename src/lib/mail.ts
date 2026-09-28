@@ -73,6 +73,9 @@ export interface MailRecipient {
   bounce_type: string | null
   // Last send error (nullable until the error_message migration is applied)
   error_message?: string | null
+  // Reply content saved by the IMAP sync (absent until the reply_subject/reply_body migration)
+  reply_subject?: string | null
+  reply_body?: string | null
   created_at: string
 }
 
