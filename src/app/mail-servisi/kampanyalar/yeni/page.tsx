@@ -578,7 +578,7 @@ function YeniKampanya() {
   // Bounce check state
   const [bounceChecking, setBounceChecking] = useState(false)
   const [bounceResults, setBounceResults] = useState<BounceResult[] | null>(null)
-  const [bounceStats, setBounceStats] = useState<{ total: number; ok: number; bounce: number; belirsiz: number; yok: number } | null>(null)
+  const [bounceStats, setBounceStats] = useState<{ total: number; ok: number; bounce: number; belirsiz: number } | null>(null)
 
   const [campaignId, setCampaignId] = useState<string | null>(null)
   const [campaignStatus, setCampaignStatus] = useState<string | null>(null)
@@ -694,7 +694,6 @@ function YeniKampanya() {
         ok: allResults.filter((r) => r.status === 'OK').length,
         bounce: allResults.filter((r) => r.status === 'BOUNCE').length,
         belirsiz: allResults.filter((r) => r.status === 'BELIRSIZ' || r.status === 'YOK').length,
-        yok: allResults.filter((r) => r.status === 'YOK').length,
       }
       setBounceResults(allResults)
       setBounceStats(stats)
@@ -1098,19 +1097,53 @@ function YeniKampanya() {
                   </div>
 
                   {bounceStats && (
-                    <div style={{ marginTop: '12px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                      <span style={{ fontSize: '12px', padding: '3px 10px', borderRadius: '999px', backgroundColor: 'var(--success)', color: '#fff', fontWeight: 600 }}>
-                        ✓ {bounceStats.ok} OK
-                      </span>
-                      {bounceStats.bounce > 0 && (
-                        <span style={{ fontSize: '12px', padding: '3px 10px', borderRadius: '999px', backgroundColor: 'var(--danger)', color: '#fff', fontWeight: 600 }}>
-                          ✗ {bounceStats.bounce} Bounce (çıkarıldı)
+                    <div style={{ marginTop: '12px' }}>
+                      {/* Summary badges */}
+                      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '10px' }}>
+                        <span style={{ fontSize: '12px', padding: '3px 10px', borderRadius: '999px', backgroundColor: 'var(--success)', color: '#fff', fontWeight: 600 }}>
+                          ✓ {bounceStats.ok} OK
                         </span>
-                      )}
-                      {bounceStats.belirsiz > 0 && (
-                        <span style={{ fontSize: '12px', padding: '3px 10px', borderRadius: '999px', backgroundColor: 'var(--orange)', color: '#fff', fontWeight: 600 }}>
-                          ? {bounceStats.belirsiz} Belirsiz (listede)
-                        </span>
+                        {bounceStats.bounce > 0 && (
+                          <span style={{ fontSize: '12px', padding: '3px 10px', borderRadius: '999px', backgroundColor: 'var(--danger)', color: '#fff', fontWeight: 600 }}>
+                            ✗ {bounceStats.bounce} Bounce (çıkarıldı)
+                          </span>
+                        )}
+                        {bounceStats.belirsiz > 0 && (
+                          <span style={{ fontSize: '12px', padding: '3px 10px', borderRadius: '999px', backgroundColor: 'var(--orange)', color: '#fff', fontWeight: 600 }}>
+                            ? {bounceStats.belirsiz} Belirsiz (listede)
+                          </span>
+                        )}
+                      </div>
+                      {/* Per-email detail table */}
+                      {bounceResults && bounceResults.length > 0 && (
+                        <div style={{ border: '1px solid var(--border)', borderRadius: '8px', overflow: 'hidden', fontSize: '12px' }}>
+                          <div style={{ maxHeight: '220px', overflowY: 'auto' }}>
+                            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                              <thead>
+                                <tr style={{ backgroundColor: 'var(--muted)', position: 'sticky', top: 0 }}>
+                                  <th style={{ padding: '6px 10px', textAlign: 'left', fontWeight: 600, color: 'var(--muted-foreground)' }}>Email</th>
+                                  <th style={{ padding: '6px 10px', textAlign: 'left', fontWeight: 600, color: 'var(--muted-foreground)', whiteSpace: 'nowrap' }}>Sonuç</th>
+                                  <th style={{ padding: '6px 10px', textAlign: 'left', fontWeight: 600, color: 'var(--muted-foreground)' }}>Açıklama</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {bounceResults.map((r, i) => {
+                                  const color = r.status === 'OK' ? 'var(--success)' : r.status === 'BOUNCE' ? 'var(--danger)' : 'var(--orange)'
+                                  const label = r.status === 'OK' ? '✓ OK' : r.status === 'BOUNCE' ? '✗ Bounce' : '? Belirsiz'
+                                  return (
+                                    <tr key={r.email} style={{ borderTop: i === 0 ? 'none' : '1px solid var(--border)', backgroundColor: r.status === 'BOUNCE' ? 'rgba(239,68,68,0.04)' : 'transparent' }}>
+                                      <td style={{ padding: '5px 10px', color: 'var(--foreground)', fontFamily: 'monospace', fontSize: '11px' }}>{r.email}</td>
+                                      <td style={{ padding: '5px 10px', whiteSpace: 'nowrap' }}>
+                                        <span style={{ color, fontWeight: 700 }}>{label}</span>
+                                      </td>
+                                      <td style={{ padding: '5px 10px', color: 'var(--muted-foreground)', fontSize: '11px' }}>{r.reason}</td>
+                                    </tr>
+                                  )
+                                })}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
                       )}
                     </div>
                   )}
