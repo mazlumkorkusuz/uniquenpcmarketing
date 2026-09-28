@@ -659,7 +659,7 @@ export default function GamalyticPage() {
                 {steamCharts.newReleases.length > 0 && (
                   <div style={{ marginBottom: '28px' }}>
                     <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--muted-foreground)', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px', textTransform: 'uppercase', letterSpacing: '0.07em' }}>
-                      🆕 Yeni Çıkanlar
+                      🏪 Benzer Oyunlar — Simülasyon & Co-op & Yönetim
                     </div>
                     <div className="gama-scroll" style={{ display: 'flex', gap: '10px', overflowX: 'auto', scrollbarWidth: 'none', paddingBottom: '4px' }}>
                       {steamCharts.newReleases.map((item) => {
